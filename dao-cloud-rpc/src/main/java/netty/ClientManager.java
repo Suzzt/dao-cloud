@@ -44,8 +44,6 @@ public class ClientManager {
     private static void initChannel() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
-        DefaultMessageCoder defaultMessageCoder = new DefaultMessageCoder();
-        RpcResponseMessageHandler rpcResponseMessageHandler = new RpcResponseMessageHandler();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(group);
@@ -55,8 +53,8 @@ public class ClientManager {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(LOGGING_HANDLER)
-                        .addLast(defaultMessageCoder)
-                        .addLast(rpcResponseMessageHandler);
+                        .addLast(new DefaultMessageCoder())
+                        .addLast(new RpcResponseMessageHandler());
                 System.out.println(">>>>>>>>>>建立连接<<<<<<<<<<<<");
             }
         });

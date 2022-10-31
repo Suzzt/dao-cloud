@@ -22,10 +22,8 @@ import protocol.ProtocolFrameDecoder;
 public class ServerManager {
     public static void main(String[] args) {
         NioEventLoopGroup boss = new NioEventLoopGroup();
-        NioEventLoopGroup worker = new NioEventLoopGroup();
+        NioEventLoopGroup worker = new NioEventLoopGroup(4);
         LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
-        DefaultMessageCoder defaultMessageCoder = new DefaultMessageCoder();
-        RpcRequestMessageHandler rpcRequestMessageHandler = new RpcRequestMessageHandler();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.channel(NioServerSocketChannel.class);
@@ -35,8 +33,8 @@ public class ServerManager {
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     ch.pipeline().addLast(LOGGING_HANDLER);
-                    ch.pipeline().addLast(defaultMessageCoder);
-                    ch.pipeline().addLast(rpcRequestMessageHandler);
+                    ch.pipeline().addLast(new DefaultMessageCoder());
+                    ch.pipeline().addLast(new RpcRequestMessageHandler());
                 }
             });
             Channel channel = serverBootstrap.bind(6661).sync().channel();
