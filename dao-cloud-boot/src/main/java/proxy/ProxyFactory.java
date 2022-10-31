@@ -1,14 +1,13 @@
 package proxy;
 
 import cn.hutool.core.util.IdUtil;
-import com.google.gson.GsonBuilder;
 import handler.RpcResponseMessageHandler;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import model.DaoMessage;
 import model.RpcRequestModel;
 import netty.ClientManager;
-import serializable.ClassCodec;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -64,7 +63,9 @@ public class ProxyFactory {
             message.setVersion((byte) 1);
             message.setSerializableType((byte) 1);
             // push message
-            ClientManager.getChannel().writeAndFlush(message);
+            Future channelFuture = ClientManager.getChannel().writeAndFlush(message);
+            System.out.println(channelFuture.get());
+
 
             // 异步！ promise 对象来处理异步接收的结果线程
             DefaultPromise<Object> promise = new DefaultPromise<>(ClientManager.getChannel().eventLoop());

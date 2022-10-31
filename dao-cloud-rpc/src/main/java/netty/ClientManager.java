@@ -61,7 +61,7 @@ public class ClientManager {
             }
         });
         try {
-            channel = bootstrap.connect("localhost", 6661).sync().channel();
+            channel = bootstrap.connect("127.0.0.1", 6661).sync().channel();
             //试试这种listen来关闭
             channel.closeFuture().addListener(future -> {
                 group.shutdownGracefully();

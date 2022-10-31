@@ -68,9 +68,9 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
         log.debug("version={}", version);
         //消息类型 1byte
         byte messageType = byteBuf.readByte();
-        if(messageType==0){
-            //心跳
-        }else if(messageType==1){
+        if (messageType == 0) {
+            //// TODO: 2022/10/31  心跳
+        } else if (messageType == 1) {
             //rpc
             //序列化 1byte
             byte serializableType = byteBuf.readByte();
