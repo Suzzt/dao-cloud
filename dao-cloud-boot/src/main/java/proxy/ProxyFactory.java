@@ -56,12 +56,7 @@ public class ProxyFactory {
                     method.getParameterTypes(),
                     args
             );
-            DaoMessage message = new DaoMessage();
-            message.setContent(requestModel);
-            message.setMagicNumber("dao".getBytes(StandardCharsets.UTF_8));
-            message.setMessageType((byte) 1);
-            message.setVersion((byte) 1);
-            message.setSerializableType((byte) 1);
+            DaoMessage message = new DaoMessage("dao".getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, requestModel);
             // push message
             Future channelFuture = ClientManager.getChannel().writeAndFlush(message);
             System.out.println(channelFuture.get());

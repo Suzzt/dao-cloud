@@ -30,12 +30,16 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
         //====================================write====================================
         //魔数 3bytes
         byteBuf.writeBytes(msg.getMagicNumber());
+        log.debug("encode magicNumber={}", new String(msg.getMagicNumber()));
         //版本 1byte
         byteBuf.writeByte(msg.getVersion());
+        log.debug("encode version={}", msg.getVersion());
         //消息类型 1byte
         byteBuf.writeByte(msg.getMessageType());
+        log.debug("encode messageType={}", msg.getMessageType());
         //序列化 1byte
         byteBuf.writeByte(msg.getSerializableType());
+        log.debug("encode serializableType={}", msg.getSerializableType());
         //获取内容的字节数组
         byte[] bytes;
         if (msg.getSerializableType() == 0) {
@@ -54,6 +58,7 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
         byteBuf.writeInt(bytes.length);
         //内容数据
         byteBuf.writeBytes(bytes);
+        out.add(byteBuf);
     }
 
     @Override
@@ -62,37 +67,39 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
         //魔数 3bytes
         byte[] magicNumber = new byte[3];
         byteBuf.readBytes(magicNumber);
-        log.debug("magicNumber={}", new String(magicNumber));
+        log.debug("decode magicNumber={}", new String(magicNumber));
         //版本 1byte
         byte version = byteBuf.readByte();
-        log.debug("version={}", version);
+        log.debug("decode version={}", version);
         //消息类型 1byte
         byte messageType = byteBuf.readByte();
+        log.debug("decode messageType={}", messageType);
         if (messageType == 0) {
             //// TODO: 2022/10/31  心跳
         } else if (messageType == 1) {
             //rpc
             //序列化 1byte
             byte serializableType = byteBuf.readByte();
-            log.debug("serializableType={}", serializableType);
+            log.debug("decode serializableType={}", serializableType);
             //内容字节数 int 4bytes
             int contentLength = byteBuf.readInt();
-            log.debug("contentLength={}", contentLength);
+            log.debug("decode contentLength={}", contentLength);
             //根据不同的序列化方式解析
             byte[] content = new byte[contentLength];
             byteBuf.readBytes(content, 0, contentLength);
-            Object o;
+            //RpcRequestModel rpcRequestModel;
+            Object model;
             if (serializableType == 0) {
                 ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(content));
-                o = ois.readObject();
+                model = ois.readObject();
             } else if (serializableType == 1) {
                 String contentJson = new String(content);
                 Gson gson = new GsonBuilder().registerTypeAdapter(Class.class, new ClassCodec()).create();
-                o = gson.fromJson(contentJson, Object.class);
+                model = gson.fromJson(contentJson, Object.class);
             } else {
                 throw new RuntimeException("嘿嘿");
             }
-            list.add(o);
+            list.add(model);
         }
     }
 

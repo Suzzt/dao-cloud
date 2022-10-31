@@ -9,6 +9,13 @@ import lombok.Data;
  */
 @Data
 public class DaoMessage {
+    public DaoMessage(byte[] magicNumber, byte version, byte messageType, byte serializableType, Object content) {
+        this.magicNumber = magicNumber;
+        this.version = version;
+        this.messageType = messageType;
+        this.serializableType = serializableType;
+        this.content = content;
+    }
 
     //====================================================固定结构====================================================
     /**
