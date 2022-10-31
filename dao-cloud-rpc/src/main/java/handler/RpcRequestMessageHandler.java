@@ -1,5 +1,6 @@
 package handler;
 
+import enums.Constant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
             String msg = e.getCause().getMessage();
             rpcResponseModel.setExceptionValue(new Exception("execute rpc error:" + msg));
         }
-        DaoMessage daoMessage = new DaoMessage("dao".getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, rpcResponseModel);
+        DaoMessage daoMessage = new DaoMessage(Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, rpcResponseModel);
         ctx.writeAndFlush(daoMessage);
     }
 

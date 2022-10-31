@@ -1,6 +1,7 @@
 package proxy;
 
 import cn.hutool.core.util.IdUtil;
+import enums.Constant;
 import handler.RpcResponseMessageHandler;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Future;
@@ -56,7 +57,7 @@ public class ProxyFactory {
                     method.getParameterTypes(),
                     args
             );
-            DaoMessage message = new DaoMessage("dao".getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, requestModel);
+            DaoMessage message = new DaoMessage(Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, requestModel);
             // push message
             Future channelFuture = ClientManager.getChannel().writeAndFlush(message);
             System.out.println(channelFuture.get());
