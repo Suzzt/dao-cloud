@@ -4,9 +4,9 @@
 # 项目结构
     dao-cloud-rpc=rpc调用
     dao-cloud-config=注册+配置-中心
-    dao-cloud-web=交互辅助页面
+    dao-cloud-web=交互辅助web页面
     dao-cloud-gateway=网关
-    dao-cloud-boot=rpc-Spring-boot-start
+    dao-cloud-sprinhg-boot-starter=rpc-Spring-boot-start
 
 #协议约定
 

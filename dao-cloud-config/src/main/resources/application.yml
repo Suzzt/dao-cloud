@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: dao-cloud-config
+log.home: /data/dao-cloud-logs/${spring.application.name}
+server:
+  port: 5555
+  servlet:
+    context-path: /${spring.application.name}
