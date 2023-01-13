@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-    <springProperty scope="context" name="log.level" source="log.level" defaultValue="info"/>
+    <springProperty scope="context" name="loglevel" source="loglevel" defaultValue="debug"/>
     <springProperty scope="context" name="log.home" source="log.home" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -96,11 +96,6 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - [%thread] %-5level - %logger{35} - %msg%n</pattern>
         </layout>
     </appender>
-
-    <logger name="com.junmo.web.mapper" additivity="false">
-        <level value="info"/>
-        <appender-ref ref="SQL"/>
-    </logger>
 
     <!--slow sql-->
     <Logger name="com.alibaba.druid.filter.stat.StatFilter" additivity="false">

@@ -31,7 +31,7 @@
 
         <dependency>
             <groupId>org.junmo</groupId>
-            <artifactId>dao-cloud-rpc</artifactId>
+            <artifactId>dao-cloud-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

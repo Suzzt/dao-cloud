@@ -35,7 +35,7 @@
     <modules>
         <module>common</module>
         <!--rpc-core-->
-        <module>dao-cloud-rpc</module>
+        <module>dao-cloud-core</module>
         <!--register config-->
         <module>dao-cloud-config</module>
         <!--web page-->
@@ -46,6 +46,8 @@
         <module>dao-cloud-monitor</module>
         <!--api-SpringBoot-->
         <module>dao-cloud-spring-boot-starter</module>
+        <module>dao-cloud-example/provider</module>
+        <module>dao-cloud-example/comsumer</module>
     </modules>
 
     <dependencies>

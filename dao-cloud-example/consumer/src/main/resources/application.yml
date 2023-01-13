@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: dao-cloud-example
+server:
+  port: 19998
+  servlet:
+    context-path: /${spring.application.name}
+
+dao-cloud:
+  enable: true
+  proxy: demo
+  corePoolSize: 3
+  maxPoolSize: 40
+  #port: 9998      // rpc port

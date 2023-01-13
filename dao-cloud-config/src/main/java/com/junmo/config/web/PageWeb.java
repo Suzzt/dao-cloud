@@ -1,7 +1,7 @@
 package com.junmo.config.web;
 
 import com.junmo.common.ApiResult;
-import com.junmo.config.register.CoreRegister;
+import com.junmo.config.register.RegisterManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +17,6 @@ public class PageWeb {
     @RequestMapping(value = "/get/server-info")
     @ResponseBody
     public ApiResult getServerInfo(){
-       return ApiResult.buildSuccess(CoreRegister.serverMap);
+       return ApiResult.buildSuccess(RegisterManager.serverMap);
     }
 }

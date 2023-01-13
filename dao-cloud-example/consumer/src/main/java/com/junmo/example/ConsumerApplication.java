@@ -1,18 +1,16 @@
-package com.junmo.config;
+package com.junmo.example;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author: sucf
- * @date: 2022/11/19 18:10
+ * @date: 2023/1/11 15:39
  * @description:
  */
 @SpringBootApplication
-@Slf4j
-public class ConfigApplication {
+public class ConsumerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ConfigApplication.class, args);
+        SpringApplication.run(ConsumerApplication.class, args);
     }
 }
