@@ -1,5 +1,6 @@
 package com.junmo.boot.handler;
 
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcResponseModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -21,12 +22,11 @@ public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<RpcRe
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponseModel msg) throws Exception {
-        log.debug("{}", msg);
         // get promise
         Promise<Object> promise = PROMISE_MAP.get(msg.getSequenceId());
         if (promise != null) {
             Object returnValue = msg.getReturnValue();
-            Exception exceptionValue = msg.getExceptionValue();
+            DaoException exceptionValue = msg.getExceptionValue();
             if(exceptionValue != null) {
                 promise.setFailure(exceptionValue);
             } else {

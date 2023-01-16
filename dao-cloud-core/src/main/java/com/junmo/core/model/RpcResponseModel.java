@@ -8,13 +8,9 @@ import lombok.Data;
  * @description: rpc 返回模型封装
  */
 @Data
-public class RpcResponseModel extends RpcBaseModel {
+public class RpcResponseModel extends RpcModel {
     /**
      * 返回值
      */
     private Object returnValue;
-    /**
-     * 异常值
-     */
-    private Exception exceptionValue;
 }

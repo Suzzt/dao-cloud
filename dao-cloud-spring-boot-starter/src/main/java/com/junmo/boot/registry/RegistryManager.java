@@ -1,13 +1,15 @@
 package com.junmo.boot.registry;
 
+import com.google.common.collect.Maps;
 import com.junmo.boot.handler.ConfigResponseMessageHandler;
 import com.junmo.common.util.ThreadPoolFactory;
-import com.junmo.core.enums.Constant;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.ServerNode;
-import com.junmo.core.model.ServerRegisterModel;
+import com.junmo.core.model.RegisterModel;
+import com.junmo.core.model.RegisterPollModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.DefaultMessageCoder;
+import com.junmo.core.netty.protocol.DaoMessageCoder;
+import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -17,10 +19,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: sucf
@@ -31,6 +34,8 @@ import java.util.List;
 public class RegistryManager {
     private static volatile Channel registerChannel;
     private static Object LOCK = new Object();
+
+    private static final Map<String, List<ServerNodeModel>> SERVER_NODE_MAP = Maps.newConcurrentMap();
 
     /**
      * get register channel
@@ -65,12 +70,13 @@ public class RegistryManager {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(LOGGING_HANDLER)
-                        .addLast(new DefaultMessageCoder())
+                        .addLast(new DaoMessageCoder())
                         .addLast(new ConfigResponseMessageHandler());
             }
         });
         try {
             registerChannel = bootstrap.connect("dao.cloud.config.com", 5551).sync().channel();
+            registerChannel.closeFuture().sync();
             log.info(">>>>>>>>> init register channel finish. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             group.shutdownGracefully();
@@ -79,15 +85,22 @@ public class RegistryManager {
     }
 
     /**
-     * get service node
+     * poll register server node by center
      *
      * @param proxy
      * @return
      */
-    public static List<ServerNode> getServiceNode(String proxy) {
-//        DaoMessage daoMessage = new DaoMessage();
-//        registerChannel.writeAndFlush();
-        return null;
+    public static List<ServerNodeModel> poll(String proxy) throws InterruptedException {
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, (byte) 0, new RegisterPollModel(proxy));
+        getChannel().writeAndFlush(daoMessage);
+        DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
+        ConfigResponseMessageHandler.PROMISE_MAP.put(proxy, promise);
+        promise.await();
+        if (promise.isSuccess()) {
+            return promise.getNow();
+        } else {
+            throw new DaoException(promise.cause());
+        }
     }
 
     /**
@@ -97,17 +110,21 @@ public class RegistryManager {
      * @param ipLinkPort
      */
     public static void registry(String proxy, String ipLinkPort) {
-        ServerRegisterModel serverRegisterModel = new ServerRegisterModel();
-        serverRegisterModel.setIpLinkPort(ipLinkPort);
-        serverRegisterModel.setProxy(proxy);
+        RegisterModel registerModel = new RegisterModel();
+        registerModel.setIpLinkPort(ipLinkPort);
+        registerModel.setProxy(proxy);
         //heart
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
             while (true) {
-                send(serverRegisterModel);
+                try {
+                    send(registerModel);
+                } catch (DaoException e) {
+                    log.error("<<<<<<<<<<<send register message disconnect>>>>>>>>>>", e);
+                }
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
-                    log.debug("thread interrupted...");
+                    log.error("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
                 }
             }
         });
@@ -116,14 +133,14 @@ public class RegistryManager {
     /**
      * 发送注册请求
      *
-     * @param serverRegisterModel
+     * @param registerModel
      */
-    private static void send(ServerRegisterModel serverRegisterModel) throws DaoException {
+    private static void send(RegisterModel registerModel) throws DaoException {
         Channel channel = getChannel();
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
-        DaoMessage daoMessage = new DaoMessage(Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, serverRegisterModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, (byte) 0, registerModel);
         channel.writeAndFlush(daoMessage);
     }
 }

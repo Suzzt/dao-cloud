@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: rpc 请求模型封装
  */
 @Data
-public class RpcRequestModel extends RpcBaseModel {
+public class RpcRequestModel extends RpcModel {
     /**
      * 调用接口名，在服务端找到它对应的实现
      */

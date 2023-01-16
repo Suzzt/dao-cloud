@@ -8,12 +8,15 @@ import com.junmo.common.util.SystemUtil;
 import com.junmo.common.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.DaoCallback;
+import com.junmo.core.model.PingPongModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
-import com.junmo.core.netty.protocol.DefaultMessageCoder;
+import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -132,7 +135,24 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtocolFrameDecoder());
                         ch.pipeline().addLast(LOGGING_HANDLER);
-                        ch.pipeline().addLast(new DefaultMessageCoder());
+                        ch.pipeline().addLast(new DaoMessageCoder());
+                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+                                Channel channel = ctx.channel();
+                                ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
+                                    while (true) {
+                                        channel.writeAndFlush(new PingPongModel());
+                                        try {
+                                            Thread.sleep(2000);
+                                        } catch (InterruptedException e) {
+                                            log.debug("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
+                                        }
+                                    }
+                                });
+                                super.channelRegistered(ctx);
+                            }
+                        });
                         ch.pipeline().addLast(rpcRequestMessageHandler);
                     }
                 });
@@ -163,6 +183,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
 
     /**
      * invoke method
+     *
      * @param requestModel
      * @return
      */

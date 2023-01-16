@@ -1,8 +1,9 @@
 package com.junmo.config.register;
 
 import com.junmo.common.util.ThreadPoolFactory;
+import com.junmo.config.register.handler.PollServerHandler;
 import com.junmo.config.register.handler.ServerRegisterMessageHandler;
-import com.junmo.core.netty.protocol.DefaultMessageCoder;
+import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -44,8 +45,9 @@ public class RegisterConfig {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtocolFrameDecoder());
                         ch.pipeline().addLast(LOGGING_HANDLER);
-                        ch.pipeline().addLast(new DefaultMessageCoder());
+                        ch.pipeline().addLast(new DaoMessageCoder());
                         ch.pipeline().addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS));
+                        ch.pipeline().addLast(new PollServerHandler());
                         ch.pipeline().addLast(new ServerRegisterMessageHandler());
                     }
                 });

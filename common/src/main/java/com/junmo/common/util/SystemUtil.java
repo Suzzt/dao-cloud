@@ -61,14 +61,14 @@ public class SystemUtil {
             serverSocket = new ServerSocket(port);
             used = false;
         } catch (IOException e) {
-            log.info(">>>>>>>>>>> dao-cloud, port[{}] is in use.", port);
+            log.error(">>>>>>>>>>> dao-cloud, port = {} is in use <<<<<<<<<<<", port, e);
             used = true;
         } finally {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
                 } catch (IOException e) {
-                    log.info("");
+                    log.error(">>>>>>>>>>> socket close fair <<<<<<<<<<<", e);
                 }
             }
         }

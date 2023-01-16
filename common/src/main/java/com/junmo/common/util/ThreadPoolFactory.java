@@ -12,12 +12,7 @@ import java.util.concurrent.*;
 public class ThreadPoolFactory {
     static {
         GLOBAL_THREAD_POOL = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
-            new SynchronousQueue<>(), new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "global thread pool");
-            }
-        });
+                new SynchronousQueue<>(), r -> new Thread(r, "global thread pool"));
     }
 
     public static ThreadPoolExecutor GLOBAL_THREAD_POOL;
@@ -36,13 +31,8 @@ public class ThreadPoolFactory {
                 maxPoolSize,
                 60L,
                 TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(2000),
-                new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        return new Thread(r, "dao-cloud-rpc, " + serverType + "-serverHandlerPool-" + r.hashCode());
-                    }
-                },
+                new LinkedBlockingQueue<>(2000),
+                r -> new Thread(r, "dao-cloud-rpc, " + serverType + "-serverHandlerPool-" + r.hashCode()),
                 new RejectedExecutionHandler() {
                     @SneakyThrows
                     @Override

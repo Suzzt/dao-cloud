@@ -46,8 +46,6 @@
         <module>dao-cloud-monitor</module>
         <!--api-SpringBoot-->
         <module>dao-cloud-spring-boot-starter</module>
-        <module>dao-cloud-example/provider</module>
-        <module>dao-cloud-example/comsumer</module>
     </modules>
 
     <dependencies>

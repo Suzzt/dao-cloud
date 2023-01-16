@@ -1,6 +1,5 @@
 package com.junmo.boot;
 
-import com.junmo.boot.channel.ChannelManager;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.boot.registry.ClientManager;
 import com.junmo.boot.registry.ServerManager;

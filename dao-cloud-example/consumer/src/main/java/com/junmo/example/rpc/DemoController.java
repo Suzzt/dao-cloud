@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 public class DemoController {
-    @DaoReference
+    @DaoReference(proxy = "demo")
     private DemoService demoService;
 
     @RequestMapping("demo")

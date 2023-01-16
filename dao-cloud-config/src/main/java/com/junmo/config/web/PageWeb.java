@@ -1,8 +1,9 @@
 package com.junmo.config.web;
 
 import com.junmo.common.ApiResult;
-import com.junmo.config.register.RegisterManager;
+import com.junmo.config.register.Register;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,9 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PageWeb {
 
-    @RequestMapping(value = "/get/server-info")
+    @RequestMapping(value = "/get/proxy-server")
     @ResponseBody
-    public ApiResult getServerInfo(){
-       return ApiResult.buildSuccess(RegisterManager.serverMap);
+    public ApiResult getProxyServer() {
+        return ApiResult.buildSuccess(Register.SERVER_MAP);
+    }
+
+    @RequestMapping(value = "/get/server-nodes")
+    @ResponseBody
+    public ApiResult getServerNodes(@RequestParam("proxy") String proxy) {
+        return ApiResult.buildSuccess(Register.getServers(proxy));
     }
 }

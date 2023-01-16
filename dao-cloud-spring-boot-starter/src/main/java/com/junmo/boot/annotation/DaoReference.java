@@ -1,6 +1,7 @@
 package com.junmo.boot.annotation;
 
 import com.junmo.core.enums.LoadBalance;
+import lombok.NonNull;
 
 import java.lang.annotation.*;
 
@@ -13,6 +14,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface DaoReference {
+    @NonNull
+    String proxy();
+
     LoadBalance loadBalance() default LoadBalance.RANDOM;
 
     String version() default "";

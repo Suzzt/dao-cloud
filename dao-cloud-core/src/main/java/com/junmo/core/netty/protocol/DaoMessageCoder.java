@@ -2,6 +2,9 @@ package com.junmo.core.netty.protocol;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.Model;
+import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.serializable.ClassCodec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,7 +24,7 @@ import java.util.List;
  * @description: 消息协议编码处理
  */
 @Slf4j
-public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {
+public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, DaoMessage msg, List<Object> out) throws Exception {
@@ -51,7 +54,7 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
             String contentJson = gson.toJson(msg.getContent());
             bytes = contentJson.getBytes(StandardCharsets.UTF_8);
         } else {
-            throw new RuntimeException("嘿嘿");
+            throw new DaoException("serializable type not exist");
         }
         //内容对象长度 int 4bytes
         byteBuf.writeInt(bytes.length);
@@ -82,16 +85,19 @@ public class DefaultMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessa
         //根据不同的序列化方式解析
         byte[] content = new byte[contentLength];
         byteBuf.readBytes(content, 0, contentLength);
-        Object model;
+        Model model;
         if (serializableType == 0) {
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(content));
-            model = ois.readObject();
+            model = (Model) ois.readObject();
         } else if (serializableType == 1) {
             String contentJson = new String(content);
             Gson gson = new GsonBuilder().registerTypeAdapter(Class.class, new ClassCodec()).create();
-            model = gson.fromJson(contentJson, Object.class);
+            model = gson.fromJson(contentJson, MessageModelTypeManager.getMessageModel(messageType));
         } else {
-            throw new RuntimeException("嘿嘿");
+            throw new DaoException("serializable type not exist");
+        }
+        if(model instanceof RegisterServerModel){
+            System.out.println(model);
         }
         list.add(model);
     }

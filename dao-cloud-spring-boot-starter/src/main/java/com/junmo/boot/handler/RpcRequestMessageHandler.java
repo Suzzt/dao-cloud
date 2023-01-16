@@ -37,7 +37,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         serverHandlerThreadPool.execute(() -> {
             // invoke + response
             RpcResponseModel responseModel = serverManager.doInvoke(rpcRequestModel);
-            DaoMessage daoMessage = new DaoMessage(Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8), (byte) 1, (byte) 1, (byte) 0, responseModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, (byte) 1, (byte) 0, responseModel);
             ctx.writeAndFlush(daoMessage);
         });
     }

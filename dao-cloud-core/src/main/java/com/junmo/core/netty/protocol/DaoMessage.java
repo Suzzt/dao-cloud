@@ -11,35 +11,8 @@ import java.nio.charset.StandardCharsets;
  * @description: 消息结构载体
  */
 @Data
-public class DaoMessage {
-
-    /**
-     * constructor
-     *
-     * @param magicNumber
-     * @param version
-     * @param messageType
-     * @param serializableType
-     * @param content
-     */
-    public DaoMessage(byte[] magicNumber, byte version, byte messageType, byte serializableType, Object content) {
-        this.magicNumber = magicNumber;
-        this.version = version;
-        this.messageType = messageType;
-        this.serializableType = serializableType;
-        this.content = content;
-    }
-
-    /**
-     * constructor
-     *
-     * @param version
-     * @param messageType
-     * @param serializableType
-     * @param content
-     */
-    public DaoMessage(byte version, byte messageType, byte serializableType, Object content) {
-        this.magicNumber = Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
+public class DaoMessage<T> {
+    public DaoMessage(byte version, byte messageType, byte serializableType, T content) {
         this.version = version;
         this.messageType = messageType;
         this.serializableType = serializableType;
@@ -51,7 +24,7 @@ public class DaoMessage {
      * 魔数
      * 3byte (no)
      */
-    private byte[] magicNumber;
+    private byte[] magicNumber = Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
 
     /**
      * 协议版本 (no)
@@ -60,7 +33,7 @@ public class DaoMessage {
     private byte version;
 
     /**
-     * 消息类型 (no)
+     * 消息类型
      * 1byte
      */
     private byte messageType;
@@ -76,10 +49,10 @@ public class DaoMessage {
      * 4byte
      */
     private int length;
-    //====================================================固定结构====================================================
 
     /**
      * 内容
      */
-    private Object content;
+    private T content;
+    //====================================================固定结构====================================================
 }
