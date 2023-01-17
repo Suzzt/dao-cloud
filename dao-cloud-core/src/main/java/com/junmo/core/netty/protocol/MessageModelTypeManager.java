@@ -17,9 +17,8 @@ public class MessageModelTypeManager {
     public static final byte REGISTRY_RESPONSE_MESSAGE = 1;
     public static final byte POLL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
     public static final byte POLL_REGISTRY_SERVER_RESPONSE_MESSAGE = 3;
-
-
-
+    public static final byte RPC_REQUEST_MESSAGE = 4;
+    public static final byte RPC_RESPONSE_MESSAGE = 5;
 
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
@@ -31,6 +30,8 @@ public class MessageModelTypeManager {
         MESSAGE_TYPE_MAP.put(REGISTRY_RESPONSE_MESSAGE, RegisterServerModel.class);
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_REQUEST_MESSAGE, RegisterPollModel.class);
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterServerModel.class);
+        MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);
+        MESSAGE_TYPE_MAP.put(RPC_RESPONSE_MESSAGE, RpcResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

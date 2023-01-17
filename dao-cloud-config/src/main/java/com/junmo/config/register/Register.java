@@ -3,6 +3,7 @@ package com.junmo.config.register;
 import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +77,13 @@ public class Register {
 
     public static List<ServerNodeModel> getServers(String proxy) {
         List<ServerNodeModel> serverNodeModels = Lists.newArrayList();
+        if (!StringUtils.hasLength(proxy)) {
+            throw new DaoException("proxy = " + proxy + " is null");
+        }
         Map<String, String> nodeList = SERVER_MAP.get(proxy);
+        if (nodeList == null) {
+            throw new DaoException("not exist proxy = " + proxy);
+        }
         for (Map.Entry<String, String> entry : nodeList.entrySet()) {
             String ipLinkPort = entry.getKey();
             ServerNodeModel serverNodeModel = new ServerNodeModel(ipLinkPort);

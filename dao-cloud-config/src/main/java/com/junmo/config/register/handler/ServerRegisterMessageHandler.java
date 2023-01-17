@@ -34,12 +34,21 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
         this.ipLinkPort = ipLinkPort;
         List<ServerNodeModel> serverNodeModels = Register.getServers(proxy);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_RESPONSE_MESSAGE, (byte) 0, new RegisterServerModel(proxy, serverNodeModels));
-        ctx.writeAndFlush(daoMessage);
+        ctx.writeAndFlush(daoMessage).addListener(f -> {
+            if (!f.isSuccess()) {
+                log.error("{}", ctx, f.cause());
+            }
+        });
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         Register.delete(proxy, ipLinkPort);
         super.channelUnregistered(ctx);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.error("{}", ctx, cause);
     }
 }

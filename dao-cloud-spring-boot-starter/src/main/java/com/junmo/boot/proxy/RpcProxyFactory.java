@@ -6,6 +6,7 @@ import com.junmo.boot.handler.RpcResponseMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,7 @@ public class RpcProxyFactory {
                     method.getParameterTypes(),
                     args
             );
-            DaoMessage message = new DaoMessage((byte) 1, (byte) 1, (byte) 0, requestModel);
+            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, (byte) 0, requestModel);
             // push message
             //todo load balance choose server channel
             Iterator<ChannelClient> iterator = channelClients.iterator();

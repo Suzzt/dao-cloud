@@ -24,8 +24,11 @@ public class PollServerHandler extends SimpleChannelInboundHandler<RegisterPollM
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterPollModel model) {
         String proxy = model.getProxy();
-        List<ServerNodeModel> serverNodeModels = Register.getServers(proxy);
+        List<ServerNodeModel> serverNodeModels;
+        serverNodeModels = Register.getServers(proxy);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, (byte) 0, new RegisterServerModel(proxy, serverNodeModels));
-        ctx.writeAndFlush(daoMessage);
+        ctx.writeAndFlush(daoMessage).addListener(future -> {
+
+        });
     }
 }

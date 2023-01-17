@@ -110,7 +110,6 @@ public class ChannelClient {
         });
         try {
             this.channel = bootstrap.connect(this.ip, this.port).sync().channel();
-            this.channel.closeFuture().sync();
         } catch (Exception e) {
             log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", e);
             group.shutdownGracefully();

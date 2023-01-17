@@ -1,5 +1,6 @@
 package com.junmo.boot.registry;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
@@ -100,10 +101,6 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
                     String proxy = entry.getKey();
                     Set<ChannelClient> oldChannelClients = entry.getValue();
                     Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
-                    // new up server node
-                    Set<ChannelClient> newUpChannelClients = Sets.newLinkedHashSet();
-                    // down server node
-                    Set<ChannelClient> downChannelClients = Sets.newLinkedHashSet();
                     List<ServerNodeModel> serverNodeModels;
                     try {
                         serverNodeModels = RegistryManager.poll(proxy);
@@ -113,7 +110,13 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
                                 pollChannelClients.add(channelClient);
                             }
                         }
-                        //todo
+                        // new up server node
+                        Set<ChannelClient> newUpChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(pollChannelClients, oldChannelClients);
+                        oldChannelClients.addAll(newUpChannelClients);
+                        // down server node
+                        Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
+                        oldChannelClients.remove(downChannelClients);
+                        entry.setValue(oldChannelClients);
                         log.info(">>>>>>>>>>>proxy = {} poll server node success<<<<<<<<<<", proxy);
                     } catch (InterruptedException e) {
                         log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);

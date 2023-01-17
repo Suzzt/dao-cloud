@@ -1,5 +1,6 @@
 package com.junmo.boot.registry;
 
+import cn.hutool.core.annotation.AnnotationUtil;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
@@ -23,12 +24,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -64,11 +65,13 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
 
     private Thread thread;
 
-    @SneakyThrows
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         //scan annotation DaoService
         Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(DaoService.class);
+        if (CollectionUtils.isEmpty(serviceBeanMap)) {
+            return;
+        }
         for (Object serviceBean : serviceBeanMap.values()) {
             if (serviceBean.getClass().getInterfaces().length == 0) {
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");

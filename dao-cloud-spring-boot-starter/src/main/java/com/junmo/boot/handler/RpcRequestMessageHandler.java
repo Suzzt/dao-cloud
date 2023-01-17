@@ -5,6 +5,7 @@ import com.junmo.core.enums.Constant;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         serverHandlerThreadPool.execute(() -> {
             // invoke + response
             RpcResponseModel responseModel = serverManager.doInvoke(rpcRequestModel);
-            DaoMessage daoMessage = new DaoMessage((byte) 1, (byte) 1, (byte) 0, responseModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, (byte) 0, responseModel);
             ctx.writeAndFlush(daoMessage);
         });
     }

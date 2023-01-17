@@ -61,7 +61,6 @@ public class SystemUtil {
             serverSocket = new ServerSocket(port);
             used = false;
         } catch (IOException e) {
-            log.error(">>>>>>>>>>> dao-cloud, port = {} is in use <<<<<<<<<<<", port, e);
             used = true;
         } finally {
             if (serverSocket != null) {

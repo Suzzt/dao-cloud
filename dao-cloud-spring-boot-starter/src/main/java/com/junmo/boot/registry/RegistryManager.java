@@ -76,7 +76,6 @@ public class RegistryManager {
         });
         try {
             registerChannel = bootstrap.connect("dao.cloud.config.com", 5551).sync().channel();
-            registerChannel.closeFuture().sync();
             log.info(">>>>>>>>> init register channel finish. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             group.shutdownGracefully();

@@ -2,13 +2,15 @@ package com.junmo.core.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author: sucf
  * @date: 2023/1/9 21:33
  * @description:
  */
 @Data
-public class ServerNodeModel {
+public class ServerNodeModel implements Serializable {
     private String ip;
     private int port;
 
