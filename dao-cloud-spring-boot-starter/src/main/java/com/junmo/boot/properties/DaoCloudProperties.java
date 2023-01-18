@@ -1,8 +1,8 @@
 package com.junmo.boot.properties;
 
-import com.junmo.boot.serializer.Serializer;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * @author: sucf
@@ -10,11 +10,33 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @description: dao cloud config
  */
 @ConfigurationProperties(prefix = "dao-cloud")
-@Data
 public class DaoCloudProperties {
-    private String proxy;
-    private int corePoolSize;
-    private int maxPoolSize;
-    private int port;
-    private Class<? extends Serializer> serializer;
+    public static String proxy;
+    public static int corePoolSize;
+    public static int maxPoolSize;
+    public static int serverPort;
+    // form yaml
+    public static String serializer;
+    // use inner
+    public static byte serializerType;
+
+    public void setProxy(String proxy) {
+        DaoCloudProperties.proxy = proxy;
+    }
+
+    public void setCorePoolSize(int corePoolSize) {
+        DaoCloudProperties.corePoolSize = corePoolSize;
+    }
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        DaoCloudProperties.maxPoolSize = maxPoolSize;
+    }
+
+    public void setServerPort(int serverPort) {
+        DaoCloudProperties.serverPort = serverPort;
+    }
+
+    public void setSerializer(String serializer) {
+        DaoCloudProperties.serializer = serializer;
+    }
 }

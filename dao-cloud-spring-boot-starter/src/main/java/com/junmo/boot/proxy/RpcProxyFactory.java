@@ -3,6 +3,7 @@ package com.junmo.boot.proxy;
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.handler.RpcResponseMessageHandler;
+import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -61,7 +62,7 @@ public class RpcProxyFactory {
                     method.getParameterTypes(),
                     args
             );
-            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, (byte) 0, requestModel);
+            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message
             //todo load balance choose server channel
             Iterator<ChannelClient> iterator = channelClients.iterator();

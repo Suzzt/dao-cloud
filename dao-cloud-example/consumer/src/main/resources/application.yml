@@ -1,6 +1,6 @@
 spring:
   application:
-    name: dao-cloud-example
+    name: dao-cloud-example-consumer
 server:
   port: 19998
   servlet:
@@ -11,4 +11,5 @@ dao-cloud:
   proxy: demo2
   corePoolSize: 3
   maxPoolSize: 40
+
   #port: 9998      // rpc port

@@ -2,6 +2,7 @@ package com.junmo.boot.registry;
 
 import com.google.common.collect.Maps;
 import com.junmo.boot.handler.ConfigResponseMessageHandler;
+import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.common.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterModel;
@@ -90,7 +91,7 @@ public class RegistryManager {
      * @return
      */
     public static List<ServerNodeModel> poll(String proxy) throws InterruptedException {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, (byte) 0, new RegisterPollModel(proxy));
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterPollModel(proxy));
         getChannel().writeAndFlush(daoMessage);
         DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
         ConfigResponseMessageHandler.PROMISE_MAP.put(proxy, promise);
@@ -139,7 +140,7 @@ public class RegistryManager {
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, (byte) 0, registerModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, DaoCloudProperties.serializerType, registerModel);
         channel.writeAndFlush(daoMessage);
     }
 }

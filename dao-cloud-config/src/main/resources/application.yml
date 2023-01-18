@@ -6,3 +6,6 @@ server:
   port: 5555
   servlet:
     context-path: /${spring.application.name}
+dao-cloud:
+  # jdk json
+  serializer: jdk

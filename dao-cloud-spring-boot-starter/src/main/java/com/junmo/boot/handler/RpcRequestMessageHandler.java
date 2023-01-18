@@ -1,5 +1,6 @@
 package com.junmo.boot.handler;
 
+import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.boot.registry.ServerManager;
 import com.junmo.core.enums.Constant;
 import com.junmo.core.model.RpcRequestModel;
@@ -38,7 +39,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         serverHandlerThreadPool.execute(() -> {
             // invoke + response
             RpcResponseModel responseModel = serverManager.doInvoke(rpcRequestModel);
-            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, (byte) 0, responseModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, DaoCloudProperties.serializerType, responseModel);
             ctx.writeAndFlush(daoMessage);
         });
     }

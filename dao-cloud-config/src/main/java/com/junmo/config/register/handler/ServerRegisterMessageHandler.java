@@ -1,6 +1,7 @@
 package com.junmo.config.register.handler;
 
 import com.junmo.config.register.Register;
+import com.junmo.config.register.RegisterConfig;
 import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.model.RegisterModel;
@@ -33,7 +34,7 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
         this.proxy = proxy;
         this.ipLinkPort = ipLinkPort;
         List<ServerNodeModel> serverNodeModels = Register.getServers(proxy);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_RESPONSE_MESSAGE, (byte) 0, new RegisterServerModel(proxy, serverNodeModels));
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
         ctx.writeAndFlush(daoMessage).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("{}", ctx, f.cause());

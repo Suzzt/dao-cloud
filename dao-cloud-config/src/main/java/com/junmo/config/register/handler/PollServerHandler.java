@@ -1,6 +1,7 @@
 package com.junmo.config.register.handler;
 
 import com.junmo.config.register.Register;
+import com.junmo.config.register.RegisterConfig;
 import com.junmo.core.model.RegisterPollModel;
 import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.model.ServerNodeModel;
@@ -26,7 +27,7 @@ public class PollServerHandler extends SimpleChannelInboundHandler<RegisterPollM
         String proxy = model.getProxy();
         List<ServerNodeModel> serverNodeModels;
         serverNodeModels = Register.getServers(proxy);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, (byte) 0, new RegisterServerModel(proxy, serverNodeModels));
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
         ctx.writeAndFlush(daoMessage).addListener(future -> {
 
         });

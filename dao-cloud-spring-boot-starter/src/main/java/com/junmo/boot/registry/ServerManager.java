@@ -1,10 +1,8 @@
 package com.junmo.boot.registry;
 
-import cn.hutool.core.annotation.AnnotationUtil;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.boot.serializer.Serializer;
 import com.junmo.common.util.SystemUtil;
 import com.junmo.common.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
@@ -14,6 +12,7 @@ import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.netty.serialize.SerializeStrategyFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,7 +31,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -46,11 +44,6 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Slf4j
 public class ServerManager implements ApplicationContextAware, InitializingBean, DisposableBean {
-
-    @Resource
-    private DaoCloudProperties daoCloudProperties;
-
-    private Serializer serializer;
 
     private Map<String, Object> localServiceCache = new HashMap<>();
 
@@ -88,20 +81,17 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
      * @throws Exception
      */
     public void prepare() throws Exception {
-        if (daoCloudProperties.getSerializer() == null) {
-            daoCloudProperties.setSerializer(null);
+        DaoCloudProperties.serializerType = SerializeStrategyFactory.getSerializeType(DaoCloudProperties.serializer);
+        if (!(DaoCloudProperties.corePoolSize > 0 && DaoCloudProperties.maxPoolSize > 0 && DaoCloudProperties.maxPoolSize >= DaoCloudProperties.corePoolSize)) {
+            DaoCloudProperties.corePoolSize = 60;
+            DaoCloudProperties.maxPoolSize = 300;
         }
 
-        if (!(daoCloudProperties.getCorePoolSize() > 0 && daoCloudProperties.getMaxPoolSize() > 0 && daoCloudProperties.getMaxPoolSize() >= daoCloudProperties.getCorePoolSize())) {
-            daoCloudProperties.setCorePoolSize(60);
-            daoCloudProperties.setMaxPoolSize(300);
+        if (DaoCloudProperties.serverPort <= 0) {
+            DaoCloudProperties.serverPort = SystemUtil.getAvailablePort(65535);
         }
 
-        if (daoCloudProperties.getPort() <= 0) {
-            daoCloudProperties.setPort(SystemUtil.getAvailablePort(65535));
-        }
-
-        if (!StringUtils.hasLength(daoCloudProperties.getProxy())) {
+        if (!StringUtils.hasLength(DaoCloudProperties.proxy)) {
             throw new DaoException("'dao-cloud.proxy' config must it");
         }
 
@@ -111,7 +101,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
         // build start callback
         startCallback = () -> {
             //register service
-            RegistryManager.registry(daoCloudProperties.getProxy(), InetAddress.getLocalHost().getHostAddress() + ":" + daoCloudProperties.getPort());
+            RegistryManager.registry(DaoCloudProperties.proxy, InetAddress.getLocalHost().getHostAddress() + ":" + DaoCloudProperties.serverPort);
 
         };
     }
@@ -123,7 +113,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
         prepare();
 
         // make thread pool
-        ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", daoCloudProperties.getCorePoolSize(), daoCloudProperties.getMaxPoolSize());
+        ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProperties.corePoolSize, DaoCloudProperties.maxPoolSize);
         RpcRequestMessageHandler rpcRequestMessageHandler = new RpcRequestMessageHandler(threadPoolProvider, this);
         thread = new Thread(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
@@ -159,8 +149,8 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                         ch.pipeline().addLast(rpcRequestMessageHandler);
                     }
                 });
-                Channel channel = serverBootstrap.bind(daoCloudProperties.getPort()).sync().channel();
-                log.debug("======✓✓✓✓✓✓start server .port = {} bingo✓✓✓✓✓✓======", daoCloudProperties.getPort());
+                Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
+                log.debug("======✓✓✓✓✓✓start server .port = {} bingo✓✓✓✓✓✓======", DaoCloudProperties.serverPort);
                 startCallback.run();
                 channel.closeFuture().sync();
             } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.junmo.core.serializable;
+package com.junmo.core.netty.serialize;
 
 import com.google.gson.*;
 
