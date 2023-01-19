@@ -5,6 +5,8 @@ import com.junmo.core.enums.Constant;
 import com.junmo.core.model.PingPongModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,5 +33,13 @@ public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<Pi
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         channelClient.setState(Constant.CHANNEL_ALIVE_DISCONNECT_STATE);
         super.channelUnregistered(ctx);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object paramObject) throws Exception {
+        IdleState state = ((IdleStateEvent) paramObject).state();
+        if (state == IdleState.READER_IDLE) {
+            channelClient.setState(Constant.CHANNEL_ALIVE_DISCONNECT_STATE);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.junmo.common.util;
+package com.junmo.core.util;
 
 import lombok.SneakyThrows;
 

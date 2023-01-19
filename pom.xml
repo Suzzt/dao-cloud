@@ -33,7 +33,6 @@
     </parent>
 
     <modules>
-        <module>common</module>
         <!--rpc-core-->
         <module>dao-cloud-core</module>
         <!--register config-->

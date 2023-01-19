@@ -3,8 +3,10 @@ package com.junmo.boot.manager;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.common.util.SystemUtil;
-import com.junmo.common.util.ThreadPoolFactory;
+import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.util.SystemUtil;
+import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.DaoCallback;
 import com.junmo.core.model.PingPongModel;
@@ -26,11 +28,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -69,7 +69,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
             if (serviceBean.getClass().getInterfaces().length == 0) {
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
             }
-            //DaoService daoService = serviceBean.getClass().getAnnotation(DaoService.class);
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             addServiceCache(interfaces, serviceBean);
         }
@@ -102,7 +101,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
         startCallback = () -> {
             //register service
             RegistryManager.registry(DaoCloudProperties.proxy, InetAddress.getLocalHost().getHostAddress() + ":" + DaoCloudProperties.serverPort);
-
         };
     }
 
@@ -111,7 +109,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
      */
     public void start() throws Exception {
         prepare();
-
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProperties.corePoolSize, DaoCloudProperties.maxPoolSize);
         RpcRequestMessageHandler rpcRequestMessageHandler = new RpcRequestMessageHandler(threadPoolProvider, this);
@@ -133,11 +130,12 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                                 Channel channel = ctx.channel();
                                 ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
                                     while (true) {
-                                        channel.writeAndFlush(new PingPongModel());
+                                        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.PING_HEART_BEAT_MESSAGE, DaoCloudProperties.serializerType, new PingPongModel());
+                                        channel.writeAndFlush(daoMessage);
                                         try {
                                             Thread.sleep(2000);
                                         } catch (InterruptedException e) {
-                                            log.debug("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
+                                            log.error("<<<<<<<<<<< thread interrupted... >>>>>>>>>>", e);
                                         }
                                     }
                                 });

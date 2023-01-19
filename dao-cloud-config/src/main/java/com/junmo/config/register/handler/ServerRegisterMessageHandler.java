@@ -2,13 +2,15 @@ package com.junmo.config.register.handler;
 
 import com.junmo.config.register.Register;
 import com.junmo.config.register.RegisterConfig;
+import com.junmo.core.model.RegisterModel;
 import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.model.ServerNodeModel;
-import com.junmo.core.model.RegisterModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -46,6 +48,14 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         Register.delete(proxy, ipLinkPort);
         super.channelUnregistered(ctx);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object paramObject) throws Exception {
+        IdleState state = ((IdleStateEvent) paramObject).state();
+        if (state == IdleState.READER_IDLE) {
+            Register.delete(proxy, ipLinkPort);
+        }
     }
 
     @Override

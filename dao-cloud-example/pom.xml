@@ -17,6 +17,7 @@
     </properties>
 
     <modules>
+        <module>api-common</module>
         <module>provider</module>
         <module>consumer</module>
     </modules>

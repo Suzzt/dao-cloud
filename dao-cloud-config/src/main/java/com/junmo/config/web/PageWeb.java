@@ -1,6 +1,6 @@
 package com.junmo.config.web;
 
-import com.junmo.common.ApiResult;
+import com.junmo.core.ApiResult;
 import com.junmo.config.register.Register;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

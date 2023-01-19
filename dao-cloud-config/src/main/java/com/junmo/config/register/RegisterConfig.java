@@ -1,11 +1,11 @@
 package com.junmo.config.register;
 
-import com.junmo.common.util.ThreadPoolFactory;
 import com.junmo.config.register.handler.PollServerHandler;
 import com.junmo.config.register.handler.ServerRegisterMessageHandler;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
+import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -15,10 +15,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -31,8 +29,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Slf4j
 public class RegisterConfig implements ApplicationContextAware {
-    @Autowired
-    private Environment environment;
 
     public static byte SERIALIZE_TYPE;
 
@@ -40,7 +36,7 @@ public class RegisterConfig implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        String serializer = environment.getProperty("dao-cloud.serializer");
+        String serializer = applicationContext.getEnvironment().getProperty("dao-cloud.serializer");
         SERIALIZE_TYPE = SerializeStrategyFactory.getSerializeType(serializer);
         ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
@@ -60,7 +56,7 @@ public class RegisterConfig implements ApplicationContextAware {
                     }
                 });
                 Channel channel = serverBootstrap.bind(port).sync().channel();
-                log.info(">>>>>>>>>>>>register-server success<<<<<<<<<<<");
+                log.info(">>>>>>>>>>>> dao-center success <<<<<<<<<<<");
                 channel.closeFuture().sync();
             } catch (InterruptedException e) {
                 log.error("server interrupted error", e);

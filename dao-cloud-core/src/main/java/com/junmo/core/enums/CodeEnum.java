@@ -1,4 +1,4 @@
-package com.junmo.common;
+package com.junmo.core.enums;
 
 /**
  * @author: sucf

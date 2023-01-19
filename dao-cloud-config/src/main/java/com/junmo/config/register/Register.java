@@ -60,19 +60,22 @@ public class Register {
             nodeList.put(ipLinkPort, DateUtil.now());
             SERVER_MAP.put(proxy, nodeList);
         }
-        log.debug(">>>>>>>>>>>register server proxy name = {}, ipLinkPort = {}<<<<<<<<<<<", proxy, ipLinkPort);
+        log.info(">>>>>>>>>>>> proxy({},{}) register success <<<<<<<<<<<<", proxy, ipLinkPort);
+        // todo notice all clients
     }
 
     public static synchronized void alive(String proxy, String ipLinkPort) {
         Map<String, String> nodeList = SERVER_MAP.get(proxy);
         nodeList.put(ipLinkPort, DateUtil.now());
-        log.debug(">>>>>>>>>>>alive server proxy name = {}, ipLinkPort = {}<<<<<<<<<<<", proxy, ipLinkPort);
+        log.info(">>>>>>>>>>> alive server proxy({},{}} <<<<<<<<<<<", proxy, ipLinkPort);
     }
 
     public static void delete(String proxy, String ipLinkPort) {
         Map<String, String> nodeList = SERVER_MAP.get(proxy);
         nodeList.remove(ipLinkPort);
-        log.debug(">>>>>>>>>>>down server proxy name = {}, ipLinkPort = {}<<<<<<<<<<<", proxy, ipLinkPort);
+        log.info(">>>>>>>>>>> down server proxy ({},{}) <<<<<<<<<<<", proxy, ipLinkPort);
+        // todo notice all clients
+
     }
 
     public static List<ServerNodeModel> getServers(String proxy) {

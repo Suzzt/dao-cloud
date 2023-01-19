@@ -7,7 +7,7 @@ import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.proxy.RpcProxyFactory;
-import com.junmo.common.util.ThreadPoolFactory;
+import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import lombok.extern.slf4j.Slf4j;

@@ -12,7 +12,6 @@ import com.junmo.common.DemoService;
 public class DemoServiceImpl implements DemoService {
     @Override
     public String test(String string1, int int1, double double1, long long1, boolean flag) {
-        System.out.println(string1 + int1 + double1 + long1 + flag);
         return string1 + int1 + double1 + long1 + flag;
     }
 }

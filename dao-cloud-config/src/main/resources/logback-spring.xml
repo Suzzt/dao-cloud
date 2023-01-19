@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-    <springProperty scope="context" name="loglevel" source="loglevel" defaultValue="debug"/>
+    <springProperty scope="context" name="loglevel" source="loglevel" defaultValue="info"/>
     <springProperty scope="context" name="log.home" source="log.home" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

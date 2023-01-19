@@ -1,4 +1,6 @@
-package com.junmo.common;
+package com.junmo.core;
+
+import com.junmo.core.enums.CodeEnum;
 
 /**
  * @author: sucf

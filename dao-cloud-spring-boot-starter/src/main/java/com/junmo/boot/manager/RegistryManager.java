@@ -3,7 +3,7 @@ package com.junmo.boot.manager;
 import com.google.common.collect.Maps;
 import com.junmo.boot.handler.ConfigResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.common.util.ThreadPoolFactory;
+import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterModel;
 import com.junmo.core.model.RegisterPollModel;
@@ -33,8 +33,6 @@ import java.util.Map;
 public class RegistryManager {
     private static volatile Channel registerChannel;
     private static Object LOCK = new Object();
-
-    private static final Map<String, List<ServerNodeModel>> SERVER_NODE_MAP = Maps.newConcurrentMap();
 
     /**
      * get register channel
@@ -113,6 +111,7 @@ public class RegistryManager {
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
             while (true) {
                 try {
+                    //// TODO: 2023/1/19 这里要想办法判断下注册中心有没有返回
                     send(registerModel);
                 } catch (DaoException e) {
                     log.error("<<<<<<<<<<<send register message disconnect>>>>>>>>>>", e);
