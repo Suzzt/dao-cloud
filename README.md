@@ -22,7 +22,7 @@
 
 # 快速开始
     暂时无需任何配置(追求轻)
-    provider还是consumer直接引入(注意:目前只支持Spring Boot自动注入的模式)
+    不管是provider还是consumer都是直接引入的方式(注意:目前只支持Spring Boot自动注入的模式)
     <dependency>
         <groupId>org.junmo</groupId>
         <artifactId>dao-cloud-spring-boot-starter</artifactId>
