@@ -1,9 +1,7 @@
 package com.junmo.boot.manager;
 
-import com.google.common.collect.Maps;
 import com.junmo.boot.handler.ConfigResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterModel;
 import com.junmo.core.model.RegisterPollModel;
@@ -12,6 +10,8 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.NetUtil;
+import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -20,9 +20,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: sucf
@@ -70,7 +70,9 @@ public class RegistryManager {
             }
         });
         try {
-            registerChannel = bootstrap.connect("dao.cloud.config.com", 5551).sync().channel();
+            String ip = NetUtil.getServerIP("dao.cloud.config.com");
+            ip = StringUtils.hasLength(ip) ? ip : "127.0.0.1";
+            registerChannel = bootstrap.connect(ip, 5551).sync().channel();
             log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             group.shutdownGracefully();
