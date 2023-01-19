@@ -1,5 +1,6 @@
 package com.junmo.boot.handler;
 
+import com.google.gson.Gson;
 import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.model.ServerNodeModel;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author: sucf
  * @date: 2022/11/19 09:11
- * @description:
+ * @description: heart beat to center || server register || poll server node
  */
 @Slf4j
 public class ConfigResponseMessageHandler extends SimpleChannelInboundHandler<RegisterServerModel> {
@@ -23,16 +24,18 @@ public class ConfigResponseMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterServerModel registerServerModel) {
-        // get promise
-        Promise<List<ServerNodeModel>> promise = PROMISE_MAP.get(registerServerModel.getProxy());
-        if (promise != null) {
+        Promise<List<ServerNodeModel>> pollPromise = PROMISE_MAP.get(registerServerModel.getProxy());
+        if (pollPromise != null) {
             List<ServerNodeModel> serverNodeModes = registerServerModel.getServerNodeModes();
             Exception exceptionValue = registerServerModel.getExceptionValue();
             if (exceptionValue != null) {
-                promise.setFailure(exceptionValue);
+                pollPromise.setFailure(exceptionValue);
             } else {
-                promise.setSuccess(serverNodeModes);
+                pollPromise.setSuccess(serverNodeModes);
             }
+            log.info(">>>>>>>>>>>> poll (proxy = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), new Gson().toJson(registerServerModel.getServerNodeModes()));
+        } else {
+            log.info(">>>>>>>>>>>> send heart beat to center || server register success <<<<<<<<<<<<");
         }
     }
 }

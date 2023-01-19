@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
+import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.proxy.RpcProxyFactory;
 import com.junmo.common.util.ThreadPoolFactory;
@@ -11,8 +12,6 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
@@ -32,7 +31,7 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, InitializingBean, DisposableBean, BeanFactoryAware {
+public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, InitializingBean, DisposableBean {
     private final Map<String, Set<ChannelClient>> channelClientMap = Maps.newConcurrentMap();
 
     private Thread pollServerNodeThread;
@@ -52,16 +51,17 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
                 try {
                     // poll service node
                     List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy);
-                    if (CollectionUtils.isEmpty(serverNodeModels)) {
-                        throw new DaoException("proxy = " + proxy + " not exist provider server");
-                    }
+//                    if (CollectionUtils.isEmpty(serverNodeModels)) {
+//                        throw new DaoException("proxy = " + proxy + " not exist provider server");
+//                    }
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
                     for (ServerNodeModel serverNodeModel : serverNodeModels) {
                         channelClients.add(new ChannelClient(serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
                     channelClientMap.put(proxy, channelClients);
+                    LoadBalance loadBalance = daoReference.loadBalance();
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, channelClients);
+                    serviceProxy = RpcProxyFactory.build(iface, channelClients, loadBalance.getDaoLoadBalance());
                 } catch (InterruptedException e) {
                     log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);
                     throw new DaoException(e);
@@ -73,11 +73,6 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
             }
         });
         return true;
-    }
-
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-
     }
 
     @Override

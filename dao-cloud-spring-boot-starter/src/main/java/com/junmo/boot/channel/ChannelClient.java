@@ -11,8 +11,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +88,6 @@ public class ChannelClient {
      */
     private void connect() {
         ServerPingPongMessageHandler serverPingPongMessageHandler = new ServerPingPongMessageHandler(this);
-        LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
@@ -100,7 +97,6 @@ public class ChannelClient {
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
-                        .addLast(LOGGING_HANDLER)
                         .addLast(new DaoMessageCoder())
                         .addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS))
                         .addLast(serverPingPongMessageHandler)

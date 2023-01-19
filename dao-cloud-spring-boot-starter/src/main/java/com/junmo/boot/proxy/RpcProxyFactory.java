@@ -1,6 +1,7 @@
 package com.junmo.boot.proxy;
 
 import cn.hutool.core.util.IdUtil;
+import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.handler.RpcResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
@@ -11,11 +12,11 @@ import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -34,8 +35,8 @@ public class RpcProxyFactory {
      * @param <T>
      * @return
      */
-    public static <T> T build(Class<T> serviceClass, Set<ChannelClient> channelClients) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, channelClients));
+    public static <T> T build(Class<T> serviceClass, Set<ChannelClient> channelClients, DaoLoadBalance daoLoadBalance) {
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, channelClients, daoLoadBalance));
     }
 
     static class ProxyHandler implements InvocationHandler {
@@ -44,9 +45,12 @@ public class RpcProxyFactory {
 
         private Set<ChannelClient> channelClients;
 
-        public ProxyHandler(Class<?> serviceClass, Set<ChannelClient> channelClients) {
+        private DaoLoadBalance daoLoadBalance;
+
+        public ProxyHandler(Class<?> serviceClass, Set<ChannelClient> channelClients, DaoLoadBalance daoLoadBalance) {
             this.serviceClass = serviceClass;
             this.channelClients = channelClients;
+            this.daoLoadBalance = daoLoadBalance;
         }
 
         @Override
@@ -62,12 +66,13 @@ public class RpcProxyFactory {
                     method.getParameterTypes(),
                     args
             );
+            if (CollectionUtils.isEmpty(channelClients)) {
+                throw new DaoException("proxy = " + proxy + "+no server provider");
+            }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
+            // load balance
+            Channel channel = daoLoadBalance.route(channelClients);
             // push message
-            //todo load balance choose server channel
-            Iterator<ChannelClient> iterator = channelClients.iterator();
-            ChannelClient channelClient = iterator.next();
-            Channel channel = channelClient.getChannel();
             channel.writeAndFlush(message);
 
             // 异步！ promise 对象来处理异步接收的结果线程

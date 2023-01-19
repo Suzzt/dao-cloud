@@ -1,6 +1,6 @@
 package com.junmo.boot.annotation;
 
-import com.junmo.core.enums.LoadBalance;
+import com.junmo.boot.banlance.LoadBalance;
 import lombok.NonNull;
 
 import java.lang.annotation.*;

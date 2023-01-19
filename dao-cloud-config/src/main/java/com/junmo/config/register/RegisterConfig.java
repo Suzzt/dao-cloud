@@ -12,19 +12,15 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +45,6 @@ public class RegisterConfig implements ApplicationContextAware {
         ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
             NioEventLoopGroup worker = new NioEventLoopGroup(4);
-            LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
             try {
                 ServerBootstrap serverBootstrap = new ServerBootstrap();
                 serverBootstrap.channel(NioServerSocketChannel.class);
@@ -58,7 +53,6 @@ public class RegisterConfig implements ApplicationContextAware {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtocolFrameDecoder());
-                        ch.pipeline().addLast(LOGGING_HANDLER);
                         ch.pipeline().addLast(new DaoMessageCoder());
                         ch.pipeline().addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS));
                         ch.pipeline().addLast(new PollServerHandler());

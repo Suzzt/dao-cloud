@@ -1,7 +1,9 @@
 package com.junmo.boot.properties;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,6 +24,30 @@ public class DaoCloudProperties {
 
     public void setProxy(String proxy) {
         DaoCloudProperties.proxy = proxy;
+    }
+
+    public static String getProxy() {
+        return proxy;
+    }
+
+    public static int getCorePoolSize() {
+        return corePoolSize;
+    }
+
+    public static int getMaxPoolSize() {
+        return maxPoolSize;
+    }
+
+    public static int getServerPort() {
+        return serverPort;
+    }
+
+    public static String getSerializer() {
+        return serializer;
+    }
+
+    public static byte getSerializerType() {
+        return serializerType;
     }
 
     public void setCorePoolSize(int corePoolSize) {

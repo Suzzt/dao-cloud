@@ -9,28 +9,31 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.Resource;
+
 /**
  * @author: sucf
  * @date: 2022/10/28 20:29
  * @description: rpc SpringBoot Auto Configuration
  */
 @Configuration
-@EnableConfigurationProperties(DaoCloudProperties.class)
+@EnableConfigurationProperties({DaoCloudProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
 @Slf4j
 public class DaoCloudConfiguration {
 
+    @Resource
+    private DaoCloudProperties daoCloudProperties;
+
     @Bean
-    public ServerManager start() {
+    public ServerManager server() {
         ServerManager serverManager = new ServerManager();
-        log.info(">>>>>>>>>>> dao-cloud-rpc server manager config init finish. <<<<<<<<<< :)bingo(:");
         return serverManager;
     }
 
     @Bean
-    public ClientManager initClient() {
+    public ClientManager client() {
         ClientManager clientManager = new ClientManager();
-        log.info(">>>>>>>>>>> dao-cloud-rpc client manager config init finish. <<<<<<<<<< :)bingo(:");
         return clientManager;
     }
 

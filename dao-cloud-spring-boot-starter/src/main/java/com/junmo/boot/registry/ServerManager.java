@@ -21,8 +21,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,6 +29,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -38,8 +37,8 @@ import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @author: sucf
- * @date: 2022/12/29 16:30
+ * @author sucf
+ * @date 2022/12/29 16:30
  * @description:
  */
 @Slf4j
@@ -57,6 +56,9 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
     private DaoCallback stopCallback;
 
     private Thread thread;
+
+    @Resource
+    private DaoCloudProperties daoCloudProperties;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
@@ -118,7 +120,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
         thread = new Thread(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
             NioEventLoopGroup worker = new NioEventLoopGroup(4);
-            LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
             try {
                 ServerBootstrap serverBootstrap = new ServerBootstrap();
                 serverBootstrap.channel(NioServerSocketChannel.class);
@@ -127,7 +128,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtocolFrameDecoder());
-                        ch.pipeline().addLast(LOGGING_HANDLER);
                         ch.pipeline().addLast(new DaoMessageCoder());
                         ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                             @Override

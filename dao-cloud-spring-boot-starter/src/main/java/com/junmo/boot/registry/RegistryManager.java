@@ -18,8 +18,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +59,6 @@ public class RegistryManager {
      */
     public static void initChannel() {
         NioEventLoopGroup group = new NioEventLoopGroup();
-        LoggingHandler LOGGING_HANDLER = new LoggingHandler(LogLevel.DEBUG);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(group);
@@ -70,14 +67,13 @@ public class RegistryManager {
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
-                        .addLast(LOGGING_HANDLER)
                         .addLast(new DaoMessageCoder())
                         .addLast(new ConfigResponseMessageHandler());
             }
         });
         try {
             registerChannel = bootstrap.connect("dao.cloud.config.com", 5551).sync().channel();
-            log.info(">>>>>>>>> init register channel finish. <<<<<<<<<< :)bingo(:");
+            log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             group.shutdownGracefully();
             log.error("connect config center error", e);
