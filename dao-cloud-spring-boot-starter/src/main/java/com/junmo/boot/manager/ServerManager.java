@@ -1,4 +1,4 @@
-package com.junmo.boot.registry;
+package com.junmo.boot.manager;
 
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,9 +57,6 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
     private DaoCallback stopCallback;
 
     private Thread thread;
-
-    @Resource
-    private DaoCloudProperties daoCloudProperties;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {

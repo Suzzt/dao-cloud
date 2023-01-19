@@ -1,4 +1,4 @@
-package com.junmo.boot.registry;
+package com.junmo.boot.manager;
 
 import com.google.common.collect.Maps;
 import com.junmo.boot.handler.ConfigResponseMessageHandler;

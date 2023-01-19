@@ -1,8 +1,8 @@
 package com.junmo.boot;
 
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.boot.registry.ClientManager;
-import com.junmo.boot.registry.ServerManager;
+import com.junmo.boot.manager.ClientManager;
+import com.junmo.boot.manager.ServerManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

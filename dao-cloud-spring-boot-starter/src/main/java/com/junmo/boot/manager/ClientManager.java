@@ -1,4 +1,4 @@
-package com.junmo.boot.registry;
+package com.junmo.boot.manager;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Maps;
