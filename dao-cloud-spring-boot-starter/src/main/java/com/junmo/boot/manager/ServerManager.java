@@ -3,18 +3,18 @@ package com.junmo.boot.manager;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
-import com.junmo.core.util.SystemUtil;
-import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.DaoCallback;
 import com.junmo.core.model.PingPongModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
+import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
+import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
+import com.junmo.core.util.SystemUtil;
+import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -58,6 +58,8 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
 
     private Thread thread;
 
+    private boolean isServerStarted;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         //scan annotation DaoService
@@ -65,6 +67,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
         if (CollectionUtils.isEmpty(serviceBeanMap)) {
             return;
         }
+        isServerStarted = true;
         for (Object serviceBean : serviceBeanMap.values()) {
             if (serviceBean.getClass().getInterfaces().length == 0) {
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
@@ -108,6 +111,9 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
      * start
      */
     public void start() throws Exception {
+        if (!isServerStarted) {
+            return;
+        }
         prepare();
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProperties.corePoolSize, DaoCloudProperties.maxPoolSize);
@@ -146,7 +152,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                     }
                 });
                 Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
-                log.debug("======✓✓✓✓✓✓start server .port = {} bingo✓✓✓✓✓✓======", DaoCloudProperties.serverPort);
+                log.debug(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
                 startCallback.run();
                 channel.closeFuture().sync();
             } catch (Exception e) {

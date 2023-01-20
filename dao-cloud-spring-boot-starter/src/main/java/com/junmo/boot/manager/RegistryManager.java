@@ -52,6 +52,10 @@ public class RegistryManager {
         }
     }
 
+    private static void destroy() {
+        registerChannel = null;
+    }
+
     /**
      * init config channel
      */
@@ -76,7 +80,7 @@ public class RegistryManager {
             log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             group.shutdownGracefully();
-            log.error("connect config center error", e);
+            log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", e);
         }
     }
 
@@ -113,15 +117,15 @@ public class RegistryManager {
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
             while (true) {
                 try {
-                    //// TODO: 2023/1/19 这里要想办法判断下注册中心有没有返回
+                    // TODO: 2023/1/19 这里要想办法判断下注册中心有没有返回
                     send(registerModel);
                 } catch (DaoException e) {
-                    log.error("<<<<<<<<<<<send register message disconnect>>>>>>>>>>", e);
+                    log.error("<<<<<<<<<<< send register message disconnect >>>>>>>>>>", e);
                 }
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
-                    log.error("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
+                    log.error("<<<<<<<<<<< thread interrupted... >>>>>>>>>>", e);
                 }
             }
         });
@@ -138,6 +142,10 @@ public class RegistryManager {
             throw new DaoException("connect config center error");
         }
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, DaoCloudProperties.serializerType, registerModel);
-        channel.writeAndFlush(daoMessage);
+        channel.writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                destroy();
+            }
+        });
     }
 }

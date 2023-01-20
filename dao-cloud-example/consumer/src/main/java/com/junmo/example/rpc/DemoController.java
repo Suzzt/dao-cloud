@@ -17,6 +17,9 @@ public class DemoController {
 
     @RequestMapping("demo")
     public String demo(){
-        return demoService.test("String1",1,1.1,1L,true);
+        long start = System.currentTimeMillis();
+        String string1 = demoService.test("String1", 1, 1.1, 1L, true);
+        long end = System.currentTimeMillis();
+        return string1+"===="+(end-start);
     }
 }
