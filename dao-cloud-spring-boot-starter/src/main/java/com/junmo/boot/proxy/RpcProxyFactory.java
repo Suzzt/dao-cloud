@@ -69,9 +69,13 @@ public class RpcProxyFactory {
             if (CollectionUtils.isEmpty(channelClients)) {
                 throw new DaoException("proxy = " + proxy + "+no server provider");
             }
+            Set<ChannelClient> availableChannelClient = daoLoadBalance.available(channelClients);
+            if (CollectionUtils.isEmpty(availableChannelClient)) {
+                throw new DaoException("proxy = " + proxy + "+no available server provider");
+            }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // load balance
-            Channel channel = daoLoadBalance.route(channelClients);
+            Channel channel = daoLoadBalance.route(availableChannelClient);
             // push message
             channel.writeAndFlush(message);
 

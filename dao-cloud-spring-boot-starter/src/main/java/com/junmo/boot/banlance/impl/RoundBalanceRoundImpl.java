@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date: 2023/1/11 22:39
  * @description:
  */
-public class RoundBalanceRoundImpl implements DaoLoadBalance {
+public class RoundBalanceRoundImpl extends DaoLoadBalance {
 
     private AtomicInteger count = new AtomicInteger();
 

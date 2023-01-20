@@ -12,11 +12,11 @@ import java.util.Set;
  * @date: 2023/1/11 22:39
  * @description:
  */
-public class RandomLoadBalanceImpl implements DaoLoadBalance {
+public class RandomLoadBalanceImpl extends DaoLoadBalance {
     @Override
-    public Channel route(Set<ChannelClient> channelClients) {
-        ChannelClient[] clients = channelClients.toArray(new ChannelClient[channelClients.size()]);
-        int index = RandomUtil.randomInt(channelClients.size());
+    public Channel route(Set<ChannelClient> availableChannelClients) {
+        ChannelClient[] clients = availableChannelClients.toArray(new ChannelClient[availableChannelClients.size()]);
+        int index = RandomUtil.randomInt(availableChannelClients.size());
         return clients[index].getChannel();
     }
 }
