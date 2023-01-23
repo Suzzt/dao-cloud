@@ -1,10 +1,8 @@
 package com.junmo.boot.banlance;
 
 import com.junmo.boot.channel.ChannelClient;
-import com.junmo.core.enums.Constant;
 import io.netty.channel.Channel;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,15 +12,9 @@ import java.util.Set;
  */
 public abstract class DaoLoadBalance {
 
-    public Set<ChannelClient> available(Set<ChannelClient> channelClients) {
-        Set<ChannelClient> result = new HashSet<>();
-        for (ChannelClient channelClient : channelClients) {
-            if (channelClient.getState() == Constant.CHANNEL_ALIVE_CONNECT_STATE) {
-                result.add(channelClient);
-            }
-        }
-        return result;
-    }
+//    public Set<ChannelClient> available(Set<ChannelClient> channelClients) {
+//        return CollectionUtil.removeNull(channelClients);
+//    }
 
     /**
      * route channel

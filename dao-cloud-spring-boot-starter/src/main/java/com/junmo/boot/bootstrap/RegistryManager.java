@@ -1,4 +1,4 @@
-package com.junmo.boot.manager;
+package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.handler.ConfigResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;

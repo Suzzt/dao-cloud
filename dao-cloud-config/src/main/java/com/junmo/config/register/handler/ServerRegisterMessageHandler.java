@@ -39,7 +39,7 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
         ctx.writeAndFlush(daoMessage).addListener(f -> {
             if (!f.isSuccess()) {
-                log.error("{}", ctx, f.cause());
+                log.error("<<<<<<<<<< register error {} >>>>>>>>>>", ctx.channel(), f.cause());
             }
         });
     }
@@ -51,15 +51,16 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object paramObject) throws Exception {
-        IdleState state = ((IdleStateEvent) paramObject).state();
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        IdleState state = ((IdleStateEvent) evt).state();
         if (state == IdleState.READER_IDLE) {
             Register.delete(proxy, ipLinkPort);
         }
+        super.userEventTriggered(ctx, evt);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("{}", ctx, cause);
+        log.error("<<<<<<<<<< register error {} >>>>>>>>>>", ctx.channel(), cause);
     }
 }

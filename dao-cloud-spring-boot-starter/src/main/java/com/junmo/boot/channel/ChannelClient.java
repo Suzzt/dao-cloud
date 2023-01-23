@@ -27,7 +27,11 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ChannelClient {
 
+    NioEventLoopGroup group = new NioEventLoopGroup();
+
     private final Object lock = new Object();
+
+    private String proxy;
 
     private String ip;
 
@@ -55,12 +59,13 @@ public class ChannelClient {
      */
     private Channel channel;
 
-    /**
-     * 1: connect  -1: disconnect
-     */
-    private volatile int state;
+//    /**
+//     * 1: connect  -1: disconnect
+//     */
+//    private volatile int state;
 
-    public ChannelClient(String ip, int port) {
+    public ChannelClient(String proxy, String ip, int port) {
+        this.proxy = proxy;
         this.ip = ip;
         this.port = port;
     }
@@ -71,7 +76,7 @@ public class ChannelClient {
      * @return
      */
     public Channel getChannel() {
-        if (this.channel != null) {
+        if (this.channel != null && this.channel.isActive()) {
             return this.channel;
         }
         synchronized (lock) {
@@ -84,11 +89,18 @@ public class ChannelClient {
     }
 
     /**
+     * destroy
+     */
+    public void destroy() throws InterruptedException {
+        this.getChannel().close().sync();
+        group.shutdownGracefully();
+    }
+
+    /**
      * connect server
      */
     private void connect() {
-        ServerPingPongMessageHandler serverPingPongMessageHandler = new ServerPingPongMessageHandler(this);
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        ServerPingPongMessageHandler serverPingPongMessageHandler = new ServerPingPongMessageHandler(proxy, this);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(group);
@@ -101,7 +113,7 @@ public class ChannelClient {
                         .addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS))
                         .addLast(serverPingPongMessageHandler)
                         .addLast(new RpcResponseMessageHandler());
-                log.info(">>>>>>>>>>dao-cloud-rpc connect server (ip = {},port = {}) success<<<<<<<<<<<<", ip, port);
+                log.info(">>>>>>>>>> dao-cloud-rpc connect server (ip = {},port = {}) success <<<<<<<<<<<<", ip, port);
             }
         });
         try {

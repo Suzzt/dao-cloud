@@ -1,15 +1,14 @@
-package com.junmo.boot.manager;
+package com.junmo.boot.bootstrap;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.proxy.RpcProxyFactory;
-import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -19,8 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -31,8 +30,9 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, InitializingBean, DisposableBean {
-    private final Map<String, Set<ChannelClient>> channelClientMap = Maps.newConcurrentMap();
+public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProcessor, InitializingBean, DisposableBean {
+
+    private final Set<String> proxySet = new HashSet<>();
 
     private Thread pollServerNodeThread;
 
@@ -50,18 +50,16 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
                 Object serviceProxy;
                 try {
                     // poll service node
-                    List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy);
-//                    if (CollectionUtils.isEmpty(serverNodeModels)) {
-//                        throw new DaoException("proxy = " + proxy + " not exist provider server");
-//                    }
+                    List<ServerNodeModel> serverNodeModels = com.junmo.boot.bootstrap.RegistryManager.poll(proxy);
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
                     for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                        channelClients.add(new ChannelClient(serverNodeModel.getIp(), serverNodeModel.getPort()));
+                        channelClients.add(new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
-                    channelClientMap.put(proxy, channelClients);
+                    ClientManager.addAll(proxy, channelClients);
+                    proxySet.add(proxy);
                     LoadBalance loadBalance = daoReference.loadBalance();
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, channelClients, loadBalance.getDaoLoadBalance());
+                    serviceProxy = RpcProxyFactory.build(iface, proxy, loadBalance.getDaoLoadBalance());
                 } catch (InterruptedException e) {
                     log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);
                     throw new DaoException(e);
@@ -87,31 +85,30 @@ public class ClientManager implements SmartInstantiationAwareBeanPostProcessor, 
     public void afterPropertiesSet() throws Exception {
         pollServerNodeThread = new Thread(() -> {
             while (true) {
+                // 这里只是兜底方案,目的是整顿这个集群
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     log.debug("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
                 }
-                for (Map.Entry<String, Set<ChannelClient>> entry : channelClientMap.entrySet()) {
-                    String proxy = entry.getKey();
-                    Set<ChannelClient> oldChannelClients = entry.getValue();
+                for (String proxy : proxySet) {
+                    Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy);
                     Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
                     List<ServerNodeModel> serverNodeModels;
                     try {
-                        serverNodeModels = RegistryManager.poll(proxy);
+                        serverNodeModels = com.junmo.boot.bootstrap.RegistryManager.poll(proxy);
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                ChannelClient channelClient = new ChannelClient(serverNodeModel.getIp(), serverNodeModel.getPort());
+                                ChannelClient channelClient = new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort());
                                 pollChannelClients.add(channelClient);
                             }
                         }
                         // new up server node
                         Set<ChannelClient> newUpChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(pollChannelClients, oldChannelClients);
-                        oldChannelClients.addAll(newUpChannelClients);
+                        ClientManager.addAll(proxy, newUpChannelClients);
                         // down server node
                         Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
-                        oldChannelClients.remove(downChannelClients);
-                        entry.setValue(oldChannelClients);
+                        ClientManager.removeAll(proxy, downChannelClients);
                         log.info(">>>>>>>>>>>proxy = {} poll server node success<<<<<<<<<<", proxy);
                     } catch (InterruptedException e) {
                         log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);

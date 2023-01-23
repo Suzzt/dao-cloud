@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
+import com.junmo.boot.bootstrap.ClientManager;
 import com.junmo.boot.channel.ChannelClient;
-import com.junmo.core.enums.Constant;
 import com.junmo.core.model.PingPongModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -17,21 +17,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<PingPongModel> {
 
+    private String proxy;
+
     private ChannelClient channelClient;
 
-    public ServerPingPongMessageHandler(ChannelClient channelClient) {
+    public ServerPingPongMessageHandler(String proxy, ChannelClient channelClient) {
+        this.proxy = proxy;
         this.channelClient = channelClient;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, PingPongModel pingPongModel) {
-        channelClient.setState(Constant.CHANNEL_ALIVE_CONNECT_STATE);
-        log.info(">>>>>>>>>>>server (ip = {},port = {}) heart beat ping-pong <<<<<<<<<<<", ctx.channel().remoteAddress(), null);
+        log.info(">>>>>>>>>>> server (connect address = {}) heart beat ping-pong <<<<<<<<<<<", ctx.channel().remoteAddress());
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        channelClient.setState(Constant.CHANNEL_ALIVE_DISCONNECT_STATE);
+        channelClient.destroy();
+        ClientManager.remove(proxy, channelClient);
+        log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         super.channelUnregistered(ctx);
     }
 
@@ -39,7 +43,9 @@ public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<Pi
     public void userEventTriggered(ChannelHandlerContext ctx, Object paramObject) throws Exception {
         IdleState state = ((IdleStateEvent) paramObject).state();
         if (state == IdleState.READER_IDLE) {
-            channelClient.setState(Constant.CHANNEL_ALIVE_DISCONNECT_STATE);
+            channelClient.destroy();
+            ClientManager.remove(proxy, channelClient);
+            log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         }
     }
 }

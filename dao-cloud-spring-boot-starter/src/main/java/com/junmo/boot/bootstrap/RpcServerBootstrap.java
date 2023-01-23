@@ -1,4 +1,4 @@
-package com.junmo.boot.manager;
+package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.handler.RpcRequestMessageHandler;
@@ -43,7 +43,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @description:
  */
 @Slf4j
-public class ServerManager implements ApplicationContextAware, InitializingBean, DisposableBean {
+public class RpcServerBootstrap implements ApplicationContextAware, InitializingBean, DisposableBean {
 
     private Map<String, Object> localServiceCache = new HashMap<>();
 
@@ -156,7 +156,7 @@ public class ServerManager implements ApplicationContextAware, InitializingBean,
                 startCallback.run();
                 channel.closeFuture().sync();
             } catch (Exception e) {
-                log.error("start dao server interrupted error", e);
+                log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>");
             } finally {
                 boss.shutdownGracefully();
                 worker.shutdownGracefully();

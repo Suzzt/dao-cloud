@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
+import com.junmo.boot.bootstrap.RpcServerBootstrap;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.boot.manager.ServerManager;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -24,11 +24,11 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
      */
     private ThreadPoolExecutor serverHandlerThreadPool;
 
-    private ServerManager serverManager;
+    private RpcServerBootstrap rpcServerBootstrap;
 
-    public RpcRequestMessageHandler(ThreadPoolExecutor serverHandlerThreadPool, ServerManager serverManager) {
+    public RpcRequestMessageHandler(ThreadPoolExecutor serverHandlerThreadPool, RpcServerBootstrap rpcServerBootstrap) {
         this.serverHandlerThreadPool = serverHandlerThreadPool;
-        this.serverManager = serverManager;
+        this.rpcServerBootstrap = rpcServerBootstrap;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
         // do invoke service
         serverHandlerThreadPool.execute(() -> {
             // invoke + response
-            RpcResponseModel responseModel = serverManager.doInvoke(rpcRequestModel);
+            RpcResponseModel responseModel = rpcServerBootstrap.doInvoke(rpcRequestModel);
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, DaoCloudProperties.serializerType, responseModel);
             ctx.writeAndFlush(daoMessage);
         });

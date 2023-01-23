@@ -1,8 +1,8 @@
 package com.junmo.boot;
 
+import com.junmo.boot.bootstrap.RpcClientBootstrap;
+import com.junmo.boot.bootstrap.RpcServerBootstrap;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.boot.manager.ClientManager;
-import com.junmo.boot.manager.ServerManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,15 +26,15 @@ public class DaoCloudConfiguration {
     private DaoCloudProperties daoCloudProperties;
 
     @Bean
-    public ServerManager server() {
-        ServerManager serverManager = new ServerManager();
-        return serverManager;
+    public RpcServerBootstrap server() {
+        RpcServerBootstrap rpcServerBootstrap = new RpcServerBootstrap();
+        return rpcServerBootstrap;
     }
 
     @Bean
-    public ClientManager client() {
-        ClientManager clientManager = new ClientManager();
-        return clientManager;
+    public RpcClientBootstrap client() {
+        RpcClientBootstrap bootstrap = new RpcClientBootstrap();
+        return bootstrap;
     }
 
 }

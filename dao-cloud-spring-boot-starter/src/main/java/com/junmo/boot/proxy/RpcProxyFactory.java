@@ -2,6 +2,7 @@ package com.junmo.boot.proxy;
 
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
+import com.junmo.boot.bootstrap.ClientManager;
 import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.handler.RpcResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
@@ -31,30 +32,31 @@ public class RpcProxyFactory {
      * build rpc proxy
      *
      * @param serviceClass
-     * @param channelClients
+     * @param proxy
+     * @param daoLoadBalance
      * @param <T>
      * @return
      */
-    public static <T> T build(Class<T> serviceClass, Set<ChannelClient> channelClients, DaoLoadBalance daoLoadBalance) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, channelClients, daoLoadBalance));
+    public static <T> T build(Class<T> serviceClass, String proxy, DaoLoadBalance daoLoadBalance) {
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, daoLoadBalance));
     }
 
     static class ProxyHandler implements InvocationHandler {
 
         private Class<?> serviceClass;
 
-        private Set<ChannelClient> channelClients;
+        private String proxy;
 
         private DaoLoadBalance daoLoadBalance;
 
-        public ProxyHandler(Class<?> serviceClass, Set<ChannelClient> channelClients, DaoLoadBalance daoLoadBalance) {
+        public ProxyHandler(Class<?> serviceClass, String proxy, DaoLoadBalance daoLoadBalance) {
             this.serviceClass = serviceClass;
-            this.channelClients = channelClients;
+            this.proxy = proxy;
             this.daoLoadBalance = daoLoadBalance;
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        public Object invoke(Object obj, Method method, Object[] args) throws Exception {
 
             //todo 这里要注意分布式下
             long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
@@ -66,16 +68,14 @@ public class RpcProxyFactory {
                     method.getParameterTypes(),
                     args
             );
+            Set<ChannelClient> channelClients = ClientManager.getClients(proxy);
             if (CollectionUtils.isEmpty(channelClients)) {
-                throw new DaoException("proxy = " + proxy + "+no server provider");
+                throw new DaoException("proxy = '" + proxy + "' no server provider");
             }
-            Set<ChannelClient> availableChannelClient = daoLoadBalance.available(channelClients);
-            if (CollectionUtils.isEmpty(availableChannelClient)) {
-                throw new DaoException("proxy = " + proxy + "+no available server provider");
-            }
+
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // load balance
-            Channel channel = daoLoadBalance.route(availableChannelClient);
+            Channel channel = daoLoadBalance.route(channelClients);
             // push message
             channel.writeAndFlush(message);
 
