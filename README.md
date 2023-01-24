@@ -15,12 +15,12 @@ dao-cloud-spring-boot-starter = rpc的依赖的jar
 dao-cloud-monitor = 监控性能
 
 # dao-协议
-魔数(3-byte)
-版本(1-byte)
-消息类型(1-byte)
-序列化方式(1-byte)  支持:jdk、json、protobuf(推荐-todo)
-数据包长度(4-byte)
-数据包内容(~)
+    魔数(3-byte)
+    版本(1-byte)
+    消息类型(1-byte)
+    序列化方式(1-byte)  支持:jdk、json、protobuf(推荐-todo)
+    数据包长度(4-byte)
+    数据包内容(~)
 
 todo 自定义协议,这是该项目的看点
 
