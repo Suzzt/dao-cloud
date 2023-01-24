@@ -27,23 +27,25 @@ todo 自定义协议,这是该项目的看点
 # 快速开始
 暂时无需任何配置(追求轻)
 不管是provider还是consumer都是直接引入的方式(注意:目前只支持Spring Boot自动注入的模式)
-<dependency>
-    <groupId>org.junmo</groupId>
-    <artifactId>dao-cloud-spring-boot-starter</artifactId>
-    <version>1.0-SNAPSHOT</version>
-</dependency>
 
-项目中有一个示例
-0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
-1.先启动dao-cloud-config
-2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
-    先启动provider,再启动consumer(其实启反也可以)
-3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo
-
+    <dependency>
+        <groupId>org.junmo</groupId>
+        <artifactId>dao-cloud-spring-boot-starter</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    
 查看config注册情况(在启动dao-cloud-config后)
 todo 可视化页面(由dao-cloud-web提供出来)。目前可以通过
 http://127.0.0.1:5555/dao-cloud-config/get/proxy-server ====查看所有服务的注册
 http://127.0.0.1:5555/dao-cloud-config/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
+
+    项目中有一个示例
+    0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
+    1.先启动dao-cloud-config
+    2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
+    先启动provider,再启动consumer(其实启反也可以)
+    3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo
+
 
 **本项目是由作者利用平时自由时间创建或迭代,所有的微服务异常情况没办法测试全,未在真实项目上实践过!请酌情考虑使用,出事故本人拒不负责(^_^)!有问题请提issues;**
     
