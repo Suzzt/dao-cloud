@@ -25,8 +25,7 @@
 todo 自定义协议,这是该项目的看点
 
 # 快速开始
-暂时无需任何配置(追求轻)
-不管是provider还是consumer都是直接引入的方式(注意:目前只支持Spring Boot自动注入的模式)
+暂时无需任何配置(追求轻).不管是provider还是consumer都是直接引入的方式(注意:目前只支持Spring Boot自动注入的模式)
 
     <dependency>
         <groupId>org.junmo</groupId>
