@@ -36,8 +36,8 @@ todo 自定义协议,这是该项目的看点
     
 查看config注册情况(在启动dao-cloud-config后)
 todo 可视化页面(由dao-cloud-web提供出来)。目前可以通过
-http://127.0.0.1:5555/dao-cloud-config/get/proxy-server ====查看所有服务的注册
-http://127.0.0.1:5555/dao-cloud-config/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
+    http://127.0.0.1:5555/dao-cloud-config/get/proxy-server ====查看所有服务的注册
+    http://127.0.0.1:5555/dao-cloud-config/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
 
     项目中有一个示例
     0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
