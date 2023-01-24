@@ -1,7 +1,6 @@
 package com.junmo.boot.banlance;
 
-import com.junmo.boot.channel.ChannelClient;
-import io.netty.channel.Channel;
+import com.junmo.boot.bootstrap.ChannelClient;
 
 import java.util.Set;
 
@@ -17,10 +16,10 @@ public abstract class DaoLoadBalance {
 //    }
 
     /**
-     * route channel
+     * route channel client
      *
      * @param availableChannelClients
      * @return
      */
-    public abstract Channel route(Set<ChannelClient> availableChannelClients);
+    public abstract ChannelClient route(Set<ChannelClient> availableChannelClients);
 }

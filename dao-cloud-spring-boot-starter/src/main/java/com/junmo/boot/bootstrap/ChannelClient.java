@@ -1,4 +1,4 @@
-package com.junmo.boot.channel;
+package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.handler.RpcResponseMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ChannelClient {
 
-    NioEventLoopGroup group = new NioEventLoopGroup();
+    NioEventLoopGroup group;
 
     private final Object lock = new Object();
 
@@ -76,7 +76,7 @@ public class ChannelClient {
      * @return
      */
     public Channel getChannel() {
-        if (this.channel != null && this.channel.isActive()) {
+        if (this.channel != null) {
             return this.channel;
         }
         synchronized (lock) {
@@ -91,15 +91,19 @@ public class ChannelClient {
     /**
      * destroy
      */
-    public void destroy() throws InterruptedException {
-        this.getChannel().close().sync();
-        group.shutdownGracefully();
+    public void destroy() {
+        try {
+            this.getChannel().close().sync();
+        } catch (Exception e) {
+            group.shutdownGracefully();
+        }
     }
 
     /**
      * connect server
      */
     private void connect() {
+        group = new NioEventLoopGroup();
         ServerPingPongMessageHandler serverPingPongMessageHandler = new ServerPingPongMessageHandler(proxy, this);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);

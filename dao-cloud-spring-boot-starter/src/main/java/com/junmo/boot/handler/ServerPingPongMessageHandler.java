@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
 import com.junmo.boot.bootstrap.ClientManager;
-import com.junmo.boot.channel.ChannelClient;
+import com.junmo.boot.bootstrap.ChannelClient;
 import com.junmo.core.model.PingPongModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

@@ -2,8 +2,8 @@ package com.junmo.boot.proxy;
 
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
+import com.junmo.boot.bootstrap.ChannelClient;
 import com.junmo.boot.bootstrap.ClientManager;
-import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.handler.RpcResponseMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2022/10/28 22:30
- * @description: 代理工厂
+ * @description: rpc proxy factory
  */
 @Slf4j
 public class RpcProxyFactory {
@@ -68,14 +68,23 @@ public class RpcProxyFactory {
                     method.getParameterTypes(),
                     args
             );
-            Set<ChannelClient> channelClients = ClientManager.getClients(proxy);
-            if (CollectionUtils.isEmpty(channelClients)) {
-                throw new DaoException("proxy = '" + proxy + "' no server provider");
-            }
-
-            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // load balance
-            Channel channel = daoLoadBalance.route(channelClients);
+            Channel channel;
+            while (true) {
+                // 把出错的几率降到最低,选出合适的channel
+                Set<ChannelClient> channelClients = ClientManager.getClients(proxy);
+                if (CollectionUtils.isEmpty(channelClients)) {
+                    throw new DaoException("proxy = '" + proxy + "' no server provider");
+                }
+                ChannelClient channelClient = daoLoadBalance.route(channelClients);
+                channel = channelClient.getChannel();
+                if (channel.isActive()) {
+                    // next
+                    break;
+                }
+                ClientManager.remove(proxy, channelClient);
+            }
+            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message
             channel.writeAndFlush(message);
 

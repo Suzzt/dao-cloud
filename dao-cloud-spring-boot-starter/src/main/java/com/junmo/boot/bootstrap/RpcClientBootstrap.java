@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
-import com.junmo.boot.channel.ChannelClient;
 import com.junmo.boot.proxy.RpcProxyFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;

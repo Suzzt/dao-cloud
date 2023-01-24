@@ -1,6 +1,5 @@
 package com.junmo.boot.bootstrap;
 
-import com.junmo.boot.channel.ChannelClient;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
