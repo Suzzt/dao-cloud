@@ -7,12 +7,12 @@
 ![dao-cloud](https://user-images.githubusercontent.com/27397567/214256837-0120110d-3d8a-4a8e-8094-cfb0ff0c17e5.jpg)
 
 # 项目结构
-dao-cloud-core = 核心
-dao-cloud-config = 注册+配置-中心
-dao-cloud-web = 交互辅助web页面(后续会把web页面都集成这里暴露出来)
-dao-cloud-gateway = 网关
-dao-cloud-spring-boot-starter = rpc的依赖的jar
-dao-cloud-monitor = 监控性能
+    dao-cloud-core = 核心
+    dao-cloud-config = 注册+配置-中心
+    dao-cloud-web = 交互辅助web页面(后续会把web页面都集成这里暴露出来)
+    dao-cloud-gateway = 网关
+    dao-cloud-spring-boot-starter = rpc的依赖的jar
+    dao-cloud-monitor = 监控性能
 
 # dao-协议
     魔数(3-byte)
@@ -36,6 +36,7 @@ todo 自定义协议,这是该项目的看点
     
 查看config注册情况(在启动dao-cloud-config后)
 todo 可视化页面(由dao-cloud-web提供出来)。目前可以通过
+
     http://127.0.0.1:5555/dao-cloud-config/get/proxy-server ====查看所有服务的注册
     http://127.0.0.1:5555/dao-cloud-config/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
 
