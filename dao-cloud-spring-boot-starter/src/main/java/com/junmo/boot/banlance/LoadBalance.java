@@ -24,21 +24,6 @@ public enum LoadBalance {
         return daoLoadBalance;
     }
 
-    //    /**
-//     * get load balance strategy handler
-//     *
-//     * @param name
-//     * @return
-//     */
-//    public static DaoLoadBalance match(String name) {
-//        for (LoadBalance item : LoadBalance.values()) {
-//            if (item.name().equals(name)) {
-//                return item.daoLoadBalance;
-//            }
-//        }
-//        //default
-//        return RANDOM.daoLoadBalance;
-//    }
 }
 
 

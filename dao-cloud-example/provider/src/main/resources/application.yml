@@ -11,4 +11,3 @@ dao-cloud:
   proxy: demo
   corePoolSize: 3
   maxPoolSize: 40
-  #serverPort: 9998      // rpc port

@@ -11,10 +11,6 @@ import java.util.Set;
  */
 public abstract class DaoLoadBalance {
 
-//    public Set<ChannelClient> available(Set<ChannelClient> channelClients) {
-//        return CollectionUtil.removeNull(channelClients);
-//    }
-
     /**
      * route channel client
      *

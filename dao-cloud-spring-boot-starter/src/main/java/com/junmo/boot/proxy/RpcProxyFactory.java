@@ -79,7 +79,6 @@ public class RpcProxyFactory {
                 ChannelClient channelClient = daoLoadBalance.route(channelClients);
                 channel = channelClient.getChannel();
                 if (channel.isActive()) {
-                    // next
                     break;
                 }
                 ClientManager.remove(proxy, channelClient);
@@ -89,6 +88,7 @@ public class RpcProxyFactory {
             channel.writeAndFlush(message);
 
             // 异步！ promise 对象来处理异步接收的结果线程
+            // todo 这里有个问题：万一发送链路上发送失败了 promise就一直等着阻塞了，当然改成sync()就没这个问题了  但是会牺牲这个异步调用的性能！
             DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
             RpcResponseMessageHandler.PROMISE_MAP.put(sequenceId, promise);
 

@@ -2,6 +2,7 @@ package com.junmo.example.rpc;
 
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.common.DemoService;
+import com.junmo.common.dto.ParamDTO;
 
 /**
  * @author: sucf
@@ -13,5 +14,12 @@ public class DemoServiceImpl implements DemoService {
     @Override
     public String test(String string1, int int1, double double1, long long1, boolean flag) {
         return string1 + int1 + double1 + long1 + flag;
+    }
+
+    @Override
+    public ParamDTO complex(ParamDTO paramDTO) {
+        paramDTO.setCharValue('s');
+        paramDTO.setString("string1");
+        return paramDTO;
     }
 }
