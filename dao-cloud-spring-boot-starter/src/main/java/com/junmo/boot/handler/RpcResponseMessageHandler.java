@@ -23,7 +23,7 @@ public class RpcResponseMessageHandler extends SimpleChannelInboundHandler<RpcRe
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponseModel msg) throws Exception {
         // get promise
-        Promise<Object> promise = PROMISE_MAP.get(msg.getSequenceId());
+        Promise<Object> promise = PROMISE_MAP.remove(msg.getSequenceId());
         if (promise != null) {
             Object returnValue = msg.getReturnValue();
             DaoException exceptionValue = msg.getExceptionValue();

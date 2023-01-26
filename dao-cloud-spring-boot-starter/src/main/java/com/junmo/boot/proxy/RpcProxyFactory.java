@@ -12,6 +12,7 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -85,7 +86,13 @@ public class RpcProxyFactory {
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message
-            channel.writeAndFlush(message);
+            channel.writeAndFlush(message).addListener(future -> {
+                if (!future.isSuccess()) {
+                    Promise<Object> promise = RpcResponseMessageHandler.PROMISE_MAP.remove(sequenceId);
+                    promise.setFailure(future.cause());
+                    log.error("<<<<<<<<<< send rpc do invoke message error >>>>>>>>>>", future.cause());
+                }
+            });
 
             // 异步！ promise 对象来处理异步接收的结果线程
             // todo 这里有个问题：万一发送链路上发送失败了 promise就一直等着阻塞了，当然改成sync()就没这个问题了  但是会牺牲这个异步调用的性能！
