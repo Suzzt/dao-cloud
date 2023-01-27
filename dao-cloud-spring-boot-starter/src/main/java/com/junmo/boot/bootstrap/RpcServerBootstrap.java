@@ -1,5 +1,6 @@
 package com.junmo.boot.bootstrap;
 
+import com.junmo.boot.annotation.ConditionalOnUseAnnotation;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.bootstrap.thread.ServerNetty;
 import com.junmo.boot.properties.DaoCloudProperties;
@@ -28,6 +29,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @description: rpc server startup
  */
 @Slf4j
+@ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcServerBootstrap implements ApplicationContextAware, InitializingBean, DisposableBean {
 
     private Map<String, Object> localServiceCache = new HashMap<>();
