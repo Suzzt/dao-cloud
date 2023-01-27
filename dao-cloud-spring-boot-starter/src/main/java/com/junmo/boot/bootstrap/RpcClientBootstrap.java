@@ -57,8 +57,9 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                     ClientManager.addAll(proxy, channelClients);
                     proxySet.add(proxy);
                     LoadBalance loadBalance = daoReference.loadBalance();
+                    long timeout = daoReference.timeout();
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, proxy, loadBalance.getDaoLoadBalance());
+                    serviceProxy = RpcProxyFactory.build(iface, proxy, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (InterruptedException e) {
                     log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);
                     throw new DaoException(e);

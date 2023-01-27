@@ -22,4 +22,14 @@ public class DemoServiceImpl implements DemoService {
         paramDTO.setString("string1");
         return paramDTO;
     }
+
+    @Override
+    public String timeout() {
+        try {
+            Thread.sleep(2100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "time out";
+    }
 }

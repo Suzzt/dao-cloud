@@ -40,4 +40,14 @@ public class DemoController {
         return new Gson().toJson(paramDTO) + "====" + (end - start);
     }
 
+    /**
+     * 此方法就是为了测试rpc接口超时
+     *
+     * @return
+     */
+    @RequestMapping("time-out")
+    public String timeOut() {
+        demoService.timeout();
+        return null;
+    }
 }

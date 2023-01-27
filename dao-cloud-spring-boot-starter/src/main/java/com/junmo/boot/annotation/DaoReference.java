@@ -14,12 +14,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface DaoReference {
-    @NonNull
+
     String proxy();
 
     LoadBalance loadBalance() default LoadBalance.RANDOM;
 
     String version() default "";
 
-    long timeout() default 1000;
+    long timeout() default 2000;
 }

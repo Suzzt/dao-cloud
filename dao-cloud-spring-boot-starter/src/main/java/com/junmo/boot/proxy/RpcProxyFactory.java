@@ -30,16 +30,15 @@ import java.util.Set;
 public class RpcProxyFactory {
 
     /**
-     * build rpc proxy
-     *
      * @param serviceClass
      * @param proxy
      * @param daoLoadBalance
+     * @param timeout
      * @param <T>
      * @return
      */
-    public static <T> T build(Class<T> serviceClass, String proxy, DaoLoadBalance daoLoadBalance) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, daoLoadBalance));
+    public static <T> T build(Class<T> serviceClass, String proxy, DaoLoadBalance daoLoadBalance, long timeout) {
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, daoLoadBalance, timeout));
     }
 
     static class ProxyHandler implements InvocationHandler {
@@ -50,14 +49,17 @@ public class RpcProxyFactory {
 
         private DaoLoadBalance daoLoadBalance;
 
-        public ProxyHandler(Class<?> serviceClass, String proxy, DaoLoadBalance daoLoadBalance) {
+        private long timeout;
+
+        public ProxyHandler(Class<?> serviceClass, String proxy, DaoLoadBalance daoLoadBalance, long timeout) {
             this.serviceClass = serviceClass;
             this.proxy = proxy;
             this.daoLoadBalance = daoLoadBalance;
+            this.timeout = timeout;
         }
 
         @Override
-        public Object invoke(Object obj, Method method, Object[] args) throws Exception {
+        public Object invoke(Object obj, Method method, Object[] args) throws InterruptedException {
 
             //todo 这里要注意分布式下
             long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
@@ -95,17 +97,16 @@ public class RpcProxyFactory {
             });
 
             // 异步！ promise 对象来处理异步接收的结果线程
-            // todo 这里有个问题：万一发送链路上发送失败了 promise就一直等着阻塞了，当然改成sync()就没这个问题了  但是会牺牲这个异步调用的性能！
             DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
             RpcResponseMessageHandler.PROMISE_MAP.put(sequenceId, promise);
 
             //等待 promise 结果
-            promise.await();
+            if (!promise.await(timeout)) {
+                throw new DaoException("rpc do invoke time out");
+            }
             if (promise.isSuccess()) {
-                // 调用正常
                 return promise.getNow();
             } else {
-                // 调用失败
                 throw new DaoException(promise.cause());
             }
         }

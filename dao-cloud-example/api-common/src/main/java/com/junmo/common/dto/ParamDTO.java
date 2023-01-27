@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @description:
  */
 @Data
-public class ParamDTO implements Serializable{
+public class ParamDTO implements Serializable {
     private String string;
     private Integer integer;
     private int intValue;
