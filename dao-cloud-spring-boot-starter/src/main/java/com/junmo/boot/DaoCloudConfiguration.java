@@ -6,10 +6,9 @@ import com.junmo.boot.properties.DaoCloudProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
-import javax.annotation.Resource;
 
 /**
  * @author: sucf
@@ -19,22 +18,7 @@ import javax.annotation.Resource;
 @Configuration
 @EnableConfigurationProperties({DaoCloudProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
+@Import({DaoCloudProperties.class, RpcServerBootstrap.class, RpcClientBootstrap.class})
 @Slf4j
 public class DaoCloudConfiguration {
-
-    @Resource
-    private DaoCloudProperties daoCloudProperties;
-
-    @Bean
-    public RpcServerBootstrap server() {
-        RpcServerBootstrap rpcServerBootstrap = new RpcServerBootstrap();
-        return rpcServerBootstrap;
-    }
-
-    @Bean
-    public RpcClientBootstrap client() {
-        RpcClientBootstrap bootstrap = new RpcClientBootstrap();
-        return bootstrap;
-    }
-
 }

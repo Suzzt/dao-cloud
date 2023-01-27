@@ -4,7 +4,6 @@ import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.bootstrap.thread.ServerNetty;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.DaoCallback;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
@@ -26,21 +25,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * @author sucf
  * @date 2022/12/29 16:30
- * @description:
+ * @description: rpc server startup
  */
 @Slf4j
 public class RpcServerBootstrap implements ApplicationContextAware, InitializingBean, DisposableBean {
 
     private Map<String, Object> localServiceCache = new HashMap<>();
-
-    /**
-     * do invoke when server start
-     */
-    private DaoCallback startCallback;
-    /**
-     * do invoke when server stop
-     */
-    private DaoCallback stopCallback;
 
     private Thread thread;
 

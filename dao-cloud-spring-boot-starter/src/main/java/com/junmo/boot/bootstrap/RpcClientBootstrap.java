@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/1/12 11:11
- * @description:
+ * @description: rpc client startup
  */
 @Slf4j
 @Component
@@ -109,9 +109,9 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                         // down server node
                         Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
                         ClientManager.removeAll(proxy, downChannelClients);
-                        log.info(">>>>>>>>>>>proxy = {} poll server node success<<<<<<<<<<", proxy);
+                        log.info(">>>>>>>>>>> proxy = {} poll server node success <<<<<<<<<<", proxy);
                     } catch (InterruptedException e) {
-                        log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);
+                        log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
                         throw new DaoException(e);
                     }
                 }

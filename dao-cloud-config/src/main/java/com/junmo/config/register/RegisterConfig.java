@@ -56,7 +56,7 @@ public class RegisterConfig implements ApplicationContextAware {
                     }
                 });
                 Channel channel = serverBootstrap.bind(port).sync().channel();
-                log.info(">>>>>>>>>>>> dao-center success <<<<<<<<<<<");
+                log.info(">>>>>>>>>>>> dao-center start success <<<<<<<<<<<");
                 channel.closeFuture().sync();
             } catch (InterruptedException e) {
                 log.error("server interrupted error", e);

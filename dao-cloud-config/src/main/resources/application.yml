@@ -7,5 +7,5 @@ server:
   servlet:
     context-path: /${spring.application.name}
 dao-cloud:
-  # jdk json
+  # jdk or json or protobuf
   serializer: jdk
