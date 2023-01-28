@@ -1,7 +1,7 @@
 package com.junmo.boot.annotation;
 
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
 
@@ -13,12 +13,17 @@ import java.util.Map;
  * @date: 2023/1/27 21:44
  * @description:
  */
-public class UseOnAnnotationCondition implements Condition {
+public class UseOnAnnotationCondition implements ConfigurationCondition {
 
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
         Map<String, Object> map = annotatedTypeMetadata.getAnnotationAttributes(ConditionalOnUseAnnotation.class.getName());
         Map<String, Object> serviceBeanMap = conditionContext.getBeanFactory().getBeansWithAnnotation((Class<? extends Annotation>) map.get("annotation"));
         return !CollectionUtils.isEmpty(serviceBeanMap);
+    }
+
+    @Override
+    public ConfigurationPhase getConfigurationPhase() {
+        return ConfigurationPhase.REGISTER_BEAN;
     }
 }

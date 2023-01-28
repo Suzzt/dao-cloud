@@ -7,6 +7,7 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -84,13 +85,12 @@ public class Register {
             throw new DaoException("proxy = " + proxy + " is null");
         }
         Map<String, String> nodeList = SERVER_MAP.get(proxy);
-        if (nodeList == null) {
-            throw new DaoException("not exist proxy = " + proxy);
-        }
-        for (Map.Entry<String, String> entry : nodeList.entrySet()) {
-            String ipLinkPort = entry.getKey();
-            ServerNodeModel serverNodeModel = new ServerNodeModel(ipLinkPort);
-            serverNodeModels.add(serverNodeModel);
+        if (!CollectionUtils.isEmpty(nodeList)) {
+            for (Map.Entry<String, String> entry : nodeList.entrySet()) {
+                String ipLinkPort = entry.getKey();
+                ServerNodeModel serverNodeModel = new ServerNodeModel(ipLinkPort);
+                serverNodeModels.add(serverNodeModel);
+            }
         }
         return serverNodeModels;
     }

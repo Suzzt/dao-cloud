@@ -11,7 +11,6 @@ import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -29,7 +28,7 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProcessor, InitializingBean, DisposableBean {
+public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
     private final Set<String> proxySet = new HashSet<>();
 
@@ -49,7 +48,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                 Object serviceProxy;
                 try {
                     // poll service node
-                    List<ServerNodeModel> serverNodeModels = com.junmo.boot.bootstrap.RegistryManager.poll(proxy);
+                    List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy);
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
                     for (ServerNodeModel serverNodeModel : serverNodeModels) {
                         channelClients.add(new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort()));
@@ -61,28 +60,15 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                     // get proxyObj
                     serviceProxy = RpcProxyFactory.build(iface, proxy, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (InterruptedException e) {
-                    log.error("<<<<<<<<<<<poll server node fair>>>>>>>>>>>", e);
+                    log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
                     throw new DaoException(e);
                 }
                 // set bean
                 field.setAccessible(true);
                 field.set(bean, serviceProxy);
-                log.info(">>>>>>>>>>>dao-cloud, invoker init reference bean success<<<<<<<<<<< proxy = {}, beanName = {}");
+                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}");
             }
         });
-        return true;
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        if (pollServerNodeThread != null && pollServerNodeThread.isAlive()) {
-            pollServerNodeThread.interrupt();
-        }
-        log.debug(">>>>>>>>>>> dao-cloud-rpc provider server destroy <<<<<<<<<<<<");
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
         pollServerNodeThread = new Thread(() -> {
             while (true) {
                 // 这里只是兜底方案,目的是整顿这个集群
@@ -96,7 +82,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                     Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
                     List<ServerNodeModel> serverNodeModels;
                     try {
-                        serverNodeModels = com.junmo.boot.bootstrap.RegistryManager.poll(proxy);
+                        serverNodeModels = RegistryManager.poll(proxy);
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
                                 ChannelClient channelClient = new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort());
@@ -118,5 +104,14 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
             }
         });
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pollServerNodeThread);
+        return true;
+    }
+
+    @Override
+    public void destroy() {
+        if (pollServerNodeThread != null && pollServerNodeThread.isAlive()) {
+            pollServerNodeThread.interrupt();
+        }
+        log.debug(">>>>>>>>>>> dao-cloud-rpc provider server destroy <<<<<<<<<<<<");
     }
 }

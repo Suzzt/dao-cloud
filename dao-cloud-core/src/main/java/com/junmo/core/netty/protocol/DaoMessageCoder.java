@@ -57,7 +57,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         byte[] bytes = new byte[contentLength];
         byteBuf.readBytes(bytes, 0, contentLength);
         //根据不同的序列化方式解析
-        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(messageType);
+        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
         Model model = daoSerializer.deserialize(bytes, MessageModelTypeManager.getMessageModel(messageType));
         list.add(model);
     }

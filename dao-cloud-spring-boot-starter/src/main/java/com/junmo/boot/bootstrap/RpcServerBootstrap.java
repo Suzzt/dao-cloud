@@ -12,9 +12,9 @@ import com.junmo.core.util.SystemUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -30,37 +30,18 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Slf4j
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
-public class RpcServerBootstrap implements ApplicationContextAware, InitializingBean, DisposableBean {
+public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
     private Map<String, Object> localServiceCache = new HashMap<>();
 
     private Thread thread;
-
-    private boolean isServerStarted;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        //scan annotation DaoService
-        Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(DaoService.class);
-        if (CollectionUtils.isEmpty(serviceBeanMap)) {
-            return;
-        }
-        isServerStarted = true;
-        for (Object serviceBean : serviceBeanMap.values()) {
-            if (serviceBean.getClass().getInterfaces().length == 0) {
-                throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
-            }
-            String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
-            addServiceCache(interfaces, serviceBean);
-        }
-    }
 
     /**
      * prepare
      *
      * @throws Exception
      */
-    public void prepare() throws Exception {
+    public void prepare() {
         DaoCloudProperties.serializerType = SerializeStrategyFactory.getSerializeType(DaoCloudProperties.serializer);
         if (!(DaoCloudProperties.corePoolSize > 0 && DaoCloudProperties.maxPoolSize > 0 && DaoCloudProperties.maxPoolSize >= DaoCloudProperties.corePoolSize)) {
             DaoCloudProperties.corePoolSize = 60;
@@ -68,7 +49,11 @@ public class RpcServerBootstrap implements ApplicationContextAware, Initializing
         }
 
         if (DaoCloudProperties.serverPort <= 0) {
-            DaoCloudProperties.serverPort = SystemUtil.getAvailablePort(65535);
+            try {
+                DaoCloudProperties.serverPort = SystemUtil.getAvailablePort(65535);
+            } catch (Exception e) {
+                throw new DaoException(e);
+            }
         }
 
         if (!StringUtils.hasLength(DaoCloudProperties.proxy)) {
@@ -79,10 +64,7 @@ public class RpcServerBootstrap implements ApplicationContextAware, Initializing
     /**
      * start
      */
-    public void start() throws Exception {
-        if (!isServerStarted) {
-            return;
-        }
+    public void start() {
         prepare();
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProperties.corePoolSize, DaoCloudProperties.maxPoolSize);
@@ -140,7 +122,7 @@ public class RpcServerBootstrap implements ApplicationContextAware, Initializing
     }
 
     @Override
-    public void destroy() throws Exception {
+    public void destroy() {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
@@ -148,7 +130,20 @@ public class RpcServerBootstrap implements ApplicationContextAware, Initializing
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        ApplicationContext applicationContext = contextRefreshedEvent.getApplicationContext();
+        Map<String, Object> serviceBeanMap = applicationContext.getBeansWithAnnotation(DaoService.class);
+        if (CollectionUtils.isEmpty(serviceBeanMap)) {
+            return;
+        }
+        for (Object serviceBean : serviceBeanMap.values()) {
+            if (serviceBean.getClass().getInterfaces().length == 0) {
+                throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
+            }
+            String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
+            addServiceCache(interfaces, serviceBean);
+        }
+        prepare();
         start();
     }
 }
