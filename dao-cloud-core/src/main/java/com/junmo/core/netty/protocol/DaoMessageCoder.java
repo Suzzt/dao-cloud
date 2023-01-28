@@ -31,7 +31,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         //序列化 1byte
         byteBuf.writeByte(msg.getSerializableType());
         //获取内容的字节数组
-        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(msg.getMessageType());
+        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(msg.getSerializableType());
         byte[] bytes = daoSerializer.serialize(msg.getContent());
         //内容对象长度 int 4bytes
         byteBuf.writeInt(bytes.length);

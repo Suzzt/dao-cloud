@@ -46,14 +46,16 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        Register.delete(proxy, ipLinkPort);
+        if(proxy != null && ipLinkPort != null){
+            Register.delete(proxy, ipLinkPort);
+        }
         super.channelUnregistered(ctx);
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         IdleState state = ((IdleStateEvent) evt).state();
-        if (state == IdleState.READER_IDLE) {
+        if (state == IdleState.READER_IDLE && proxy != null && ipLinkPort != null) {
             Register.delete(proxy, ipLinkPort);
         }
         super.userEventTriggered(ctx, evt);

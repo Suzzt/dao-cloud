@@ -66,7 +66,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                 // set bean
                 field.setAccessible(true);
                 field.set(bean, serviceProxy);
-                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}");
+                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, beanName);
             }
         });
         pollServerNodeThread = new Thread(() -> {
@@ -75,7 +75,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
-                    log.debug("<<<<<<<<<<<thread interrupted...>>>>>>>>>>", e);
+                    log.debug("<<<<<<<<<<< thread interrupted... >>>>>>>>>>>", e);
                 }
                 for (String proxy : proxySet) {
                     Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy);

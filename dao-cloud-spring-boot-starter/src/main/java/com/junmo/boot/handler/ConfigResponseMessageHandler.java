@@ -24,7 +24,7 @@ public class ConfigResponseMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterServerModel registerServerModel) {
-        Promise<List<ServerNodeModel>> pollPromise = PROMISE_MAP.get(registerServerModel.getProxy());
+        Promise<List<ServerNodeModel>> pollPromise = PROMISE_MAP.remove(registerServerModel.getProxy());
         if (pollPromise != null) {
             List<ServerNodeModel> serverNodeModes = registerServerModel.getServerNodeModes();
             Exception exceptionValue = registerServerModel.getExceptionValue();

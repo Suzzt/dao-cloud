@@ -29,7 +29,9 @@ public class PollServerHandler extends SimpleChannelInboundHandler<RegisterPollM
         serverNodeModels = Register.getServers(proxy);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
         ctx.writeAndFlush(daoMessage).addListener(future -> {
-            log.error("<<<<<<<<<<< send server node info error >>>>>>>>>>>>", future.cause());
+            if (!future.isSuccess()) {
+                log.error("<<<<<<<<<<< send server node info error >>>>>>>>>>>>", future.cause());
+            }
         });
     }
 
