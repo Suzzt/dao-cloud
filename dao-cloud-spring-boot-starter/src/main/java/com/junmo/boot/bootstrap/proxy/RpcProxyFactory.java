@@ -1,4 +1,4 @@
-package com.junmo.boot.proxy;
+package com.junmo.boot.bootstrap.proxy;
 
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;

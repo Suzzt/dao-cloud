@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
-import com.junmo.boot.proxy.RpcProxyFactory;
+import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.ThreadPoolFactory;
@@ -73,7 +73,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
             while (true) {
                 // 这里只是兜底方案,目的是整顿这个集群
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     log.debug("<<<<<<<<<<< thread interrupted... >>>>>>>>>>>", e);
                 }
