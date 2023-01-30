@@ -19,7 +19,7 @@ public @interface DaoReference {
 
     LoadBalance loadBalance() default LoadBalance.RANDOM;
 
-    String version() default "";
+    int version() default 0;
 
     long timeout() default 2000;
 }
