@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author: sucf
  * @date: 2022/11/19 09:11
- * @description: heart beat to center || server register || poll server node
+ * @description: server register center || poll server node
  */
 @Slf4j
 public class ConfigResponseMessageHandler extends SimpleChannelInboundHandler<RegisterServerModel> {
@@ -35,7 +35,7 @@ public class ConfigResponseMessageHandler extends SimpleChannelInboundHandler<Re
             }
             log.info(">>>>>>>>>>>> poll (proxy = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), new Gson().toJson(registerServerModel.getServerNodeModes()));
         } else {
-            log.info(">>>>>>>>>>>> send heart beat to center || server register success <<<<<<<<<<<<");
+            log.info(">>>>>>>>>>>> server register center success <<<<<<<<<<<<");
         }
     }
 }

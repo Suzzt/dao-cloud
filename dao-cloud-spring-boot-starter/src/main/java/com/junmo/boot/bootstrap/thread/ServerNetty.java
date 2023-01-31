@@ -2,26 +2,23 @@ package com.junmo.boot.bootstrap.thread;
 
 import com.junmo.boot.bootstrap.RegistryManager;
 import com.junmo.boot.bootstrap.RpcServerBootstrap;
-import com.junmo.boot.handler.RpcRequestMessageHandler;
+import com.junmo.boot.handler.RpcServerMessageHandler;
+import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
-import com.junmo.core.model.PingPongModel;
-import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
-import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
@@ -29,7 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @description:
  */
 @Slf4j
-public class ServerNetty extends Thread{
+public class ServerNetty extends Thread {
 
     private ThreadPoolExecutor threadPoolProvider;
 
@@ -53,25 +50,9 @@ public class ServerNetty extends Thread{
                 protected void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(new ProtocolFrameDecoder());
                     ch.pipeline().addLast(new DaoMessageCoder());
-                    ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                        @Override
-                        public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-                            Channel channel = ctx.channel();
-                            ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
-                                while (true) {
-                                    DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.PING_HEART_BEAT_MESSAGE, DaoCloudProperties.serializerType, new PingPongModel());
-                                    channel.writeAndFlush(daoMessage);
-                                    try {
-                                        Thread.sleep(2000);
-                                    } catch (InterruptedException e) {
-                                        log.error("<<<<<<<<<<< thread interrupted... >>>>>>>>>>", e);
-                                    }
-                                }
-                            });
-                            super.channelRegistered(ctx);
-                        }
-                    });
-                    ch.pipeline().addLast(new RpcRequestMessageHandler(threadPoolProvider, rpcServerBootstrap));
+                    ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
+                    ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
+                    ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider, rpcServerBootstrap));
                 }
             });
             Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();

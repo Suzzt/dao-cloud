@@ -95,7 +95,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                         // down server node
                         Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
                         ClientManager.removeAll(proxy, downChannelClients);
-                        log.info(">>>>>>>>>>> proxy = {} poll server node success <<<<<<<<<<", proxy);
+                        //log.info(">>>>>>>>>>> proxy = {} poll server node success <<<<<<<<<<", proxy);
                     } catch (InterruptedException e) {
                         log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
                         throw new DaoException(e);

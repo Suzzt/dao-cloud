@@ -1,12 +1,9 @@
 package com.junmo.boot.handler;
 
-import com.junmo.boot.bootstrap.ClientManager;
-import com.junmo.boot.bootstrap.ChannelClient;
-import com.junmo.core.model.PingPongModel;
+import com.junmo.core.model.HeartbeatModel;
+import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleState;
-import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -15,37 +12,16 @@ import lombok.extern.slf4j.Slf4j;
  * @description:
  */
 @Slf4j
-public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<PingPongModel> {
-
-    private String proxy;
-
-    private ChannelClient channelClient;
-
-    public ServerPingPongMessageHandler(String proxy, ChannelClient channelClient) {
-        this.proxy = proxy;
-        this.channelClient = channelClient;
-    }
+public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<HeartbeatModel> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, PingPongModel pingPongModel) {
-        log.info(">>>>>>>>>>> server (connect address = {}) heart beat ping-pong <<<<<<<<<<<", ctx.channel().remoteAddress());
+    protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel heartbeatModel) {
+        log.info(">>>>>>>>>>> receive client (connect address = {}) heart beat packet <<<<<<<<<<<", ctx.channel().remoteAddress());
+        ctx.channel().writeAndFlush(new HeartbeatPacket()).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("<<<<<<<<<<< send back client (connect address = {}) heart beat packet error >>>>>>>>>>>", ctx.channel().remoteAddress(),future.cause());
+            }
+        });
     }
 
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        channelClient.destroy();
-        ClientManager.remove(proxy, channelClient);
-        log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
-        super.channelUnregistered(ctx);
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object paramObject) throws Exception {
-        IdleState state = ((IdleStateEvent) paramObject).state();
-        if (state == IdleState.READER_IDLE) {
-            channelClient.destroy();
-            ClientManager.remove(proxy, channelClient);
-            log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
-        }
-    }
 }

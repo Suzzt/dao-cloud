@@ -19,6 +19,9 @@ public class DaoMessage<T> {
         this.content = content;
     }
 
+    public DaoMessage() {
+    }
+
     //====================================================固定结构====================================================
     /**
      * 魔数
@@ -27,16 +30,16 @@ public class DaoMessage<T> {
     private byte[] magicNumber = Constant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
 
     /**
-     * 协议版本 (no)
-     * 1byte
-     */
-    private byte version;
-
-    /**
      * 消息类型
      * 1byte
      */
     private byte messageType;
+
+    /**
+     * 协议版本 (no)
+     * 1byte
+     */
+    private byte version;
 
     /**
      * 序列化方式类型 0：jdk  1：json  2:protobuf  -1:自定义

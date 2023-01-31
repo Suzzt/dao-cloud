@@ -1,7 +1,6 @@
 package com.junmo.boot.bootstrap;
 
-import com.junmo.boot.handler.RpcResponseMessageHandler;
-import com.junmo.boot.handler.ServerPingPongMessageHandler;
+import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
@@ -37,6 +36,18 @@ public class ChannelClient {
 
     private int port;
 
+    /**
+     * connect channel
+     */
+    private Channel channel;
+
+    /**
+     * fail mark count
+     * if >3. it will be eliminated
+     */
+    private int failMark = 0;
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -53,16 +64,6 @@ public class ChannelClient {
     public int hashCode() {
         return Objects.hash(ip, port);
     }
-
-    /**
-     * connect channel
-     */
-    private Channel channel;
-
-//    /**
-//     * 1: connect  -1: disconnect
-//     */
-//    private volatile int state;
 
     public ChannelClient(String proxy, String ip, int port) {
         this.proxy = proxy;
@@ -88,6 +89,12 @@ public class ChannelClient {
         }
     }
 
+    public void reconnect() {
+        channel.close().addListener(future -> {
+            channel.eventLoop().schedule(() -> connect(), 5, TimeUnit.SECONDS);
+        });
+    }
+
     /**
      * destroy
      */
@@ -104,7 +111,7 @@ public class ChannelClient {
      */
     private void connect() {
         group = new NioEventLoopGroup();
-        ServerPingPongMessageHandler serverPingPongMessageHandler = new ServerPingPongMessageHandler(proxy, this);
+        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxy, this);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(group);
@@ -114,9 +121,8 @@ public class ChannelClient {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
-                        .addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS))
-                        .addLast(serverPingPongMessageHandler)
-                        .addLast(new RpcResponseMessageHandler());
+                        .addLast("clientIdleHandler", new IdleStateHandler(2, 0, 0, TimeUnit.SECONDS))
+                        .addLast(rpcClientMessageHandler);
                 log.info(">>>>>>>>>> dao-cloud-rpc connect server (ip = {},port = {}) success <<<<<<<<<<<<", ip, port);
             }
         });
@@ -127,5 +133,13 @@ public class ChannelClient {
             group.shutdownGracefully();
             throw new DaoException(e);
         }
+    }
+
+    public void clearFailMark() {
+        failMark = 0;
+    }
+
+    public void addFailMark() {
+        failMark++;
     }
 }

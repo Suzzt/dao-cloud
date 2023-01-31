@@ -1,5 +1,6 @@
 package com.junmo.core.netty.protocol;
 
+import com.junmo.core.model.HeartbeatModel;
 import com.junmo.core.model.Model;
 import com.junmo.core.netty.serialize.DaoSerializer;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
@@ -24,19 +25,27 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         //====================================write====================================
         //魔数 3bytes
         byteBuf.writeBytes(msg.getMagicNumber());
-        //版本 1byte
-        byteBuf.writeByte(msg.getVersion());
         //消息类型 1byte
         byteBuf.writeByte(msg.getMessageType());
-        //序列化 1byte
-        byteBuf.writeByte(msg.getSerializableType());
-        //获取内容的字节数组
-        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(msg.getSerializableType());
-        byte[] bytes = daoSerializer.serialize(msg.getContent());
-        //内容对象长度 int 4bytes
-        byteBuf.writeInt(bytes.length);
-        //内容数据
-        byteBuf.writeBytes(bytes);
+        if (msg.getMessageType() == MessageModelTypeManager.PING_PONG_HEART_BEAT_MESSAGE) {
+            // heart beat packet
+            byteBuf.writeByte(0xff);
+            byteBuf.writeByte(0xff);
+            byteBuf.writeInt(0);
+        } else {
+            // business message
+            //版本 1byte
+            byteBuf.writeByte(msg.getVersion());
+            //序列化 1byte
+            byteBuf.writeByte(msg.getSerializableType());
+            //获取内容的字节数组
+            DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(msg.getSerializableType());
+            byte[] bytes = daoSerializer.serialize(msg.getContent());
+            //内容对象长度 int 4bytes
+            byteBuf.writeInt(bytes.length);
+            //内容数据
+            byteBuf.writeBytes(bytes);
+        }
         out.add(byteBuf);
     }
 
@@ -46,20 +55,25 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         //魔数 3bytes
         byte[] magicNumber = new byte[3];
         byteBuf.readBytes(magicNumber);
-        //版本 1byte
-        byte version = byteBuf.readByte();
         //消息类型 1byte
         byte messageType = byteBuf.readByte();
-        //序列化 1byte
-        byte serializableType = byteBuf.readByte();
-        //内容字节数 int 4bytes
-        int contentLength = byteBuf.readInt();
-        byte[] bytes = new byte[contentLength];
-        byteBuf.readBytes(bytes, 0, contentLength);
-        //根据不同的序列化方式解析
-        DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
-        Model model = daoSerializer.deserialize(bytes, MessageModelTypeManager.getMessageModel(messageType));
-        list.add(model);
+        if (messageType == MessageModelTypeManager.PING_PONG_HEART_BEAT_MESSAGE) {
+            // heart beat packet
+            list.add(new HeartbeatModel());
+        } else {
+            //版本 1byte
+            byte version = byteBuf.readByte();
+            //序列化 1byte
+            byte serializableType = byteBuf.readByte();
+            //内容字节数 int 4bytes
+            int contentLength = byteBuf.readInt();
+            byte[] bytes = new byte[contentLength];
+            byteBuf.readBytes(bytes, 0, contentLength);
+            //根据不同的序列化方式解析
+            DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
+            Model model = daoSerializer.deserialize(bytes, MessageModelTypeManager.getMessageModel(messageType));
+            list.add(model);
+        }
     }
 
 }

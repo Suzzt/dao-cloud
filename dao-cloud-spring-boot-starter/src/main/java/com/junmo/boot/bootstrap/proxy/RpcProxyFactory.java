@@ -4,7 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.ChannelClient;
 import com.junmo.boot.bootstrap.ClientManager;
-import com.junmo.boot.handler.RpcResponseMessageHandler;
+import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
@@ -72,39 +72,39 @@ public class RpcProxyFactory {
                     args
             );
             // load balance
-            Channel channel;
+            ChannelClient channelClient;
             while (true) {
                 // 把出错的几率降到最低,选出合适的channel
                 Set<ChannelClient> channelClients = ClientManager.getClients(proxy);
                 if (CollectionUtils.isEmpty(channelClients)) {
                     throw new DaoException("proxy = '" + proxy + "' no server provider");
                 }
-                ChannelClient channelClient = daoLoadBalance.route(channelClients);
-                channel = channelClient.getChannel();
-                if (channel.isActive()) {
+                channelClient = daoLoadBalance.route(channelClients);
+                if (channelClient.getChannel().isActive()) {
                     break;
                 }
                 ClientManager.remove(proxy, channelClient);
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message
-            channel.writeAndFlush(message).addListener(future -> {
+            channelClient.getChannel().writeAndFlush(message).addListener(future -> {
                 if (!future.isSuccess()) {
-                    Promise<Object> promise = RpcResponseMessageHandler.PROMISE_MAP.remove(sequenceId);
+                    Promise<Object> promise = RpcClientMessageHandler.PROMISE_MAP.remove(sequenceId);
                     promise.setFailure(future.cause());
                     log.error("<<<<<<<<<< send rpc do invoke message error >>>>>>>>>>", future.cause());
                 }
             });
 
             // 异步！ promise 对象来处理异步接收的结果线程
-            DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
-            RpcResponseMessageHandler.PROMISE_MAP.put(sequenceId, promise);
+            DefaultPromise<Object> promise = new DefaultPromise<>(channelClient.getChannel().eventLoop());
+            RpcClientMessageHandler.PROMISE_MAP.put(sequenceId, promise);
 
             //等待 promise 结果
             if (!promise.await(timeout)) {
                 throw new DaoException("rpc do invoke time out");
             }
             if (promise.isSuccess()) {
+                channelClient.clearFailMark();
                 return promise.getNow();
             } else {
                 throw new DaoException(promise.cause());

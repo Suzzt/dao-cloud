@@ -8,6 +8,7 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ThreadPoolExecutor;
@@ -18,15 +19,15 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @description:
  */
 @Slf4j
-public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcRequestModel> {
+public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequestModel> {
     /**
-     * thread pool
+     * rpc do invoke thread pool
      */
     private ThreadPoolExecutor serverHandlerThreadPool;
 
     private RpcServerBootstrap rpcServerBootstrap;
 
-    public RpcRequestMessageHandler(ThreadPoolExecutor serverHandlerThreadPool, RpcServerBootstrap rpcServerBootstrap) {
+    public RpcServerMessageHandler(ThreadPoolExecutor serverHandlerThreadPool, RpcServerBootstrap rpcServerBootstrap) {
         this.serverHandlerThreadPool = serverHandlerThreadPool;
         this.rpcServerBootstrap = rpcServerBootstrap;
     }
@@ -40,6 +41,15 @@ public class RpcRequestMessageHandler extends SimpleChannelInboundHandler<RpcReq
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, DaoCloudProperties.serializerType, responseModel);
             ctx.writeAndFlush(daoMessage);
         });
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            ctx.channel().close();
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
     }
 
 }
