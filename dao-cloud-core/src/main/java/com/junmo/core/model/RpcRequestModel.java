@@ -8,7 +8,8 @@ import lombok.Data;
  * @description: rpc 请求模型封装
  */
 @Data
-public class RpcRequestModel extends RpcModel {
+public class RpcRequestModel extends ResponseModel {
+    private long sequenceId;
     /**
      * 调用接口名，在服务端找到它对应的实现
      */
@@ -31,7 +32,7 @@ public class RpcRequestModel extends RpcModel {
     private Object[] parameterValue;
 
     public RpcRequestModel(Long sequenceId, String interfaceName, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
-        super.setSequenceId(sequenceId);
+        this.sequenceId = sequenceId;
         this.interfaceName = interfaceName;
         this.methodName = methodName;
         this.returnType = returnType;

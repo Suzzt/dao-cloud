@@ -11,7 +11,7 @@ import java.util.List;
  * @description:
  */
 @Data
-public class RegisterServerModel extends Model {
+public class RegisterServerModel extends ResponseModel {
     private String proxy;
 
     private List<ServerNodeModel> serverNodeModes;

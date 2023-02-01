@@ -1,6 +1,5 @@
 package com.junmo.core.model;
 
-import com.junmo.core.exception.DaoException;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,8 +11,4 @@ import java.io.Serializable;
  */
 @Data
 public class Model implements Serializable {
-    /**
-     * 异常值
-     */
-    public DaoException exceptionValue;
 }

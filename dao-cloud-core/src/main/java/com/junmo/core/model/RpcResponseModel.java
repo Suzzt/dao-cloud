@@ -8,7 +8,9 @@ import lombok.Data;
  * @description: rpc 返回模型封装
  */
 @Data
-public class RpcResponseModel extends RpcModel {
+public class RpcResponseModel extends ResponseModel {
+    private long sequenceId;
+
     /**
      * 返回值
      */
