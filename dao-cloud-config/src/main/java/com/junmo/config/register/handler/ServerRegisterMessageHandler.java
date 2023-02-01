@@ -1,19 +1,12 @@
 package com.junmo.config.register.handler;
 
 import com.junmo.config.register.Register;
-import com.junmo.config.register.RegisterConfig;
 import com.junmo.core.model.RegisterModel;
-import com.junmo.core.model.RegisterServerModel;
-import com.junmo.core.model.ServerNodeModel;
-import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 
 /**
@@ -35,18 +28,16 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
         Register.register(proxy, ipLinkPort);
         this.proxy = proxy;
         this.ipLinkPort = ipLinkPort;
-        List<ServerNodeModel> serverNodeModels = Register.getServers(proxy);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
-        ctx.writeAndFlush(daoMessage).addListener(f -> {
+        ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
-                log.error("<<<<<<<<<< register error {} >>>>>>>>>>", ctx.channel(), f.cause());
+                log.error("<<<<<<<<<< back server heartbeat fail {} >>>>>>>>>>", ctx.channel(), f.cause());
             }
         });
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        if(proxy != null && ipLinkPort != null){
+        if (proxy != null && ipLinkPort != null) {
             Register.delete(proxy, ipLinkPort);
         }
         super.channelUnregistered(ctx);
@@ -54,11 +45,14 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        IdleState state = ((IdleStateEvent) evt).state();
-        if (state == IdleState.READER_IDLE && proxy != null && ipLinkPort != null) {
-            Register.delete(proxy, ipLinkPort);
+        if (evt instanceof IdleStateEvent) {
+            if (proxy != null && ipLinkPort != null) {
+                Register.delete(proxy, ipLinkPort);
+                ctx.channel().close();
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
-        super.userEventTriggered(ctx, evt);
     }
 
     @Override

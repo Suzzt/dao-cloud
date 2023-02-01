@@ -13,7 +13,6 @@ import java.util.Map;
 public class MessageModelTypeManager {
     public static final byte PING_PONG_HEART_BEAT_MESSAGE = -1;
     public static final byte REGISTRY_REQUEST_MESSAGE = 0;
-    public static final byte REGISTRY_RESPONSE_MESSAGE = 1;
     public static final byte POLL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
     public static final byte POLL_REGISTRY_SERVER_RESPONSE_MESSAGE = 3;
     public static final byte RPC_REQUEST_MESSAGE = 4;
@@ -25,7 +24,6 @@ public class MessageModelTypeManager {
     static {
         MESSAGE_TYPE_MAP.put(PING_PONG_HEART_BEAT_MESSAGE, HeartbeatModel.class);
         MESSAGE_TYPE_MAP.put(REGISTRY_REQUEST_MESSAGE, RegisterModel.class);
-        MESSAGE_TYPE_MAP.put(REGISTRY_RESPONSE_MESSAGE, RegisterServerModel.class);
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_REQUEST_MESSAGE, RegisterPollModel.class);
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterServerModel.class);
         MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);

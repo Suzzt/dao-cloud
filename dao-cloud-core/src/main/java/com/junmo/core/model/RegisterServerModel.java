@@ -1,5 +1,6 @@
 package com.junmo.core.model;
 
+import com.junmo.core.exception.DaoException;
 import lombok.Data;
 
 import java.util.List;
@@ -18,5 +19,9 @@ public class RegisterServerModel extends Model {
     public RegisterServerModel(String proxy, List<ServerNodeModel> serverNodeModes) {
         this.proxy = proxy;
         this.serverNodeModes = serverNodeModes;
+    }
+
+    public RegisterServerModel(DaoException daoException) {
+        this.exceptionValue = daoException;
     }
 }

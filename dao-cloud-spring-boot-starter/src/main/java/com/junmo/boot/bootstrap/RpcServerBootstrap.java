@@ -2,7 +2,7 @@ package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.annotation.ConditionalOnUseAnnotation;
 import com.junmo.boot.annotation.DaoService;
-import com.junmo.boot.bootstrap.thread.ServerNetty;
+import com.junmo.boot.bootstrap.thread.Server;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
@@ -32,16 +32,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
-    private Map<String, Object> localServiceCache = new HashMap<>();
+    private final Map<String, Object> localServiceCache = new HashMap<>();
 
     private Thread thread;
 
     /**
-     * prepare
-     *
-     * @throws Exception
+     * start
      */
-    public void prepare() {
+    public void start() {
         DaoCloudProperties.serializerType = SerializeStrategyFactory.getSerializeType(DaoCloudProperties.serializer);
         if (!(DaoCloudProperties.corePoolSize > 0 && DaoCloudProperties.maxPoolSize > 0 && DaoCloudProperties.maxPoolSize >= DaoCloudProperties.corePoolSize)) {
             DaoCloudProperties.corePoolSize = 60;
@@ -59,16 +57,9 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
         if (!StringUtils.hasLength(DaoCloudProperties.proxy)) {
             throw new DaoException("'dao-cloud.proxy' config must it");
         }
-    }
-
-    /**
-     * start
-     */
-    public void start() {
-        prepare();
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProperties.corePoolSize, DaoCloudProperties.maxPoolSize);
-        thread = new ServerNetty(threadPoolProvider, this);
+        thread = new Server(threadPoolProvider, this);
         thread.setDaemon(true);
         thread.start();
     }
@@ -143,7 +134,6 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             addServiceCache(interfaces, serviceBean);
         }
-        prepare();
         start();
     }
 }

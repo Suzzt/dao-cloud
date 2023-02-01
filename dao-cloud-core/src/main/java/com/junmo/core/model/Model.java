@@ -15,5 +15,5 @@ public class Model implements Serializable {
     /**
      * 异常值
      */
-    private DaoException exceptionValue;
+    public DaoException exceptionValue;
 }

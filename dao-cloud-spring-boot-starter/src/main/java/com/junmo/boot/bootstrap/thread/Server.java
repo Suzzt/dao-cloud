@@ -26,13 +26,13 @@ import java.util.concurrent.TimeUnit;
  * @description:
  */
 @Slf4j
-public class ServerNetty extends Thread {
+public class Server extends Thread {
 
     private ThreadPoolExecutor threadPoolProvider;
 
     private RpcServerBootstrap rpcServerBootstrap;
 
-    public ServerNetty(ThreadPoolExecutor threadPoolProvider, RpcServerBootstrap rpcServerBootstrap) {
+    public Server(ThreadPoolExecutor threadPoolProvider, RpcServerBootstrap rpcServerBootstrap) {
         this.threadPoolProvider = threadPoolProvider;
         this.rpcServerBootstrap = rpcServerBootstrap;
     }

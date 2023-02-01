@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ChannelClient {
 
-    NioEventLoopGroup group;
+    private NioEventLoopGroup group;
 
     private final Object lock = new Object();
 

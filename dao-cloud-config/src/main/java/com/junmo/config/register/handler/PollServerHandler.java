@@ -2,6 +2,7 @@ package com.junmo.config.register.handler;
 
 import com.junmo.config.register.Register;
 import com.junmo.config.register.RegisterConfig;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterPollModel;
 import com.junmo.core.model.RegisterServerModel;
 import com.junmo.core.model.ServerNodeModel;
@@ -26,8 +27,13 @@ public class PollServerHandler extends SimpleChannelInboundHandler<RegisterPollM
     protected void channelRead0(ChannelHandlerContext ctx, RegisterPollModel model) {
         String proxy = model.getProxy();
         List<ServerNodeModel> serverNodeModels;
-        serverNodeModels = Register.getServers(proxy);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
+        DaoMessage daoMessage;
+        try {
+            serverNodeModels = Register.getServers(proxy);
+            daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
+        } catch (Exception e) {
+            daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(new DaoException(e)));
+        }
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< send server node info error >>>>>>>>>>>>", future.cause());

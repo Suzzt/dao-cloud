@@ -50,7 +50,7 @@ public class RegisterConfig implements ApplicationContextAware {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtocolFrameDecoder());
                         ch.pipeline().addLast(new DaoMessageCoder());
-                        ch.pipeline().addLast(new IdleStateHandler(3, 3, 3, TimeUnit.SECONDS));
+                        ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
                         ch.pipeline().addLast(new PollServerHandler());
                         ch.pipeline().addLast(new ServerRegisterMessageHandler());
                     }

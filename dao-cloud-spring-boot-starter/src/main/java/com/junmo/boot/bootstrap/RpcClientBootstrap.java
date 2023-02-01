@@ -1,10 +1,10 @@
 package com.junmo.boot.bootstrap;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
+import com.junmo.boot.bootstrap.thread.PollClient;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.ThreadPoolFactory;
@@ -12,8 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.HashSet;
@@ -28,11 +29,17 @@ import java.util.Set;
  */
 @Slf4j
 @Component
-public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProcessor, DisposableBean {
+public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
-    private final Set<String> proxySet = new HashSet<>();
+    private final Set<String> relyProxy = new HashSet<>();
 
     private Thread pollServerNodeThread;
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        pollServerNodeThread = new Thread(new PollClient(relyProxy));
+        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pollServerNodeThread);
+    }
 
     @Override
     public boolean postProcessAfterInstantiation(final Object bean, final String beanName) throws BeansException {
@@ -54,7 +61,7 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                         channelClients.add(new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
                     ClientManager.addAll(proxy, channelClients);
-                    proxySet.add(proxy);
+                    relyProxy.add(proxy);
                     LoadBalance loadBalance = daoReference.loadBalance();
                     long timeout = daoReference.timeout();
                     // get proxyObj
@@ -69,41 +76,6 @@ public class RpcClientBootstrap implements SmartInstantiationAwareBeanPostProces
                 log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, beanName);
             }
         });
-        pollServerNodeThread = new Thread(() -> {
-            while (true) {
-                // 这里只是兜底方案,目的是整顿这个集群
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    log.debug("<<<<<<<<<<< thread interrupted... >>>>>>>>>>>", e);
-                }
-                for (String proxy : proxySet) {
-                    Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy);
-                    Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
-                    List<ServerNodeModel> serverNodeModels;
-                    try {
-                        serverNodeModels = RegistryManager.poll(proxy);
-                        if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                            for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                ChannelClient channelClient = new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort());
-                                pollChannelClients.add(channelClient);
-                            }
-                        }
-                        // new up server node
-                        Set<ChannelClient> newUpChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(pollChannelClients, oldChannelClients);
-                        ClientManager.addAll(proxy, newUpChannelClients);
-                        // down server node
-                        Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
-                        ClientManager.removeAll(proxy, downChannelClients);
-                        //log.info(">>>>>>>>>>> proxy = {} poll server node success <<<<<<<<<<", proxy);
-                    } catch (InterruptedException e) {
-                        log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
-                        throw new DaoException(e);
-                    }
-                }
-            }
-        });
-        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pollServerNodeThread);
         return true;
     }
 
