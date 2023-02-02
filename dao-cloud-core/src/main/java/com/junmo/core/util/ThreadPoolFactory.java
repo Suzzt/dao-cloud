@@ -13,19 +13,9 @@ public class ThreadPoolFactory {
     static {
         GLOBAL_THREAD_POOL = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(), r -> new Thread(r, "global thread pool"));
-        SCHEDULED_THREAD_POOL = new ScheduledThreadPoolExecutor(10, r -> new Thread(r, "schedule thread pool"),
-                new RejectedExecutionHandler() {
-                    @SneakyThrows
-                    @Override
-                    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        throw new Exception("dao-cloud-rpc schedule Thread pool is exhausted!");
-                    }
-                });
     }
 
     public static ThreadPoolExecutor GLOBAL_THREAD_POOL;
-
-    public static ScheduledThreadPoolExecutor SCHEDULED_THREAD_POOL;
 
     /**
      * make thread pool

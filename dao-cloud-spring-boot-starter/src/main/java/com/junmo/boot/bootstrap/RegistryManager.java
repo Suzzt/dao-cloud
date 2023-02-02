@@ -10,8 +10,8 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.DaoTimer;
 import com.junmo.core.util.NetUtil;
-import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -19,6 +19,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class RegistryManager {
+
     private static volatile Channel registerChannel;
 
     private static Object LOCK = new Object();
@@ -120,21 +123,15 @@ public class RegistryManager {
         RegisterModel registerModel = new RegisterModel();
         registerModel.setIpLinkPort(ipLinkPort);
         registerModel.setProxy(proxy);
-        //heart
-        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
-            while (true) {
-                try {
-                    send(registerModel);
-                } catch (DaoException e) {
-                    log.error("<<<<<<<<<<< send register message disconnect >>>>>>>>>>", e);
-                }
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    log.error("<<<<<<<<<<< thread interrupted... >>>>>>>>>>", e);
-                }
+        send(registerModel);
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run(Timeout timeout) {
+                send(registerModel);
+                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
             }
-        });
+        };
+        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
     }
 
     public static void reconnect() {
