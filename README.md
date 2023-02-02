@@ -36,7 +36,7 @@ todo 自定义协议,这是该项目的看点
 使用注解说明(其实用法与dubbo、spring-cloud、sofa这些差不多一致)
 
     @DaoService = 用于服务注册
-    @DaoReference = 用于服务注入
+    @DaoReference = 用于服务注入  proxy:暴露服务的proxy,loadbanalce:负载路由选择,timeout:超时时间
 
 查看config注册情况(在启动dao-cloud-config后)
 todo 可视化页面(由dao-cloud-web提供出来)。目前可以通过
