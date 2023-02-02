@@ -4,7 +4,7 @@
 致力于简化应用程序之间的RPC调用，并为应用程序提供方便、无代码入侵、稳定和高效的点对点远程微服务调用解决方案。对于开发人员来说,dao-cloud的提供了丰富的模型抽象和可扩展接口,为求一站式解决微服务带来的系统架构复杂度,包括路由、负载平衡、故障转移、性能监控、微服务治理等;
 
 # 系统架构
-![dao-cloud](https://user-images.githubusercontent.com/27397567/216059165-fece6988-8d2c-4e61-a67f-552c33adc4b1.jpg)
+![dao-cloud](https://user-images.githubusercontent.com/27397567/216244716-dc95ad0e-5e35-4f47-af78-ad8b4d81de4f.jpg)
 
 # 项目结构
     dao-cloud-core = 核心
