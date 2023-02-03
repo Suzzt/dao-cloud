@@ -24,13 +24,13 @@ import java.util.List;
 public class PollServerHandler extends SimpleChannelInboundHandler<RegisterPollModel> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RegisterPollModel model) {
-        String proxy = model.getProxy();
+    protected void channelRead0(ChannelHandlerContext ctx, RegisterPollModel pollModel) {
+        String proxy = pollModel.getProxy();
         List<ServerNodeModel> serverNodeModels;
         DaoMessage daoMessage;
         try {
             serverNodeModels = Register.getServers(proxy);
-            daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, serverNodeModels));
+            daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(proxy, pollModel.getVersion(), serverNodeModels));
         } catch (Exception e) {
             daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterConfig.SERIALIZE_TYPE, new RegisterServerModel(new DaoException(e)));
         }

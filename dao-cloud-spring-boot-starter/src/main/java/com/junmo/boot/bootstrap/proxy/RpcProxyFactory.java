@@ -10,7 +10,6 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
-import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +36,8 @@ public class RpcProxyFactory {
      * @param <T>
      * @return
      */
-    public static <T> T build(Class<T> serviceClass, String proxy, DaoLoadBalance daoLoadBalance, long timeout) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, daoLoadBalance, timeout));
+    public static <T> T build(Class<T> serviceClass, String proxy, int version, DaoLoadBalance daoLoadBalance, long timeout) {
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, version, daoLoadBalance, timeout));
     }
 
     static class ProxyHandler implements InvocationHandler {
@@ -47,13 +46,16 @@ public class RpcProxyFactory {
 
         private String proxy;
 
+        private int version;
+
         private DaoLoadBalance daoLoadBalance;
 
         private long timeout;
 
-        public ProxyHandler(Class<?> serviceClass, String proxy, DaoLoadBalance daoLoadBalance, long timeout) {
+        public ProxyHandler(Class<?> serviceClass, String proxy, int version, DaoLoadBalance daoLoadBalance, long timeout) {
             this.serviceClass = serviceClass;
             this.proxy = proxy;
+            this.version = version;
             this.daoLoadBalance = daoLoadBalance;
             this.timeout = timeout;
         }
@@ -65,6 +67,7 @@ public class RpcProxyFactory {
             long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
             RpcRequestModel requestModel = new RpcRequestModel(
                     sequenceId,
+                    version,
                     serviceClass.getName(),
                     method.getName(),
                     method.getReturnType(),
@@ -75,7 +78,7 @@ public class RpcProxyFactory {
             ChannelClient channelClient;
             while (true) {
                 // 把出错的几率降到最低,选出合适的channel
-                Set<ChannelClient> channelClients = ClientManager.getClients(proxy);
+                Set<ChannelClient> channelClients = ClientManager.getClients(proxy, version);
                 if (CollectionUtils.isEmpty(channelClients)) {
                     throw new DaoException("proxy = '" + proxy + "' no server provider");
                 }
@@ -83,7 +86,7 @@ public class RpcProxyFactory {
                 if (channelClient.getChannel().isActive()) {
                     break;
                 }
-                ClientManager.remove(proxy, channelClient);
+                ClientManager.remove(proxy, version, channelClient);
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message

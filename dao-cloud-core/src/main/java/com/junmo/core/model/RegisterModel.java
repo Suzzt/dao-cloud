@@ -15,6 +15,11 @@ public class RegisterModel extends Model {
     private String proxy;
 
     /**
+     * version
+     */
+    private int version;
+
+    /**
      * ip address + port
      */
     private String ipLinkPort;

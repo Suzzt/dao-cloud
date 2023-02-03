@@ -26,14 +26,14 @@ public class ConfigPollMessageHandler extends SimpleChannelInboundHandler<Regist
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterServerModel registerServerModel) {
-        Promise<List<ServerNodeModel>> pollPromise = PROMISE_MAP.remove(registerServerModel.getProxy());
+        Promise<List<ServerNodeModel>> pollPromise = PROMISE_MAP.remove(registerServerModel.getProxy() + "#" + registerServerModel.getVersion());
         List<ServerNodeModel> serverNodeModes = registerServerModel.getServerNodeModes();
         Exception exceptionValue = registerServerModel.getExceptionValue();
         if (exceptionValue != null) {
-            log.error(">>>>>>>>>>>> poll (proxy = {}, server node = {}) error. <<<<<<<<<<<<", registerServerModel.getProxy(), new Gson().toJson(registerServerModel.getServerNodeModes()));
+            log.error(">>>>>>>>>>>> poll (proxy = {}, version = {}, server node = {}) error. <<<<<<<<<<<<", registerServerModel.getProxy(), registerServerModel.getVersion(), new Gson().toJson(registerServerModel.getServerNodeModes()));
             pollPromise.setFailure(exceptionValue);
         } else {
-            log.info(">>>>>>>>>>>> poll (proxy = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), new Gson().toJson(registerServerModel.getServerNodeModes()));
+            log.info(">>>>>>>>>>>> poll (proxy = {}, version = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), registerServerModel.getVersion(), new Gson().toJson(registerServerModel.getServerNodeModes()));
             pollPromise.setSuccess(serverNodeModes);
         }
     }

@@ -10,7 +10,11 @@ import lombok.Data;
 @Data
 public class RegisterPollModel extends Model{
     private String proxy;
-    public RegisterPollModel(String proxy) {
+
+    private int version;
+
+    public RegisterPollModel(String proxy, int version) {
         this.proxy = proxy;
+        this.version = version;
     }
 }

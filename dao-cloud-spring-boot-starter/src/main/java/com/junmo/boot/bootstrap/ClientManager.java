@@ -13,10 +13,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description: todo 这个有线程安全问题
  */
 public class ClientManager {
+    /**
+     * clients
+     * key: proxy+'#'+version
+     * value: channel clients
+     */
     private static Map<String, Set<ChannelClient>> clients = new ConcurrentHashMap<>();
 
-    public static Set<ChannelClient> getClients(String proxy) {
-        return clients.get(proxy);
+    public static Set<ChannelClient> getClients(String proxy, int version) {
+        return clients.get(makeKey(proxy, version));
+    }
+
+    private static String makeKey(String proxy, int version) {
+        return proxy + "#" + version;
     }
 
     /**
@@ -25,13 +34,14 @@ public class ClientManager {
      * @param proxy
      * @param channelClient
      */
-    public static void add(String proxy, ChannelClient channelClient) {
-        if (CollectionUtils.isEmpty(clients) || CollectionUtils.isEmpty(clients.get(proxy))) {
+    public static void add(String proxy, int version, ChannelClient channelClient) {
+        String key = makeKey(proxy, version);
+        if (CollectionUtils.isEmpty(clients) || CollectionUtils.isEmpty(clients.get(key))) {
             Set<ChannelClient> channelClients = new HashSet<>();
             channelClients.add(channelClient);
-            clients.put(proxy, channelClients);
+            clients.put(key, channelClients);
         } else {
-            Set<ChannelClient> channelClients = clients.get(proxy);
+            Set<ChannelClient> channelClients = clients.get(key);
             channelClients.add(channelClient);
         }
     }
@@ -40,13 +50,15 @@ public class ClientManager {
      * add clients
      *
      * @param proxy
+     * @param version
      * @param channelClients
      */
-    public static void addAll(String proxy, Set<ChannelClient> channelClients) {
-        if (CollectionUtils.isEmpty(clients) || CollectionUtils.isEmpty(clients.get(proxy))) {
-            clients.put(proxy, channelClients);
+    public static void addAll(String proxy, int version, Set<ChannelClient> channelClients) {
+        String key = makeKey(proxy, version);
+        if (CollectionUtils.isEmpty(clients) || CollectionUtils.isEmpty(clients.get(key))) {
+            clients.put(key, channelClients);
         } else {
-            Set<ChannelClient> channelClientSet = clients.get(proxy);
+            Set<ChannelClient> channelClientSet = clients.get(key);
             channelClientSet.addAll(channelClients);
         }
     }
@@ -55,10 +67,12 @@ public class ClientManager {
      * remove client
      *
      * @param proxy
+     * @param version
      * @param channelClient
      */
-    public static void remove(String proxy, ChannelClient channelClient) {
-        Set<ChannelClient> channelClientSet = clients.get(proxy);
+    public static void remove(String proxy, int version, ChannelClient channelClient) {
+        String key = makeKey(proxy, version);
+        Set<ChannelClient> channelClientSet = clients.get(key);
         channelClientSet.remove(channelClient);
     }
 
@@ -66,10 +80,12 @@ public class ClientManager {
      * remove clients
      *
      * @param proxy
+     * @param version
      * @param channelClients
      */
-    public static void removeAll(String proxy, Set<ChannelClient> channelClients) {
-        Set<ChannelClient> channelClientSet = clients.get(proxy);
+    public static void removeAll(String proxy, int version, Set<ChannelClient> channelClients) {
+        String key = makeKey(proxy, version);
+        Set<ChannelClient> channelClientSet = clients.get(key);
         channelClientSet.removeAll(channelClients);
     }
 }

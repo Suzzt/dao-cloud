@@ -56,7 +56,7 @@ public class Server extends Thread {
                 }
             });
             Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
-            log.debug(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
+            log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
             // register service
             RegistryManager.registry(DaoCloudProperties.proxy, InetAddress.getLocalHost().getHostAddress() + ":" + DaoCloudProperties.serverPort);
             channel.closeFuture().sync();

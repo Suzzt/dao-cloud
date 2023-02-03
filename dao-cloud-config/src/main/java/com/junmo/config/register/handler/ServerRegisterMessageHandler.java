@@ -17,17 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<RegisterModel> {
 
-    private String proxy;
-
-    private String ipLinkPort;
+    private RegisterModel registerModel;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterModel registerModel) {
-        String proxy = registerModel.getProxy();
-        String ipLinkPort = registerModel.getIpLinkPort();
-        Register.register(proxy, ipLinkPort);
-        this.proxy = proxy;
-        this.ipLinkPort = ipLinkPort;
+        Register.register(registerModel);
+        this.registerModel = registerModel;
         ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< back server heartbeat fail {} >>>>>>>>>>", ctx.channel(), f.cause());
@@ -37,8 +32,8 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        if (proxy != null && ipLinkPort != null) {
-            Register.delete(proxy, ipLinkPort);
+        if (registerModel != null) {
+            Register.delete(registerModel);
         }
         super.channelUnregistered(ctx);
     }
@@ -46,8 +41,8 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            if (proxy != null && ipLinkPort != null) {
-                Register.delete(proxy, ipLinkPort);
+            if (registerModel != null) {
+                Register.delete(registerModel);
                 ctx.channel().close();
             }
         } else {

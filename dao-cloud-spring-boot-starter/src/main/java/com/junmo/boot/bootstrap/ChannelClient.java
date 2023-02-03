@@ -32,13 +32,12 @@ public class ChannelClient {
 
     private String proxy;
 
+    private int version;
+
     private String ip;
 
     private int port;
 
-    /**
-     * connect channel
-     */
     private Channel channel;
 
     /**
@@ -46,7 +45,6 @@ public class ChannelClient {
      * if >3. it will be eliminated
      */
     private int failMark = 0;
-
 
     @Override
     public boolean equals(Object o) {
@@ -65,8 +63,9 @@ public class ChannelClient {
         return Objects.hash(ip, port);
     }
 
-    public ChannelClient(String proxy, String ip, int port) {
+    public ChannelClient(String proxy, int version, String ip, int port) {
         this.proxy = proxy;
+        this.version = version;
         this.ip = ip;
         this.port = port;
     }
@@ -111,7 +110,7 @@ public class ChannelClient {
      */
     private void connect() {
         group = new NioEventLoopGroup();
-        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxy, this);
+        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxy,version, this);
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.group(group);

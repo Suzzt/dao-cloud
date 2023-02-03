@@ -32,6 +32,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
+    /**
+     * local class objects
+     * key: instance + '#' +version
+     * value: object bean
+     */
     private final Map<String, Object> localServiceCache = new HashMap<>();
 
     private Thread thread;
@@ -67,11 +72,12 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
     /**
      * add server
      *
+     * @param version
      * @param interfaces
      * @param serviceBean
      */
-    private void addServiceCache(String interfaces, Object serviceBean) {
-        localServiceCache.put(interfaces, serviceBean);
+    private void addServiceCache(int version, String interfaces, Object serviceBean) {
+        localServiceCache.put(interfaces + "#" + version, serviceBean);
     }
 
     /**
@@ -86,7 +92,7 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
         responseModel.setSequenceId(requestModel.getSequenceId());
 
         // match service bean
-        Object serviceBean = localServiceCache.get(requestModel.getInterfaceName());
+        Object serviceBean = localServiceCache.get(requestModel.getInterfaceName() + "#" + requestModel.getVersion());
 
         // valid
         if (serviceBean == null) {
@@ -131,8 +137,9 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
             if (serviceBean.getClass().getInterfaces().length == 0) {
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
             }
+            DaoService daoService = serviceBean.getClass().getAnnotation(DaoService.class);
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
-            addServiceCache(interfaces, serviceBean);
+            addServiceCache(daoService.version(), interfaces, serviceBean);
         }
         start();
     }

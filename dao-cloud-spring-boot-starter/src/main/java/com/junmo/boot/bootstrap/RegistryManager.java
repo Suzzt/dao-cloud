@@ -93,11 +93,12 @@ public class RegistryManager {
      *
      * @param proxy
      * @return
+     * @throws InterruptedException
      */
-    public static List<ServerNodeModel> poll(String proxy) throws InterruptedException {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterPollModel(proxy));
+    public static List<ServerNodeModel> poll(String proxy, int version) throws InterruptedException {
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterPollModel(proxy, version));
         DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
-        ConfigPollMessageHandler.PROMISE_MAP.put(proxy, promise);
+        ConfigPollMessageHandler.PROMISE_MAP.put(proxy + "#" + version, promise);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 reconnect();

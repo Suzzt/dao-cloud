@@ -27,10 +27,13 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
 
     private String proxy;
 
+    private int version;
+
     private ChannelClient channelClient;
 
-    public RpcClientMessageHandler(String proxy, ChannelClient channelClient) {
+    public RpcClientMessageHandler(String proxy, int version, ChannelClient channelClient) {
         this.proxy = proxy;
+        this.version = version;
         this.channelClient = channelClient;
     }
 
@@ -52,7 +55,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         channelClient.destroy();
-        ClientManager.remove(proxy, channelClient);
+        ClientManager.remove(proxy, version, channelClient);
         log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         super.channelUnregistered(ctx);
     }
@@ -78,7 +81,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
                 int failMark = channelClient.getFailMark();
                 if (failMark >= 3) {
                     channelClient.destroy();
-                    ClientManager.remove(proxy, channelClient);
+                    ClientManager.remove(proxy, version, channelClient);
                     log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
 
                 } else {

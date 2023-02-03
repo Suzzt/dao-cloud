@@ -14,10 +14,13 @@ import java.util.List;
 public class RegisterServerModel extends ResponseModel {
     private String proxy;
 
+    private int version;
+
     private List<ServerNodeModel> serverNodeModes;
 
-    public RegisterServerModel(String proxy, List<ServerNodeModel> serverNodeModes) {
+    public RegisterServerModel(String proxy, int version, List<ServerNodeModel> serverNodeModes) {
         this.proxy = proxy;
+        this.version = version;
         this.serverNodeModes = serverNodeModes;
     }
 

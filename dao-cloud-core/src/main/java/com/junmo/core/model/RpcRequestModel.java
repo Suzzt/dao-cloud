@@ -10,6 +10,12 @@ import lombok.Data;
 @Data
 public class RpcRequestModel extends ResponseModel {
     private long sequenceId;
+
+    /**
+     * 版本
+     */
+    private int version;
+
     /**
      * 调用接口名，在服务端找到它对应的实现
      */
@@ -31,8 +37,9 @@ public class RpcRequestModel extends ResponseModel {
      */
     private Object[] parameterValue;
 
-    public RpcRequestModel(Long sequenceId, String interfaceName, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
+    public RpcRequestModel(long sequenceId, int version, String interfaceName, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
         this.sequenceId = sequenceId;
+        this.version = version;
         this.interfaceName = interfaceName;
         this.methodName = methodName;
         this.returnType = returnType;

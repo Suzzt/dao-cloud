@@ -6,6 +6,7 @@ import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
 import com.junmo.boot.bootstrap.thread.PollClient;
 import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.RegisterPollModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import java.util.Set;
 @Component
 public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
-    private final Set<String> relyProxy = new HashSet<>();
+    private final Set<RegisterPollModel> relyProxy = new HashSet<>();
 
     private Thread pollServerNodeThread;
 
@@ -52,20 +53,21 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                 }
                 DaoReference daoReference = field.getAnnotation(DaoReference.class);
                 String proxy = daoReference.proxy();
+                int version = daoReference.version();
                 Object serviceProxy;
                 try {
                     // poll service node
-                    List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy);
+                    List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy, version);
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
                     for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                        channelClients.add(new ChannelClient(proxy, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                        channelClients.add(new ChannelClient(proxy,version, serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
-                    ClientManager.addAll(proxy, channelClients);
-                    relyProxy.add(proxy);
+                    ClientManager.addAll(proxy, version, channelClients);
+                    relyProxy.add(new RegisterPollModel(proxy, version));
                     LoadBalance loadBalance = daoReference.loadBalance();
                     long timeout = daoReference.timeout();
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, proxy, loadBalance.getDaoLoadBalance(), timeout);
+                    serviceProxy = RpcProxyFactory.build(iface, proxy, version, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (InterruptedException e) {
                     log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
                     throw new DaoException(e);
