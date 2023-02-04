@@ -11,3 +11,5 @@ dao-cloud:
   proxy: demo
   corePoolSize: 3
   maxPoolSize: 40
+
+log.home: /data/dao-cloud-logs/${spring.application.name}
