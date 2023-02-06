@@ -1,7 +1,7 @@
 spring:
   application:
-    name: dao-cloud-config
-log.home: /data/dao-cloud-logs/${spring.application.name}
+    name: web
+log.home: /data/dao-cloud/${spring.application.name}
 server:
   port: 5555
   servlet:
@@ -9,3 +9,5 @@ server:
 dao-cloud:
   # jdk or json or protobuf
   serializer: jdk
+  center:
+    dashboard: true

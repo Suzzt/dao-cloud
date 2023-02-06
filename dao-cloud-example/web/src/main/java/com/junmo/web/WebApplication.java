@@ -1,18 +1,18 @@
-package com.junmo.config;
+package com.junmo.web;
 
-import lombok.extern.slf4j.Slf4j;
+import com.junmo.center.bootstarp.EnableDaoCloudCenter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author: sucf
- * @date: 2022/11/19 18:10
+ * @date: 2023/2/6 21:03
  * @description:
  */
 @SpringBootApplication
-@Slf4j
-public class ConfigApplication {
+@EnableDaoCloudCenter
+public class WebApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ConfigApplication.class, args);
+        SpringApplication.run(WebApplication.class, args);
     }
 }

@@ -1,4 +1,4 @@
-package com.junmo.config.register;
+package com.junmo.center.register;
 
 import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Lists;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description: server register manager
  */
 @Slf4j
-public class Register {
+public class RegisterClient {
 
     /**
      * server info

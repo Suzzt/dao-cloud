@@ -36,9 +36,7 @@
         <!--rpc-core-->
         <module>dao-cloud-core</module>
         <!--register config-->
-        <module>dao-cloud-config</module>
-        <!--web page-->
-        <module>dao-cloud-web</module>
+        <module>dao-cloud-center</module>
         <!--example project-->
         <module>dao-cloud-example</module>
         <!--rpc monitor-->

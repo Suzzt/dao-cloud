@@ -8,11 +8,11 @@
 
 # 项目结构
     dao-cloud-core = 核心
-    dao-cloud-config = 注册+配置-中心
-    dao-cloud-web = 交互辅助web页面(后续会把web页面都集成这里暴露出来)
+    dao-cloud-center = 注册+配置-中心
     dao-cloud-gateway = 网关
     dao-cloud-spring-boot-starter = rpc的依赖的jar
     dao-cloud-monitor = 监控性能
+    dao-cloud-example = 使用示例
 
 # dao-协议
     魔数(3-byte)
@@ -38,16 +38,15 @@ todo 自定义协议,这是该项目的看点
     @DaoService = 用于服务注册    version:发布版本
     @DaoReference = 用于服务注入  proxy:暴露服务的proxy, version:发布版本, loadbanalce:负载路由选择, timeout:超时时间
 
-查看服务注册情况(在启动dao-cloud-config后)
-todo 可视化页面(由dao-cloud-web提供出来)。目前可以通过
+查看服务注册情况(在启动注册中心后),可以通过
 
-    http://127.0.0.1:5555/dao-cloud-config/get/proxy-server ====查看所有服务的注册
-    http://127.0.0.1:5555/dao-cloud-config/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
+    http://127.0.0.1:5555/web/get/proxy-server ====查看所有服务的注册
+    http://127.0.0.1:5555/web/get/server-nodes?proxy=demo =====查看某个proxy的所有服务节点
 
 项目(dao-cloud-example)中有一个示例
 
     0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
-    1.先启动dao-cloud-config
+    1.先启动web工程,@EnableDaoCloudCenter一个注解搞定注册中心
     2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
     先启动provider,再启动consumer(其实启反也可以)
     3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo

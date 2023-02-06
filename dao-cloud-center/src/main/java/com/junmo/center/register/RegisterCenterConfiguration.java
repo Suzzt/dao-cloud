@@ -1,7 +1,10 @@
-package com.junmo.config.register;
+package com.junmo.center.register;
 
-import com.junmo.config.register.handler.PollServerHandler;
-import com.junmo.config.register.handler.ServerRegisterMessageHandler;
+import cn.hutool.extra.spring.SpringUtil;
+import com.junmo.center.bootstarp.DaoCloudCenterProperties;
+import com.junmo.center.register.handler.PollServerHandler;
+import com.junmo.center.register.handler.ServerRegisterMessageHandler;
+import com.junmo.center.web.CenterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
@@ -15,20 +18,20 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
  * @date: 2022/11/13 23:14
- * @description: 配置中心
+ * @description: register center configuration
  */
-@Component
 @Slf4j
-public class RegisterConfig implements ApplicationContextAware {
+public class RegisterCenterConfiguration implements ApplicationContextAware {
 
     public static byte SERIALIZE_TYPE;
 
@@ -36,8 +39,7 @@ public class RegisterConfig implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        String serializer = applicationContext.getEnvironment().getProperty("dao-cloud.serializer");
-        SERIALIZE_TYPE = SerializeStrategyFactory.getSerializeType(serializer);
+        SERIALIZE_TYPE = SerializeStrategyFactory.getSerializeType(DaoCloudCenterProperties.serializer);
         ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
             NioEventLoopGroup worker = new NioEventLoopGroup(4);
@@ -66,4 +68,13 @@ public class RegisterConfig implements ApplicationContextAware {
             }
         });
     }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    public CenterController eurekaController() {
+        return new CenterController();
+    }
 }
+
+
+
