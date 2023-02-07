@@ -18,5 +18,4 @@ import java.lang.annotation.*;
 @EnableConfigurationProperties({DaoCloudCenterProperties.class})
 @Import({DaoCloudCenterProperties.class, RegisterCenterConfiguration.class})
 public @interface EnableDaoCloudCenter {
-
 }

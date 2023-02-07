@@ -24,7 +24,7 @@ public class MessageModelTypeManager {
     static {
         MESSAGE_TYPE_MAP.put(PING_PONG_HEART_BEAT_MESSAGE, HeartbeatModel.class);
         MESSAGE_TYPE_MAP.put(REGISTRY_REQUEST_MESSAGE, RegisterModel.class);
-        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_REQUEST_MESSAGE, RegisterPollModel.class);
+        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_REQUEST_MESSAGE, RegisterProxyModel.class);
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, RegisterServerModel.class);
         MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);
         MESSAGE_TYPE_MAP.put(RPC_RESPONSE_MESSAGE, RpcResponseModel.class);

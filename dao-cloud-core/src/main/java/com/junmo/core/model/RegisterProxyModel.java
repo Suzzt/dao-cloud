@@ -8,12 +8,12 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class RegisterPollModel extends Model{
+public class RegisterProxyModel extends Model{
     private String proxy;
 
     private int version;
 
-    public RegisterPollModel(String proxy, int version) {
+    public RegisterProxyModel(String proxy, int version) {
         this.proxy = proxy;
         this.version = version;
     }

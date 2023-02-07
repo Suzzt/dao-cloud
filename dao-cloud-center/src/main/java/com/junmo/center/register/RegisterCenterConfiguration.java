@@ -1,10 +1,9 @@
 package com.junmo.center.register;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.junmo.center.bootstarp.DaoCloudCenterProperties;
 import com.junmo.center.register.handler.PollServerHandler;
 import com.junmo.center.register.handler.ServerRegisterMessageHandler;
-import com.junmo.center.web.CenterController;
+import com.junmo.center.web.RegisterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
@@ -71,8 +70,8 @@ public class RegisterCenterConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController eurekaController() {
-        return new CenterController();
+    public RegisterController registerController() {
+        return new RegisterController();
     }
 }
 

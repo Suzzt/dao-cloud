@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterModel;
+import com.junmo.core.model.RegisterProxyModel;
 import com.junmo.core.model.ServerNodeModel;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RegisterClient {
 
+    private static final String PROXY_CONNECTOR = "#";
+
     /**
      * server info
      * key: proxy + '#' + version
@@ -39,8 +42,13 @@ public class RegisterClient {
      */
     public final static Map<String, Map<String, Channel>> CHANNEL_MAP = new ConcurrentHashMap<>();
 
-    private static String makeKey(String proxy, int version) {
-        return proxy + "#" + version;
+    public static String makeKey(String proxy, int version) {
+        return proxy + PROXY_CONNECTOR + version;
+    }
+
+    public static RegisterProxyModel parseKey(String proxyKey) {
+        String[] split = proxyKey.split(PROXY_CONNECTOR);
+        return new RegisterProxyModel(split[0], Integer.parseInt(split[1]));
     }
 
     public static synchronized void register(RegisterModel registerModel) {

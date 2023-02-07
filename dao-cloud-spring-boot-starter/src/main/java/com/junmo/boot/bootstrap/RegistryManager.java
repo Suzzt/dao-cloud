@@ -4,7 +4,7 @@ import com.junmo.boot.handler.ConfigPollMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterModel;
-import com.junmo.core.model.RegisterPollModel;
+import com.junmo.core.model.RegisterProxyModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
@@ -96,7 +96,7 @@ public class RegistryManager {
      * @throws InterruptedException
      */
     public static List<ServerNodeModel> poll(String proxy, int version) throws InterruptedException {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterPollModel(proxy, version));
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterProxyModel(proxy, version));
         DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
         ConfigPollMessageHandler.PROMISE_MAP.put(proxy + "#" + version, promise);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {

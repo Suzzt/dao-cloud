@@ -6,7 +6,7 @@ import com.junmo.boot.bootstrap.ChannelClient;
 import com.junmo.boot.bootstrap.ClientManager;
 import com.junmo.boot.bootstrap.RegistryManager;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.RegisterPollModel;
+import com.junmo.core.model.RegisterProxyModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoTimer;
 import io.netty.util.Timeout;
@@ -26,9 +26,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class PollClient implements Runnable {
 
-    private Set<RegisterPollModel> relyProxy;
+    private Set<RegisterProxyModel> relyProxy;
 
-    public PollClient(Set<RegisterPollModel> relyProxy) {
+    public PollClient(Set<RegisterProxyModel> relyProxy) {
         this.relyProxy = relyProxy;
     }
 
@@ -37,7 +37,7 @@ public class PollClient implements Runnable {
         TimerTask task = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
-                for (RegisterPollModel registerPollModel : relyProxy) {
+                for (RegisterProxyModel registerPollModel : relyProxy) {
                     String proxy = registerPollModel.getProxy();
                     int version = registerPollModel.getVersion();
                     Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy, version);

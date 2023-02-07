@@ -14,10 +14,6 @@ public class ServerNodeModel implements Serializable {
     private String ip;
     private int port;
 
-    public String link() {
-        return this.ip + ":" + this.port;
-    }
-
     public ServerNodeModel(String link) {
         String[] split = link.split(":");
         this.ip = split[0];

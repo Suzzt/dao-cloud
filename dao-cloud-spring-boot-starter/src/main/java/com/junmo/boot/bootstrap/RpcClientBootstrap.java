@@ -6,7 +6,7 @@ import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
 import com.junmo.boot.bootstrap.thread.PollClient;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.RegisterPollModel;
+import com.junmo.core.model.RegisterProxyModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import java.util.Set;
 @Component
 public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
-    private final Set<RegisterPollModel> relyProxy = new HashSet<>();
+    private final Set<RegisterProxyModel> relyProxy = new HashSet<>();
 
     private Thread pollServerNodeThread;
 
@@ -63,7 +63,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                         channelClients.add(new ChannelClient(proxy,version, serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
                     ClientManager.addAll(proxy, version, channelClients);
-                    relyProxy.add(new RegisterPollModel(proxy, version));
+                    relyProxy.add(new RegisterProxyModel(proxy, version));
                     LoadBalance loadBalance = daoReference.loadBalance();
                     long timeout = daoReference.timeout();
                     // get proxyObj
