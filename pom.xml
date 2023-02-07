@@ -43,6 +43,7 @@
         <module>dao-cloud-monitor</module>
         <!--api-SpringBoot-->
         <module>dao-cloud-spring-boot-starter</module>
+        <module>dao-cloud-gateway</module>
     </modules>
 
     <dependencies>
