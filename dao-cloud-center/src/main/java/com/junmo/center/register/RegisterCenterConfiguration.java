@@ -16,11 +16,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,14 +29,14 @@ import java.util.concurrent.TimeUnit;
  * @description: register center configuration
  */
 @Slf4j
-public class RegisterCenterConfiguration implements ApplicationContextAware {
+public class RegisterCenterConfiguration implements ApplicationListener<ContextRefreshedEvent> {
 
     public static byte SERIALIZE_TYPE;
 
     private final int port = 5551;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         SERIALIZE_TYPE = SerializeStrategyFactory.getSerializeType(DaoCloudCenterProperties.serializer);
         ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
             NioEventLoopGroup boss = new NioEventLoopGroup();
@@ -57,7 +56,7 @@ public class RegisterCenterConfiguration implements ApplicationContextAware {
                     }
                 });
                 Channel channel = serverBootstrap.bind(port).sync().channel();
-                log.info(">>>>>>>>>>>> dao-center start success <<<<<<<<<<<");
+                log.info(">>>>>>>>>>>> dao-cloud-center port({}) start success <<<<<<<<<<<", port);
                 channel.closeFuture().sync();
             } catch (InterruptedException e) {
                 log.error("server interrupted error", e);
