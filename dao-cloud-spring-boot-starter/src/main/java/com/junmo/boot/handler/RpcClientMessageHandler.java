@@ -82,7 +82,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
                 if (failMark >= 3) {
                     channelClient.destroy();
                     ClientManager.remove(proxy, version, channelClient);
-                    log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
+                    log.error(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
 
                 } else {
                     channelClient.addFailMark();

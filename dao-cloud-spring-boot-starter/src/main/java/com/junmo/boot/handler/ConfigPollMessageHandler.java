@@ -33,7 +33,7 @@ public class ConfigPollMessageHandler extends SimpleChannelInboundHandler<Regist
             log.error(">>>>>>>>>>>> poll (proxy = {}, version = {}, server node = {}) error. <<<<<<<<<<<<", registerServerModel.getProxy(), registerServerModel.getVersion(), new Gson().toJson(registerServerModel.getServerNodeModes()));
             pollPromise.setFailure(exceptionValue);
         } else {
-            log.info(">>>>>>>>>>>> poll (proxy = {}, version = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), registerServerModel.getVersion(), new Gson().toJson(registerServerModel.getServerNodeModes()));
+            log.debug(">>>>>>>>>>>> poll (proxy = {}, version = {}, server node = {}) success. <<<<<<<<<<<<", registerServerModel.getProxy(), registerServerModel.getVersion(), new Gson().toJson(registerServerModel.getServerNodeModes()));
             pollPromise.setSuccess(serverNodeModes);
         }
     }

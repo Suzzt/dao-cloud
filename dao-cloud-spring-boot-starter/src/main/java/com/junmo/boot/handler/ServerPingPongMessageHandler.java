@@ -16,7 +16,7 @@ public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<He
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel heartbeatModel) {
-        log.info(">>>>>>>>>>> receive client (connect address = {}) heart beat packet <<<<<<<<<<<", ctx.channel().remoteAddress());
+        log.debug(">>>>>>>>>>> receive client (connect address = {}) heart beat packet <<<<<<<<<<<", ctx.channel().remoteAddress());
         ctx.channel().writeAndFlush(new HeartbeatPacket()).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< send back client (connect address = {}) heart beat packet error >>>>>>>>>>>", ctx.channel().remoteAddress(),future.cause());
