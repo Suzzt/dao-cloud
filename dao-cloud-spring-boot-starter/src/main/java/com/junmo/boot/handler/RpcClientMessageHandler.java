@@ -83,7 +83,6 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
                     channelClient.destroy();
                     ClientManager.remove(proxy, version, channelClient);
                     log.error(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
-
                 } else {
                     channelClient.addFailMark();
                     channelClient.reconnect();

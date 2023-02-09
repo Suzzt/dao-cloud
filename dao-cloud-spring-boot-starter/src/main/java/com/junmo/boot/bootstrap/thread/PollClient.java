@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.junmo.boot.bootstrap.ChannelClient;
 import com.junmo.boot.bootstrap.ClientManager;
 import com.junmo.boot.bootstrap.RegistryManager;
-import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RegisterProxyModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoTimer;
@@ -34,16 +33,16 @@ public class PollClient implements Runnable {
 
     @Override
     public void run() {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run(Timeout timeout) {
-                for (RegisterProxyModel registerPollModel : relyProxy) {
-                    String proxy = registerPollModel.getProxy();
-                    int version = registerPollModel.getVersion();
-                    Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy, version);
-                    Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
-                    List<ServerNodeModel> serverNodeModels;
+        for (RegisterProxyModel registerPollModel : relyProxy) {
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run(Timeout timeout) {
                     try {
+                        String proxy = registerPollModel.getProxy();
+                        int version = registerPollModel.getVersion();
+                        Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxy, version);
+                        Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
+                        List<ServerNodeModel> serverNodeModels;
                         serverNodeModels = RegistryManager.poll(proxy, version);
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
@@ -54,17 +53,14 @@ public class PollClient implements Runnable {
                         // new up server node
                         Set<ChannelClient> newUpChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(pollChannelClients, oldChannelClients);
                         ClientManager.addAll(proxy, version, newUpChannelClients);
-                        // down server node
-                        Set<ChannelClient> downChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(oldChannelClients, pollChannelClients);
-                        ClientManager.removeAll(proxy, version, downChannelClients);
-                    } catch (InterruptedException e) {
-                        log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
-                        throw new DaoException(e);
+                    } catch (Exception e) {
+                        log.error("<<<<<<<<<<< poll proxy = {}, version = {} server node error >>>>>>>>>>>", registerPollModel.getProxy(), registerPollModel.getVersion(), e);
+                    } finally {
+                        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 3, TimeUnit.SECONDS);
                     }
                 }
-                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 3, TimeUnit.SECONDS);
-            }
-        };
-        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 3, TimeUnit.SECONDS);
+            };
+            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 3, TimeUnit.SECONDS);
+        }
     }
 }

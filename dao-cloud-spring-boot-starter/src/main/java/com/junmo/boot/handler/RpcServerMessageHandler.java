@@ -43,9 +43,11 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
         });
     }
 
+
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
+            log.info(">>>>>>>>>> close the client {} <<<<<<<<<<", ctx.channel());
             ctx.channel().close();
         } else {
             super.userEventTriggered(ctx, evt);

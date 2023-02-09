@@ -6,6 +6,8 @@ import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -26,8 +28,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ChannelClient {
 
-    private NioEventLoopGroup group;
-
     private final Object lock = new Object();
 
     private String proxy;
@@ -38,7 +38,11 @@ public class ChannelClient {
 
     private int port;
 
-    private Channel channel;
+    private volatile Channel channel;
+
+    Bootstrap bootstrap = new Bootstrap();
+
+    private NioEventLoopGroup group;
 
     /**
      * fail mark count
@@ -90,7 +94,19 @@ public class ChannelClient {
 
     public void reconnect() {
         channel.close().addListener(future -> {
-            channel.eventLoop().schedule(() -> connect(), 5, TimeUnit.SECONDS);
+            channel.eventLoop().schedule(() -> {
+                bootstrap.connect().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (future.isSuccess()) {
+                            channel = future.channel();
+                            log.info(">>>>>>>>> reconnect server channel success. <<<<<<<<<< :)bingo(:");
+                        } else {
+                            log.error("<<<<<<<<<< reconnect server center error >>>>>>>>>>", future.cause());
+                        }
+                    }
+                });
+            }, 5, TimeUnit.SECONDS);
         });
     }
 
@@ -111,8 +127,8 @@ public class ChannelClient {
     private void connect() {
         group = new NioEventLoopGroup();
         RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxy,version, this);
-        Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
+        bootstrap.remoteAddress(this.ip, this.port);
         bootstrap.group(group);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -126,7 +142,7 @@ public class ChannelClient {
             }
         });
         try {
-            this.channel = bootstrap.connect(this.ip, this.port).sync().channel();
+            this.channel = bootstrap.connect().sync().channel();
         } catch (Exception e) {
             log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", e);
             group.shutdownGracefully();

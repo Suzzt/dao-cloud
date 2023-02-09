@@ -60,7 +60,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                     List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy, version);
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
                     for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                        channelClients.add(new ChannelClient(proxy,version, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                        channelClients.add(new ChannelClient(proxy, version, serverNodeModel.getIp(), serverNodeModel.getPort()));
                     }
                     ClientManager.addAll(proxy, version, channelClients);
                     relyProxy.add(new RegisterProxyModel(proxy, version));
@@ -68,8 +68,8 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                     long timeout = daoReference.timeout();
                     // get proxyObj
                     serviceProxy = RpcProxyFactory.build(iface, proxy, version, loadBalance.getDaoLoadBalance(), timeout);
-                } catch (InterruptedException e) {
-                    log.error("<<<<<<<<<<< poll server node fair >>>>>>>>>>>", e);
+                } catch (Exception e) {
+                    log.error("<<<<<<<<<<< poll proxy = {}, version = {} server node error >>>>>>>>>>>", proxy, version, e);
                     throw new DaoException(e);
                 }
                 // set bean

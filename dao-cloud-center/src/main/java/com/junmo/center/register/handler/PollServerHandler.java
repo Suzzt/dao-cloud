@@ -44,6 +44,6 @@ public class PollServerHandler extends SimpleChannelInboundHandler<RegisterProxy
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("<<<<<<<<<< poll server node info error >>>>>>>>>", cause);
+        log.error("<<<<<<<<<< poll server node info error {} >>>>>>>>>", ctx.channel(), cause);
     }
 }

@@ -101,13 +101,13 @@ public class RegistryManager {
      * @return
      * @throws InterruptedException
      */
-    public static List<ServerNodeModel> poll(String proxy, int version) throws InterruptedException {
+    public static List<ServerNodeModel> poll(String proxy, int version) throws Exception {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterProxyModel(proxy, version));
         DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
         ConfigPollMessageHandler.PROMISE_MAP.put(proxy + "#" + version, promise);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("<<<<<<<<< poll register server node error >>>>>>>>", future.cause());
+                promise.setFailure(future.cause());
             }
         });
         if (!promise.await(8, TimeUnit.SECONDS)) {
@@ -134,8 +134,13 @@ public class RegistryManager {
         TimerTask task = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
-                send(registerModel);
-                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
+                try {
+                    send(registerModel);
+                } catch (Exception e) {
+                    log.error("<<<<<<<<< send register server exception >>>>>>>>", e);
+                } finally {
+                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
+                }
             }
         };
         DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
@@ -151,7 +156,7 @@ public class RegistryManager {
                             REGISTER_CHANNEL = future.channel();
                             log.info(">>>>>>>>> reconnect register channel success. <<<<<<<<<< :)bingo(:");
                         } else {
-                            log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", future.cause());
+                            log.error("<<<<<<<<<< reconnect config center error >>>>>>>>>>", future.cause());
                         }
                     }
                 });
