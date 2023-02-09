@@ -83,7 +83,7 @@ public class RegisterClient {
     public static synchronized void alive(String key, String ipLinkPort) {
         Map<String, String> nodeList = SERVER_MAP.get(key);
         nodeList.put(ipLinkPort, DateUtil.now());
-        log.info(">>>>>>>>>>> alive server proxy({},{}} <<<<<<<<<<<", key, ipLinkPort);
+        log.debug(">>>>>>>>>>> alive server proxy({},{}} <<<<<<<<<<<", key, ipLinkPort);
     }
 
     public static void delete(RegisterModel registerModel) {
@@ -91,7 +91,7 @@ public class RegisterClient {
         String ipLinkPort = registerModel.getIpLinkPort();
         Map<String, String> nodeList = SERVER_MAP.get(key);
         nodeList.remove(ipLinkPort);
-        log.info(">>>>>>>>>>> down server proxy ({},{}) <<<<<<<<<<<", key, ipLinkPort);
+        log.error(">>>>>>>>>>> down server proxy ({},{}) <<<<<<<<<<<", key, ipLinkPort);
         // todo notice all clients
 
     }

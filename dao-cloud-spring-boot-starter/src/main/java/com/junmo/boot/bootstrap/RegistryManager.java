@@ -14,6 +14,8 @@ import com.junmo.core.util.DaoTimer;
 import com.junmo.core.util.NetUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -36,9 +38,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class RegistryManager {
 
-    private static volatile Channel registerChannel;
+    private static volatile Channel REGISTER_CHANNEL;
 
     private static Object LOCK = new Object();
+
+    private static final Bootstrap BOOTSTRAP = new Bootstrap();
+
+    private static int CONNECT_PORT = 5551;
 
     /**
      * get register channel
@@ -46,15 +52,15 @@ public class RegistryManager {
      * @return
      */
     private static Channel getChannel() {
-        if (registerChannel != null) {
-            return registerChannel;
+        if (REGISTER_CHANNEL != null) {
+            return REGISTER_CHANNEL;
         }
         synchronized (LOCK) {
-            if (registerChannel != null) {
-                return registerChannel;
+            if (REGISTER_CHANNEL != null) {
+                return REGISTER_CHANNEL;
             }
             connect();
-            return registerChannel;
+            return REGISTER_CHANNEL;
         }
     }
 
@@ -62,11 +68,13 @@ public class RegistryManager {
      * init config channel
      */
     public static void connect() {
+        String ip = NetUtil.getServerIP("dao.cloud.config.com");
+        ip = StringUtils.hasLength(ip) ? ip : "127.0.0.1";
         NioEventLoopGroup group = new NioEventLoopGroup();
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.group(group);
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+        BOOTSTRAP.channel(NioSocketChannel.class);
+        BOOTSTRAP.remoteAddress(ip, CONNECT_PORT);
+        BOOTSTRAP.group(group);
+        BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
@@ -77,9 +85,7 @@ public class RegistryManager {
             }
         });
         try {
-            String ip = NetUtil.getServerIP("dao.cloud.config.com");
-            ip = StringUtils.hasLength(ip) ? ip : "127.0.0.1";
-            registerChannel = bootstrap.connect(ip, 5551).sync().channel();
+            REGISTER_CHANNEL = BOOTSTRAP.connect().sync().channel();
             log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", e);
@@ -136,8 +142,18 @@ public class RegistryManager {
     }
 
     public static void reconnect() {
-        registerChannel.close().addListener(future -> {
-            registerChannel.eventLoop().schedule(() -> connect(), 5, TimeUnit.SECONDS);
+        REGISTER_CHANNEL.close().addListener(future -> {
+            REGISTER_CHANNEL.eventLoop().schedule(() -> {
+                BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (!future.isSuccess() || future.cause() != null) {
+                            log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", future.cause());
+                        }
+                        REGISTER_CHANNEL = future.channel();
+                    }
+                });
+            }, 5, TimeUnit.SECONDS);
         });
     }
 
