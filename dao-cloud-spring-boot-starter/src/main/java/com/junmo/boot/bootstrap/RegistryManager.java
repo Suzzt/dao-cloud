@@ -107,7 +107,7 @@ public class RegistryManager {
         ConfigPollMessageHandler.PROMISE_MAP.put(proxy + "#" + version, promise);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                reconnect();
+                log.error("<<<<<<<<< poll register server node error >>>>>>>>", future.cause());
             }
         });
         if (!promise.await(8, TimeUnit.SECONDS)) {
@@ -147,10 +147,12 @@ public class RegistryManager {
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        if (!future.isSuccess() || future.cause() != null) {
+                        if (future.isSuccess()) {
+                            REGISTER_CHANNEL = future.channel();
+                            log.info(">>>>>>>>> reconnect register channel success. <<<<<<<<<< :)bingo(:");
+                        } else {
                             log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", future.cause());
                         }
-                        REGISTER_CHANNEL = future.channel();
                     }
                 });
             }, 5, TimeUnit.SECONDS);
@@ -170,7 +172,7 @@ public class RegistryManager {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, DaoCloudProperties.serializerType, registerModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                reconnect();
+                log.error("<<<<<<<<< send register server error >>>>>>>>", future.cause());
             }
         });
     }
