@@ -65,11 +65,11 @@ public class RegistryManager {
     }
 
     /**
-     * init config channel
+     * connect registry
      */
     public static void connect() {
         String ip = NetUtil.getServerIP("dao.cloud.config.com");
-        ip = StringUtils.hasLength(ip) ? ip : "127.0.0.1";
+        ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
         BOOTSTRAP.remoteAddress(ip, CONNECT_PORT);

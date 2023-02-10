@@ -1,9 +1,6 @@
 package com.junmo.center.web.vo;
 
-import com.junmo.core.model.ServerNodeModel;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author: sucf
@@ -16,5 +13,5 @@ public class ProxyVO {
 
     private Integer version;
 
-    private List<ServerNodeModel> servers;
+    private Integer number;
 }

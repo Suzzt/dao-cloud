@@ -7,6 +7,7 @@ import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.NetUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -16,7 +17,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +58,7 @@ public class Server extends Thread {
             Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
             log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
             // register service
-            RegistryManager.registry(DaoCloudProperties.proxy, InetAddress.getLocalHost().getHostAddress() + ":" + DaoCloudProperties.serverPort);
+            RegistryManager.registry(DaoCloudProperties.proxy, NetUtil.getLocalIp() + ":" + DaoCloudProperties.serverPort);
             channel.closeFuture().sync();
         } catch (Exception e) {
             log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>");
