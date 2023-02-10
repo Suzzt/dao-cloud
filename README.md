@@ -40,7 +40,8 @@ todo 自定义协议,这是该项目的看点
 
 查看服务注册情况(在启动注册中心后),可以通过
 
-    http://127.0.0.1:5555/web/get/proxy-server ==== 查看所有服务的注册
+    http://127.0.0.1:5555/get/proxy ==== 查看proxy
+    http://127.0.0.1:5555/get/server?proxy=demo&version=0 ==== 查看服务列表详情
 
 项目(dao-cloud-example)中有一个示例
 

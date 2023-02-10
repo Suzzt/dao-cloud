@@ -4,8 +4,8 @@ spring:
 log.home: /data/dao-cloud/${spring.application.name}
 server:
   port: 5555
-  servlet:
-    context-path: /${spring.application.name}
+#  servlet:
+#    context-path: /${spring.application.name}
 dao-cloud:
   # jdk or json or protobuf
   serializer: jdk

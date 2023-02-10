@@ -72,7 +72,7 @@ public class RegisterCenterConfiguration implements ApplicationListener<Applicat
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web register center page address: {}:{}/web/dao-cloud/index.html >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", NetUtil.getLocalIp(), event.getWebServer().getPort());
+            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: {}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", NetUtil.getLocalIp(), event.getWebServer().getPort());
         }
 
 
