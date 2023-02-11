@@ -40,7 +40,7 @@ public class RegistryManager {
 
     private static volatile Channel REGISTER_CHANNEL;
 
-    private static Object LOCK = new Object();
+    private static final Object LOCK = new Object();
 
     private static final Bootstrap BOOTSTRAP = new Bootstrap();
 
@@ -76,7 +76,7 @@ public class RegistryManager {
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
+            protected void initChannel(SocketChannel ch) {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
@@ -99,7 +99,7 @@ public class RegistryManager {
      *
      * @param proxy
      * @return
-     * @throws InterruptedException
+     * @throws Exception
      */
     public static List<ServerNodeModel> poll(String proxy, int version) throws Exception {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterProxyModel(proxy, version));
