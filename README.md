@@ -34,9 +34,10 @@ todo 自定义协议,这是该项目的看点
     </dependency>
 
 使用注解说明(其实用法与dubbo、spring-cloud、sofa这些差不多一致)
-
-    @DaoService = 用于服务注册    version:发布版本
-    @DaoReference = 用于服务注入  proxy:暴露服务的proxy, version:发布版本, loadbanalce:负载路由选择, timeout:超时时间
+    
+    每个provider一定要设置自己的proxy名字! 确定唯一接口: proxy+provider+version
+    @DaoService = 用于服务注册    provider:暴露服务的provider名称, version:发布版本
+    @DaoReference = 用于服务注入  provider:暴露服务的provider名称, version:发布版本, loadbanalce:负载路由选择, timeout:超时时间
 
 查看服务注册情况(在启动注册中心后),可以通过
 
