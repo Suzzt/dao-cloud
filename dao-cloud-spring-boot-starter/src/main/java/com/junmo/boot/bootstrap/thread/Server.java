@@ -5,6 +5,8 @@ import com.junmo.boot.bootstrap.RpcServerBootstrap;
 import com.junmo.boot.handler.RpcServerMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
+import com.junmo.core.model.RegisterProviderModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.util.NetUtil;
@@ -58,7 +60,11 @@ public class Server extends Thread {
             Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
             log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
             // register service
-            RegistryManager.registry(DaoCloudProperties.proxy, NetUtil.getLocalIp() + ":" + DaoCloudProperties.serverPort);
+            RegisterProviderModel registerProviderModel = new RegisterProviderModel();
+            registerProviderModel.setProxy(DaoCloudProperties.proxy);
+            registerProviderModel.setProviderModels(rpcServerBootstrap.getProviders());
+            registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudProperties.serverPort));
+            RegistryManager.registry(registerProviderModel);
             channel.closeFuture().sync();
         } catch (Exception e) {
             log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>");

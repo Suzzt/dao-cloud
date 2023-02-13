@@ -6,7 +6,8 @@ import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
 import com.junmo.boot.bootstrap.thread.PollClient;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.RegisterProxyModel;
+import com.junmo.core.model.ProviderModel;
+import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,11 @@ import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostP
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -32,7 +34,7 @@ import java.util.Set;
 @Component
 public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
-    private final Set<RegisterProxyModel> relyProxy = new HashSet<>();
+    private final Set<ProxyProviderModel> relyProxy = new HashSet<>();
 
     private Thread pollServerNodeThread;
 
@@ -53,23 +55,27 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                 }
                 DaoReference daoReference = field.getAnnotation(DaoReference.class);
                 String proxy = daoReference.proxy();
+                String provider = StringUtils.hasLength(daoReference.provider()) ? daoReference.provider() : iface.getSimpleName();
                 int version = daoReference.version();
                 Object serviceProxy;
                 try {
                     // poll service node
-                    List<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxy, version);
+                    ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+                    Set<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxyProviderModel);
                     Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
-                    for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                        channelClients.add(new ChannelClient(proxy, version, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                    if (!CollectionUtils.isEmpty(serverNodeModels)) {
+                        for (ServerNodeModel serverNodeModel : serverNodeModels) {
+                            channelClients.add(new ChannelClient(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                        }
+                        ClientManager.addAll(proxyProviderModel, channelClients);
                     }
-                    ClientManager.addAll(proxy, version, channelClients);
-                    relyProxy.add(new RegisterProxyModel(proxy, version));
+                    relyProxy.add(proxyProviderModel);
                     LoadBalance loadBalance = daoReference.loadBalance();
                     long timeout = daoReference.timeout();
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, proxy, version, loadBalance.getDaoLoadBalance(), timeout);
+                    serviceProxy = RpcProxyFactory.build(iface, proxyProviderModel, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (Exception e) {
-                    log.error("<<<<<<<<<<< poll proxy = {}, version = {} server node error >>>>>>>>>>>", proxy, version, e);
+                    log.error("<<<<<<<<<<< poll proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
                     throw new DaoException(e);
                 }
                 // set bean
@@ -86,6 +92,6 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
         if (pollServerNodeThread != null && pollServerNodeThread.isAlive()) {
             pollServerNodeThread.interrupt();
         }
-        log.debug(">>>>>>>>>>> dao-cloud-rpc provider server destroy <<<<<<<<<<<<");
+        log.debug(">>>>>>>>>>> dao-cloud-rpc consumer server destroy <<<<<<<<<<<<");
     }
 }

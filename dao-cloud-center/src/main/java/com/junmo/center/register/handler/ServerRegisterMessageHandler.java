@@ -1,7 +1,7 @@
 package com.junmo.center.register.handler;
 
-import com.junmo.center.register.RegisterClient;
-import com.junmo.core.model.RegisterModel;
+import com.junmo.center.register.RegisterManager;
+import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,14 +15,14 @@ import lombok.extern.slf4j.Slf4j;
  * @description: server register handler
  */
 @Slf4j
-public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<RegisterModel> {
+public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<RegisterProviderModel> {
 
-    private RegisterModel registerModel;
+    private RegisterProviderModel registerProviderModel;
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RegisterModel registerModel) {
-        RegisterClient.register(registerModel);
-        this.registerModel = registerModel;
+    protected void channelRead0(ChannelHandlerContext ctx, RegisterProviderModel registerProviderModel) {
+        RegisterManager.register(registerProviderModel);
+        this.registerProviderModel = registerProviderModel;
         ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< back server heartbeat fail {} >>>>>>>>>>", ctx.channel(), f.cause());
@@ -32,8 +32,8 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        if (registerModel != null) {
-            RegisterClient.delete(registerModel);
+        if (registerProviderModel != null) {
+            RegisterManager.delete(registerProviderModel);
         }
         super.channelUnregistered(ctx);
     }
@@ -41,8 +41,8 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            if (registerModel != null) {
-                RegisterClient.delete(registerModel);
+            if (registerProviderModel != null) {
+                RegisterManager.delete(registerProviderModel);
                 ctx.channel().close();
             }
         } else {

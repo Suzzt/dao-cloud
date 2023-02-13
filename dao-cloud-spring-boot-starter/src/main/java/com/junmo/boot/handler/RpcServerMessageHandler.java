@@ -6,6 +6,8 @@ import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -39,7 +41,11 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             // invoke + response
             RpcResponseModel responseModel = rpcServerBootstrap.doInvoke(rpcRequestModel);
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, DaoCloudProperties.serializerType, responseModel);
-            ctx.writeAndFlush(daoMessage);
+            ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());
+                }
+            });
         });
     }
 

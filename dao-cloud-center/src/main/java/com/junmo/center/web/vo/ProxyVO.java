@@ -11,6 +11,8 @@ import lombok.Data;
 public class ProxyVO {
     private String proxy;
 
+    private String provider;
+
     private Integer version;
 
     private Integer number;

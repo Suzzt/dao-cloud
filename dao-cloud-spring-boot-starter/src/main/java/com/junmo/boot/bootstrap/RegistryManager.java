@@ -1,10 +1,10 @@
 package com.junmo.boot.bootstrap;
 
-import com.junmo.boot.handler.ConfigPollMessageHandler;
+import com.junmo.boot.handler.CenterServerMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.RegisterModel;
-import com.junmo.core.model.RegisterProxyModel;
+import com.junmo.core.model.ProxyProviderModel;
+import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
@@ -27,7 +27,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,7 +81,7 @@ public class RegistryManager {
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
                         .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
-                        .addLast(new ConfigPollMessageHandler());
+                        .addLast(new CenterServerMessageHandler());
             }
         });
         try {
@@ -97,14 +97,14 @@ public class RegistryManager {
     /**
      * poll register server node by center
      *
-     * @param proxy
+     * @param proxyProviderModel
      * @return
      * @throws Exception
      */
-    public static List<ServerNodeModel> poll(String proxy, int version) throws Exception {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, new RegisterProxyModel(proxy, version));
-        DefaultPromise<List<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
-        ConfigPollMessageHandler.PROMISE_MAP.put(proxy + "#" + version, promise);
+    public static Set<ServerNodeModel> poll(ProxyProviderModel proxyProviderModel) throws Exception {
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudProperties.serializerType, proxyProviderModel);
+        DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(getChannel().eventLoop());
+        CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 promise.setFailure(future.cause());
@@ -121,21 +121,17 @@ public class RegistryManager {
     }
 
     /**
-     * 服务注册
+     * registry provider server
      *
-     * @param proxy
-     * @param ipLinkPort
+     * @param registerProviderModel
      */
-    public static void registry(String proxy, String ipLinkPort) {
-        RegisterModel registerModel = new RegisterModel();
-        registerModel.setIpLinkPort(ipLinkPort);
-        registerModel.setProxy(proxy);
-        send(registerModel);
+    public static void registry(RegisterProviderModel registerProviderModel) {
+        send(registerProviderModel);
         TimerTask task = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
                 try {
-                    send(registerModel);
+                    send(registerProviderModel);
                 } catch (Exception e) {
                     log.error("<<<<<<<<< send register server exception >>>>>>>>", e);
                 } finally {
@@ -167,14 +163,14 @@ public class RegistryManager {
     /**
      * 发送注册请求
      *
-     * @param registerModel
+     * @param registerProviderModel
      */
-    private static void send(RegisterModel registerModel) throws DaoException {
+    private static void send(RegisterProviderModel registerProviderModel) throws DaoException {
         Channel channel = getChannel();
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, DaoCloudProperties.serializerType, registerModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, DaoCloudProperties.serializerType, registerProviderModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send register server error >>>>>>>>", future.cause());

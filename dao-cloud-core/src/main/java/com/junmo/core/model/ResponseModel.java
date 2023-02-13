@@ -1,6 +1,5 @@
 package com.junmo.core.model;
 
-import com.junmo.core.exception.DaoException;
 import lombok.Data;
 
 /**
@@ -11,7 +10,7 @@ import lombok.Data;
 @Data
 public class ResponseModel extends Model{
     /**
-     * 异常值
+     * error message
      */
-    public DaoException exceptionValue;
+    public String errorMessage;
 }

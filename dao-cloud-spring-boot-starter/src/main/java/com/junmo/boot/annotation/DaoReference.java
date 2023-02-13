@@ -17,9 +17,11 @@ public @interface DaoReference {
 
     String proxy();
 
-    LoadBalance loadBalance() default LoadBalance.RANDOM;
+    String provider() default "";
 
     int version() default 0;
 
     long timeout() default 2000;
+
+    LoadBalance loadBalance() default LoadBalance.RANDOM;
 }

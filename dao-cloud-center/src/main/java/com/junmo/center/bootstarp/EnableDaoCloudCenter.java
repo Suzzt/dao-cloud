@@ -1,6 +1,6 @@
 package com.junmo.center.bootstarp;
 
-import com.junmo.center.register.RegisterCenterConfiguration;
+import com.junmo.center.register.DaoCloudCenterConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 
@@ -16,6 +16,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @EnableConfigurationProperties({DaoCloudCenterProperties.class})
-@Import({DaoCloudCenterProperties.class, RegisterCenterConfiguration.class})
+@Import({DaoCloudCenterProperties.class, DaoCloudCenterConfiguration.class})
 public @interface EnableDaoCloudCenter {
 }

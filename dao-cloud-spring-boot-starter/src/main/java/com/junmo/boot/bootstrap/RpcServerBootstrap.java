@@ -1,13 +1,16 @@
 package com.junmo.boot.bootstrap;
 
+import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.ConditionalOnUseAnnotation;
 import com.junmo.boot.annotation.DaoService;
 import com.junmo.boot.bootstrap.thread.Server;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
+import com.junmo.core.util.DaoCloudUtil;
 import com.junmo.core.util.SystemUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +24,7 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -37,9 +41,13 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
      * key: instance + '#' +version
      * value: object bean
      */
-    private final Map<String, Object> localServiceCache = new HashMap<>();
+    private final Map<ProviderModel, Object> localServiceCache = new HashMap<>();
 
     private Thread thread;
+
+    public Set<ProviderModel> getProviders() {
+        return Sets.newHashSet(localServiceCache.keySet());
+    }
 
     /**
      * start
@@ -70,17 +78,6 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
     }
 
     /**
-     * add server
-     *
-     * @param version
-     * @param interfaces
-     * @param serviceBean
-     */
-    private void addServiceCache(int version, String interfaces, Object serviceBean) {
-        localServiceCache.put(interfaces + "#" + version, serviceBean);
-    }
-
-    /**
      * invoke method
      *
      * @param requestModel
@@ -92,11 +89,12 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
         responseModel.setSequenceId(requestModel.getSequenceId());
 
         // match service bean
-        Object serviceBean = localServiceCache.get(requestModel.getInterfaceName() + "#" + requestModel.getVersion());
+        ProviderModel providerModel = new ProviderModel(requestModel.getProvider(),requestModel.getVersion());
+        Object serviceBean = localServiceCache.get(providerModel);
 
         // valid
         if (serviceBean == null) {
-            responseModel.setExceptionValue(new DaoException("no method exists"));
+            responseModel.setErrorMessage("provider not exists method");
             return responseModel;
         }
 
@@ -111,8 +109,8 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
             Object result = method.invoke(serviceBean, parameters);
             responseModel.setReturnValue(result);
         } catch (Throwable t) {
-            log.error("dao-cloud provider invokeService error.", t);
-            responseModel.setExceptionValue(new DaoException(t));
+            log.error("<<<<<<<<<<< dao-cloud provider invokeService error >>>>>>>>>>>>", t);
+            responseModel.setErrorMessage(t.getMessage());
         }
 
         return responseModel;
@@ -138,8 +136,12 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
             }
             DaoService daoService = serviceBean.getClass().getAnnotation(DaoService.class);
-            String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
-            addServiceCache(daoService.version(), interfaces, serviceBean);
+            ProviderModel providerModel = new ProviderModel();
+            String interfaces = serviceBean.getClass().getInterfaces()[0].getSimpleName();
+            String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
+            providerModel.setProvider(provider);
+            providerModel.setVersion(daoService.version());
+            localServiceCache.put(providerModel, serviceBean);
         }
         start();
     }

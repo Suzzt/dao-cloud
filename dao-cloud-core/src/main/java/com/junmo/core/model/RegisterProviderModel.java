@@ -2,26 +2,28 @@ package com.junmo.core.model;
 
 import lombok.Data;
 
+import java.util.Set;
+
 /**
  * @author: sucf
  * @date: 2022/11/13 23:19
  * @description:
  */
 @Data
-public class RegisterModel extends Model {
+public class RegisterProviderModel extends Model {
     /**
      * proxy name (unique)
      */
     private String proxy;
 
     /**
-     * version
+     * provider server
      */
-    private int version;
+    private Set<ProviderModel> providerModels;
 
     /**
      * ip address + port
      */
-    private String ipLinkPort;
+    private ServerNodeModel serverNodeModel;
 
 }

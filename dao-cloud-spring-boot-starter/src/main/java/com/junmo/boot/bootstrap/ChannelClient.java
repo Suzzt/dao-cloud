@@ -2,6 +2,7 @@ package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import io.netty.bootstrap.Bootstrap;
@@ -30,9 +31,7 @@ public class ChannelClient {
 
     private final Object lock = new Object();
 
-    private String proxy;
-
-    private int version;
+    private ProxyProviderModel proxyProviderModel;
 
     private String ip;
 
@@ -67,9 +66,8 @@ public class ChannelClient {
         return Objects.hash(ip, port);
     }
 
-    public ChannelClient(String proxy, int version, String ip, int port) {
-        this.proxy = proxy;
-        this.version = version;
+    public ChannelClient(ProxyProviderModel proxyProviderModel, String ip, int port) {
+        this.proxyProviderModel = proxyProviderModel;
         this.ip = ip;
         this.port = port;
     }
@@ -126,7 +124,7 @@ public class ChannelClient {
      */
     private void connect() {
         group = new NioEventLoopGroup();
-        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxy,version, this);
+        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxyProviderModel, this);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.remoteAddress(this.ip, this.port);
         bootstrap.group(group);

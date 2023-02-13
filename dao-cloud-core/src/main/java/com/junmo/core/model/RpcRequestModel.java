@@ -12,14 +12,13 @@ public class RpcRequestModel extends ResponseModel {
     private long sequenceId;
 
     /**
+     * 调用接口名，在服务端找到它对应的实现
+     */
+    private String provider;
+    /**
      * 版本
      */
     private int version;
-
-    /**
-     * 调用接口名，在服务端找到它对应的实现
-     */
-    private String interfaceName;
     /**
      * 调用接口中方法名
      */
@@ -37,10 +36,10 @@ public class RpcRequestModel extends ResponseModel {
      */
     private Object[] parameterValue;
 
-    public RpcRequestModel(long sequenceId, int version, String interfaceName, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
+    public RpcRequestModel(long sequenceId, String provider, int version, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
         this.sequenceId = sequenceId;
+        this.provider = provider;
         this.version = version;
-        this.interfaceName = interfaceName;
         this.methodName = methodName;
         this.returnType = returnType;
         this.parameterTypes = parameterTypes;

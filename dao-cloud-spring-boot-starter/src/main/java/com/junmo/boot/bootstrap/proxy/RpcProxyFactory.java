@@ -7,6 +7,8 @@ import com.junmo.boot.bootstrap.ClientManager;
 import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.boot.properties.DaoCloudProperties;
 import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.ProviderModel;
+import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
@@ -29,46 +31,46 @@ import java.util.Set;
 public class RpcProxyFactory {
 
     /**
+     * build bean
+     *
      * @param serviceClass
-     * @param proxy
+     * @param proxyProviderModel
      * @param daoLoadBalance
      * @param timeout
      * @param <T>
      * @return
      */
-    public static <T> T build(Class<T> serviceClass, String proxy, int version, DaoLoadBalance daoLoadBalance, long timeout) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxy, version, daoLoadBalance, timeout));
+    public static <T> T build(Class<T> serviceClass, ProxyProviderModel proxyProviderModel, DaoLoadBalance daoLoadBalance, long timeout) {
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxyProviderModel, daoLoadBalance, timeout));
     }
 
     static class ProxyHandler implements InvocationHandler {
 
         private Class<?> serviceClass;
 
-        private String proxy;
-
-        private int version;
+        private ProxyProviderModel proxyProviderModel;
 
         private DaoLoadBalance daoLoadBalance;
 
         private long timeout;
 
-        public ProxyHandler(Class<?> serviceClass, String proxy, int version, DaoLoadBalance daoLoadBalance, long timeout) {
+        public ProxyHandler(Class<?> serviceClass, ProxyProviderModel proxyProviderModel, DaoLoadBalance daoLoadBalance, long timeout) {
             this.serviceClass = serviceClass;
-            this.proxy = proxy;
-            this.version = version;
+            this.proxyProviderModel = proxyProviderModel;
             this.daoLoadBalance = daoLoadBalance;
             this.timeout = timeout;
         }
 
         @Override
         public Object invoke(Object obj, Method method, Object[] args) throws InterruptedException {
+            ProviderModel providerModel = proxyProviderModel.getProviderModel();
 
             //todo 这里要注意分布式下
             long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
             RpcRequestModel requestModel = new RpcRequestModel(
                     sequenceId,
-                    version,
-                    serviceClass.getName(),
+                    providerModel.getProvider(),
+                    providerModel.getVersion(),
                     method.getName(),
                     method.getReturnType(),
                     method.getParameterTypes(),
@@ -78,15 +80,15 @@ public class RpcProxyFactory {
             ChannelClient channelClient;
             while (true) {
                 // 把出错的几率降到最低,选出合适的channel
-                Set<ChannelClient> channelClients = ClientManager.getClients(proxy, version);
+                Set<ChannelClient> channelClients = ClientManager.getClients(proxyProviderModel);
                 if (CollectionUtils.isEmpty(channelClients)) {
-                    throw new DaoException("proxy = '" + proxy + "' no server provider");
+                    throw new DaoException("proxy = '" + proxyProviderModel.getProxy() + "', provider = '" + proxyProviderModel.getProviderModel() + "' no provider server");
                 }
                 channelClient = daoLoadBalance.route(channelClients);
                 if (channelClient.getChannel().isActive()) {
                     break;
                 }
-                ClientManager.remove(proxy, version, channelClient);
+                ClientManager.remove(proxyProviderModel, channelClient);
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, DaoCloudProperties.serializerType, requestModel);
             // push message

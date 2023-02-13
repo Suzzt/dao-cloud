@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * @description: register center configuration
  */
 @Slf4j
-public class RegisterCenterConfiguration implements ApplicationListener<ApplicationEvent> {
+public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     public static byte SERIALIZE_TYPE;
 

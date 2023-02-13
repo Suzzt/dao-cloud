@@ -14,5 +14,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Component
 public @interface DaoService {
+    String provider() default "";
     int version() default 0;
 }

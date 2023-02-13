@@ -1,12 +1,11 @@
 package com.junmo.center.web;
 
 import com.google.common.collect.Lists;
-import com.junmo.center.register.RegisterClient;
+import com.junmo.center.register.RegisterManager;
 import com.junmo.center.web.vo.ProxyVO;
 import com.junmo.core.ApiResult;
-import com.junmo.core.model.RegisterProxyModel;
+import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ServerNodeModel;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -26,38 +26,38 @@ public class RegisterController {
 
     @RequestMapping(value = "/get/proxy")
     @ResponseBody
-    public ApiResult<List<ProxyVO>> getProxy(String proxy, Integer version) {
+    public ApiResult<List<ProxyVO>> getProxy(String proxy, String provider) {
         List<ProxyVO> result = Lists.newArrayList();
-        Map<String, Map<String, String>> serverMap = RegisterClient.SERVER_MAP;
-        for (Map.Entry<String, Map<String, String>> entry : serverMap.entrySet()) {
-            RegisterProxyModel registerProxyModel = RegisterClient.parseKey(entry.getKey());
-            if (StringUtils.hasLength(proxy) && !registerProxyModel.getProxy().equals(proxy)) {
+        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterManager.getServer();
+        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : server.entrySet()) {
+            if (StringUtils.hasLength(proxy) && !entry.getValue().equals(proxy)) {
                 continue;
             }
-            if (version != null && registerProxyModel.getVersion() != version) {
-                continue;
+            proxy = entry.getKey();
+            Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
+            for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
+                ProviderModel providerModel = providerModelSetEntry.getKey();
+                if (StringUtils.hasLength(provider) && !providerModel.getProvider().equals(provider)) {
+                    continue;
+                }
+                Set<ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
+                ProxyVO proxyVO = new ProxyVO();
+                proxyVO.setProxy(proxy);
+                proxyVO.setProvider(providerModel.getProvider());
+                proxyVO.setVersion(providerModel.getVersion());
+                proxyVO.setNumber(serverNodeModels.size());
+                result.add(proxyVO);
             }
-            ProxyVO proxyVO = new ProxyVO();
-            proxyVO.setProxy(registerProxyModel.getProxy());
-            proxyVO.setVersion(registerProxyModel.getVersion());
-            proxyVO.setNumber(entry.getValue().size());
-            result.add(proxyVO);
         }
         return ApiResult.buildSuccess(result);
     }
 
     @RequestMapping(value = "/get/server")
     @ResponseBody
-    public ApiResult<List<ServerNodeModel>> getServer(@RequestParam String proxy, @RequestParam(defaultValue = "0") Integer version) {
-        List<ServerNodeModel> servers = Lists.newArrayList();
-        Map<String, Map<String, String>> serverMap = RegisterClient.SERVER_MAP;
-        Map<String, String> nodeMap = serverMap.get(proxy + "#" + version);
-        if (!CollectionUtils.isEmpty(nodeMap)) {
-            for (Map.Entry<String, String> nodeEntry : nodeMap.entrySet()) {
-                String ipLinkPort = nodeEntry.getKey();
-                servers.add(new ServerNodeModel(ipLinkPort));
-            }
-        }
-        return ApiResult.buildSuccess(servers);
+    public ApiResult<Set<ServerNodeModel>> getServer(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
+        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterManager.getServer();
+        Map<ProviderModel, Set<ServerNodeModel>> providerModels = server.get(proxy);
+        Set<ServerNodeModel> serverNodeModels = providerModels.get(new ProviderModel(provider, version));
+        return ApiResult.buildSuccess(serverNodeModels);
     }
 }
