@@ -61,7 +61,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         }
                     });
                     Channel channel = serverBootstrap.bind(port).sync().channel();
-                    log.info(">>>>>>>>>>>> dao-cloud-center port({}) start success <<<<<<<<<<<", port);
+                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
                     log.error("server interrupted error", e);
@@ -72,7 +72,10 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-            log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: {}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<", NetUtil.getLocalIp(), event.getWebServer().getPort());
+            log.info("====================================================================================================================================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
+            log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: {}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort());
+            log.info("====================================================================================================================================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
+
         }
 
 

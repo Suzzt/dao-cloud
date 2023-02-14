@@ -47,7 +47,7 @@ todo 自定义协议,这是该项目的看点
 项目(dao-cloud-example)中有一个示例
 
     0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
-    1.先启动web工程,@EnableDaoCloudCenter一个注解搞定注册中心
+    1.先启动web工程(通过@EnableDaoCloudCenter注解搞定注册中心)
     2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
     先启动provider,再启动consumer(其实启反也可以)
     3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo
