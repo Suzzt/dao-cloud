@@ -23,11 +23,11 @@ import java.util.concurrent.TimeUnit;
  * @description:
  */
 @Slf4j
-public class PollClient implements Runnable {
+public class SyncServerTimer implements Runnable {
 
     private Set<ProxyProviderModel> relyProxy;
 
-    public PollClient(Set<ProxyProviderModel> relyProxy) {
+    public SyncServerTimer(Set<ProxyProviderModel> relyProxy) {
         this.relyProxy = relyProxy;
     }
 

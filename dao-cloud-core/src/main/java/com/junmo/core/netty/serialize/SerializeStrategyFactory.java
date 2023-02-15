@@ -1,6 +1,6 @@
 package com.junmo.core.netty.serialize;
 
-import com.junmo.core.enums.SerializerStrategy;
+import com.junmo.core.enums.Serializer;
 
 /**
  * @author: sucf
@@ -14,35 +14,35 @@ public class SerializeStrategyFactory {
     public static byte JSON_SERIALIZER = 1;
 
     public static DaoSerializer getSerializer(byte type) {
-        SerializerStrategy[] serializerStrategies = SerializerStrategy.values();
-        for (SerializerStrategy serializerStrategy : serializerStrategies) {
-            if (serializerStrategy.getType() == type) {
-                return serializerStrategy.getDaoSerializer();
+        Serializer[] values = Serializer.values();
+        for (Serializer serializer : values) {
+            if (serializer.getType() == type) {
+                return serializer.getDaoSerializer();
             }
         }
         // default
-        return SerializerStrategy.JDK.getDaoSerializer();
+        return Serializer.JDK.getDaoSerializer();
     }
 
     public static DaoSerializer getSerializer(String name) {
-        SerializerStrategy[] serializerStrategies = SerializerStrategy.values();
-        for (SerializerStrategy serializerStrategy : serializerStrategies) {
-            if (serializerStrategy.getName().equals(name)) {
-                return serializerStrategy.getDaoSerializer();
+        Serializer[] serializerStrategies = Serializer.values();
+        for (Serializer serializer : serializerStrategies) {
+            if (serializer.getName().equals(name)) {
+                return serializer.getDaoSerializer();
             }
         }
         // default
-        return SerializerStrategy.JDK.getDaoSerializer();
+        return Serializer.JDK.getDaoSerializer();
     }
 
     public static Byte getSerializeType(String name) {
-        SerializerStrategy[] serializerStrategies = SerializerStrategy.values();
-        for (SerializerStrategy serializerStrategy : serializerStrategies) {
-            if (serializerStrategy.getName().equals(name)) {
-                return serializerStrategy.getType();
+        Serializer[] serializerStrategies = Serializer.values();
+        for (Serializer serializer : serializerStrategies) {
+            if (serializer.getName().equals(name)) {
+                return serializer.getType();
             }
         }
         // default
-        return SerializerStrategy.JDK.getType();
+        return Serializer.JDK.getType();
     }
 }

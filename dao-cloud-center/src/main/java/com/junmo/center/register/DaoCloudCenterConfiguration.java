@@ -17,6 +17,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -38,6 +39,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     public static byte SERIALIZE_TYPE;
 
     private final int port = 5551;
+
+    @Value(value = "${server.servlet.context-path:null}")
+    private String contextPath;
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
@@ -72,13 +76,12 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-            log.info("====================================================================================================================================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
-            log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: {}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort());
-            log.info("====================================================================================================================================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
-
+            if (contextPath == null) {
+                log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: http://{}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort());
+            } else {
+                log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: http://{}:{}{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
+            }
         }
-
-
     }
 
     @Bean

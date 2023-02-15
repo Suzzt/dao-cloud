@@ -10,7 +10,6 @@ import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
-import com.junmo.core.util.DaoCloudUtil;
 import com.junmo.core.util.SystemUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +88,7 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
         responseModel.setSequenceId(requestModel.getSequenceId());
 
         // match service bean
-        ProviderModel providerModel = new ProviderModel(requestModel.getProvider(),requestModel.getVersion());
+        ProviderModel providerModel = new ProviderModel(requestModel.getProvider(), requestModel.getVersion());
         Object serviceBean = localServiceCache.get(providerModel);
 
         // valid

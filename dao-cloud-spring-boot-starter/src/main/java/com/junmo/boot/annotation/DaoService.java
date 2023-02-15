@@ -1,5 +1,6 @@
 package com.junmo.boot.annotation;
 
+import com.junmo.core.enums.Serializer;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -15,5 +16,8 @@ import java.lang.annotation.*;
 @Component
 public @interface DaoService {
     String provider() default "";
+
     int version() default 0;
+
+    Serializer serializable() default Serializer.JDK;
 }

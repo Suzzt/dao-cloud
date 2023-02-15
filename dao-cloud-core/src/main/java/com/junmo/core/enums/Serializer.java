@@ -10,7 +10,7 @@ import com.junmo.core.netty.serialize.impl.JsonSerializer;
  * @date: 2023/1/18 14:34
  * @description:
  */
-public enum SerializerStrategy {
+public enum Serializer {
     JDK(SerializeStrategyFactory.JDK_SERIALIZER, "jdk", new JdkSerializer()),
     JSON(SerializeStrategyFactory.JSON_SERIALIZER, "json", new JsonSerializer());
 
@@ -29,7 +29,7 @@ public enum SerializerStrategy {
      */
     private DaoSerializer daoSerializer;
 
-    SerializerStrategy(byte type, String name, DaoSerializer daoSerializer) {
+    Serializer(byte type, String name, DaoSerializer daoSerializer) {
         this.type = type;
         this.name = name;
         this.daoSerializer = daoSerializer;

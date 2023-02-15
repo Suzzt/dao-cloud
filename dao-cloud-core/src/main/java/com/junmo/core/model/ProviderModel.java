@@ -39,6 +39,6 @@ public class ProviderModel extends Model {
 
     @Override
     public String toString() {
-        return "["+provider + "||" + version+"]";
+        return "["+provider + "/" + version+"]";
     }
 }

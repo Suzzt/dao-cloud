@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
-import com.junmo.boot.bootstrap.thread.PollClient;
+import com.junmo.boot.bootstrap.thread.SyncServerTimer;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
@@ -40,7 +40,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        pollServerNodeThread = new Thread(new PollClient(relyProxy));
+        pollServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pollServerNodeThread);
     }
 

@@ -6,7 +6,6 @@ import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -48,7 +47,6 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             });
         });
     }
-
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
