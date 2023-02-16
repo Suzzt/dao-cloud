@@ -1,6 +1,6 @@
 package com.junmo.boot.annotation;
 
-import com.junmo.boot.bootstrap.DaoCloudConfigConfiguration;
+import com.junmo.boot.bootstrap.ConfigCenterBootstrap;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(DaoCloudConfigConfiguration.class)
+@Import(ConfigCenterBootstrap.class)
 public @interface EnableDaoCloudConfig {
     String[] proxy() ;
 }

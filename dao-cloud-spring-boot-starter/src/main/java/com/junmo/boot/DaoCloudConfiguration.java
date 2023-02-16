@@ -2,7 +2,7 @@ package com.junmo.boot;
 
 import com.junmo.boot.bootstrap.RpcClientBootstrap;
 import com.junmo.boot.bootstrap.RpcServerBootstrap;
-import com.junmo.boot.properties.DaoCloudProperties;
+import com.junmo.boot.properties.DaoCloudServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Import;
  * @description: rpc SpringBoot Auto Configuration
  */
 @Configuration
-@EnableConfigurationProperties({DaoCloudProperties.class})
+@EnableConfigurationProperties({DaoCloudServerProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
-@Import({DaoCloudProperties.class, RpcServerBootstrap.class, RpcClientBootstrap.class})
+@Import({DaoCloudServerProperties.class, RpcServerBootstrap.class, RpcClientBootstrap.class})
 public class DaoCloudConfiguration {
 }

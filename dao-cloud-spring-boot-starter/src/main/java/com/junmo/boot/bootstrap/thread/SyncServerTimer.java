@@ -2,9 +2,9 @@ package com.junmo.boot.bootstrap.thread;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.collect.Sets;
-import com.junmo.boot.bootstrap.ChannelClient;
-import com.junmo.boot.bootstrap.ClientManager;
-import com.junmo.boot.bootstrap.RegistryManager;
+import com.junmo.boot.bootstrap.unit.Client;
+import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoTimer;
@@ -38,18 +38,18 @@ public class SyncServerTimer implements Runnable {
                 @Override
                 public void run(Timeout timeout) {
                     try {
-                        Set<ChannelClient> oldChannelClients = ClientManager.getClients(proxyProviderModel);
-                        Set<ChannelClient> pollChannelClients = Sets.newLinkedHashSet();
+                        Set<Client> oldClients = ClientManager.getClients(proxyProviderModel);
+                        Set<Client> pollClients = Sets.newLinkedHashSet();
                         Set<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxyProviderModel);
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                ChannelClient channelClient = new ChannelClient(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort());
-                                pollChannelClients.add(channelClient);
+                                Client client = new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort());
+                                pollClients.add(client);
                             }
                             // new up server node
-                            oldChannelClients = oldChannelClients == null ? new HashSet<>() : oldChannelClients;
-                            Set<ChannelClient> newUpChannelClients = (Set<ChannelClient>) CollectionUtil.subtract(pollChannelClients, oldChannelClients);
-                            ClientManager.addAll(proxyProviderModel, newUpChannelClients);
+                            oldClients = oldClients == null ? new HashSet<>() : oldClients;
+                            Set<Client> newUpClients = (Set<Client>) CollectionUtil.subtract(pollClients, oldClients);
+                            ClientManager.addAll(proxyProviderModel, newUpClients);
                         }
                     } catch (Exception e) {
                         log.error("<<<<<<<<<<< poll proxy = {}, provider = {} server node error >>>>>>>>>>>", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel(), e);

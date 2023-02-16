@@ -7,7 +7,5 @@ server:
   servlet:
     context-path: /dao-cloud
 dao-cloud:
-  # jdk or json or protobuf
-  serializer: jdk
   center:
     dashboard: true

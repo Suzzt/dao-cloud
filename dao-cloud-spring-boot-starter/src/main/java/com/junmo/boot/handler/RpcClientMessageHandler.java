@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
-import com.junmo.boot.bootstrap.ChannelClient;
-import com.junmo.boot.bootstrap.ClientManager;
+import com.junmo.boot.bootstrap.unit.Client;
+import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcResponseModel;
@@ -29,11 +29,11 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
 
     private ProxyProviderModel proxyProviderModel;
 
-    private ChannelClient channelClient;
+    private Client client;
 
-    public RpcClientMessageHandler(ProxyProviderModel proxyProviderModel, ChannelClient channelClient) {
+    public RpcClientMessageHandler(ProxyProviderModel proxyProviderModel, Client client) {
         this.proxyProviderModel = proxyProviderModel;
-        this.channelClient = channelClient;
+        this.client = client;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        channelClient.destroy();
-        ClientManager.remove(proxyProviderModel, channelClient);
+        client.destroy();
+        ClientManager.remove(proxyProviderModel, client);
         log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         super.channelUnregistered(ctx);
     }
@@ -75,16 +75,16 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         channel.writeAndFlush(heartbeatPacket).addListener(future -> {
             if (future.isSuccess()) {
                 // clear fail mark
-                channelClient.clearFailMark();
+                client.clearFailMark();
             } else {
-                int failMark = channelClient.getFailMark();
+                int failMark = client.getFailMark();
                 if (failMark >= 3) {
-                    channelClient.destroy();
-                    ClientManager.remove(proxyProviderModel, channelClient);
+                    client.destroy();
+                    ClientManager.remove(proxyProviderModel, client);
                     log.error(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
                 } else {
-                    channelClient.addFailMark();
-                    channelClient.reconnect();
+                    client.addFailMark();
+                    client.reconnect();
                 }
             }
         });

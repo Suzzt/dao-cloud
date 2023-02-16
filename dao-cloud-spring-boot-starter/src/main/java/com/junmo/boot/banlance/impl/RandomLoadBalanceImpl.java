@@ -2,7 +2,7 @@ package com.junmo.boot.banlance.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
-import com.junmo.boot.bootstrap.ChannelClient;
+import com.junmo.boot.bootstrap.unit.Client;
 
 import java.util.Set;
 
@@ -13,9 +13,9 @@ import java.util.Set;
  */
 public class RandomLoadBalanceImpl extends DaoLoadBalance {
     @Override
-    public ChannelClient route(Set<ChannelClient> availableChannelClients) {
-        ChannelClient[] clients = availableChannelClients.toArray(new ChannelClient[availableChannelClients.size()]);
-        int index = RandomUtil.randomInt(availableChannelClients.size());
+    public Client route(Set<Client> availableClients) {
+        Client[] clients = availableClients.toArray(new Client[availableClients.size()]);
+        int index = RandomUtil.randomInt(availableClients.size());
         return clients[index];
     }
 }

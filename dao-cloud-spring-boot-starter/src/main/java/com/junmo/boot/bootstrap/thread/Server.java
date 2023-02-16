@@ -1,10 +1,12 @@
 package com.junmo.boot.bootstrap.thread;
 
-import com.junmo.boot.bootstrap.RegistryManager;
-import com.junmo.boot.bootstrap.RpcServerBootstrap;
+import com.google.common.collect.Sets;
+import com.junmo.boot.bootstrap.manager.RegistryManager;
+import com.junmo.boot.bootstrap.manager.ServiceManager;
 import com.junmo.boot.handler.RpcServerMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
-import com.junmo.boot.properties.DaoCloudProperties;
+import com.junmo.boot.properties.DaoCloudServerProperties;
+import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
@@ -19,6 +21,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -32,11 +35,8 @@ public class Server extends Thread {
 
     private ThreadPoolExecutor threadPoolProvider;
 
-    private RpcServerBootstrap rpcServerBootstrap;
-
-    public Server(ThreadPoolExecutor threadPoolProvider, RpcServerBootstrap rpcServerBootstrap) {
+    public Server(ThreadPoolExecutor threadPoolProvider) {
         this.threadPoolProvider = threadPoolProvider;
-        this.rpcServerBootstrap = rpcServerBootstrap;
     }
 
     @Override
@@ -54,16 +54,17 @@ public class Server extends Thread {
                     ch.pipeline().addLast(new DaoMessageCoder());
                     ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                     ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
-                    ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider, rpcServerBootstrap));
+                    ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
                 }
             });
-            Channel channel = serverBootstrap.bind(DaoCloudProperties.serverPort).sync().channel();
-            log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProperties.serverPort);
+            Channel channel = serverBootstrap.bind(DaoCloudServerProperties.serverPort).sync().channel();
+            log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudServerProperties.serverPort);
             // register service
             RegisterProviderModel registerProviderModel = new RegisterProviderModel();
-            registerProviderModel.setProxy(DaoCloudProperties.proxy);
-            registerProviderModel.setProviderModels(rpcServerBootstrap.getProviders());
-            registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudProperties.serverPort));
+            registerProviderModel.setProxy(DaoCloudServerProperties.proxy);
+            Set<ProviderModel> providerModels = ServiceManager.getServiceInvokers().keySet();
+            registerProviderModel.setProviderModels(Sets.newHashSet(providerModels));
+            registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudServerProperties.serverPort));
             RegistryManager.registry(registerProviderModel);
             channel.closeFuture().sync();
         } catch (Exception e) {

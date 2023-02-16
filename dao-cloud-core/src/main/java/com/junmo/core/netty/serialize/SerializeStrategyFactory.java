@@ -45,4 +45,5 @@ public class SerializeStrategyFactory {
         // default
         return Serializer.JDK.getType();
     }
+
 }

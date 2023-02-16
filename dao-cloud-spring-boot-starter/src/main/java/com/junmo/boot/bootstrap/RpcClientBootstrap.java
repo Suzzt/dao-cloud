@@ -3,12 +3,16 @@ package com.junmo.boot.bootstrap;
 import com.google.common.collect.Sets;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
-import com.junmo.boot.bootstrap.proxy.RpcProxyFactory;
+import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.boot.bootstrap.thread.SyncServerTimer;
+import com.junmo.boot.bootstrap.unit.Client;
+import com.junmo.boot.bootstrap.unit.RpcProxy;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.netty.serialize.SerializeStrategyFactory;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -62,18 +66,19 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                     // poll service node
                     ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
                     Set<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxyProviderModel);
-                    Set<ChannelClient> channelClients = Sets.newLinkedHashSet();
+                    Set<Client> clients = Sets.newLinkedHashSet();
                     if (!CollectionUtils.isEmpty(serverNodeModels)) {
                         for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                            channelClients.add(new ChannelClient(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                            clients.add(new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
                         }
-                        ClientManager.addAll(proxyProviderModel, channelClients);
+                        ClientManager.addAll(proxyProviderModel, clients);
                     }
                     relyProxy.add(proxyProviderModel);
                     LoadBalance loadBalance = daoReference.loadBalance();
                     long timeout = daoReference.timeout();
+                    Byte serialized = SerializeStrategyFactory.getSerializeType(daoReference.serializable().getName());
                     // get proxyObj
-                    serviceProxy = RpcProxyFactory.build(iface, proxyProviderModel, loadBalance.getDaoLoadBalance(), timeout);
+                    serviceProxy = RpcProxy.build(iface, proxyProviderModel, serialized, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (Exception e) {
                     log.error("<<<<<<<<<<< poll proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
                     throw new DaoException(e);

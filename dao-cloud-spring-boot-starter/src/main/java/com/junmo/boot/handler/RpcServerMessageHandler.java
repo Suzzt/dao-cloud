@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
-import com.junmo.boot.bootstrap.RpcServerBootstrap;
-import com.junmo.boot.properties.DaoCloudProperties;
+import com.junmo.boot.bootstrap.unit.ServiceInvoker;
+import com.junmo.boot.bootstrap.manager.ServiceManager;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -26,11 +26,8 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
      */
     private ThreadPoolExecutor serverHandlerThreadPool;
 
-    private RpcServerBootstrap rpcServerBootstrap;
-
-    public RpcServerMessageHandler(ThreadPoolExecutor serverHandlerThreadPool, RpcServerBootstrap rpcServerBootstrap) {
+    public RpcServerMessageHandler(ThreadPoolExecutor serverHandlerThreadPool) {
         this.serverHandlerThreadPool = serverHandlerThreadPool;
-        this.rpcServerBootstrap = rpcServerBootstrap;
     }
 
     @Override
@@ -38,8 +35,9 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
         // do invoke service
         serverHandlerThreadPool.execute(() -> {
             // invoke + response
-            RpcResponseModel responseModel = rpcServerBootstrap.doInvoke(rpcRequestModel);
-            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, DaoCloudProperties.serializerType, responseModel);
+            ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
+            RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());

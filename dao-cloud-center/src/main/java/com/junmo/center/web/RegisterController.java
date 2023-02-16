@@ -30,7 +30,7 @@ public class RegisterController {
         List<ProxyVO> result = Lists.newArrayList();
         Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterManager.getServer();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : server.entrySet()) {
-            if (StringUtils.hasLength(proxy) && !entry.getValue().equals(proxy)) {
+            if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
             }
             proxy = entry.getKey();

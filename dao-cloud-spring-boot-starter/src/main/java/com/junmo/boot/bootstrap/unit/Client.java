@@ -1,4 +1,4 @@
-package com.junmo.boot.bootstrap;
+package com.junmo.boot.bootstrap.unit;
 
 import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 @Slf4j
-public class ChannelClient {
+public class Client {
 
     private final Object lock = new Object();
 
@@ -57,7 +57,7 @@ public class ChannelClient {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ChannelClient that = (ChannelClient) o;
+        Client that = (Client) o;
         return port == that.port && Objects.equals(ip, that.ip);
     }
 
@@ -66,7 +66,7 @@ public class ChannelClient {
         return Objects.hash(ip, port);
     }
 
-    public ChannelClient(ProxyProviderModel proxyProviderModel, String ip, int port) {
+    public Client(ProxyProviderModel proxyProviderModel, String ip, int port) {
         this.proxyProviderModel = proxyProviderModel;
         this.ip = ip;
         this.port = port;

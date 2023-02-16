@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationListener;
  * @date: 2023/2/12 16:37
  * @description:
  */
-public class DaoCloudConfigConfiguration implements ApplicationListener<ApplicationEvent> {
+public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEvent> {
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
 

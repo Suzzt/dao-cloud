@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
 import com.google.gson.Gson;
-import com.junmo.boot.bootstrap.RegistryManager;
+import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;

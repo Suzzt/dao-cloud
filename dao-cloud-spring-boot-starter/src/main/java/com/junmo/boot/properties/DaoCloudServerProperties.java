@@ -8,33 +8,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @description: dao cloud config
  */
 @ConfigurationProperties(prefix = "dao-cloud")
-public class DaoCloudProperties {
+public class DaoCloudServerProperties {
     public static String proxy;
     public static int corePoolSize;
     public static int maxPoolSize;
     public static int serverPort;
-    // form yaml
-    public static String serializer;
-    // use inner
-    public static byte serializerType;
 
     public void setProxy(String proxy) {
-        DaoCloudProperties.proxy = proxy;
+        DaoCloudServerProperties.proxy = proxy;
     }
 
     public void setCorePoolSize(int corePoolSize) {
-        DaoCloudProperties.corePoolSize = corePoolSize;
+        DaoCloudServerProperties.corePoolSize = corePoolSize;
     }
 
     public void setMaxPoolSize(int maxPoolSize) {
-        DaoCloudProperties.maxPoolSize = maxPoolSize;
+        DaoCloudServerProperties.maxPoolSize = maxPoolSize;
     }
 
     public void setServerPort(int serverPort) {
-        DaoCloudProperties.serverPort = serverPort;
-    }
-
-    public void setSerializer(String serializer) {
-        DaoCloudProperties.serializer = serializer;
+        DaoCloudServerProperties.serverPort = serverPort;
     }
 }

@@ -15,14 +15,13 @@
     dao-cloud-example = 使用示例
 
 # dao-协议
-    魔数(3-byte)
-    版本(1-byte)
-    消息类型(1-byte)
-    序列化方式(1-byte)  支持:jdk、json、protobuf(推荐-todo)
-    数据包长度(4-byte)
-    数据包内容(~)
-
-todo 自定义协议,这是该项目的看点
+    +---------+---------+--------------+----------------+----------------+----------------+
+    |  magic  | version | message type | serialize type |   data length  |  data content  |
+    | 3(byte) | 1(byte) |    1(byte)   |     1(byte)    |     4(byte)    |       ~~       |
+    +---------+---------+--------------+----------------+----------------+----------------+
+    version: 暂时没用到
+    serialize type 支持: jdk、json、protobuf(推荐-todo)、dao(默认-todo)
+todo 自定义协议(通过版本来让用户自定义一个协议来通信),这是该项目的看点
 
 # 快速开始
 暂时无需任何配置(追求轻).不管是provider还是consumer都是直接引入的方式(注意:目前只支持Spring Boot自动注入的模式)
@@ -36,8 +35,8 @@ todo 自定义协议,这是该项目的看点
 使用注解说明(其实用法与dubbo、spring-cloud、sofa这些差不多一致)
     
     每个provider一定要设置自己的proxy名字! 确定唯一接口: proxy+provider+version
-    @DaoService = 用于服务注册    provider:暴露服务的provider名称, version:发布版本
-    @DaoReference = 用于服务注入  provider:暴露服务的provider名称, version:发布版本, loadbanalce:负载路由选择, timeout:超时时间
+    @DaoService = 用于服务注册    provider:暴露服务的provider名称, version:发布版本, serialize:序列化选择
+    @DaoReference = 用于服务注入  provider:暴露服务的provider名称, version:发布版本, serialize:序列化选择, loadbanalce:负载路由选择, timeout:超时时间
 
 查看服务注册情况(在启动注册中心后),可以通过
 
