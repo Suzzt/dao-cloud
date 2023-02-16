@@ -1,7 +1,7 @@
 spring:
   application:
     name: web
-log.home: /data/dao-cloud/${spring.application.name}
+log.home: /data/dao-cloud-logs/${spring.application.name}
 server:
   port: 5555
   servlet:

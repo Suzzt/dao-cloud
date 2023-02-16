@@ -86,7 +86,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                 // set bean
                 field.setAccessible(true);
                 field.set(bean, serviceProxy);
-                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, beanName);
+                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, field.getName());
             }
         });
         return true;
