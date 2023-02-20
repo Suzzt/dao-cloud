@@ -9,9 +9,11 @@ import com.junmo.core.enums.Serializer;
  */
 public class SerializeStrategyFactory {
 
-    public static byte JDK_SERIALIZER = 0;
+    public static byte HESSIAN = 0;
 
-    public static byte JSON_SERIALIZER = 1;
+    public static byte JDK = 1;
+
+    public static byte JSON = 2;
 
     public static DaoSerializer getSerializer(byte type) {
         Serializer[] values = Serializer.values();
@@ -21,7 +23,7 @@ public class SerializeStrategyFactory {
             }
         }
         // default
-        return Serializer.JDK.getDaoSerializer();
+        return Serializer.HESSIAN.getDaoSerializer();
     }
 
     public static DaoSerializer getSerializer(String name) {
@@ -32,7 +34,7 @@ public class SerializeStrategyFactory {
             }
         }
         // default
-        return Serializer.JDK.getDaoSerializer();
+        return Serializer.HESSIAN.getDaoSerializer();
     }
 
     public static Byte getSerializeType(String name) {
@@ -43,7 +45,7 @@ public class SerializeStrategyFactory {
             }
         }
         // default
-        return Serializer.JDK.getType();
+        return Serializer.HESSIAN.getType();
     }
 
 }

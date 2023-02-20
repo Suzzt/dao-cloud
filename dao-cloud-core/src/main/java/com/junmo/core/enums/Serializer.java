@@ -2,6 +2,7 @@ package com.junmo.core.enums;
 
 import com.junmo.core.netty.serialize.DaoSerializer;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
+import com.junmo.core.netty.serialize.impl.HessianSerializer;
 import com.junmo.core.netty.serialize.impl.JdkSerializer;
 import com.junmo.core.netty.serialize.impl.JsonSerializer;
 
@@ -11,8 +12,9 @@ import com.junmo.core.netty.serialize.impl.JsonSerializer;
  * @description:
  */
 public enum Serializer {
-    JDK(SerializeStrategyFactory.JDK_SERIALIZER, "jdk", new JdkSerializer()),
-    JSON(SerializeStrategyFactory.JSON_SERIALIZER, "json", new JsonSerializer());
+    HESSIAN(SerializeStrategyFactory.HESSIAN, "hessian", new HessianSerializer()),
+    JDK(SerializeStrategyFactory.JDK, "jdk", new JdkSerializer()),
+    JSON(SerializeStrategyFactory.JSON, "json", new JsonSerializer());
 
     /**
      * type

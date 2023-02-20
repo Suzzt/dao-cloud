@@ -26,5 +26,5 @@ public @interface DaoReference {
 
     LoadBalance loadBalance() default LoadBalance.RANDOM;
 
-    Serializer serializable() default Serializer.JDK;
+    Serializer serializable() default Serializer.HESSIAN;
 }

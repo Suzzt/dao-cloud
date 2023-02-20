@@ -20,7 +20,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     | 3(byte) | 1(byte) |    1(byte)   |     1(byte)    |     4(byte)    |       ~~       |
     +---------+---------+--------------+----------------+----------------+----------------+
     version: 暂时没用到
-    serialize type 支持: jdk、json、protobuf(推荐默认)
+    serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 todo 自定义协议(通过版本来让用户自定义一个协议来通信),这是该项目的看点
 
 # 快速开始

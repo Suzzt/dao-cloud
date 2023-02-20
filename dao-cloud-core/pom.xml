@@ -23,6 +23,12 @@
             <version>4.1.39.Final</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.66</version>
+        </dependency>
+
     </dependencies>
 
 

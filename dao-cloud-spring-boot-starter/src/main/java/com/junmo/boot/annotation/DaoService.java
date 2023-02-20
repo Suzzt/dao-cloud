@@ -19,5 +19,5 @@ public @interface DaoService {
 
     int version() default 0;
 
-    Serializer serializable() default Serializer.JDK;
+    Serializer serializable() default Serializer.HESSIAN;
 }
