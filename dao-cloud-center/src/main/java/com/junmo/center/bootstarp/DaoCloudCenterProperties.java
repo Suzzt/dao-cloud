@@ -9,9 +9,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "dao-cloud")
 public class DaoCloudCenterProperties {
-    public static String serializer;
 
-    public void setSerializer(String serializer) {
-        DaoCloudCenterProperties.serializer = serializer;
-    }
 }

@@ -36,7 +36,10 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
-    public static byte SERIALIZE_TYPE;
+    /**
+     * default hessian serialize
+     */
+    public static byte SERIALIZE_TYPE = 0;
 
     private final int port = 5551;
 
@@ -46,7 +49,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
-            SERIALIZE_TYPE = SerializeStrategyFactory.getSerializeType(DaoCloudCenterProperties.serializer);
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);
