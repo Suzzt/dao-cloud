@@ -1,12 +1,10 @@
 package com.junmo.center.register;
 
-import com.junmo.center.bootstarp.DaoCloudCenterProperties;
 import com.junmo.center.register.handler.PollServerHandler;
 import com.junmo.center.register.handler.ServerRegisterMessageHandler;
 import com.junmo.center.web.RegisterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
-import com.junmo.core.netty.serialize.SerializeStrategyFactory;
 import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
