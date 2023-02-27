@@ -4,8 +4,8 @@ spring:
 log.home: /data/dao-cloud-logs/${spring.application.name}
 server:
   port: 5555
-  servlet:
-    context-path: /dao-cloud
+#  servlet:
+#    context-path: /dao-cloud
 dao-cloud:
   center:
     dashboard: true

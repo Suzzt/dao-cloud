@@ -1,0 +1,38 @@
+package com.junmo.core.model;
+
+import lombok.Data;
+
+import java.util.Objects;
+
+/**
+ * @author: sucf
+ * @date: 2023/2/26 17:23
+ * @description:
+ */
+@Data
+public class ProxyConfigModel extends Model {
+    private String proxy;
+
+    private String key;
+
+    private int version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProxyConfigModel that = (ProxyConfigModel) o;
+        return version == that.version && Objects.equals(proxy, that.proxy) && Objects.equals(key, that.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), proxy, key, version);
+    }
+
+    @Override
+    public String toString() {
+        return this.proxy + "|" + this.key + "|" + this.version;
+    }
+}

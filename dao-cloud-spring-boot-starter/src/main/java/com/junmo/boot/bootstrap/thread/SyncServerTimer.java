@@ -39,20 +39,20 @@ public class SyncServerTimer implements Runnable {
                 public void run(Timeout timeout) {
                     try {
                         Set<Client> oldClients = ClientManager.getClients(proxyProviderModel);
-                        Set<Client> pollClients = Sets.newLinkedHashSet();
-                        Set<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxyProviderModel);
+                        Set<Client> pullClients = Sets.newLinkedHashSet();
+                        Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
                                 Client client = new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort());
-                                pollClients.add(client);
+                                pullClients.add(client);
                             }
                             // new up server node
                             oldClients = oldClients == null ? new HashSet<>() : oldClients;
-                            Set<Client> newUpClients = (Set<Client>) CollectionUtil.subtract(pollClients, oldClients);
+                            Set<Client> newUpClients = (Set<Client>) CollectionUtil.subtract(pullClients, oldClients);
                             ClientManager.addAll(proxyProviderModel, newUpClients);
                         }
                     } catch (Exception e) {
-                        log.error("<<<<<<<<<<< poll proxy = {}, provider = {} server node error >>>>>>>>>>>", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel(), e);
+                        log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel(), e);
                     } finally {
                         DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 3, TimeUnit.SECONDS);
                     }

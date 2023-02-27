@@ -30,8 +30,8 @@ public class MessageModelTypeManager {
         MESSAGE_TYPE_MAP.put(POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, ProxyProviderServerModel.class);
         MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);
         MESSAGE_TYPE_MAP.put(RPC_RESPONSE_MESSAGE, RpcResponseModel.class);
-//        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_CONFIG_REQUEST_MESSAGE, ProxyProviderModel.class);
-//        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, ConfigModel.class);
+        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_CONFIG_REQUEST_MESSAGE, ProxyConfigModel.class);
+        MESSAGE_TYPE_MAP.put(POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, ConfigModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

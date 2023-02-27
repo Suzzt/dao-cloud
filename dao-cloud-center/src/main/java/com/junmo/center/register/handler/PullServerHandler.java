@@ -1,7 +1,7 @@
 package com.junmo.center.register.handler;
 
 import com.junmo.center.register.DaoCloudCenterConfiguration;
-import com.junmo.center.register.RegisterManager;
+import com.junmo.center.register.RegisterCenterManager;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ProxyProviderServerModel;
@@ -18,10 +18,10 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2022/10/29 10:28
- * @description: poll server handler
+ * @description: pull server handler
  */
 @Slf4j
-public class PollServerHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {
+public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProxyProviderModel proxyProviderModel) {
@@ -30,7 +30,7 @@ public class PollServerHandler extends SimpleChannelInboundHandler<ProxyProvider
         Set<ServerNodeModel> serverNodeModels;
         DaoMessage daoMessage;
         try {
-            serverNodeModels = RegisterManager.getServers(proxy, providerModel);
+            serverNodeModels = RegisterCenterManager.getServers(proxy, providerModel);
             daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
         } catch (Exception e) {
             daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, e.getMessage()));
@@ -44,6 +44,6 @@ public class PollServerHandler extends SimpleChannelInboundHandler<ProxyProvider
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("<<<<<<<<<< poll server node info error {} >>>>>>>>>", ctx.channel(), cause);
+        log.error("<<<<<<<<<< pull server node info error {} >>>>>>>>>", ctx.channel(), cause);
     }
 }

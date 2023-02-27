@@ -40,12 +40,12 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     private final Set<ProxyProviderModel> relyProxy = new HashSet<>();
 
-    private Thread pollServerNodeThread;
+    private Thread pullServerNodeThread;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        pollServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
-        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pollServerNodeThread);
+        pullServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
+        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pullServerNodeThread);
     }
 
     @Override
@@ -63,9 +63,9 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                 int version = daoReference.version();
                 Object serviceProxy;
                 try {
-                    // poll service node
+                    // pull service node
                     ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
-                    Set<ServerNodeModel> serverNodeModels = RegistryManager.poll(proxyProviderModel);
+                    Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
                     Set<Client> clients = Sets.newLinkedHashSet();
                     if (!CollectionUtils.isEmpty(serverNodeModels)) {
                         for (ServerNodeModel serverNodeModel : serverNodeModels) {
@@ -80,7 +80,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                     // get proxyObj
                     serviceProxy = RpcProxy.build(iface, proxyProviderModel, serialized, loadBalance.getDaoLoadBalance(), timeout);
                 } catch (Exception e) {
-                    log.error("<<<<<<<<<<< poll proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
+                    log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
                     throw new DaoException(e);
                 }
                 // set bean
@@ -94,8 +94,8 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void destroy() {
-        if (pollServerNodeThread != null && pollServerNodeThread.isAlive()) {
-            pollServerNodeThread.interrupt();
+        if (pullServerNodeThread != null && pullServerNodeThread.isAlive()) {
+            pullServerNodeThread.interrupt();
         }
         log.debug(">>>>>>>>>>> dao-cloud-rpc consumer server destroy <<<<<<<<<<<<");
     }

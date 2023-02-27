@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description: server register manager
  */
 @Slf4j
-public class RegisterManager {
+public class RegisterCenterManager {
 
     /**
      * register servers

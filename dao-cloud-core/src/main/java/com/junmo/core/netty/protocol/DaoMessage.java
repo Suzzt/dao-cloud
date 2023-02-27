@@ -25,7 +25,7 @@ public class DaoMessage<T> {
     //====================================================固定结构====================================================
     /**
      * 魔数
-     * 3byte (no)
+     * 3byte
      */
     private byte[] magicNumber = DaoCloudUtil.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
 

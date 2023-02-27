@@ -105,7 +105,7 @@ public class RpcProxy {
             DefaultPromise<Object> promise = new DefaultPromise<>(client.getChannel().eventLoop());
             RpcClientMessageHandler.PROMISE_MAP.put(sequenceId, promise);
 
-            //等待 promise 结果
+            // 等待 promise 结果
             if (!promise.await(timeout)) {
                 throw new DaoException("rpc do invoke time out");
             }

@@ -2,8 +2,14 @@ package com.junmo.example.rpc;
 
 import com.google.gson.Gson;
 import com.junmo.boot.annotation.DaoReference;
+import com.junmo.boot.bootstrap.manager.DaoConfig;
+import com.junmo.boot.bootstrap.unit.ConfigCallBack;
 import com.junmo.common.DemoService;
 import com.junmo.common.dto.ParamDTO;
+import com.junmo.core.ApiResult;
+import com.junmo.core.model.ProxyConfigModel;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @description:
  */
 @RestController
+@Slf4j
 public class DemoController {
+
     @DaoReference(proxy = "demo")
     private DemoService demoService;
 
@@ -49,5 +57,50 @@ public class DemoController {
     public String timeOut() {
         demoService.timeout();
         return null;
+    }
+
+    /**
+     * 测试获取config信息
+     *
+     * @return
+     */
+    @RequestMapping("test-config")
+    public ApiResult config() {
+        ConfigObject configObject = DaoConfig.getConf("demo", "config-key", ConfigObject.class);
+        return ApiResult.buildSuccess(configObject);
+    }
+
+    /**
+     * 测试订阅config信息
+     *
+     * @return
+     */
+    @RequestMapping("test-subscribe-config")
+    public ApiResult subscribe() {
+        DaoConfig.subscribe("demo", "config-key", new DemoConfigCallback());
+        return ApiResult.buildSuccess("config subscribe success");
+    }
+
+    @Data
+    public static class ConfigObject {
+        private String str;
+
+        private Integer integer;
+
+        @Override
+        public String toString() {
+            final StringBuffer sb = new StringBuffer("ConfigObject{");
+            sb.append("str='").append(str).append('\'');
+            sb.append(", integer=").append(integer);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    public static class DemoConfigCallback extends ConfigCallBack<ConfigObject> {
+        @Override
+        public void callback(ProxyConfigModel proxyConfigModel, ConfigObject configObject) {
+            log.info("proxyConfigModel = {}, configObject = {} to do something......", proxyConfigModel, configObject);
+        }
     }
 }

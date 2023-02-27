@@ -1,6 +1,6 @@
 package com.junmo.center.register.handler;
 
-import com.junmo.center.register.RegisterManager;
+import com.junmo.center.register.RegisterCenterManager;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,7 +21,7 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RegisterProviderModel registerProviderModel) {
-        RegisterManager.register(registerProviderModel);
+        RegisterCenterManager.register(registerProviderModel);
         this.registerProviderModel = registerProviderModel;
         ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
@@ -33,7 +33,7 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         if (registerProviderModel != null) {
-            RegisterManager.delete(registerProviderModel);
+            RegisterCenterManager.delete(registerProviderModel);
         }
         super.channelUnregistered(ctx);
     }
@@ -42,7 +42,7 @@ public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<Re
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             if (registerProviderModel != null) {
-                RegisterManager.delete(registerProviderModel);
+                RegisterCenterManager.delete(registerProviderModel);
                 ctx.channel().close();
             }
         } else {

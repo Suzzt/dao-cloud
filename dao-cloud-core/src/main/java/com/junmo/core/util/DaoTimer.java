@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DaoTimer {
     public static final HashedWheelTimer HASHED_WHEEL_TIMER = new HashedWheelTimer(
-            new DefaultThreadFactory("register-timer"),
+            new DefaultThreadFactory("dao-timer"),
             100,
             TimeUnit.MILLISECONDS,
             512,

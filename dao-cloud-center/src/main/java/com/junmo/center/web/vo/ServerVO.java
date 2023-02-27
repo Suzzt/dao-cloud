@@ -8,7 +8,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class ProxyVO {
+public class ServerVO {
     private String proxy;
 
     private String provider;

@@ -8,10 +8,8 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class ConfigModel extends Model{
-    private ProxyProviderModel proxyProviderModel;
-
-    private String key;
+public class ConfigModel extends ResponseModel {
+    private ProxyConfigModel proxyConfigModel;
 
     private String configValue;
 }
