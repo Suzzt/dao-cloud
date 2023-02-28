@@ -1,7 +1,7 @@
-package com.junmo.center.register.handler;
+package com.junmo.center.core.handler;
 
-import com.junmo.center.register.ConfigCenterManager;
-import com.junmo.center.register.ConfigChannelManager;
+import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.ConfigChannelManager;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;

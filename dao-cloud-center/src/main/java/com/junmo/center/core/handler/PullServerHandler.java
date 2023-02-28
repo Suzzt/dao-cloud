@@ -1,7 +1,7 @@
-package com.junmo.center.register.handler;
+package com.junmo.center.core.handler;
 
-import com.junmo.center.register.DaoCloudCenterConfiguration;
-import com.junmo.center.register.RegisterCenterManager;
+import com.junmo.center.bootstarp.DaoCloudCenterConfiguration;
+import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ProxyProviderServerModel;

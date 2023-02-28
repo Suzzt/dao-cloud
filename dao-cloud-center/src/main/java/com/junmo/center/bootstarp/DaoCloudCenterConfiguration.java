@@ -1,8 +1,8 @@
-package com.junmo.center.register;
+package com.junmo.center.bootstarp;
 
-import com.junmo.center.register.handler.PullServerHandler;
-import com.junmo.center.register.handler.ServerRegisterMessageHandler;
-import com.junmo.center.register.handler.SubscribeConfigHandler;
+import com.junmo.center.core.handler.PullServerHandler;
+import com.junmo.center.core.handler.ServerRegisterHandler;
+import com.junmo.center.core.handler.SubscribeConfigHandler;
 import com.junmo.center.web.CenterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
@@ -63,7 +63,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
                             ch.pipeline().addLast(new SubscribeConfigHandler());
                             ch.pipeline().addLast(new PullServerHandler());
-                            ch.pipeline().addLast(new ServerRegisterMessageHandler());
+                            ch.pipeline().addLast(new ServerRegisterHandler());
 
                         }
                     });

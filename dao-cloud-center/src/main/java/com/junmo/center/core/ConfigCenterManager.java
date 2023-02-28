@@ -1,4 +1,4 @@
-package com.junmo.center.register;
+package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -19,32 +19,15 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/2/11 22:57
- * @description: config info manager
+ * @description: config manager
  */
 @Slf4j
 public class ConfigCenterManager {
 
-    private static Map<ProxyConfigModel, String> CONFIG = Maps.newConcurrentMap();
-
-    public static List<ConfigVO> getConfigVO(String proxy, String key) {
-        List<ConfigVO> result = Lists.newArrayList();
-        for (Map.Entry<ProxyConfigModel, String> entry : CONFIG.entrySet()) {
-            ConfigVO configVO = new ConfigVO();
-            ProxyConfigModel proxyConfigModel = entry.getKey();
-            if (StringUtils.hasLength(proxy) && !proxyConfigModel.getProxy().equals(proxy)) {
-                continue;
-            }
-            if (StringUtils.hasLength(key) && !proxyConfigModel.getKey().equals(key)) {
-                continue;
-            }
-            configVO.setProxy(proxyConfigModel.getProxy());
-            configVO.setKey(proxyConfigModel.getKey());
-            configVO.setVersion(proxyConfigModel.getVersion());
-            configVO.setValue(entry.getValue());
-            result.add(configVO);
-        }
-        return result;
-    }
+    /**
+     * config storage
+     */
+    private static Map<ProxyConfigModel, String> WARE_HOUSE = Maps.newConcurrentMap();
 
     /**
      * add or update config content
@@ -53,7 +36,7 @@ public class ConfigCenterManager {
      * @param jsonValue
      */
     public static synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
-        CONFIG.put(proxyConfigModel, jsonValue);
+        WARE_HOUSE.put(proxyConfigModel, jsonValue);
         Set<Channel> subscribeChannels = ConfigChannelManager.getSubscribeChannel(proxyConfigModel);
         if (!CollectionUtils.isEmpty(subscribeChannels)) {
             for (Channel channel : subscribeChannels) {
@@ -76,6 +59,26 @@ public class ConfigCenterManager {
      * @param proxyConfigModel
      */
     public static String getConfigValue(ProxyConfigModel proxyConfigModel) {
-        return CONFIG.get(proxyConfigModel);
+        return WARE_HOUSE.get(proxyConfigModel);
+    }
+
+    public static List<ConfigVO> getConfigVO(String proxy, String key) {
+        List<ConfigVO> result = Lists.newArrayList();
+        for (Map.Entry<ProxyConfigModel, String> entry : WARE_HOUSE.entrySet()) {
+            ConfigVO configVO = new ConfigVO();
+            ProxyConfigModel proxyConfigModel = entry.getKey();
+            if (StringUtils.hasLength(proxy) && !proxyConfigModel.getProxy().equals(proxy)) {
+                continue;
+            }
+            if (StringUtils.hasLength(key) && !proxyConfigModel.getKey().equals(key)) {
+                continue;
+            }
+            configVO.setProxy(proxyConfigModel.getProxy());
+            configVO.setKey(proxyConfigModel.getKey());
+            configVO.setVersion(proxyConfigModel.getVersion());
+            configVO.setValue(entry.getValue());
+            result.add(configVO);
+        }
+        return result;
     }
 }

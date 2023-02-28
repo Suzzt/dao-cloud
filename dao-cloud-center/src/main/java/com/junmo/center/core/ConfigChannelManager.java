@@ -1,9 +1,8 @@
-package com.junmo.center.register;
+package com.junmo.center.core;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.junmo.core.model.ProxyConfigModel;
-import com.junmo.core.model.ProxyProviderModel;
 import io.netty.channel.Channel;
 import org.springframework.util.CollectionUtils;
 

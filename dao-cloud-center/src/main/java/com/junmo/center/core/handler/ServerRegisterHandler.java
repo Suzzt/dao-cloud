@@ -1,6 +1,6 @@
-package com.junmo.center.register.handler;
+package com.junmo.center.core.handler;
 
-import com.junmo.center.register.RegisterCenterManager;
+import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * @description: server register handler
  */
 @Slf4j
-public class ServerRegisterMessageHandler extends SimpleChannelInboundHandler<RegisterProviderModel> {
+public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterProviderModel> {
 
     private RegisterProviderModel registerProviderModel;
 

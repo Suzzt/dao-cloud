@@ -1,8 +1,8 @@
 package com.junmo.center.web;
 
 import com.google.common.collect.Lists;
-import com.junmo.center.register.ConfigCenterManager;
-import com.junmo.center.register.RegisterCenterManager;
+import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.center.web.vo.ServerVO;
 import com.junmo.core.ApiResult;
