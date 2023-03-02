@@ -90,7 +90,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController registerController() {
+    public CenterController centerController() {
         return new CenterController();
     }
 }

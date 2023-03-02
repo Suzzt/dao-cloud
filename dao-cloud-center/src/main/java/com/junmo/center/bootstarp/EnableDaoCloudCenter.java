@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EnableConfigurationProperties({DaoCloudCenterProperties.class})
-@Import({DaoCloudCenterProperties.class, DaoCloudCenterConfiguration.class})
+@EnableConfigurationProperties({DaoCloudConfigCenterProperties.class})
+@Import({DaoCloudConfigCenterProperties.class, DaoCloudCenterConfiguration.class})
 public @interface EnableDaoCloudCenter {
 }

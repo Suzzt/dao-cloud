@@ -1,7 +1,8 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.junmo.center.core.storage.FileSystem;
+import com.junmo.center.core.storage.Persistence;
 import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
@@ -27,7 +28,15 @@ public class ConfigCenterManager {
     /**
      * config storage
      */
-    private static Map<ProxyConfigModel, String> WARE_HOUSE = Maps.newConcurrentMap();
+    private static Map<ProxyConfigModel, String> WARE_HOUSE;
+
+    private static final Persistence persistence;
+
+    static {
+        persistence = new FileSystem();
+        // load config data
+        WARE_HOUSE = persistence.load();
+    }
 
     /**
      * add or update config content
@@ -37,6 +46,11 @@ public class ConfigCenterManager {
      */
     public static synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
         WARE_HOUSE.put(proxyConfigModel, jsonValue);
+        // persistence config data
+        ConfigModel config = new ConfigModel();
+        config.setProxyConfigModel(proxyConfigModel);
+        config.setConfigValue(jsonValue);
+        persistence.storage(config);
         Set<Channel> subscribeChannels = ConfigChannelManager.getSubscribeChannel(proxyConfigModel);
         if (!CollectionUtils.isEmpty(subscribeChannels)) {
             for (Channel channel : subscribeChannels) {
@@ -51,6 +65,11 @@ public class ConfigCenterManager {
                 });
             }
         }
+    }
+
+    public static synchronized void delete(ProxyConfigModel proxyConfigModel) {
+        WARE_HOUSE.remove(proxyConfigModel);
+        persistence.delete(proxyConfigModel);
     }
 
     /**

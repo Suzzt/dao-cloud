@@ -9,3 +9,6 @@ server:
 dao-cloud:
   center:
     dashboard: true
+  config:
+    persistence: file-system # file-system(本地文件)、mysql
+    prefix: /data/dao-cloud/config

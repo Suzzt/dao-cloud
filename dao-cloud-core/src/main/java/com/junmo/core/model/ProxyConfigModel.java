@@ -17,6 +17,15 @@ public class ProxyConfigModel extends Model {
 
     private int version;
 
+    public ProxyConfigModel(String proxy, String key, int version) {
+        this.proxy = proxy;
+        this.key = key;
+        this.version = version;
+    }
+
+    public ProxyConfigModel() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

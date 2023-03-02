@@ -65,12 +65,19 @@ public class CenterController {
 
     @RequestMapping(value = "/config/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult getConfigProxy(@Valid @RequestBody ConfigVO configVO) {
+    public ApiResult save(@Valid @RequestBody ConfigVO configVO) {
         ProxyConfigModel proxyConfigModel = new ProxyConfigModel();
         proxyConfigModel.setProxy(configVO.getProxy());
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
         ConfigCenterManager.update(proxyConfigModel, configVO.getValue());
+        return ApiResult.buildSuccess();
+    }
+
+    @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
+        ConfigCenterManager.delete(proxyConfigModel);
         return ApiResult.buildSuccess();
     }
 
