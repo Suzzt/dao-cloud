@@ -1,5 +1,6 @@
 package com.junmo.center.bootstarp;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -13,6 +14,20 @@ public class DaoCloudConfigCenterProperties {
 
     private static String prefix;
 
+    private static MysqlSetting mysqlSetting = new MysqlSetting();
+
+    public void setPersistence(String persistence) {
+        DaoCloudConfigCenterProperties.persistence = persistence;
+    }
+
+    public void setPrefix(String prefix) {
+        DaoCloudConfigCenterProperties.prefix = prefix;
+    }
+
+    public void setMysqlSetting(MysqlSetting mysqlSetting) {
+        DaoCloudConfigCenterProperties.mysqlSetting = mysqlSetting;
+    }
+
     public static String getPersistence() {
         return persistence;
     }
@@ -21,11 +36,15 @@ public class DaoCloudConfigCenterProperties {
         return prefix;
     }
 
-    public void setPersistence(String persistence) {
-        DaoCloudConfigCenterProperties.persistence = persistence;
+    public static MysqlSetting getMysqlSetting() {
+        return mysqlSetting;
     }
 
-    public void setPrefix(String prefix) {
-        DaoCloudConfigCenterProperties.prefix = prefix;
+    @Data
+    public static class MysqlSetting {
+        private String url;
+        private Integer port;
+        private String username;
+        private String password;
     }
 }

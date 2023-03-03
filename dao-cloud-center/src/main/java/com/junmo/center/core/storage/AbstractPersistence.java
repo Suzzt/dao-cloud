@@ -6,5 +6,4 @@ package com.junmo.center.core.storage;
  * @description: abstract template persistence
  */
 public abstract class AbstractPersistence implements Persistence {
-
 }

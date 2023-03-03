@@ -1,6 +1,8 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
+import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.center.core.storage.DbMysql;
 import com.junmo.center.core.storage.FileSystem;
 import com.junmo.center.core.storage.Persistence;
 import com.junmo.center.web.vo.ConfigVO;
@@ -10,6 +12,7 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -23,6 +26,7 @@ import java.util.Set;
  * @description: config manager
  */
 @Slf4j
+@Component
 public class ConfigCenterManager {
 
     /**
@@ -30,11 +34,19 @@ public class ConfigCenterManager {
      */
     private static Map<ProxyConfigModel, String> WARE_HOUSE;
 
-    private static final Persistence persistence;
+    private static Persistence persistence;
 
     static {
-        persistence = new FileSystem();
-        // load config data
+        if ("file-system".equals(DaoCloudConfigCenterProperties.getPersistence())) {
+            persistence = new FileSystem();
+        } else if ("mysql".equals(DaoCloudConfigCenterProperties.getPersistence())) {
+            DaoCloudConfigCenterProperties.MysqlSetting mysqlSetting = DaoCloudConfigCenterProperties.getMysqlSetting();
+            String url = mysqlSetting.getUrl();
+            Integer port = mysqlSetting.getPort();
+            String username = mysqlSetting.getUsername();
+            String password = mysqlSetting.getPassword();
+            persistence = new DbMysql(url, port, username, password);
+        }
         WARE_HOUSE = persistence.load();
     }
 
