@@ -30,7 +30,9 @@ public class DbMysql implements Persistence {
 
     private final String insert_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
-    private final String update_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? where proxy=? and `key`=? and version=?";
+    private final String update_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
+
+    private final String delete_sql_template = "DELETE FROM config WHERE PROXY = ? and `key` = ? and value = ?";
 
     public DbMysql(String url, int port, String username, String password) {
         druidDataSource = new DruidDataSource();
@@ -125,7 +127,7 @@ public class DbMysql implements Persistence {
             preparedStatement.setString(4, configValue);
             preparedStatement.execute();
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql insert config error >>>>>>>>>>>>", e);
             throw new RuntimeException(e);
         }
     }
@@ -148,10 +150,12 @@ public class DbMysql implements Persistence {
         }
     }
 
-    private void delete(String proxy, String key, int value) {
-        try (DruidPooledConnection connection = druidDataSource.getConnection()) {
-            String sql = "delete where proxy = '%s' and `key` = '%s' and value = %s";
-            connection.createStatement().execute(String.format(sql, proxy, key, value));
+    private void delete(String proxy, String key, int version) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, key);
+            preparedStatement.setInt(3, version);
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
             throw new RuntimeException(e);

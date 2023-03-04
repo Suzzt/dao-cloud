@@ -77,7 +77,7 @@ public class CenterController {
 
     @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
+    public ApiResult<List<ConfigVO>> delete(@RequestBody ProxyConfigModel proxyConfigModel) {
         ConfigCenterManager.delete(proxyConfigModel);
         return ApiResult.buildSuccess();
     }
