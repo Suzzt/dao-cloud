@@ -27,13 +27,6 @@ public interface Persistence {
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
-     * get json value
-     * @param proxyConfigModel
-     * @return
-     */
-    String getValue(ProxyConfigModel proxyConfigModel);
-
-    /**
      * load init all config data
      * @return
      */

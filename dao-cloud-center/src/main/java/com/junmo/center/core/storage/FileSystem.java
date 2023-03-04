@@ -37,12 +37,6 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public String getValue(ProxyConfigModel proxyConfigModel) {
-        String path = makePath(proxyConfigModel);
-        return FileUtil.readUtf8String(path);
-    }
-
-    @Override
     public Map<ProxyConfigModel, String> load() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
         String prefixPath = DaoCloudConfigCenterProperties.getPrefix();

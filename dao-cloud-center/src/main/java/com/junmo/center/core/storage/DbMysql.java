@@ -29,9 +29,9 @@ public class DbMysql implements Persistence {
 
     private DruidDataSource druidDataSource;
 
-    private final String create_table = "CREATE TABLE IF NOT EXISTS `dao_cloud.config` ( `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键', `gmt_create` datetime NOT NULL COMMENT '创建时间', `gmt_modified` datetime NOT NULL COMMENT '修改时间', `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark', `key` varchar(255) NOT NULL COMMENT 'key', `version` int(11) NOT NULL COMMENT 'config版本', `value` longtext NOT NULL COMMENT '配置值', PRIMARY KEY (`id`), UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`) ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARSET = utf8 COMMENT '配置中心存储'";
+    private final String create_table = "CREATE TABLE IF NOT EXISTS `config` ( `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键', `gmt_create` datetime NOT NULL COMMENT '创建时间', `gmt_modified` datetime NOT NULL COMMENT '修改时间', `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark', `key` varchar(255) NOT NULL COMMENT 'key', `version` int(11) NOT NULL COMMENT 'config版本', `value` longtext NOT NULL COMMENT '配置值', PRIMARY KEY (`id`), UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`) ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARSET = utf8 COMMENT '配置中心存储'";
 
-    private final String example_data = "INSERT INTO `dao_cloud.config` (gmt_create, gmt_modified, proxy, `key`, version , value) VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0 , 'Welcome to dao-cloud!')";
+    private final String example_data = "INSERT INTO `config` (gmt_create, gmt_modified, proxy, `key`, version , value) VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0 , 'Welcome to dao-cloud!')";
 
     public DbMysql(String url, int port, String username, String password) {
         druidDataSource = new DruidDataSource();
@@ -51,11 +51,6 @@ public class DbMysql implements Persistence {
     @Override
     public void delete(ProxyConfigModel proxyConfigModel) {
         delete(proxyConfigModel.getProxy(), proxyConfigModel.getKey(), proxyConfigModel.getVersion());
-    }
-
-    @Override
-    public String getValue(ProxyConfigModel proxyConfigModel) {
-        return null;
     }
 
     @Override
@@ -81,23 +76,13 @@ public class DbMysql implements Persistence {
     }
 
     /**
-     * init table
-     */
-    private void create() {
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute(create_table);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * init example data
      */
     private void initialize() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(create_table);
             statement.execute(example_data);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

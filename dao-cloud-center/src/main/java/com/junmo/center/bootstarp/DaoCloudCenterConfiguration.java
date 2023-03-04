@@ -1,5 +1,6 @@
 package com.junmo.center.bootstarp;
 
+import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.handler.PullServerHandler;
 import com.junmo.center.core.handler.ServerRegisterHandler;
 import com.junmo.center.core.handler.SubscribeConfigHandler;
@@ -48,6 +49,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
+            // init config center
+            ConfigCenterManager.init();
+            // start up server
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);

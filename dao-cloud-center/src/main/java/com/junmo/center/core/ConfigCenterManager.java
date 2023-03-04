@@ -29,14 +29,11 @@ import java.util.Set;
 @Component
 public class ConfigCenterManager {
 
-    /**
-     * config storage
-     */
     private static Map<ProxyConfigModel, String> WARE_HOUSE;
 
     private static Persistence persistence;
 
-    static {
+    public static void init() {
         if ("file-system".equals(DaoCloudConfigCenterProperties.getPersistence())) {
             persistence = new FileSystem();
         } else if ("mysql".equals(DaoCloudConfigCenterProperties.getPersistence())) {

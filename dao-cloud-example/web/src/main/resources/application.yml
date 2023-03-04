@@ -12,7 +12,8 @@ dao-cloud:
   config:
     persistence: file-system # file-system(本地文件)、mysql
     prefix: /data/dao-cloud/config
-#    mysql:
-#      url: 192.168.1.14
-#      username: root
-#      password: JunMo123
+    mysql-setting:
+      url: 192.168.31.23
+      port: 3306
+      username: root
+      password: JunMo123

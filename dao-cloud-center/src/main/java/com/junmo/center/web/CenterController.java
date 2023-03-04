@@ -9,6 +9,7 @@ import com.junmo.core.ApiResult;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.model.ServerNodeModel;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ import java.util.Set;
  * @date: 2022/11/19 18:16
  * @description:
  */
-@RestController
+@Controller
 @RequestMapping(value = "dao-cloud")
 public class CenterController {
 
