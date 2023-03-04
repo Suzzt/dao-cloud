@@ -172,11 +172,12 @@ public class DbMysql implements Persistence {
 
     private List<ConfigPO> queryList(int index, int size) {
         List<ConfigPO> list = Lists.newArrayList();
-        try (DruidPooledConnection connection = druidDataSource.getConnection()) {
-            String sql = "select * from config limit %s, %s";
-            ResultSet result = connection.createStatement().executeQuery(String.format(sql, index, size));
-            if (result.next()) {
-                ConfigPO configPO = conversion(result);
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select * from config limit ?, ?");) {
+            preparedStatement.setInt(1, index);
+            preparedStatement.setInt(2, size);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                ConfigPO configPO = conversion(resultSet);
                 list.add(configPO);
             }
         } catch (Exception e) {

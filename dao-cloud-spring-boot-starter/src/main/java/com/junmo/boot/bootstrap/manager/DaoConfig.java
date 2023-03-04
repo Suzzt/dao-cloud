@@ -150,13 +150,20 @@ public class DaoConfig {
                 return null;
             }
         }
-        Gson gson = new Gson();
         try {
+            if (String.class.equals(clazz)) {
+                return (T) jsonValue;
+            }
+            Gson gson = new Gson();
             return gson.fromJson(jsonValue, clazz);
         } catch (Exception e) {
             log.error("<<<<<<<<<<<<<< get config ({}) error >>>>>>>>>>>>>>", proxyConfigModel, e);
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Integer.class.isPrimitive());
     }
 
     /**

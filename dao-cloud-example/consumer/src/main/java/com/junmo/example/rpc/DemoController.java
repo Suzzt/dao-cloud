@@ -60,12 +60,23 @@ public class DemoController {
     }
 
     /**
-     * 测试获取config信息
+     * 测试获取config信息(String)
      *
      * @return
      */
     @RequestMapping("test-config")
     public ApiResult config() {
+        String conf = DaoConfig.getConf("dao-cloud", "dao-cloud", String.class);
+        return ApiResult.buildSuccess(conf);
+    }
+
+    /**
+     * 测试获取config信息(组合)
+     *
+     * @return
+     */
+    @RequestMapping("test-config-complex")
+    public ApiResult configComplex() {
         ConfigObject configObject = DaoConfig.getConf("demo", "config-key", ConfigObject.class);
         return ApiResult.buildSuccess(configObject);
     }
