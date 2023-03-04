@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DaoCloudConfigCenterProperties {
     private static String persistence;
 
-    private static String prefix;
+    private static FileSystemSetting fileSystemSetting = new FileSystemSetting();
 
     private static MysqlSetting mysqlSetting = new MysqlSetting();
 
@@ -20,20 +20,20 @@ public class DaoCloudConfigCenterProperties {
         DaoCloudConfigCenterProperties.persistence = persistence;
     }
 
-    public void setPrefix(String prefix) {
-        DaoCloudConfigCenterProperties.prefix = prefix;
-    }
-
-    public void setMysqlSetting(MysqlSetting mysqlSetting) {
-        DaoCloudConfigCenterProperties.mysqlSetting = mysqlSetting;
-    }
-
     public static String getPersistence() {
         return persistence;
     }
 
-    public static String getPrefix() {
-        return prefix;
+    public void setFileSystemSetting(FileSystemSetting fileSystemSetting) {
+        DaoCloudConfigCenterProperties.fileSystemSetting = fileSystemSetting;
+    }
+
+    public static FileSystemSetting getFileSystemSetting() {
+        return fileSystemSetting;
+    }
+
+    public void setMysqlSetting(MysqlSetting mysqlSetting) {
+        DaoCloudConfigCenterProperties.mysqlSetting = mysqlSetting;
     }
 
     public static MysqlSetting getMysqlSetting() {
@@ -46,5 +46,10 @@ public class DaoCloudConfigCenterProperties {
         private Integer port;
         private String username;
         private String password;
+    }
+
+    @Data
+    public static class FileSystemSetting {
+        private String pathPrefix;
     }
 }

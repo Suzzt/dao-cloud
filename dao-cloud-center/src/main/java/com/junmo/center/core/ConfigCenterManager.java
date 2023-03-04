@@ -36,12 +36,26 @@ public class ConfigCenterManager {
     public static void init() {
         if ("file-system".equals(DaoCloudConfigCenterProperties.getPersistence())) {
             persistence = new FileSystem();
+            DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = DaoCloudConfigCenterProperties.getFileSystemSetting();
+            String pathPrefix = fileSystemSetting.getPathPrefix();
+            if (!StringUtils.hasLength(pathPrefix)) {
+                fileSystemSetting.setPathPrefix("/data/dao-cloud/config");
+            }
         } else if ("mysql".equals(DaoCloudConfigCenterProperties.getPersistence())) {
             DaoCloudConfigCenterProperties.MysqlSetting mysqlSetting = DaoCloudConfigCenterProperties.getMysqlSetting();
             String url = mysqlSetting.getUrl();
             Integer port = mysqlSetting.getPort();
             String username = mysqlSetting.getUsername();
             String password = mysqlSetting.getPassword();
+            if (!StringUtils.hasLength(url) || (port == null || port < 0)
+                    || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
+                throw new RuntimeException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" +
+                        " mysql-setting:\n" +
+                        "      url: x\n" +
+                        "      port: x\n" +
+                        "      username: x\n" +
+                        "      password: x");
+            }
             persistence = new DbMysql(url, port, username, password);
         }
         WARE_HOUSE = persistence.load();

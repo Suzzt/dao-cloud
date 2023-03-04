@@ -9,10 +9,7 @@ import com.junmo.core.model.ProxyConfigModel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +28,9 @@ public class DbMysql implements Persistence {
 
     private final String create_table = "CREATE TABLE IF NOT EXISTS `config` ( `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键', `gmt_create` datetime NOT NULL COMMENT '创建时间', `gmt_modified` datetime NOT NULL COMMENT '修改时间', `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark', `key` varchar(255) NOT NULL COMMENT 'key', `version` int(11) NOT NULL COMMENT 'config版本', `value` longtext NOT NULL COMMENT '配置值', PRIMARY KEY (`id`), UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`) ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARSET = utf8 COMMENT '配置中心存储'";
 
-    private final String example_data = "INSERT INTO `config` (gmt_create, gmt_modified, proxy, `key`, version , value) VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0 , 'Welcome to dao-cloud!')";
+    private final String insert_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
+
+    private final String update_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? where proxy=? and `key`=? and version=?";
 
     public DbMysql(String url, int port, String username, String password) {
         druidDataSource = new DruidDataSource();
@@ -43,9 +42,20 @@ public class DbMysql implements Persistence {
         druidDataSource.setMaxActive(20);
     }
 
+    /**
+     * init create table
+     */
+    private void initialize() {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(create_table);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void storage(ConfigModel configModel) {
-        insert(configModel);
+        insertOrUpdate(configModel);
     }
 
     @Override
@@ -60,7 +70,12 @@ public class DbMysql implements Persistence {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
         Long count = count();
         if (count == 0) {
-            initialize();
+            // init example data
+            ConfigModel configModel = new ConfigModel();
+            ProxyConfigModel proxyConfigModel = new ProxyConfigModel("dao-cloud", "dao-cloud", 0);
+            configModel.setProxyConfigModel(proxyConfigModel);
+            configModel.setConfigValue("Welcome to dao-cloud!");
+            insert(configModel);
             count = count();
         }
         int limit = 500;
@@ -75,14 +90,24 @@ public class DbMysql implements Persistence {
         return map;
     }
 
-    /**
-     * init example data
-     */
-    private void initialize() {
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute(create_table);
-            statement.execute(example_data);
+    private void insertOrUpdate(ConfigModel configModel) {
+        ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
+        String proxy = proxyConfigModel.getProxy();
+        String key = proxyConfigModel.getKey();
+        int version = proxyConfigModel.getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select count(1) from config where proxy=? and `key`=? and version=?")) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, key);
+            preparedStatement.setInt(3, version);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            if (result.getLong(1) == 0) {
+                insert(configModel);
+            } else {
+                update(configModel);
+            }
         } catch (Exception e) {
+            log.error("<<<<<<<<<<<< insertOrUpdate delete config error >>>>>>>>>>>>", e);
             throw new RuntimeException(e);
         }
     }
@@ -93,11 +118,32 @@ public class DbMysql implements Persistence {
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
         String configValue = configModel.getConfigValue();
-        try (DruidPooledConnection connection = druidDataSource.getConnection()) {
-            String sql = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), '%s', '%s', %s, '%s')";
-            connection.createStatement().execute(String.format(sql, proxy, key, version, configValue));
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, key);
+            preparedStatement.setInt(3, version);
+            preparedStatement.setString(4, configValue);
+            preparedStatement.execute();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void update(ConfigModel configModel) {
+        ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
+        String proxy = proxyConfigModel.getProxy();
+        String key = proxyConfigModel.getKey();
+        int version = proxyConfigModel.getVersion();
+        String configValue = configModel.getConfigValue();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_sql_template)) {
+            preparedStatement.setString(1, configValue);
+            preparedStatement.setString(2, proxy);
+            preparedStatement.setString(3, key);
+            preparedStatement.setInt(4, version);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update config error >>>>>>>>>>>>", e);
             throw new RuntimeException(e);
         }
     }
@@ -152,7 +198,7 @@ public class DbMysql implements Persistence {
         return configPO;
     }
 
-    private ConfigPO query(String proxy, String key, int value) throws SQLException {
+    private ConfigPO query(String proxy, String key, int value) {
         try (DruidPooledConnection connection = druidDataSource.getConnection()) {
             String sql = "select * from config where proxy = '%s' and `key` = '%s' and value = %s";
             ResultSet result = connection.createStatement().executeQuery(String.format(sql, proxy, key, value));
@@ -164,7 +210,7 @@ public class DbMysql implements Persistence {
             }
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 

@@ -39,7 +39,7 @@ public class FileSystem implements Persistence {
     @Override
     public Map<ProxyConfigModel, String> load() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
-        String prefixPath = DaoCloudConfigCenterProperties.getPrefix();
+        String prefixPath = DaoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
             List<String> keys = loopDirs(prefixPath + File.separator + proxy);
@@ -59,7 +59,7 @@ public class FileSystem implements Persistence {
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String prefix = DaoCloudConfigCenterProperties.getPrefix();
+        String prefix = DaoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
         return prefix + File.separator + proxy + File.separator + key + File.separator + version;
     }
 
