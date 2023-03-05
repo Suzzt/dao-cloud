@@ -12,7 +12,8 @@ dao-cloud:
   config:
     persistence: file-system # file-system(本地文件)、mysql
     # 配置文件存储地址
-    prefix: /data/dao-cloud/config
+    file-system-setting:
+      pathPrefix: /data/dao-cloud/config
     # 配置文件存放mysql的地址
 #    mysql-setting:
 #      url: 192.168.31.23
