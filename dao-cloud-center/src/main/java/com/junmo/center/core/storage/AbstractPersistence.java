@@ -1,8 +1,6 @@
 package com.junmo.center.core.storage;
 
-import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
-
-import javax.annotation.Resource;
+import com.junmo.core.expand.Persistence;
 
 /**
  * @author: sucf
@@ -10,6 +8,4 @@ import javax.annotation.Resource;
  * @description: abstract template persistence
  */
 public abstract class AbstractPersistence implements Persistence {
-    @Resource
-    public DaoCloudConfigCenterProperties daoCloudConfigCenterProperties;
 }

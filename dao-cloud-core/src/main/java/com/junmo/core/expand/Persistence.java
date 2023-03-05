@@ -1,4 +1,4 @@
-package com.junmo.center.core.storage;
+package com.junmo.core.expand;
 
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;

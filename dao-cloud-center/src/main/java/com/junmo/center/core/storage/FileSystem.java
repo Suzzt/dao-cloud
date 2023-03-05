@@ -4,6 +4,7 @@ package com.junmo.center.core.storage;
 import cn.hutool.core.io.FileUtil;
 import com.google.common.collect.Maps;
 import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,24 @@ import java.util.Map;
  * @author: sucf
  * @date: 2023/2/27 23:55
  * @description: data in local file system data persistence
+ * <p>
+ * config data is written to the file system.
+ * if there is no directory or file, just create it.
+ * the following is the file address corresponding to the config data.
+ * ｜  dir  ｜  dir  ｜    dir    ｜ file-name ｜
+ * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
+ * </p>
  */
 @Component
 @ConditionalOnProperty(value = "dao-cloud.config.persistence", havingValue = "file-system")
-public class FileSystem extends AbstractPersistence {
+public class FileSystem implements Persistence {
+
+    private DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting;
 
     @Autowired
-    public FileSystem() {
+    public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
+        this.fileSystemSetting = fileSystemSetting;
         String pathPrefix = fileSystemSetting.getPathPrefix();
         if (!StringUtils.hasLength(pathPrefix)) {
             fileSystemSetting.setPathPrefix("/data/dao-cloud/config");
@@ -52,7 +63,7 @@ public class FileSystem extends AbstractPersistence {
     @Override
     public Map<ProxyConfigModel, String> load() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
-        String prefixPath = daoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
+        String prefixPath = fileSystemSetting.getPathPrefix();
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
             List<String> keys = loopDirs(prefixPath + File.separator + proxy);
@@ -72,7 +83,7 @@ public class FileSystem extends AbstractPersistence {
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String prefix = daoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
+        String prefix = fileSystemSetting.getPathPrefix();
         return prefix + File.separator + proxy + File.separator + key + File.separator + version;
     }
 
@@ -90,18 +101,6 @@ public class FileSystem extends AbstractPersistence {
         return dirs;
     }
 
-    /**
-     * config data is written to the file system.
-     * if there is no directory or file, just create it.
-     * the following is the file address corresponding to the config data.
-     * <p>
-     * ｜  dir  ｜  dir  ｜    dir    ｜ file-name ｜
-     * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
-     * </p
-     *
-     * @param path
-     * @param data
-     */
     public void write(String path, String data) {
         FileUtil.writeUtf8String(data, path);
     }

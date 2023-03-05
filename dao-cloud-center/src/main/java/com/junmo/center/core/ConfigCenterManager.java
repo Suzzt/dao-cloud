@@ -1,7 +1,7 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
-import com.junmo.center.core.storage.Persistence;
+import com.junmo.core.expand.Persistence;
 import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;

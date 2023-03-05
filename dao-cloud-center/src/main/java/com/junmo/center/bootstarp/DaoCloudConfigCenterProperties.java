@@ -11,19 +11,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "dao-cloud.config")
 public class DaoCloudConfigCenterProperties {
 
-    private String persistence;
-
     private FileSystemSetting fileSystemSetting = new FileSystemSetting();
 
     private MysqlSetting mysqlSetting = new MysqlSetting();
-
-    public String getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(String persistence) {
-        this.persistence = persistence;
-    }
 
     public FileSystemSetting getFileSystemSetting() {
         return fileSystemSetting;

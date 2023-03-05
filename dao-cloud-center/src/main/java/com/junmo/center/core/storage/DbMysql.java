@@ -5,6 +5,7 @@ import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import lombok.Data;
@@ -26,7 +27,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @ConditionalOnProperty(value = "dao-cloud.config.persistence", havingValue = "mysql")
-public class DbMysql extends AbstractPersistence {
+public class DbMysql implements Persistence {
 
     private final String connect_template = "jdbc:mysql://%s:%s/dao_cloud?characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true";
 
@@ -43,7 +44,7 @@ public class DbMysql extends AbstractPersistence {
     private final String delete_sql_template = "DELETE FROM config WHERE PROXY = ? and `key` = ? and value = ?";
 
     @Autowired
-    public DbMysql() {
+    public DbMysql(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.MysqlSetting mysqlSetting = daoCloudConfigCenterProperties.getMysqlSetting();
         String url = mysqlSetting.getUrl();
         Integer port = mysqlSetting.getPort();
