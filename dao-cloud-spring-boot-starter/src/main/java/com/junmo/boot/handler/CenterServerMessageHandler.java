@@ -37,7 +37,7 @@ public class CenterServerMessageHandler extends SimpleChannelInboundHandler<Prox
         Set<ServerNodeModel> serverNodeModes = proxyProviderServerModel.getServerNodeModes();
         String errorMessage = proxyProviderServerModel.getErrorMessage();
         if (StringUtils.hasLength(errorMessage)) {
-            log.error(">>>>>>>>>>>> pull (proxy = {}, provider = {}, server node = {}) error. <<<<<<<<<<<<", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
+            log.error("<<<<<<<<<<<< pull (proxy = {}, provider = {}, server node = {}) error. >>>>>>>>>>>>", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
             pullPromise.setFailure(new DaoException(errorMessage));
         } else {
             log.info(">>>>>>>>>>>> pull (proxy = {}, provider = {}, server node = {}) success. <<<<<<<<<<<<", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
