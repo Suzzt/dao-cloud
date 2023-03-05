@@ -5,6 +5,7 @@ import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
@@ -51,7 +52,7 @@ public class DbMysql implements Persistence {
         String username = mysqlSetting.getUsername();
         String password = mysqlSetting.getPassword();
         if (!StringUtils.hasLength(url) || (port == null || port < 0) || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
-            throw new RuntimeException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" + " mysql-setting:\n" + "      url: x\n" + "      port: x\n" + "      username: x\n" + "      password: x");
+            throw new DaoException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" + " mysql-setting:\n" + "      url: x\n" + "      port: x\n" + "      username: x\n" + "      password: x");
         }
         druidDataSource = new DruidDataSource();
         url = String.format(connect_template, url, port);
@@ -69,7 +70,7 @@ public class DbMysql implements Persistence {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(create_table);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -128,7 +129,7 @@ public class DbMysql implements Persistence {
             }
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< insertOrUpdate delete config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -146,7 +147,7 @@ public class DbMysql implements Persistence {
             preparedStatement.execute();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql insert config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -164,7 +165,7 @@ public class DbMysql implements Persistence {
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql update config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -176,7 +177,7 @@ public class DbMysql implements Persistence {
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -188,7 +189,7 @@ public class DbMysql implements Persistence {
             return result.getLong(1);
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql count config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
@@ -204,7 +205,7 @@ public class DbMysql implements Persistence {
             }
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
         return list;
     }
@@ -233,7 +234,7 @@ public class DbMysql implements Persistence {
             }
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
 
