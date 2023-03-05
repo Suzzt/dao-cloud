@@ -10,34 +10,35 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "dao-cloud.config")
 public class DaoCloudConfigCenterProperties {
-    private static String persistence;
 
-    private static FileSystemSetting fileSystemSetting = new FileSystemSetting();
+    private String persistence;
 
-    private static MysqlSetting mysqlSetting = new MysqlSetting();
+    private FileSystemSetting fileSystemSetting = new FileSystemSetting();
 
-    public void setPersistence(String persistence) {
-        DaoCloudConfigCenterProperties.persistence = persistence;
-    }
+    private MysqlSetting mysqlSetting = new MysqlSetting();
 
-    public static String getPersistence() {
+    public String getPersistence() {
         return persistence;
     }
 
-    public void setFileSystemSetting(FileSystemSetting fileSystemSetting) {
-        DaoCloudConfigCenterProperties.fileSystemSetting = fileSystemSetting;
+    public void setPersistence(String persistence) {
+        this.persistence = persistence;
     }
 
-    public static FileSystemSetting getFileSystemSetting() {
+    public FileSystemSetting getFileSystemSetting() {
         return fileSystemSetting;
     }
 
-    public void setMysqlSetting(MysqlSetting mysqlSetting) {
-        DaoCloudConfigCenterProperties.mysqlSetting = mysqlSetting;
+    public void setFileSystemSetting(FileSystemSetting fileSystemSetting) {
+        this.fileSystemSetting = fileSystemSetting;
     }
 
-    public static MysqlSetting getMysqlSetting() {
+    public MysqlSetting getMysqlSetting() {
         return mysqlSetting;
+    }
+
+    public void setMysqlSetting(MysqlSetting mysqlSetting) {
+        this.mysqlSetting = mysqlSetting;
     }
 
     @Data

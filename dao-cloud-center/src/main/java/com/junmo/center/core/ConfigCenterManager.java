@@ -1,9 +1,6 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
-import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
-import com.junmo.center.core.storage.DbMysql;
-import com.junmo.center.core.storage.FileSystem;
 import com.junmo.center.core.storage.Persistence;
 import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.model.ConfigModel;
@@ -12,10 +9,11 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageModelTypeManager;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,38 +24,15 @@ import java.util.Set;
  * @description: config manager
  */
 @Slf4j
-@Component
 public class ConfigCenterManager {
 
-    private static Map<ProxyConfigModel, String> WARE_HOUSE;
+    private Map<ProxyConfigModel, String> WARE_HOUSE;
 
-    private static Persistence persistence;
+    @Resource
+    private Persistence persistence;
 
-    public static void init() {
-        if ("file-system".equals(DaoCloudConfigCenterProperties.getPersistence())) {
-            persistence = new FileSystem();
-            DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = DaoCloudConfigCenterProperties.getFileSystemSetting();
-            String pathPrefix = fileSystemSetting.getPathPrefix();
-            if (!StringUtils.hasLength(pathPrefix)) {
-                fileSystemSetting.setPathPrefix("/data/dao-cloud/config");
-            }
-        } else if ("mysql".equals(DaoCloudConfigCenterProperties.getPersistence())) {
-            DaoCloudConfigCenterProperties.MysqlSetting mysqlSetting = DaoCloudConfigCenterProperties.getMysqlSetting();
-            String url = mysqlSetting.getUrl();
-            Integer port = mysqlSetting.getPort();
-            String username = mysqlSetting.getUsername();
-            String password = mysqlSetting.getPassword();
-            if (!StringUtils.hasLength(url) || (port == null || port < 0)
-                    || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
-                throw new RuntimeException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" +
-                        " mysql-setting:\n" +
-                        "      url: x\n" +
-                        "      port: x\n" +
-                        "      username: x\n" +
-                        "      password: x");
-            }
-            persistence = new DbMysql(url, port, username, password);
-        }
+    @Autowired
+    public ConfigCenterManager(Persistence persistence) {
         WARE_HOUSE = persistence.load();
     }
 
@@ -67,7 +42,7 @@ public class ConfigCenterManager {
      * @param proxyConfigModel
      * @param jsonValue
      */
-    public static synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
+    public synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
         WARE_HOUSE.put(proxyConfigModel, jsonValue);
         // persistence config data
         ConfigModel config = new ConfigModel();
@@ -90,7 +65,7 @@ public class ConfigCenterManager {
         }
     }
 
-    public static synchronized void delete(ProxyConfigModel proxyConfigModel) {
+    public synchronized void delete(ProxyConfigModel proxyConfigModel) {
         WARE_HOUSE.remove(proxyConfigModel);
         persistence.delete(proxyConfigModel);
     }
@@ -100,11 +75,11 @@ public class ConfigCenterManager {
      *
      * @param proxyConfigModel
      */
-    public static String getConfigValue(ProxyConfigModel proxyConfigModel) {
+    public String getConfigValue(ProxyConfigModel proxyConfigModel) {
         return WARE_HOUSE.get(proxyConfigModel);
     }
 
-    public static List<ConfigVO> getConfigVO(String proxy, String key) {
+    public List<ConfigVO> getConfigVO(String proxy, String key) {
         List<ConfigVO> result = Lists.newArrayList();
         for (Map.Entry<ProxyConfigModel, String> entry : WARE_HOUSE.entrySet()) {
             ConfigVO configVO = new ConfigVO();

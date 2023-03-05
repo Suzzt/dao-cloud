@@ -4,10 +4,15 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.sql.*;
 import java.util.List;
@@ -19,7 +24,10 @@ import java.util.Map;
  * @description: data in mysql persistence
  */
 @Slf4j
-public class DbMysql implements Persistence {
+@Component
+@ConditionalOnProperty(value = "dao-cloud.config.persistence", havingValue = "mysql")
+public class DbMysql extends AbstractPersistence {
+
     private final String connect_template = "jdbc:mysql://%s:%s/dao_cloud?characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true";
 
     private final String driver = "com.mysql.cj.jdbc.Driver";
@@ -34,7 +42,16 @@ public class DbMysql implements Persistence {
 
     private final String delete_sql_template = "DELETE FROM config WHERE PROXY = ? and `key` = ? and value = ?";
 
-    public DbMysql(String url, int port, String username, String password) {
+    @Autowired
+    public DbMysql() {
+        DaoCloudConfigCenterProperties.MysqlSetting mysqlSetting = daoCloudConfigCenterProperties.getMysqlSetting();
+        String url = mysqlSetting.getUrl();
+        Integer port = mysqlSetting.getPort();
+        String username = mysqlSetting.getUsername();
+        String password = mysqlSetting.getPassword();
+        if (!StringUtils.hasLength(url) || (port == null || port < 0) || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
+            throw new RuntimeException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" + " mysql-setting:\n" + "      url: x\n" + "      port: x\n" + "      username: x\n" + "      password: x");
+        }
         druidDataSource = new DruidDataSource();
         url = String.format(connect_template, url, port);
         druidDataSource.setDriverClassName(driver);

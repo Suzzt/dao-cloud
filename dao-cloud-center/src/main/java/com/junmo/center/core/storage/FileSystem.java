@@ -6,7 +6,10 @@ import com.google.common.collect.Maps;
 import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -20,7 +23,17 @@ import java.util.Map;
  * @description: data in local file system data persistence
  */
 @Component
-public class FileSystem implements Persistence {
+@ConditionalOnProperty(value = "dao-cloud.config.persistence", havingValue = "file-system")
+public class FileSystem extends AbstractPersistence {
+
+    @Autowired
+    public FileSystem() {
+        DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
+        String pathPrefix = fileSystemSetting.getPathPrefix();
+        if (!StringUtils.hasLength(pathPrefix)) {
+            fileSystemSetting.setPathPrefix("/data/dao-cloud/config");
+        }
+    }
 
     @Override
     public void storage(ConfigModel configModel) {
@@ -39,7 +52,7 @@ public class FileSystem implements Persistence {
     @Override
     public Map<ProxyConfigModel, String> load() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
-        String prefixPath = DaoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
+        String prefixPath = daoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
             List<String> keys = loopDirs(prefixPath + File.separator + proxy);
@@ -59,7 +72,7 @@ public class FileSystem implements Persistence {
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String prefix = DaoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
+        String prefix = daoCloudConfigCenterProperties.getFileSystemSetting().getPathPrefix();
         return prefix + File.separator + proxy + File.separator + key + File.separator + version;
     }
 

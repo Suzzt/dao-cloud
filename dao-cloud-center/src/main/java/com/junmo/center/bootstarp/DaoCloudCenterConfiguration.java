@@ -24,8 +24,11 @@ import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,7 +37,12 @@ import java.util.concurrent.TimeUnit;
  * @description: register center configuration
  */
 @Slf4j
+@ComponentScan(value = "com.junmo.center.core.storage")
+@Import(ConfigCenterManager.class)
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
+
+    @Resource
+    private ConfigCenterManager configCenterManager;
 
     /**
      * default hessian serialize
@@ -49,8 +57,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
-            // init config center
-            ConfigCenterManager.init();
             // start up server
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
@@ -65,7 +71,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new ProtocolFrameDecoder());
                             ch.pipeline().addLast(new DaoMessageCoder());
                             ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
-                            ch.pipeline().addLast(new SubscribeConfigHandler());
+                            ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
                             ch.pipeline().addLast(new PullServerHandler());
                             ch.pipeline().addLast(new ServerRegisterHandler());
 

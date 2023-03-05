@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,9 @@ import java.util.Set;
 @Controller
 @RequestMapping(value = "dao-cloud")
 public class CenterController {
+
+    @Resource
+    private ConfigCenterManager configCenterManager;
 
     @RequestMapping(value = "/register/proxy")
     @ResponseBody
@@ -71,20 +75,20 @@ public class CenterController {
         proxyConfigModel.setProxy(configVO.getProxy());
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
-        ConfigCenterManager.update(proxyConfigModel, configVO.getValue());
+        configCenterManager.update(proxyConfigModel, configVO.getValue());
         return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult<List<ConfigVO>> delete(@RequestBody ProxyConfigModel proxyConfigModel) {
-        ConfigCenterManager.delete(proxyConfigModel);
+        configCenterManager.delete(proxyConfigModel);
         return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/config/query")
     @ResponseBody
     public ApiResult<List<ConfigVO>> getConfigProxy(String proxy, String key) {
-        return ApiResult.buildSuccess(ConfigCenterManager.getConfigVO(proxy, key));
+        return ApiResult.buildSuccess(configCenterManager.getConfigVO(proxy, key));
     }
 }

@@ -21,10 +21,16 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
 
     private ProxyConfigModel proxyConfigModel;
 
+    private ConfigCenterManager configCenterManager;
+
+    public SubscribeConfigHandler(ConfigCenterManager configCenterManager){
+        this.configCenterManager = configCenterManager;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProxyConfigModel proxyConfigModel) {
         ConfigChannelManager.add(proxyConfigModel, ctx.channel());
-        String configValue = ConfigCenterManager.getConfigValue(proxyConfigModel);
+        String configValue = configCenterManager.getConfigValue(proxyConfigModel);
         this.proxyConfigModel = proxyConfigModel;
         ConfigModel configModel = new ConfigModel();
         configModel.setProxyConfigModel(proxyConfigModel);
