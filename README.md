@@ -4,7 +4,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 致力于简化应用程序之间的RPC调用，并为应用程序提供方便、无代码入侵、稳定和高效的点对点远程微服务调用解决方案。对于开发人员来说,dao-cloud的提供了丰富的模型抽象和可扩展接口,为求一站式解决微服务带来的系统架构复杂度,包括路由、负载平衡、故障转移、性能监控、微服务治理等;
 
 # 系统架构
-![dao-cloud](https://user-images.githubusercontent.com/27397567/222968572-2d40acfc-1e6e-4078-8d75-dfebc7831417.jpg)
+![dao-cloud](https://user-images.githubusercontent.com/27397567/223003214-f6839f9d-d6fe-40c8-bba6-1cae2f0fa749.jpg)
 
 # 项目结构
     dao-cloud-core = 核心
