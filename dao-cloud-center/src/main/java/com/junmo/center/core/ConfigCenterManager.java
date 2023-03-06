@@ -26,14 +26,14 @@ import java.util.Set;
 @Slf4j
 public class ConfigCenterManager {
 
-    private Map<ProxyConfigModel, String> WARE_HOUSE;
+    private Map<ProxyConfigModel, String> cache;
 
     @Resource
     private Persistence persistence;
 
     @Autowired
     public ConfigCenterManager(Persistence persistence) {
-        WARE_HOUSE = persistence.load();
+        cache = persistence.load();
     }
 
     /**
@@ -43,7 +43,7 @@ public class ConfigCenterManager {
      * @param jsonValue
      */
     public synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
-        WARE_HOUSE.put(proxyConfigModel, jsonValue);
+        cache.put(proxyConfigModel, jsonValue);
         // persistence config data
         ConfigModel config = new ConfigModel();
         config.setProxyConfigModel(proxyConfigModel);
@@ -66,7 +66,7 @@ public class ConfigCenterManager {
     }
 
     public synchronized void delete(ProxyConfigModel proxyConfigModel) {
-        WARE_HOUSE.remove(proxyConfigModel);
+        cache.remove(proxyConfigModel);
         persistence.delete(proxyConfigModel);
     }
 
@@ -76,12 +76,12 @@ public class ConfigCenterManager {
      * @param proxyConfigModel
      */
     public String getConfigValue(ProxyConfigModel proxyConfigModel) {
-        return WARE_HOUSE.get(proxyConfigModel);
+        return cache.get(proxyConfigModel);
     }
 
     public List<ConfigVO> getConfigVO(String proxy, String key) {
         List<ConfigVO> result = Lists.newArrayList();
-        for (Map.Entry<ProxyConfigModel, String> entry : WARE_HOUSE.entrySet()) {
+        for (Map.Entry<ProxyConfigModel, String> entry : cache.entrySet()) {
             ConfigVO configVO = new ConfigVO();
             ProxyConfigModel proxyConfigModel = entry.getKey();
             if (StringUtils.hasLength(proxy) && !proxyConfigModel.getProxy().equals(proxy)) {
