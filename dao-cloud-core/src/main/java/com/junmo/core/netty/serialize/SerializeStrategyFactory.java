@@ -47,5 +47,4 @@ public class SerializeStrategyFactory {
         // default
         return Serializer.HESSIAN.getType();
     }
-
 }
