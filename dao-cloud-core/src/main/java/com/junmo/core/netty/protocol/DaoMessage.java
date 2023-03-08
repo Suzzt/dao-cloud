@@ -42,7 +42,8 @@ public class DaoMessage<T> {
     private byte version;
 
     /**
-     * 序列化方式类型 0：jdk  1：json  2:protobuf  -1:自定义
+     * 序列化方式类型
+     * see com.junmo.core.enums.Serializer
      * 1byte
      */
     private byte serializableType;
