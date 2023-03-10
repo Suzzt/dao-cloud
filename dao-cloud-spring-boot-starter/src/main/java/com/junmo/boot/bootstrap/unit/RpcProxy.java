@@ -9,7 +9,7 @@ import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +91,7 @@ public class RpcProxy {
                 }
                 ClientManager.remove(proxyProviderModel, client);
             }
-            DaoMessage message = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_REQUEST_MESSAGE, serialized, requestModel);
+            DaoMessage message = new DaoMessage((byte) 1, MessageType.RPC_REQUEST_MESSAGE, serialized, requestModel);
             // push message
             client.getChannel().writeAndFlush(message).addListener(future -> {
                 if (!future.isSuccess()) {

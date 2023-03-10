@@ -10,7 +10,7 @@ import java.util.Map;
  * @date: 2023/1/13 17:22
  * @description:
  */
-public class MessageModelTypeManager {
+public class MessageType {
     public static final byte PING_PONG_HEART_BEAT_MESSAGE = -1;
     public static final byte REGISTRY_REQUEST_MESSAGE = 0;
     public static final byte POLL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
@@ -19,7 +19,6 @@ public class MessageModelTypeManager {
     public static final byte RPC_RESPONSE_MESSAGE = 5;
     public static final byte POLL_REGISTRY_CONFIG_REQUEST_MESSAGE = 6;
     public static final byte POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE = 7;
-
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 

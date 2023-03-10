@@ -5,7 +5,7 @@ import com.junmo.boot.bootstrap.unit.ServiceInvoker;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -37,7 +37,7 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             // invoke + response
             ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
             RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
-            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());

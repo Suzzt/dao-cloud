@@ -6,7 +6,7 @@ import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class ConfigCenterManager {
                 ConfigModel configModel = new ConfigModel();
                 configModel.setProxyConfigModel(proxyConfigModel);
                 configModel.setConfigValue(jsonValue);
-                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageModelTypeManager.POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
+                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
                 channel.writeAndFlush(daoMessage).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("<<<<<<<<<<< pushing config information to subscriber({}) failed >>>>>>>>>>>", channel);

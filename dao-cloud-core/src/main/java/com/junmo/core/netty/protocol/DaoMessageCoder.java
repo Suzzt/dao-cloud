@@ -27,7 +27,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         byteBuf.writeBytes(msg.getMagicNumber());
         //消息类型 1byte
         byteBuf.writeByte(msg.getMessageType());
-        if (msg.getMessageType() == MessageModelTypeManager.PING_PONG_HEART_BEAT_MESSAGE) {
+        if (msg.getMessageType() == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
             // heart beat packet
             byteBuf.writeByte(0xff);
             byteBuf.writeByte(0xff);
@@ -57,7 +57,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         byteBuf.readBytes(magicNumber);
         //消息类型 1byte
         byte messageType = byteBuf.readByte();
-        if (messageType == MessageModelTypeManager.PING_PONG_HEART_BEAT_MESSAGE) {
+        if (messageType == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
             // heart beat packet
             list.add(new HeartbeatModel());
         } else {
@@ -71,7 +71,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             byteBuf.readBytes(bytes, 0, contentLength);
             //根据不同的序列化方式解析
             DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
-            Model model = daoSerializer.deserialize(bytes, MessageModelTypeManager.getMessageModel(messageType));
+            Model model = daoSerializer.deserialize(bytes, MessageType.getMessageModel(messageType));
             list.add(model);
         }
     }

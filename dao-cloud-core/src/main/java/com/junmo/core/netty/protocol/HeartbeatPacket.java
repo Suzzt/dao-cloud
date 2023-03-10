@@ -8,6 +8,6 @@ package com.junmo.core.netty.protocol;
 public class HeartbeatPacket extends DaoMessage{
     public HeartbeatPacket() {
         super();
-        setMessageType(MessageModelTypeManager.PING_PONG_HEART_BEAT_MESSAGE);
+        setMessageType(MessageType.PING_PONG_HEART_BEAT_MESSAGE);
     }
 }

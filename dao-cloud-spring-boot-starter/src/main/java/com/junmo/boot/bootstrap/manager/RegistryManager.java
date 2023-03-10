@@ -7,7 +7,7 @@ import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoTimer;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
@@ -34,7 +34,7 @@ public class RegistryManager {
      * @throws Exception
      */
     public static Set<ServerNodeModel> pull(ProxyProviderModel proxyProviderModel) throws Exception {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
         DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannel.getChannel().eventLoop());
         CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
         CenterChannel.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -84,7 +84,7 @@ public class RegistryManager {
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageModelTypeManager.REGISTRY_REQUEST_MESSAGE, MainProperties.serialize, registerProviderModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, MainProperties.serialize, registerProviderModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());

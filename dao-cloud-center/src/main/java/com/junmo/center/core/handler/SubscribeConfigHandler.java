@@ -5,7 +5,7 @@ import com.junmo.center.core.ConfigChannelManager;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
@@ -35,7 +35,7 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
         ConfigModel configModel = new ConfigModel();
         configModel.setProxyConfigModel(proxyConfigModel);
         configModel.setConfigValue(configValue);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageModelTypeManager.POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
         ctx.writeAndFlush(daoMessage).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< pull config value fail. proxyConfigModel={}, channel={} >>>>>>>>>>", proxyConfigModel, ctx.channel(), f.cause());

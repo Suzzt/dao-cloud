@@ -7,7 +7,7 @@ import com.junmo.boot.bootstrap.unit.ConfigCallBack;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
-import com.junmo.core.netty.protocol.MessageModelTypeManager;
+import com.junmo.core.netty.protocol.MessageType;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -120,7 +120,7 @@ public class DaoConfig {
         String jsonValue = CONFIG_OBJECT.get(proxyConfigModel);
         if (!StringUtils.hasLength(jsonValue)) {
             // no hit cache
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageModelTypeManager.POLL_REGISTRY_CONFIG_REQUEST_MESSAGE, (byte) 0, proxyConfigModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.POLL_REGISTRY_CONFIG_REQUEST_MESSAGE, (byte) 0, proxyConfigModel);
             DefaultPromise<String> promise = new DefaultPromise<>(CenterChannel.getChannel().eventLoop());
             CenterConfigMessageHandler.PROMISE_MAP.put(proxyConfigModel, promise);
             CenterChannel.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -160,10 +160,6 @@ public class DaoConfig {
             log.error("<<<<<<<<<<<<<< get config ({}) error >>>>>>>>>>>>>>", proxyConfigModel, e);
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Integer.class.isPrimitive());
     }
 
     /**
