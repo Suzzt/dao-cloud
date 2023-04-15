@@ -6,9 +6,8 @@ package com.junmo.core.util;
  * @date: 2022/10/31 17:06
  * @description:
  */
-public class DaoCloudUtil {
+public class DaoCloudConstant {
     public static final String MAGIC_NUMBER = "dao";
 
-    public static final String PROXY_CONNECTOR = "#";
-
+    public static final String CENTER_HOST = "dao.cloud.config.com";
 }

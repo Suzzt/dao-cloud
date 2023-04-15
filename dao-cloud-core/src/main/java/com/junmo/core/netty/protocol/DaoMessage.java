@@ -1,6 +1,6 @@
 package com.junmo.core.netty.protocol;
 
-import com.junmo.core.util.DaoCloudUtil;
+import com.junmo.core.util.DaoCloudConstant;
 import lombok.Data;
 
 import java.nio.charset.StandardCharsets;
@@ -27,7 +27,7 @@ public class DaoMessage<T> {
      * 魔数
      * 3byte
      */
-    private byte[] magicNumber = DaoCloudUtil.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
+    private byte[] magicNumber = DaoCloudConstant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
 
     /**
      * 消息类型

@@ -5,6 +5,7 @@ import com.junmo.boot.handler.CenterServerMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.NetUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -57,7 +58,7 @@ public class CenterChannel {
      * connect registry
      */
     public static void connect() {
-        String ip = NetUtil.getServerIP("dao.cloud.config.com");
+        String ip = NetUtil.getServerIP(DaoCloudConstant.CENTER_HOST);
         ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);

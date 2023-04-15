@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @date: 2023/2/6 21:42
  * @description:
  */
-@ConfigurationProperties(prefix = "dao-cloud.config")
+@ConfigurationProperties(prefix = "dao-cloud.center.config")
 public class DaoCloudConfigCenterProperties {
 
     private FileSystemSetting fileSystemSetting = new FileSystemSetting();

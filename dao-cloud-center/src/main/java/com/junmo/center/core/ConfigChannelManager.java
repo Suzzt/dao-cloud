@@ -15,7 +15,7 @@ import java.util.Set;
  * @description: config channel manager
  */
 public class ConfigChannelManager {
-    private static Map<ProxyConfigModel, Set<Channel>> CONFIG_CHANNEL_MAP = Maps.newConcurrentMap();
+    private final static Map<ProxyConfigModel, Set<Channel>> CONFIG_CHANNEL_MAP = Maps.newConcurrentMap();
 
     public static Set<Channel> getSubscribeChannel(ProxyConfigModel proxyConfigModel) {
         return CONFIG_CHANNEL_MAP.get(proxyConfigModel);

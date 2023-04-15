@@ -1,6 +1,7 @@
 package com.junmo.center.bootstarp;
 
 import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.handler.ClusterCenterHandler;
 import com.junmo.center.core.handler.PullServerHandler;
 import com.junmo.center.core.handler.ServerRegisterHandler;
 import com.junmo.center.core.handler.SubscribeConfigHandler;
@@ -44,6 +45,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Resource
     private ConfigCenterManager configCenterManager;
 
+    @Resource
+    private DaoCloudClusterCenterProperties daoCloudClusterCenterProperties;
+
     /**
      * default hessian serialize
      */
@@ -67,17 +71,19 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     serverBootstrap.group(boss, worker);
                     serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
                             ch.pipeline().addLast(new ProtocolFrameDecoder());
                             ch.pipeline().addLast(new DaoMessageCoder());
                             ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
+                            ch.pipeline().addLast(new ClusterCenterHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
                             ch.pipeline().addLast(new PullServerHandler());
                             ch.pipeline().addLast(new ServerRegisterHandler());
-
                         }
                     });
                     Channel channel = serverBootstrap.bind(port).sync().channel();
+                    // join cluster
+
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
