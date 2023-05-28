@@ -24,14 +24,19 @@ import java.util.concurrent.TimeUnit;
 public class CenterClusterManager {
 
     public static String inquireIpAddress;
-    public static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
+    private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
 
-    public static void joinCluster() throws InterruptedException {
+    public static void start() throws InterruptedException {
         // get cluster alive node
         Set<String> aliveNodes = inquire();
         for (String aliveNode : aliveNodes) {
-            clusterMap.put(aliveNode, new ClusterCenterConnector(aliveNode));
+            joinCluster(aliveNode);
         }
+    }
+
+    public static void joinCluster(String ip) {
+        log.debug("add a new or heartbeat (ip = {}) node cluster", ip);
+        clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip));
     }
 
     /**

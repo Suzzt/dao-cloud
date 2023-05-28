@@ -65,7 +65,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
             if (StringUtils.hasLength(contextProperties.getIp())) {
                 // join cluster
                 CenterClusterManager.inquireIpAddress = contextProperties.getIp();
-                CenterClusterManager.joinCluster();
+                CenterClusterManager.start();
             }
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
