@@ -1,7 +1,6 @@
 package com.junmo.center.core.handler;
 
 import com.junmo.center.core.CenterClusterManager;
-import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.core.model.HeartbeatModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,7 +17,6 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel msg) {
         // get cluster ip
         String ip = ctx.channel().remoteAddress().toString();
-        log.info("receive a new node or heartbeat (ip = {}) cluster", ip);
         CenterClusterManager.joinCluster(ip);
     }
 }
