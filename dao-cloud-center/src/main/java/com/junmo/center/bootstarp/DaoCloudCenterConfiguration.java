@@ -1,10 +1,8 @@
 package com.junmo.center.bootstarp;
 
+import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
-import com.junmo.center.core.handler.ClusterCenterHandler;
-import com.junmo.center.core.handler.PullServerHandler;
-import com.junmo.center.core.handler.ServerRegisterHandler;
-import com.junmo.center.core.handler.SubscribeConfigHandler;
+import com.junmo.center.core.handler.*;
 import com.junmo.center.web.CenterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
@@ -17,6 +15,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
@@ -45,9 +45,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Resource
     private ConfigCenterManager configCenterManager;
 
-    @Resource
-    private DaoCloudClusterCenterProperties daoCloudClusterCenterProperties;
-
     /**
      * default hessian serialize
      */
@@ -58,10 +55,18 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:null}")
     private String contextPath;
 
+    @Resource
+    private DaoCloudClusterCenterProperties contextProperties;
+
+    @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
-            // start up server
+            if (StringUtils.hasLength(contextProperties.getIp())) {
+                // join cluster
+                CenterClusterManager.inquireIpAddress = contextProperties.getIp();
+                CenterClusterManager.joinCluster();
+            }
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);
@@ -75,15 +80,14 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new ProtocolFrameDecoder());
                             ch.pipeline().addLast(new DaoMessageCoder());
                             ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
-                            ch.pipeline().addLast(new ClusterCenterHandler());
+                            ch.pipeline().addLast(new SelectClusterCenterRequestHandler());
+                            ch.pipeline().addLast(new AcceptHeartbeatClusterCenterHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
                             ch.pipeline().addLast(new PullServerHandler());
                             ch.pipeline().addLast(new ServerRegisterHandler());
                         }
                     });
                     Channel channel = serverBootstrap.bind(port).sync().channel();
-                    // join cluster
-
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
@@ -96,9 +100,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
             if (contextPath == null) {
-                log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: http://{}:{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort());
+                log.info("======================================== open web dao-cloud page address: http://{}:{}/dao-cloud/index.html ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
             } else {
-                log.info("====>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> open web dao-cloud page address: http://{}:{}{}/dao-cloud/index.html <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<====", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
+                log.info("======================================== open web dao-cloud page address: http://{}:{}{}/dao-cloud/index.html ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
             }
         }
     }
