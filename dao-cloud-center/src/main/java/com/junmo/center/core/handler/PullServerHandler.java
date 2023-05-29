@@ -43,7 +43,7 @@ public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProvider
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error("<<<<<<<<<< pull server node info error {} >>>>>>>>>", ctx.channel(), cause);
     }
 }

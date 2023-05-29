@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: sucf
  * @date: 2023/4/16 23:03
- * @description:
+ * @description: receive cluster heartbeat handler
  */
 @Slf4j
 public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHandler<HeartbeatModel> {
