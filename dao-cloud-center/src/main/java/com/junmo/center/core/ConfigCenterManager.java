@@ -55,7 +55,7 @@ public class ConfigCenterManager {
                 ConfigModel configModel = new ConfigModel();
                 configModel.setProxyConfigModel(proxyConfigModel);
                 configModel.setConfigValue(jsonValue);
-                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.POLL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
+                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, (byte) 0, configModel);
                 channel.writeAndFlush(daoMessage).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("<<<<<<<<<<< pushing config information to subscriber({}) failed >>>>>>>>>>>", channel);

@@ -5,6 +5,7 @@ import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
+import com.junmo.core.model.ClusterSyncServerModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.Channel;
@@ -24,8 +25,19 @@ import java.util.concurrent.TimeUnit;
 public class CenterClusterManager {
 
     public static String inquireIpAddress;
+
+    /**
+     * cluster info
+     * key: ip
+     * value: cluster interaction connector
+     */
     private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
 
+    /**
+     * cluster start
+     *
+     * @throws InterruptedException
+     */
     public static void start() throws InterruptedException {
         // get cluster alive node
         Set<String> aliveNodes = inquire();
@@ -34,9 +46,26 @@ public class CenterClusterManager {
         }
     }
 
+    /**
+     * join cluster
+     *
+     * @param ip
+     */
     public static void joinCluster(String ip) {
         log.debug("add a new or heartbeat (ip = {}) node cluster", ip);
         clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip));
+    }
+
+    /**
+     * synchronized service nodes
+     */
+    public static void syncServerNode(ClusterSyncServerModel clusterSyncServerModel) {
+        Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
+        for (Map.Entry<String, ClusterCenterConnector> entry : set) {
+            ClusterCenterConnector connector = entry.getValue();
+
+
+        }
     }
 
     /**

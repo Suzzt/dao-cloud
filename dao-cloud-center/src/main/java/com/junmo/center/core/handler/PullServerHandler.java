@@ -31,9 +31,9 @@ public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProvider
         DaoMessage daoMessage;
         try {
             serverNodeModels = RegisterCenterManager.getServers(proxy, providerModel);
-            daoMessage = new DaoMessage((byte) 1, MessageType.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
+            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
         } catch (Exception e) {
-            daoMessage = new DaoMessage((byte) 1, MessageType.POLL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, e.getMessage()));
+            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, e.getMessage()));
         }
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
