@@ -63,7 +63,11 @@ public class CenterClusterManager {
         Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
         for (Map.Entry<String, ClusterCenterConnector> entry : set) {
             ClusterCenterConnector connector = entry.getValue();
-
+            connector.getChannel().writeAndFlush(clusterSyncServerModel).addListeners(future -> {
+                if (!future.isSuccess()) {
+                    log.error("send sync server error", future.cause());
+                }
+            });
 
         }
     }
