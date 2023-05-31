@@ -34,7 +34,7 @@ public class RegistryManager {
      * @throws Exception
      */
     public static Set<ServerNodeModel> pull(ProxyProviderModel proxyProviderModel) throws Exception {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.POLL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
         DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannel.getChannel().eventLoop());
         CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
         CenterChannel.getChannel().writeAndFlush(daoMessage).addListener(future -> {
