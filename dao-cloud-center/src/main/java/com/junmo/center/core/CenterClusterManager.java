@@ -68,7 +68,6 @@ public class CenterClusterManager {
                     log.error("send sync server error", future.cause());
                 }
             });
-
         }
     }
 

@@ -1,6 +1,8 @@
 package com.junmo.center.core.handler;
 
+import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.RegisterCenterManager;
+import com.junmo.core.model.ClusterSyncServerModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,6 +36,11 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         if (registerProviderModel != null) {
             RegisterCenterManager.delete(registerProviderModel);
+            ClusterSyncServerModel clusterSyncServerModel = new ClusterSyncServerModel();
+            clusterSyncServerModel.setFlag((byte) -1);
+            clusterSyncServerModel.setRegisterProviderModel(registerProviderModel);
+            // sync server to other center
+            CenterClusterManager.syncServerNode(clusterSyncServerModel);
         }
         super.channelUnregistered(ctx);
     }

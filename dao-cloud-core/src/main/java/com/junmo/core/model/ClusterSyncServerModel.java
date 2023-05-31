@@ -15,6 +15,5 @@ public class ClusterSyncServerModel extends Model {
      * 1: indicates that the service is added to the cluster
      */
     private byte flag;
-    private ProxyProviderModel proxyProviderModel;
-    private ServerNodeModel serverNodeModel;
+    private RegisterProviderModel registerProviderModel;
 }
