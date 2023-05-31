@@ -6,6 +6,7 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
 import com.junmo.core.model.ClusterSyncServerModel;
+import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.Channel;
@@ -56,19 +57,36 @@ public class CenterClusterManager {
         clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip));
     }
 
-    /**
-     * synchronized service nodes
-     */
-    public static void syncServerNode(ClusterSyncServerModel clusterSyncServerModel) {
-        Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
-        for (Map.Entry<String, ClusterCenterConnector> entry : set) {
-            ClusterCenterConnector connector = entry.getValue();
-            connector.getChannel().writeAndFlush(clusterSyncServerModel).addListeners(future -> {
-                if (!future.isSuccess()) {
-                    log.error("send sync server error", future.cause());
-                }
-            });
+    public static class SyncServerHandler {
+        /**
+         * notify other cluster nodes
+         */
+        public static void notice(ClusterSyncServerModel clusterSyncServerModel) {
+            Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
+            for (Map.Entry<String, ClusterCenterConnector> entry : set) {
+                ClusterCenterConnector connector = entry.getValue();
+                connector.getChannel().writeAndFlush(clusterSyncServerModel).addListeners(future -> {
+                    if (!future.isSuccess()) {
+                        log.error("send sync server error", future.cause());
+                    }
+                });
+            }
         }
+
+        /**
+         * receive processing
+         *
+         * @param clusterSyncServerModel
+         */
+        public static void accept(ClusterSyncServerModel clusterSyncServerModel) {
+            RegisterProviderModel registerProviderModel = clusterSyncServerModel.getRegisterProviderModel();
+            if (clusterSyncServerModel.getFlag() == (byte) -1) {
+                RegisterCenterManager.delete(registerProviderModel);
+            } else {
+                RegisterCenterManager.register(registerProviderModel);
+            }
+        }
+
     }
 
     /**

@@ -25,6 +25,7 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
     protected void channelRead0(ChannelHandlerContext ctx, RegisterProviderModel registerProviderModel) {
         RegisterCenterManager.register(registerProviderModel);
         this.registerProviderModel = registerProviderModel;
+        // todo cluster all node
         ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< back server heartbeat fail {} >>>>>>>>>>", ctx.channel(), f.cause());
@@ -40,7 +41,7 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
             clusterSyncServerModel.setFlag((byte) -1);
             clusterSyncServerModel.setRegisterProviderModel(registerProviderModel);
             // sync server to other center
-            CenterClusterManager.syncServerNode(clusterSyncServerModel);
+            CenterClusterManager.SyncServerHandler.notice(clusterSyncServerModel);
         }
         super.channelUnregistered(ctx);
     }
