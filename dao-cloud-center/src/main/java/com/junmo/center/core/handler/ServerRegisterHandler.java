@@ -51,7 +51,11 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
         if (evt instanceof IdleStateEvent) {
             if (registerProviderModel != null) {
                 RegisterCenterManager.delete(registerProviderModel);
-                ctx.channel().close();
+                ClusterSyncServerModel clusterSyncServerModel = new ClusterSyncServerModel();
+                clusterSyncServerModel.setFlag((byte) -1);
+                clusterSyncServerModel.setRegisterProviderModel(registerProviderModel);
+                // sync server to other center
+                CenterClusterManager.SyncServerHandler.notice(clusterSyncServerModel);
             }
         } else {
             super.userEventTriggered(ctx, evt);
