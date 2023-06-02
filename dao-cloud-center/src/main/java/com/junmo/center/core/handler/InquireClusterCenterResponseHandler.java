@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * @description:
  */
 @Slf4j
-public class SelectClusterCenterResponseHandler extends SimpleChannelInboundHandler<ClusterCenterNodeModel> {
+public class InquireClusterCenterResponseHandler extends SimpleChannelInboundHandler<ClusterCenterNodeModel> {
     public static Promise<ClusterCenterNodeModel> promise;
 
     @Override

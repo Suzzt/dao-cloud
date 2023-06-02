@@ -1,6 +1,6 @@
 package com.junmo.center.core.cluster;
 
-import com.junmo.center.core.handler.SelectClusterCenterResponseHandler;
+import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
@@ -49,7 +49,7 @@ public class ClusterCenterConnector {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
-                        .addLast(new SelectClusterCenterResponseHandler());
+                        .addLast(new InquireClusterCenterResponseHandler());
             }
         });
         try {

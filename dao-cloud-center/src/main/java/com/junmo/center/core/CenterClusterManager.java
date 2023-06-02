@@ -13,6 +13,7 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,6 +34,14 @@ public class CenterClusterManager {
      * value: cluster interaction connector
      */
     private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
+
+    public static Set<String> aliveNode(){
+        Set<String> set = new HashSet<>();
+        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
+            set.add(entry.getKey());
+        }
+        return set;
+    }
 
     /**
      * cluster start
@@ -117,7 +126,7 @@ public class CenterClusterManager {
             }
         });
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CLUSTER_REQUEST_MESSAGE, (byte) 0, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, (byte) 0, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
