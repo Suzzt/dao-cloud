@@ -7,7 +7,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 ![dao-cloud](https://user-images.githubusercontent.com/27397567/223003214-f6839f9d-d6fe-40c8-bba6-1cae2f0fa749.jpg)
 
 # center集群架构
-
+![dao-center-cluster](https://github.com/Suzzt/dao-cloud/assets/27397567/05b1e959-f307-42b4-8a27-23d406d93a8a)
 
 # 项目结构
     dao-cloud-core = 核心
