@@ -55,11 +55,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:null}")
     private String contextPath;
 
-    /**
-     * start success mark
-     */
-    private boolean flag = false;
-
     @Resource
     private DaoCloudClusterCenterProperties contextProperties;
 
@@ -89,24 +84,20 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         }
                     });
                     Channel channel = serverBootstrap.bind(port).sync().channel();
-                    flag = true;
+                    if (StringUtils.hasLength(contextProperties.getIp())) {
+                        // join cluster
+                        CenterClusterManager.inquireIpAddress = contextProperties.getIp();
+                        CenterClusterManager.start();
+                    }
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
-                    log.error("server interrupted error", e);
+                    log.error("dao-cloud center start interrupted error", e);
                 } finally {
                     boss.shutdownGracefully();
                     worker.shutdownGracefully();
                 }
             });
-            while (!flag) {
-                Thread.sleep(10);
-            }
-            if (StringUtils.hasLength(contextProperties.getIp())) {
-                // join cluster
-                CenterClusterManager.inquireIpAddress = contextProperties.getIp();
-                CenterClusterManager.start();
-            }
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
             if (contextPath == null) {
