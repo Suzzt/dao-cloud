@@ -55,6 +55,11 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:null}")
     private String contextPath;
 
+    /**
+     * start success mark
+     */
+    private boolean flag = false;
+
     @Resource
     private DaoCloudClusterCenterProperties contextProperties;
 
@@ -62,11 +67,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
-            if (StringUtils.hasLength(contextProperties.getIp())) {
-                // join cluster
-                CenterClusterManager.inquireIpAddress = contextProperties.getIp();
-                CenterClusterManager.start();
-            }
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);
@@ -89,6 +89,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         }
                     });
                     Channel channel = serverBootstrap.bind(port).sync().channel();
+                    flag = true;
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
@@ -98,6 +99,14 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     worker.shutdownGracefully();
                 }
             });
+            while (!flag) {
+                Thread.sleep(10);
+            }
+            if (StringUtils.hasLength(contextProperties.getIp())) {
+                // join cluster
+                CenterClusterManager.inquireIpAddress = contextProperties.getIp();
+                CenterClusterManager.start();
+            }
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
             if (contextPath == null) {
