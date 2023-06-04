@@ -35,7 +35,7 @@ public class CenterClusterManager {
      */
     private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
 
-    public static Set<String> aliveNode(){
+    public static Set<String> aliveNode() {
         Set<String> set = new HashSet<>();
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             set.add(entry.getKey());
@@ -64,6 +64,15 @@ public class CenterClusterManager {
     public static void joinCluster(String ip) {
         log.debug("add a new or heartbeat (ip = {}) node cluster", ip);
         clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip));
+    }
+
+    /**
+     * down center
+     *
+     * @param ip
+     */
+    public static void remove(String ip) {
+        clusterMap.remove(ip);
     }
 
     public static class SyncServerHandler {
