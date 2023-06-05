@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author: sucf
  * @date: 2023/4/16 23:03
@@ -19,8 +21,10 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel msg) {
         // get cluster ip
-        String ip = ctx.channel().remoteAddress().toString();
-        CenterClusterManager.joinCluster(ip);
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+        String clientIP = inetSocketAddress.getAddress().getHostAddress();
+        ip = clientIP;
+        CenterClusterManager.joinCluster(clientIP);
     }
 
     @Override
