@@ -19,6 +19,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +29,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class CenterChannel {
-    private static volatile Channel REGISTER_CHANNEL;
+
+    private static Set<String> CLUSTER_CENTER_IP;
+
+    private static volatile Channel CONNECT_CENTER_CHANNEL;
 
     private static final Object LOCK = new Object();
 
@@ -36,21 +40,27 @@ public class CenterChannel {
 
     private static int CONNECT_PORT = 5551;
 
+    private static void init() {
+        String ip = NetUtil.getServerIP(DaoCloudConstant.CENTER_HOST);
+        ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
+        CLUSTER_CENTER_IP = ClusterNodeManager.inquire(ip);
+    }
+
     /**
      * get center channel
      *
      * @return
      */
     public static Channel getChannel() {
-        if (REGISTER_CHANNEL != null) {
-            return REGISTER_CHANNEL;
+        if (CONNECT_CENTER_CHANNEL != null) {
+            return CONNECT_CENTER_CHANNEL;
         }
         synchronized (LOCK) {
-            if (REGISTER_CHANNEL != null) {
-                return REGISTER_CHANNEL;
+            if (CONNECT_CENTER_CHANNEL != null) {
+                return CONNECT_CENTER_CHANNEL;
             }
             connect();
-            return REGISTER_CHANNEL;
+            return CONNECT_CENTER_CHANNEL;
         }
     }
 
@@ -58,11 +68,9 @@ public class CenterChannel {
      * connect registry
      */
     public static void connect() {
-        String ip = NetUtil.getServerIP(DaoCloudConstant.CENTER_HOST);
-        ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
-        BOOTSTRAP.remoteAddress(ip, CONNECT_PORT);
+        BOOTSTRAP.remoteAddress(chooseCenterIp(), CONNECT_PORT);
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -76,7 +84,7 @@ public class CenterChannel {
             }
         });
         try {
-            REGISTER_CHANNEL = BOOTSTRAP.connect().sync().channel();
+            CONNECT_CENTER_CHANNEL = BOOTSTRAP.connect().sync().channel();
             log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
         } catch (Exception e) {
             log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", e);
@@ -86,13 +94,13 @@ public class CenterChannel {
     }
 
     public static void reconnect() {
-        REGISTER_CHANNEL.close().addListener(future -> {
-            REGISTER_CHANNEL.eventLoop().schedule(() -> {
+        CONNECT_CENTER_CHANNEL.close().addListener(future -> {
+            CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
-                            REGISTER_CHANNEL = future.channel();
+                            CONNECT_CENTER_CHANNEL = future.channel();
                             log.info(">>>>>>>>> reconnect register channel success. <<<<<<<<<< :)bingo(:");
                         } else {
                             log.error("<<<<<<<<<< reconnect config center error >>>>>>>>>>", future.cause());
@@ -101,5 +109,9 @@ public class CenterChannel {
                 });
             }, 5, TimeUnit.SECONDS);
         });
+    }
+
+    private static String chooseCenterIp() {
+        return null;
     }
 }
