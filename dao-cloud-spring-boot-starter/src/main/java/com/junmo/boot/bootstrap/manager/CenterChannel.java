@@ -46,6 +46,10 @@ public class CenterChannel {
         CLUSTER_CENTER_IP = ClusterNodeManager.inquire(ip);
     }
 
+    public static void setClusterCenterIp(Set<String> centerNodes){
+        CLUSTER_CENTER_IP = centerNodes;
+    }
+
     /**
      * get center channel
      *
