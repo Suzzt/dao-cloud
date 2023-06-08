@@ -32,6 +32,8 @@ public class CenterChannel {
 
     private static Set<String> CLUSTER_CENTER_IP;
 
+    private static Set<String> clusterIps;
+
     private static volatile Channel CONNECT_CENTER_CHANNEL;
 
     private static final Object LOCK = new Object();
@@ -40,14 +42,14 @@ public class CenterChannel {
 
     private static int CONNECT_PORT = 5551;
 
-    private static void init() {
+    static {
         String ip = NetUtil.getServerIP(DaoCloudConstant.CENTER_HOST);
         ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
-        CLUSTER_CENTER_IP = ClusterNodeManager.inquire(ip);
+        CLUSTER_CENTER_IP = inquire(ip);
     }
 
-    public static void setClusterCenterIp(Set<String> centerNodes){
-        CLUSTER_CENTER_IP = centerNodes;
+    private static Set<String> inquire(String ip) {
+        return null;
     }
 
     /**
