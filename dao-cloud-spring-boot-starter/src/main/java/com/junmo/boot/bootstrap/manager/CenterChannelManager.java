@@ -28,11 +28,9 @@ import java.util.concurrent.TimeUnit;
  * @description:
  */
 @Slf4j
-public class CenterChannel {
+public class CenterChannelManager {
 
     private static Set<String> CLUSTER_CENTER_IP;
-
-    private static Set<String> clusterIps;
 
     private static volatile Channel CONNECT_CENTER_CHANNEL;
 
@@ -42,7 +40,7 @@ public class CenterChannel {
 
     private static int CONNECT_PORT = 5551;
 
-    static {
+    public static void init() {
         String ip = NetUtil.getServerIP(DaoCloudConstant.CENTER_HOST);
         ip = StringUtils.hasLength(ip) ? ip : NetUtil.getLocalIp();
         CLUSTER_CENTER_IP = inquire(ip);

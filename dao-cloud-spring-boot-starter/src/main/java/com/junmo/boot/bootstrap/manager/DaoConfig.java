@@ -121,9 +121,9 @@ public class DaoConfig {
         if (!StringUtils.hasLength(jsonValue)) {
             // no hit cache
             DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, (byte) 0, proxyConfigModel);
-            DefaultPromise<String> promise = new DefaultPromise<>(CenterChannel.getChannel().eventLoop());
+            DefaultPromise<String> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
             CenterConfigMessageHandler.PROMISE_MAP.put(proxyConfigModel, promise);
-            CenterChannel.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<<<<<< failed to fetch config({}) from config center error >>>>>>>>>>>>>>", proxyConfigModel, future.cause());
                 }

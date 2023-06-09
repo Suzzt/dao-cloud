@@ -1,8 +1,7 @@
 package com.junmo.boot.handler;
 
 import com.google.gson.Gson;
-import com.junmo.boot.bootstrap.manager.CenterChannel;
-import com.junmo.boot.bootstrap.manager.RegistryManager;
+import com.junmo.boot.bootstrap.manager.CenterChannelManager;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
@@ -47,13 +46,13 @@ public class CenterServerMessageHandler extends SimpleChannelInboundHandler<Prox
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        CenterChannel.reconnect();
+        CenterChannelManager.reconnect();
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            CenterChannel.reconnect();
+            CenterChannelManager.reconnect();
         } else {
             super.userEventTriggered(ctx, evt);
         }

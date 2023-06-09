@@ -35,9 +35,9 @@ public class RegistryManager {
      */
     public static Set<ServerNodeModel> pull(ProxyProviderModel proxyProviderModel) throws Exception {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
-        DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannel.getChannel().eventLoop());
+        DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
         CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
-        CenterChannel.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+        CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 promise.setFailure(future.cause());
             }
@@ -80,7 +80,7 @@ public class RegistryManager {
      * @param registerProviderModel
      */
     private static void send(RegisterProviderModel registerProviderModel) throws DaoException {
-        Channel channel = CenterChannel.getChannel();
+        Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
