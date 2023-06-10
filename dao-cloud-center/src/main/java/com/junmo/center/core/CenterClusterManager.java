@@ -1,7 +1,9 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.junmo.center.core.cluster.ClusterCenterConnector;
+import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
@@ -137,16 +139,19 @@ public class CenterClusterManager {
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, (byte) 0, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
+        InquireClusterCenterResponseHandler.promise = promise;
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 promise.setFailure(future.cause());
             }
         });
-        if (!promise.await(3, TimeUnit.SECONDS)) {
+         if (!promise.await(3, TimeUnit.SECONDS)) {
             throw new DaoException(promise.cause());
         }
         if (promise.isSuccess()) {
-            return promise.getNow().getClusterNodes();
+            Set<String> aliveNodes = promise.getNow().getClusterNodes();
+            aliveNodes.add(inquireIpAddress);
+            return aliveNodes;
         } else {
             throw new DaoException(promise.cause());
         }
