@@ -65,9 +65,9 @@ public class ClusterCenterConnector {
         });
         try {
             clusterChannel = bootstrap.connect().sync().channel();
-            log.info(">>>>>>>>> connect dao-cloud-center cluster success <<<<<<<<<<");
+            log.info(">>>>>>>>> connect dao-cloud-center cluster (ip={}) success <<<<<<<<<<", connectIp);
         } catch (Exception e) {
-            log.error("<<<<<<<<<< connect dao-cloud-center cluster error >>>>>>>>>>", e);
+            log.error("<<<<<<<<<< connect dao-cloud-center cluster (ip={}) error >>>>>>>>>>", connectIp, e);
             group.shutdownGracefully();
             throw new DaoException(e);
         }
@@ -76,9 +76,9 @@ public class ClusterCenterConnector {
     public void sendHeartbeat() {
         getChannel().writeAndFlush(new HeartbeatPacket()).addListeners(future -> {
             if (future.isSuccess()) {
-                log.debug(">>>>>>>>> send heart beat cluster success <<<<<<<<<");
+                log.info(">>>>>>>>> send heart beat cluster (ip={}) success <<<<<<<<<", connectIp);
             } else {
-                log.error("<<<<<<<<< send heart beat cluster error <<<<<<<<<");
+                log.error("<<<<<<<<< send heart beat cluster (ip={}) error <<<<<<<<<", connectIp);
                 reconnect();
                 sendHeartbeat();
             }

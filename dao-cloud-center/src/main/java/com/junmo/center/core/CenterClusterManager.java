@@ -1,7 +1,6 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.exception.DaoException;
@@ -64,8 +63,10 @@ public class CenterClusterManager {
      * @param ip
      */
     public static void joinCluster(String ip) {
-        log.debug("add a new or heartbeat (ip = {}) node cluster", ip);
-        clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip, true));
+        log.info("add a new or heartbeat (ip = {}) node cluster", ip);
+        if (clusterMap.get(ip) == null) {
+            clusterMap.put(ip, new ClusterCenterConnector(ip, true));
+        }
     }
 
     /**
@@ -145,7 +146,7 @@ public class CenterClusterManager {
                 promise.setFailure(future.cause());
             }
         });
-         if (!promise.await(3, TimeUnit.SECONDS)) {
+        if (!promise.await(3, TimeUnit.SECONDS)) {
             throw new DaoException(promise.cause());
         }
         if (promise.isSuccess()) {
