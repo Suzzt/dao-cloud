@@ -132,17 +132,13 @@ public class CenterClusterManager {
     public static Set<String> inquire() throws InterruptedException {
         ClusterCenterConnector connector = new ClusterCenterConnector(inquireIpAddress, false);
         Channel channel = connector.getChannel();
-        channel.writeAndFlush(new ClusterInquireMarkModel()).addListener(future -> {
-            if (!future.isSuccess()) {
-                log.error("<<<<<<<<<< send inquire cluster node ip error >>>>>>>>>>>", future.cause());
-            }
-        });
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, (byte) 0, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
+                log.error("<<<<<<<<<< send inquire cluster node ip error >>>>>>>>>>>", future.cause());
                 promise.setFailure(future.cause());
             }
         });
