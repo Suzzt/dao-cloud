@@ -26,24 +26,33 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ClusterCenterConnector {
     private final Bootstrap bootstrap = new Bootstrap();
+    private String connectIp;
     private final int connectPort = 5551;
     private Channel clusterChannel;
 
     public ClusterCenterConnector(String connectIp, boolean flag) {
-        connect(connectIp);
-        if(flag){
+        this.connectIp = connectIp;
+        if (flag) {
             ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(new JoinClusterTimer(this));
         }
     }
 
+    /**
+     * get center channel
+     *
+     * @return
+     */
     public Channel getChannel() {
-        return this.clusterChannel;
+        if (clusterChannel == null) {
+            connect();
+        }
+        return clusterChannel;
     }
 
-    public void connect(String ip) {
+    public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(ip, connectPort);
+        bootstrap.remoteAddress(connectIp, connectPort);
         bootstrap.group(group);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -65,7 +74,7 @@ public class ClusterCenterConnector {
     }
 
     public void sendHeartbeat() {
-        clusterChannel.writeAndFlush(new HeartbeatPacket()).addListeners(future -> {
+        getChannel().writeAndFlush(new HeartbeatPacket()).addListeners(future -> {
             if (future.isSuccess()) {
                 log.debug(">>>>>>>>> send heart beat cluster success <<<<<<<<<");
             } else {
