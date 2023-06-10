@@ -5,9 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @author: sucf
  * @date: 2022/12/29 21:30
- * @description: dao cloud config
+ * @description: dao cloud server config
  */
-@ConfigurationProperties(prefix = "dao-cloud")
+@ConfigurationProperties(prefix = "dao-cloud.server")
 public class DaoCloudServerProperties {
     public static String proxy;
     public static int corePoolSize;

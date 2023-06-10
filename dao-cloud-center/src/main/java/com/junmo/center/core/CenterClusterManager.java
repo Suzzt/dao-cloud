@@ -63,7 +63,7 @@ public class CenterClusterManager {
      */
     public static void joinCluster(String ip) {
         log.debug("add a new or heartbeat (ip = {}) node cluster", ip);
-        clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip));
+        clusterMap.putIfAbsent(ip, new ClusterCenterConnector(ip, true));
     }
 
     /**
@@ -127,7 +127,7 @@ public class CenterClusterManager {
      * @return
      */
     public static Set<String> inquire() throws InterruptedException {
-        ClusterCenterConnector connector = new ClusterCenterConnector(inquireIpAddress);
+        ClusterCenterConnector connector = new ClusterCenterConnector(inquireIpAddress, false);
         Channel channel = connector.getChannel();
         channel.writeAndFlush(new ClusterInquireMarkModel()).addListener(future -> {
             if (!future.isSuccess()) {

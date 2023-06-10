@@ -1,4 +1,4 @@
-package com.junmo.center.core.handler;
+package com.junmo.boot.handler;
 
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;

@@ -1,6 +1,5 @@
 package com.junmo.center.core.cluster;
 
-import com.junmo.center.core.CenterClusterManager;
 import com.junmo.core.util.DaoTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;

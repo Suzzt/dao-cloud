@@ -29,9 +29,11 @@ public class ClusterCenterConnector {
     private final int connectPort = 5551;
     private Channel clusterChannel;
 
-    public ClusterCenterConnector(String connectIp) {
+    public ClusterCenterConnector(String connectIp, boolean flag) {
         connect(connectIp);
-        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(new JoinClusterTimer(this));
+        if(flag){
+            ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(new JoinClusterTimer(this));
+        }
     }
 
     public Channel getChannel() {
