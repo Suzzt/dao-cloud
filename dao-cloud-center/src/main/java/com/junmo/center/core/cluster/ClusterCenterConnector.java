@@ -5,7 +5,7 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
-import com.junmo.core.util.ThreadPoolFactory;
+import com.junmo.core.util.DaoTimer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -14,6 +14,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -35,10 +37,19 @@ public class ClusterCenterConnector {
      */
     private int failMark = 0;
 
+    private Timeout timeout;
+
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
-            ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(new JoinClusterTimer(this));
+            TimerTask task = timeout -> {
+                try {
+                    sendHeartbeat();
+                } catch (Exception e) {
+                    log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
+                }
+            };
+            this.timeout = DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
         }
     }
 
@@ -110,5 +121,9 @@ public class ClusterCenterConnector {
                 });
             }, 5, TimeUnit.SECONDS);
         });
+    }
+
+    public void cancel() {
+        timeout.cancel();
     }
 }

@@ -75,7 +75,8 @@ public class CenterClusterManager {
      * @param ip
      */
     public static void remove(String ip) {
-        clusterMap.remove(ip);
+        ClusterCenterConnector clusterCenterConnector = clusterMap.remove(ip);
+        clusterCenterConnector.cancel();
     }
 
     public static class SyncServerHandler {
