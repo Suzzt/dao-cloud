@@ -14,6 +14,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
@@ -42,14 +43,19 @@ public class ClusterCenterConnector {
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
-            TimerTask task = timeout -> {
-                try {
-                    sendHeartbeat();
-                } catch (Exception e) {
-                    log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run(Timeout timeout) {
+                    try {
+                        sendHeartbeat();
+                    } catch (Exception e) {
+                        log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
+                    } finally {
+                        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
+                    }
                 }
             };
-            this.timeout = DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
+            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
         }
     }
 
