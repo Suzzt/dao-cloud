@@ -38,8 +38,6 @@ public class ClusterCenterConnector {
      */
     private int failMark = 0;
 
-    private Timeout timeout;
-
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
@@ -127,9 +125,5 @@ public class ClusterCenterConnector {
                 });
             }, 5, TimeUnit.SECONDS);
         });
-    }
-
-    public void cancel() {
-        timeout.cancel();
     }
 }
