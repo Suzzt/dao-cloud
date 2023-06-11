@@ -35,7 +35,6 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        CenterClusterManager.remove(ip);
         super.userEventTriggered(ctx, evt);
     }
 }
