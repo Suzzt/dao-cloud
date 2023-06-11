@@ -23,7 +23,7 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
         // get cluster ip
         InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = inetSocketAddress.getAddress().getHostAddress();
-        ip = clientIP;
+        this.ip = clientIP;
         CenterClusterManager.joinCluster(clientIP);
     }
 
@@ -35,6 +35,7 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        CenterClusterManager.remove(ip);
         super.userEventTriggered(ctx, evt);
     }
 }
