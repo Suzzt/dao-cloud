@@ -29,6 +29,11 @@ public class ClusterCenterConnector {
     private String connectIp;
     private final int connectPort = 5551;
     private Channel clusterChannel;
+    /**
+     * fail mark count
+     * if >3. it will be eliminated
+     */
+    private int failMark = 0;
 
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
@@ -79,8 +84,10 @@ public class ClusterCenterConnector {
                 log.info(">>>>>>>>> send heart beat cluster (ip={}) success <<<<<<<<<", connectIp);
             } else {
                 log.error("<<<<<<<<< send heart beat cluster (ip={}) error <<<<<<<<<", connectIp);
-                reconnect();
-                sendHeartbeat();
+                if (failMark <= 3) {
+                    reconnect();
+                    sendHeartbeat();
+                }
             }
         });
     }
@@ -93,8 +100,10 @@ public class ClusterCenterConnector {
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
                             clusterChannel = future.channel();
+                            failMark = 0;
                             log.info(">>>>>>>>> reconnect center cluster success. <<<<<<<<<< :)bingo(:");
                         } else {
+                            failMark++;
                             log.error("<<<<<<<<<< reconnect center cluster error >>>>>>>>>>", future.cause());
                         }
                     }
