@@ -36,26 +36,36 @@ public class ClusterCenterConnector {
      * if >3. it will be eliminated
      */
     private int failMark = 0;
-    private TimerTask task;
-
+    private ClusterTimerTask clusterTimerTask;
 
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
-            this.task = new TimerTask() {
-                @Override
-                public void run(Timeout timeout) {
-                    try {
-                        sendHeartbeat();
-                    } catch (Exception e) {
-                        log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
-                    } finally {
-                        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
-                    }
-                }
-            };
-            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
+            this.clusterTimerTask = new ClusterTimerTask();
+            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(clusterTimerTask, 5, TimeUnit.SECONDS);
         }
+    }
+
+    private class ClusterTimerTask implements TimerTask {
+        private boolean remove;
+
+        @Override
+        public void run(Timeout timeout) {
+            if (remove) {
+                return;
+            }
+            try {
+                sendHeartbeat();
+            } catch (Exception e) {
+                log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
+            } finally {
+                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    public void cancel() {
+        clusterTimerTask.remove = true;
     }
 
     /**
@@ -103,6 +113,8 @@ public class ClusterCenterConnector {
                 if (failMark <= 3) {
                     reconnect();
                     sendHeartbeat();
+                } else {
+                    cancel();
                 }
             }
         });
