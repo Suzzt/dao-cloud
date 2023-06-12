@@ -14,7 +14,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +36,13 @@ public class ClusterCenterConnector {
      * if >3. it will be eliminated
      */
     private int failMark = 0;
+    private TimerTask task;
+
 
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
-            TimerTask task = new TimerTask() {
+            this.task = new TimerTask() {
                 @Override
                 public void run(Timeout timeout) {
                     try {
