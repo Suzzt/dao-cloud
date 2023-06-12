@@ -16,20 +16,19 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHandler<HeartbeatModel> {
 
-    private String ip;
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel msg) {
         // get cluster ip
         InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = inetSocketAddress.getAddress().getHostAddress();
-        this.ip = clientIP;
         CenterClusterManager.joinCluster(clientIP);
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        CenterClusterManager.remove(ip);
+        InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+        String clientIP = inetSocketAddress.getAddress().getHostAddress();
+        CenterClusterManager.remove(clientIP);
         super.channelUnregistered(ctx);
     }
 
