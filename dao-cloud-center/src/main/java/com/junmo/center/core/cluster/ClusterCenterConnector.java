@@ -42,6 +42,7 @@ public class ClusterCenterConnector {
         this.connectIp = connectIp;
         if (flag) {
             this.clusterTimerTask = new ClusterTimerTask();
+            sendHeartbeat();
             DaoTimer.HASHED_WHEEL_TIMER.newTimeout(clusterTimerTask, 5, TimeUnit.SECONDS);
         }
     }
