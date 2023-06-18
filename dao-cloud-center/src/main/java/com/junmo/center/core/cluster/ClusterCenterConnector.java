@@ -2,9 +2,8 @@ package com.junmo.center.core.cluster;
 
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.netty.protocol.DaoMessageCoder;
-import com.junmo.core.netty.protocol.HeartbeatPacket;
-import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.model.RegisterProviderModel;
+import com.junmo.core.netty.protocol.*;
 import com.junmo.core.util.DaoTimer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -138,6 +137,15 @@ public class ClusterCenterConnector {
                     }
                 });
             }, 5, TimeUnit.SECONDS);
+        });
+    }
+
+    public void registerProvider(RegisterProviderModel registerProviderModel) {
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, (byte) 0, registerProviderModel);
+        getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());
+            }
         });
     }
 }

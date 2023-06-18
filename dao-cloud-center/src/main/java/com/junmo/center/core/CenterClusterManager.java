@@ -58,6 +58,16 @@ public class CenterClusterManager {
     }
 
     /**
+     * synchronized server to cluster
+     */
+    public static void syncServer(RegisterProviderModel registerProviderModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            clusterCenterConnector.registerProvider(registerProviderModel);
+        }
+    }
+
+    /**
      * join cluster
      *
      * @param ip
@@ -75,6 +85,7 @@ public class CenterClusterManager {
      * @param ip
      */
     public static void remove(String ip) {
+        log.info("down center node(ip = {})", ip);
         ClusterCenterConnector clusterCenterConnector = clusterMap.remove(ip);
         clusterCenterConnector.cancel();
     }

@@ -12,6 +12,11 @@ import java.util.Set;
 @Data
 public class RegisterProviderModel extends Model {
     /**
+     * whether to synchronize to other clusters
+     */
+    private boolean syncOtherClusterNode;
+
+    /**
      * proxy name (unique)
      */
     private String proxy;
