@@ -4,6 +4,8 @@ import com.junmo.center.core.CenterClusterManager;
 import com.junmo.core.model.HeartbeatModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -34,6 +36,15 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        super.userEventTriggered(ctx, evt);
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event.state() == IdleState.READER_IDLE) {
+                InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                String clientIP = inetSocketAddress.getAddress().getHostAddress();
+                CenterClusterManager.remove(clientIP);
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
     }
 }
