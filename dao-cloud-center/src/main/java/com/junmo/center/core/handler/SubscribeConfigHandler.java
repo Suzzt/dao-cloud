@@ -8,6 +8,7 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,9 +55,12 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            if (proxyConfigModel != null) {
-                ConfigChannelManager.remove(proxyConfigModel, ctx.channel());
-                ctx.channel().close();
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event.state() == IdleState.WRITER_IDLE) {
+                if (proxyConfigModel != null) {
+                    ConfigChannelManager.remove(proxyConfigModel, ctx.channel());
+                    ctx.channel().close();
+                }
             }
         } else {
             super.userEventTriggered(ctx, evt);
