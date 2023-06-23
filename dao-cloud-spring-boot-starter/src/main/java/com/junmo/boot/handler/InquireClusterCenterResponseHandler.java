@@ -1,6 +1,5 @@
 package com.junmo.boot.handler;
 
-import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -15,12 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InquireClusterCenterResponseHandler extends SimpleChannelInboundHandler<ClusterCenterNodeModel> {
     public static Promise<ClusterCenterNodeModel> promise;
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterCenterNodeModel clusterCenterNodeModel) {
-        if (promise.isSuccess()) {
-            promise.setSuccess(clusterCenterNodeModel);
-        } else {
-            promise.setFailure(new DaoException("inquire cluster ip error"));
-        }
+        promise.setSuccess(clusterCenterNodeModel);
     }
 }

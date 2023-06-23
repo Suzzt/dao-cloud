@@ -49,7 +49,7 @@ public class CenterChannelManager {
 
     private static Thread timer;
 
-    public static void init(String centerIp) {
+    public static void init(String centerIp) throws InterruptedException {
         CURRENT_USE_CENTER_IP = centerIp;
         inquire();
         timer = new Thread(new InquireClusterTimer());
@@ -59,29 +59,24 @@ public class CenterChannelManager {
     /**
      * inquire cluster ips
      */
-    public static void inquire() {
-        getChannel().writeAndFlush(new ClusterInquireMarkModel()).addListener(future -> {
-            if (future.isSuccess()) {
-                ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-                DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
-                DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(CONNECT_CENTER_CHANNEL.eventLoop());
-                CONNECT_CENTER_CHANNEL.writeAndFlush(daoMessage).addListener(future2 -> {
-                    if (!future2.isSuccess()) {
-                        promise.setFailure(future2.cause());
-                    }
-                });
-                if (!promise.await(3, TimeUnit.SECONDS)) {
-                    throw new DaoException(promise.cause());
-                }
-                if (promise.isSuccess()) {
-                    CLUSTER_CENTER_IP_ITERATOR = promise.getNow().getClusterNodes().iterator();
-                } else {
-                    throw new DaoException(promise.cause());
-                }
-            } else {
+    public static void inquire() throws InterruptedException {
+        ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
+        DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(getChannel().eventLoop());
+        InquireClusterCenterResponseHandler.promise = promise;
+        getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
                 log.error("<<<<<<<<<< send inquire cluster node ip error >>>>>>>>>>>", future.cause());
             }
         });
+        if (!promise.await(3, TimeUnit.SECONDS)) {
+            throw new DaoException(promise.cause());
+        }
+        if (promise.isSuccess()) {
+            CLUSTER_CENTER_IP_ITERATOR = promise.getNow().getClusterNodes().iterator();
+        } else {
+            throw new DaoException(promise.cause());
+        }
     }
 
     /**

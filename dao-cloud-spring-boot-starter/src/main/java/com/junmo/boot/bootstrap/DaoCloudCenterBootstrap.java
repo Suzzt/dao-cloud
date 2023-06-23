@@ -16,9 +16,12 @@ public class DaoCloudCenterBootstrap implements ApplicationListener<ContextRefre
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-
         // init the connection cluster
-        CenterChannelManager.init(DaoCloudCenterProperties.ip);
+        try {
+            CenterChannelManager.init(DaoCloudCenterProperties.ip);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

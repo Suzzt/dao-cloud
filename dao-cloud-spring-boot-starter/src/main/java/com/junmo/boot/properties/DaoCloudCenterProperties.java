@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DaoCloudCenterProperties {
     public static String ip;
 
-    public static void setIp(String ip) {
+    public void setIp(String ip) {
         DaoCloudCenterProperties.ip = ip;
     }
 }
