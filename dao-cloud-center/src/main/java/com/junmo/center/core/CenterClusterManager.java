@@ -11,6 +11,7 @@ import com.junmo.core.model.ClusterSyncServerModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.NetUtil;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class CenterClusterManager {
 
     public static Set<String> aliveNode() {
         Set<String> set = new HashSet<>();
+        set.add(NetUtil.getLocalIp());
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             set.add(entry.getKey());
         }
@@ -160,7 +162,7 @@ public class CenterClusterManager {
         }
         if (promise.isSuccess()) {
             Set<String> aliveNodes = promise.getNow().getClusterNodes();
-            aliveNodes.add(inquireIpAddress);
+            // aliveNodes.add(inquireIpAddress);
             return aliveNodes;
         } else {
             throw new DaoException(promise.cause());
