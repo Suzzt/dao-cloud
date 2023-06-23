@@ -1,8 +1,10 @@
 package com.junmo.boot.bootstrap.manager;
 
+import com.junmo.boot.bootstrap.thread.InquireClusterTimer;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
 import com.junmo.boot.handler.CenterServerMessageHandler;
 import com.junmo.boot.handler.InquireClusterCenterResponseHandler;
+import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
@@ -22,7 +24,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,7 +37,7 @@ public class CenterChannelManager {
 
     private static String CURRENT_USE_CENTER_IP;
 
-    private static Set<String> CLUSTER_CENTER_IP_SET;
+    private static Iterator<String> CLUSTER_CENTER_IP_ITERATOR;
 
     private static volatile Channel CONNECT_CENTER_CHANNEL;
 
@@ -45,36 +47,41 @@ public class CenterChannelManager {
 
     private static int CONNECT_PORT = 5551;
 
-    public static void init(String centerIp) throws InterruptedException {
+    private static Thread timer;
+
+    public static void init(String centerIp) {
         CURRENT_USE_CENTER_IP = centerIp;
         inquire();
+        timer = new Thread(new InquireClusterTimer());
+        timer.start();
     }
 
     /**
      * inquire cluster ips
      */
-    private static void inquire() throws InterruptedException {
+    public static void inquire() {
         getChannel().writeAndFlush(new ClusterInquireMarkModel()).addListener(future -> {
-            if (!future.isSuccess()) {
+            if (future.isSuccess()) {
+                ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
+                DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
+                DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(CONNECT_CENTER_CHANNEL.eventLoop());
+                CONNECT_CENTER_CHANNEL.writeAndFlush(daoMessage).addListener(future2 -> {
+                    if (!future2.isSuccess()) {
+                        promise.setFailure(future2.cause());
+                    }
+                });
+                if (!promise.await(3, TimeUnit.SECONDS)) {
+                    throw new DaoException(promise.cause());
+                }
+                if (promise.isSuccess()) {
+                    CLUSTER_CENTER_IP_ITERATOR = promise.getNow().getClusterNodes().iterator();
+                } else {
+                    throw new DaoException(promise.cause());
+                }
+            } else {
                 log.error("<<<<<<<<<< send inquire cluster node ip error >>>>>>>>>>>", future.cause());
             }
         });
-        ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, (byte) 0, clusterInquireMarkModel);
-        DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(CONNECT_CENTER_CHANNEL.eventLoop());
-        CONNECT_CENTER_CHANNEL.writeAndFlush(daoMessage).addListener(future -> {
-            if (!future.isSuccess()) {
-                promise.setFailure(future.cause());
-            }
-        });
-        if (!promise.await(3, TimeUnit.SECONDS)) {
-            throw new DaoException(promise.cause());
-        }
-        if (promise.isSuccess()) {
-            CLUSTER_CENTER_IP_SET = promise.getNow().getClusterNodes();
-        } else {
-            throw new DaoException(promise.cause());
-        }
     }
 
     /**
@@ -106,7 +113,12 @@ public class CenterChannelManager {
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS)).addLast(new InquireClusterCenterResponseHandler()).addLast(new CenterConfigMessageHandler()).addLast(new CenterServerMessageHandler());
+                ch.pipeline().addLast(new ProtocolFrameDecoder())
+                        .addLast(new DaoMessageCoder())
+                        .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
+                        .addLast(new InquireClusterCenterResponseHandler())
+                        .addLast(new CenterConfigMessageHandler())
+                        .addLast(new CenterServerMessageHandler());
             }
         });
         try {
@@ -122,13 +134,15 @@ public class CenterChannelManager {
     public static void reconnect() {
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
+                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, CONNECT_PORT);
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
+                    public void operationComplete(ChannelFuture future) {
                         if (future.isSuccess()) {
                             CONNECT_CENTER_CHANNEL = future.channel();
                             log.info(">>>>>>>>> reconnect register channel success. <<<<<<<<<< :)bingo(:");
                         } else {
+                            shuffle();
                             log.error("<<<<<<<<<< reconnect config center error >>>>>>>>>>", future.cause());
                         }
                     }
@@ -137,7 +151,12 @@ public class CenterChannelManager {
         });
     }
 
-    private static String chooseCenterIp() {
-        return null;
+    /**
+     * Filter to connect the cluster ip
+     */
+    private static void shuffle() {
+        if (CLUSTER_CENTER_IP_ITERATOR.hasNext()) {
+            CURRENT_USE_CENTER_IP = CLUSTER_CENTER_IP_ITERATOR.next();
+        }
     }
 }

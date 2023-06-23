@@ -1,5 +1,6 @@
 package com.junmo.boot.bootstrap.thread;
 
+import com.junmo.boot.bootstrap.manager.CenterChannelManager;
 import com.junmo.core.util.DaoTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -20,7 +21,7 @@ public class InquireClusterTimer implements Runnable {
             @Override
             public void run(Timeout timeout) {
                 try {
-
+                    CenterChannelManager.inquire();
                 } catch (Exception e) {
                     log.error("inquire cluster node error", e);
                 } finally {

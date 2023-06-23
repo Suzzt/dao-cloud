@@ -1,7 +1,7 @@
 package com.junmo.boot.bootstrap.manager;
 
 import com.junmo.boot.handler.CenterServerMessageHandler;
-import com.junmo.boot.properties.MainProperties;
+import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RegisterProviderModel;

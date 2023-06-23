@@ -1,8 +1,8 @@
-package com.junmo.boot.properties;
+package com.junmo.core;
 
 /**
  * @author: sucf
- * @date: 2023/2/16 19:18
+ * @date: 2023/6/23 17:26
  * @description:
  */
 public class MainProperties {

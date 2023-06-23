@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DaoCloudApplicationRunner implements ApplicationRunner {
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         // init the connection cluster
         CenterChannelManager.init(args.getOptionValues("dao-cloud.center.ip").get(0));
     }
