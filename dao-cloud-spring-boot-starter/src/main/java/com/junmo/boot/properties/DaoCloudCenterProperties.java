@@ -9,6 +9,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "dao-cloud.center")
 public class DaoCloudCenterProperties {
-    private static String dashboard;
-    private static String cluster;
+    public static String ip;
+
+    public static void setIp(String ip) {
+        DaoCloudCenterProperties.ip = ip;
+    }
 }
