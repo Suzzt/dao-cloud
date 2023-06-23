@@ -8,12 +8,15 @@ server:
 
 dao-cloud:
   enable: true
+  proxy: demo
+  corePoolSize: 3
+  maxPoolSize: 40
   server:
     proxy: demo
     corePoolSize: 3
     maxPoolSize: 40
   center:
     # 如果没有此项配置的话,默认为单机的127.0.0.1去连接.
-    ip: 192.168.31.254
+    ip: 127.0.0.1
 
 log.home: /data/dao-cloud-logs/${spring.application.name}
