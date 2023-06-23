@@ -66,7 +66,7 @@ public class CenterChannelManager {
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("<<<<<<<<<< send inquire cluster node ip error >>>>>>>>>>>", future.cause());
+                log.error("<<<<<<<<<< send inquire cluster node(ip={}) error >>>>>>>>>>>", future.cause(), CURRENT_USE_CENTER_IP);
             }
         });
         if (!promise.await(3, TimeUnit.SECONDS)) {
@@ -118,9 +118,9 @@ public class CenterChannelManager {
         });
         try {
             CONNECT_CENTER_CHANNEL = BOOTSTRAP.connect().sync().channel();
-            log.info(">>>>>>>>> connect register channel success. <<<<<<<<<< :)bingo(:");
+            log.info(">>>>>>>>> connect center node(ip={}) success. <<<<<<<<<< :)bingo(:", CURRENT_USE_CENTER_IP);
         } catch (Exception e) {
-            log.error("<<<<<<<<<< connect config center error >>>>>>>>>>", e);
+            log.error("<<<<<<<<<< connect center node(ip={}) error >>>>>>>>>>", e, CURRENT_USE_CENTER_IP);
             group.shutdownGracefully();
             throw new DaoException(e);
         }
@@ -135,10 +135,10 @@ public class CenterChannelManager {
                     public void operationComplete(ChannelFuture future) {
                         if (future.isSuccess()) {
                             CONNECT_CENTER_CHANNEL = future.channel();
-                            log.info(">>>>>>>>> reconnect register channel success. <<<<<<<<<< :)bingo(:");
+                            log.info(">>>>>>>>> reconnect center node(ip={}) success. <<<<<<<<<< :)bingo(:", CURRENT_USE_CENTER_IP);
                         } else {
                             shuffle();
-                            log.error("<<<<<<<<<< reconnect config center error >>>>>>>>>>", future.cause());
+                            log.error("<<<<<<<<<< reconnect center node(ip={}) error >>>>>>>>>>", future.cause());
                         }
                     }
                 });
