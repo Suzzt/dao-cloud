@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class DaoCloudApplicationRunner implements ApplicationRunner {
+public class CenterApplicationRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         // init the connection cluster
