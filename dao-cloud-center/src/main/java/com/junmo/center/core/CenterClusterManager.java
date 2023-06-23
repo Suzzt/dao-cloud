@@ -13,9 +13,11 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.NetUtil;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -38,9 +40,9 @@ public class CenterClusterManager {
      */
     private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
 
-    public static Set<String> aliveNode() {
+    public static Set<String> aliveNode(String localAddressIp) {
         Set<String> set = new HashSet<>();
-        set.add(NetUtil.getLocalIp());
+        set.add(localAddressIp);
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             set.add(entry.getKey());
         }

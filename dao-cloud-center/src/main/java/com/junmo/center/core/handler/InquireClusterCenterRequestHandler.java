@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author: sucf
  * @date: 2023/3/12 22:47
@@ -19,7 +21,8 @@ public class InquireClusterCenterRequestHandler extends SimpleChannelInboundHand
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterInquireMarkModel clusterInquireMarkModel) {
         ClusterCenterNodeModel clusterCenterNodeModel = new ClusterCenterNodeModel();
-        clusterCenterNodeModel.setClusterNodes(CenterClusterManager.aliveNode());
+        InetSocketAddress localAddress = (InetSocketAddress) ctx.channel().localAddress();
+        clusterCenterNodeModel.setClusterNodes(CenterClusterManager.aliveNode(localAddress.getHostString()));
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE, (byte) 0, clusterCenterNodeModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
