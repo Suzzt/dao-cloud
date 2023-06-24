@@ -5,19 +5,13 @@ import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.ClusterCenterNodeModel;
-import com.junmo.core.model.ClusterInquireMarkModel;
-import com.junmo.core.model.ClusterSyncServerModel;
-import com.junmo.core.model.RegisterProviderModel;
+import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
-import com.junmo.core.util.NetUtil;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -65,10 +59,24 @@ public class CenterClusterManager {
     /**
      * synchronized server to cluster
      */
-    public static void syncServer(RegisterProviderModel registerProviderModel) {
+    public static void syncRegisterToCluster(byte type, RegisterProviderModel registerProviderModel) {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
-            clusterCenterConnector.registerProvider(registerProviderModel);
+            ClusterSyncDataModel clusterSyncDataModel = new ClusterSyncDataModel();
+            clusterSyncDataModel.setType(type);
+            clusterSyncDataModel.setRegisterProviderModel(registerProviderModel);
+            clusterCenterConnector.syncData(clusterSyncDataModel);
+        }
+    }
+
+    public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            ClusterSyncDataModel clusterSyncDataModel = new ClusterSyncDataModel();
+            clusterSyncDataModel.setType(type);
+            clusterSyncDataModel.setProxyConfigModel(proxyConfigModel);
+            clusterSyncDataModel.setConfigJson(configJson);
+            clusterCenterConnector.syncData(clusterSyncDataModel);
         }
     }
 
@@ -95,37 +103,37 @@ public class CenterClusterManager {
         clusterCenterConnector.cancel();
     }
 
-    public static class SyncServerHandler {
-        /**
-         * notify other cluster nodes
-         */
-        public static void notice(ClusterSyncServerModel clusterSyncServerModel) {
-            Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
-            for (Map.Entry<String, ClusterCenterConnector> entry : set) {
-                ClusterCenterConnector connector = entry.getValue();
-                connector.getChannel().writeAndFlush(clusterSyncServerModel).addListeners(future -> {
-                    if (!future.isSuccess()) {
-                        log.error("send sync server error", future.cause());
-                    }
-                });
-            }
-        }
-
-        /**
-         * receive processing
-         *
-         * @param clusterSyncServerModel
-         */
-        public static void accept(ClusterSyncServerModel clusterSyncServerModel) {
-            RegisterProviderModel registerProviderModel = clusterSyncServerModel.getRegisterProviderModel();
-            if (clusterSyncServerModel.getFlag() == (byte) -1) {
-                RegisterCenterManager.delete(registerProviderModel);
-            } else {
-                RegisterCenterManager.register(registerProviderModel);
-            }
-        }
-
-    }
+//    public static class SyncServerHandler {
+//        /**
+//         * notify other cluster nodes
+//         */
+//        public static void notice(ClusterSyncDataModel clusterSyncDataModel) {
+//            Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
+//            for (Map.Entry<String, ClusterCenterConnector> entry : set) {
+//                ClusterCenterConnector connector = entry.getValue();
+//                connector.getChannel().writeAndFlush(clusterSyncDataModel).addListeners(future -> {
+//                    if (!future.isSuccess()) {
+//                        log.error("send sync server error", future.cause());
+//                    }
+//                });
+//            }
+//        }
+//
+//        /**
+//         * receive processing
+//         *
+//         * @param clusterSyncDataModel
+//         */
+//        public static void accept(ClusterSyncDataModel clusterSyncDataModel) {
+//            RegisterProviderModel registerProviderModel = clusterSyncDataModel.getRegisterProviderModel();
+//            if (clusterSyncDataModel.getType() == (byte) -1) {
+//                RegisterCenterManager.delete(registerProviderModel);
+//            } else {
+//                RegisterCenterManager.register(registerProviderModel);
+//            }
+//        }
+//
+//    }
 
     /**
      * inquire cluster ip

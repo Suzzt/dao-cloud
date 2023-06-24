@@ -75,7 +75,7 @@ public class CenterController {
         proxyConfigModel.setProxy(configVO.getProxy());
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
-        configCenterManager.update(proxyConfigModel, configVO.getValue());
+        configCenterManager.save(proxyConfigModel, configVO.getValue());
         return ApiResult.buildSuccess();
     }
 

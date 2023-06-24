@@ -43,7 +43,7 @@ public class ConfigCenterManager {
      * @param proxyConfigModel
      * @param jsonValue
      */
-    public synchronized void update(ProxyConfigModel proxyConfigModel, String jsonValue) {
+    public synchronized void save(ProxyConfigModel proxyConfigModel, String jsonValue) {
         cache.put(proxyConfigModel, jsonValue);
         // persistence config data
         ConfigModel config = new ConfigModel();

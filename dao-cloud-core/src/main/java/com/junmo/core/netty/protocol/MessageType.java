@@ -29,7 +29,7 @@ public class MessageType {
     static {
         MESSAGE_TYPE_MAP.put(PING_PONG_HEART_BEAT_MESSAGE, HeartbeatModel.class);
         MESSAGE_TYPE_MAP.put(REGISTRY_REQUEST_MESSAGE, RegisterProviderModel.class);
-        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_MESSAGE, ClusterSyncServerModel.class);
+        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_MESSAGE, ClusterSyncDataModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_SERVER_REQUEST_MESSAGE, ProxyProviderModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, ProxyProviderServerModel.class);
         MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);

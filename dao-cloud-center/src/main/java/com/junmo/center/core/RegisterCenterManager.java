@@ -63,7 +63,7 @@ public class RegisterCenterManager {
         log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, serverNodeModel);
     }
 
-    public static void delete(RegisterProviderModel registerProviderModel) {
+    public static void down(RegisterProviderModel registerProviderModel) {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> providerModels = registerProviderModel.getProviderModels();
         ServerNodeModel serverNodeModel = registerProviderModel.getServerNodeModel();
