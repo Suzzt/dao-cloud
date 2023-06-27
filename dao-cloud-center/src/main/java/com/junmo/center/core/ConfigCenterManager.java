@@ -64,13 +64,13 @@ public class ConfigCenterManager {
                 });
             }
         }
-        CenterClusterManager.syncConfigToCluster((byte) 1, proxyConfigModel, jsonValue);
+        CenterClusterManager.syncConfigToCluster((byte) 2, proxyConfigModel, jsonValue);
     }
 
     public synchronized void delete(ProxyConfigModel proxyConfigModel) {
         cache.remove(proxyConfigModel);
         persistence.delete(proxyConfigModel);
-        CenterClusterManager.syncConfigToCluster((byte) -1, proxyConfigModel, null);
+        CenterClusterManager.syncConfigToCluster((byte) -2, proxyConfigModel, null);
     }
 
     /**
