@@ -1,9 +1,9 @@
 package com.junmo.center.core;
 
 import com.google.common.collect.Lists;
+import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.MainProperties;
 import com.junmo.core.expand.Persistence;
-import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -64,11 +64,13 @@ public class ConfigCenterManager {
                 });
             }
         }
+        CenterClusterManager.syncConfigToCluster((byte) 1, proxyConfigModel, jsonValue);
     }
 
     public synchronized void delete(ProxyConfigModel proxyConfigModel) {
         cache.remove(proxyConfigModel);
         persistence.delete(proxyConfigModel);
+        CenterClusterManager.syncConfigToCluster((byte) -1, proxyConfigModel, null);
     }
 
     /**

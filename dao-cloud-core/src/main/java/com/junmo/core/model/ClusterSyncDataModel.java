@@ -13,9 +13,8 @@ public class ClusterSyncDataModel extends Model {
      * type
      * -2: remove the configuration from the configuration center
      * -1: indicates that the service is down from the cluster
-     * 0: update the configuration from the configuration center
      * 1: indicates that the service is added to the cluster
-     * 2: add the configuration from the configuration center
+     * 2: save the configuration from the configuration center
      */
     private byte type;
     private RegisterProviderModel registerProviderModel;

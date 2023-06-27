@@ -57,7 +57,10 @@ public class CenterClusterManager {
     }
 
     /**
-     * synchronized server to cluster
+     * synchronized server info to cluster
+     *
+     * @param type
+     * @param registerProviderModel
      */
     public static void syncRegisterToCluster(byte type, RegisterProviderModel registerProviderModel) {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
@@ -69,6 +72,13 @@ public class CenterClusterManager {
         }
     }
 
+    /**
+     * synchronized config info to cluster
+     *
+     * @param type
+     * @param proxyConfigModel
+     * @param configJson
+     */
     public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
