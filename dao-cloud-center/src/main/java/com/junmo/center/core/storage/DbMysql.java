@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ConditionalOnProperty(value = "dao-cloud.config.persistence", havingValue = "mysql")
+@ConditionalOnProperty(value = "dao-cloud.center.config.persistence", havingValue = "mysql")
 public class DbMysql implements Persistence {
 
     private final String connect_template = "jdbc:mysql://%s:%s/dao_cloud?characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true";
