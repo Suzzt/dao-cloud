@@ -7,10 +7,13 @@ server:
     context-path: /${spring.application.name}
 
 dao-cloud:
+  enable: true
   server:
     enable: true
     proxy: demo2
     corePoolSize: 3
     maxPoolSize: 40
+  center:
+    ip: 192.168.31.122
 
 log.home: /data/dao-cloud-logs/${spring.application.name}

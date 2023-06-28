@@ -2,9 +2,10 @@ package com.junmo.boot.bootstrap;
 
 import com.junmo.boot.bootstrap.manager.CenterChannelManager;
 import com.junmo.boot.properties.DaoCloudCenterProperties;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import com.junmo.core.exception.DaoException;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author: sucf
@@ -12,16 +13,14 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class DaoCloudCenterBootstrap implements ApplicationListener<ContextRefreshedEvent> {
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+public class DaoCloudCenterBootstrap {
+    @PostConstruct
+    public void init() {
         // init the connection cluster
         try {
             CenterChannelManager.init(DaoCloudCenterProperties.ip);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
     }
-
 }

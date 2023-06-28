@@ -42,51 +42,64 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     private Thread pullServerNodeThread;
 
+    private Set<Object> fields = new HashSet<>();
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         pullServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pullServerNodeThread);
+        DelayedLoad();
+    }
+
+    public void DelayedLoad() {
+        for (Object bean : fields) {
+            ReflectionUtils.doWithFields(bean.getClass(), field -> {
+                if (field.isAnnotationPresent(DaoReference.class)) {
+                    // valid
+                    Class iface = field.getType();
+                    if (!iface.isInterface()) {
+                        throw new DaoException("dao-cloud reference(DaoReference) must be interface.");
+                    }
+                    DaoReference daoReference = field.getAnnotation(DaoReference.class);
+                    String proxy = daoReference.proxy();
+                    String provider = StringUtils.hasLength(daoReference.provider()) ? daoReference.provider() : iface.getSimpleName();
+                    int version = daoReference.version();
+                    Object serviceProxy;
+                    try {
+                        // pull service node
+                        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+                        Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
+                        Set<Client> clients = Sets.newLinkedHashSet();
+                        if (!CollectionUtils.isEmpty(serverNodeModels)) {
+                            for (ServerNodeModel serverNodeModel : serverNodeModels) {
+                                clients.add(new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                            }
+                            ClientManager.addAll(proxyProviderModel, clients);
+                        }
+                        relyProxy.add(proxyProviderModel);
+                        LoadBalance loadBalance = daoReference.loadBalance();
+                        long timeout = daoReference.timeout();
+                        Byte serialized = SerializeStrategyFactory.getSerializeType(daoReference.serializable().getName());
+                        // get proxyObj
+                        serviceProxy = RpcProxy.build(iface, proxyProviderModel, serialized, loadBalance.getDaoLoadBalance(), timeout);
+                    } catch (Exception e) {
+                        log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
+                        throw new DaoException(e);
+                    }
+                    // set bean
+                    field.setAccessible(true);
+                    field.set(bean, serviceProxy);
+                    log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, field.getName());
+                }
+            });
+        }
     }
 
     @Override
     public boolean postProcessAfterInstantiation(final Object bean, final String beanName) throws BeansException {
         ReflectionUtils.doWithFields(bean.getClass(), field -> {
             if (field.isAnnotationPresent(DaoReference.class)) {
-                // valid
-                Class iface = field.getType();
-                if (!iface.isInterface()) {
-                    throw new DaoException("dao-cloud reference(DaoReference) must be interface.");
-                }
-                DaoReference daoReference = field.getAnnotation(DaoReference.class);
-                String proxy = daoReference.proxy();
-                String provider = StringUtils.hasLength(daoReference.provider()) ? daoReference.provider() : iface.getSimpleName();
-                int version = daoReference.version();
-                Object serviceProxy;
-                try {
-                    // pull service node
-                    ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
-                    Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
-                    Set<Client> clients = Sets.newLinkedHashSet();
-                    if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                        for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                            clients.add(new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
-                        }
-                        ClientManager.addAll(proxyProviderModel, clients);
-                    }
-                    relyProxy.add(proxyProviderModel);
-                    LoadBalance loadBalance = daoReference.loadBalance();
-                    long timeout = daoReference.timeout();
-                    Byte serialized = SerializeStrategyFactory.getSerializeType(daoReference.serializable().getName());
-                    // get proxyObj
-                    serviceProxy = RpcProxy.build(iface, proxyProviderModel, serialized, loadBalance.getDaoLoadBalance(), timeout);
-                } catch (Exception e) {
-                    log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
-                    throw new DaoException(e);
-                }
-                // set bean
-                field.setAccessible(true);
-                field.set(bean, serviceProxy);
-                log.info(">>>>>>>>>>> dao-cloud, invoker init reference bean success <<<<<<<<<<< proxy = {}, beanName = {}", proxy, field.getName());
+                fields.add(bean);
             }
         });
         return true;
