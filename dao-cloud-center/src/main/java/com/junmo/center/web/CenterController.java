@@ -1,6 +1,7 @@
 package com.junmo.center.web;
 
 import com.google.common.collect.Lists;
+import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.vo.ConfigVO;
@@ -76,6 +77,7 @@ public class CenterController {
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
         configCenterManager.save(proxyConfigModel, configVO.getValue());
+        CenterClusterManager.syncConfigToCluster((byte) 2, proxyConfigModel, configVO.getValue());
         return ApiResult.buildSuccess();
     }
 
@@ -83,6 +85,7 @@ public class CenterController {
     @ResponseBody
     public ApiResult<List<ConfigVO>> delete(@RequestBody ProxyConfigModel proxyConfigModel) {
         configCenterManager.delete(proxyConfigModel);
+        CenterClusterManager.syncConfigToCluster((byte) -2, proxyConfigModel, null);
         return ApiResult.buildSuccess();
     }
 
