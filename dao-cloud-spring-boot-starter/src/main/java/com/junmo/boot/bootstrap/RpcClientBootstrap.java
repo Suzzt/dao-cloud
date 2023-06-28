@@ -48,10 +48,10 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         pullServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pullServerNodeThread);
-        DelayedLoad();
+        delayedLoad();
     }
 
-    public void DelayedLoad() {
+    public void delayedLoad() {
         for (Object bean : fields) {
             ReflectionUtils.doWithFields(bean.getClass(), field -> {
                 if (field.isAnnotationPresent(DaoReference.class)) {
