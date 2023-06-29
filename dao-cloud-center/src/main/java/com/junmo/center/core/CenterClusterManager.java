@@ -178,7 +178,8 @@ public class CenterClusterManager {
             }
         });
         if (!promise.await(3, TimeUnit.SECONDS)) {
-            throw new DaoException(promise.cause());
+            log.error("<<<<<<<<<<<<<< inquire cluster ips timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
         }
         if (promise.isSuccess()) {
             Set<String> aliveNodes = promise.getNow().getClusterNodes();

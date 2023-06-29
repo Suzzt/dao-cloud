@@ -25,10 +25,10 @@ public class InquireClusterTimer implements Runnable {
                 } catch (Exception e) {
                     log.error("inquire cluster node error", e);
                 } finally {
-                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 3, TimeUnit.SECONDS);
+                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
                 }
             }
         };
-        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 3, TimeUnit.SECONDS);
+        DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
     }
 }

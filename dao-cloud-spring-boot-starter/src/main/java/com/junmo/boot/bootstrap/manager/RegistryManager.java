@@ -43,7 +43,8 @@ public class RegistryManager {
             }
         });
         if (!promise.await(8, TimeUnit.SECONDS)) {
-            throw new DaoException(promise.cause());
+            log.error("<<<<<<<<<<<<<< pull server node info timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
         }
         if (promise.isSuccess()) {
             return promise.getNow();

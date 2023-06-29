@@ -66,11 +66,12 @@ public class CenterChannelManager {
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("<<<<<<<<<< send inquire cluster node(ip={}) error >>>>>>>>>>>", future.cause(), CURRENT_USE_CENTER_IP);
+                log.error("<<<<<<<<<< send inquire cluster node(ip={}) error >>>>>>>>>>>", CURRENT_USE_CENTER_IP, future.cause());
             }
         });
         if (!promise.await(3, TimeUnit.SECONDS)) {
-            throw new DaoException(promise.cause());
+            log.error("<<<<<<<<<<<<<< inquire cluster ips timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
         }
         if (promise.isSuccess()) {
             CLUSTER_CENTER_IP_ITERATOR = promise.getNow().getClusterNodes().iterator();
@@ -120,7 +121,7 @@ public class CenterChannelManager {
             CONNECT_CENTER_CHANNEL = BOOTSTRAP.connect().sync().channel();
             log.info(">>>>>>>>> connect center node(ip={}) success. <<<<<<<<<< :)bingo(:", CURRENT_USE_CENTER_IP);
         } catch (Exception e) {
-            log.error("<<<<<<<<<< connect center node(ip={}) error >>>>>>>>>>", e, CURRENT_USE_CENTER_IP);
+            log.error("<<<<<<<<<< connect center node(ip={}) error >>>>>>>>>>", CURRENT_USE_CENTER_IP, e);
             group.shutdownGracefully();
             throw new DaoException(e);
         }
@@ -138,11 +139,11 @@ public class CenterChannelManager {
                             log.info(">>>>>>>>> reconnect center node(ip={}) success. <<<<<<<<<< :)bingo(:", CURRENT_USE_CENTER_IP);
                         } else {
                             shuffle();
-                            log.error("<<<<<<<<<< reconnect center node(ip={}) error >>>>>>>>>>", future.cause());
+                            log.error("<<<<<<<<<< reconnect center node(ip={}) error >>>>>>>>>>", CURRENT_USE_CENTER_IP, future.cause());
                         }
                     }
                 });
-            }, 5, TimeUnit.SECONDS);
+            }, 1, TimeUnit.SECONDS);
         });
     }
 
