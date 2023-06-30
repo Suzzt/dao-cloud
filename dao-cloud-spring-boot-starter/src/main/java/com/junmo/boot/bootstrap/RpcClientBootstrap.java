@@ -46,9 +46,9 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        delayedLoad();
         pullServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pullServerNodeThread);
-        delayedLoad();
     }
 
     public void delayedLoad() {
