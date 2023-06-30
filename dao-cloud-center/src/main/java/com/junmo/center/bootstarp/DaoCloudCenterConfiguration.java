@@ -52,7 +52,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     private final int port = 5551;
 
-    @Value(value = "${server.servlet.context-path:null}")
+    @Value(value = "${server.servlet.context-path:#{null}}")
     private String contextPath;
 
     @Resource
