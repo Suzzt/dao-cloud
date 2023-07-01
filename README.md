@@ -6,20 +6,18 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 # 简要系统架构
 ![dao-cloud](https://user-images.githubusercontent.com/27397567/223003214-f6839f9d-d6fe-40c8-bba6-1cae2f0fa749.jpg)
 
-    架构说明
-        1.注册中心与配置中心都是center来提供能力，两者是一体化集成的
-        2.这里服务与center、provider与comsumer都是长连接的提供高可用的方案，这里的心跳检测存活分为两种，一种是重心跳，一种轻量级单向交互的心跳(该单向并不是指只有一方发送心跳！)
-        3.服务间设计由于有长连接的存在，因此center宕机对现有服务间的调用没有影响，但是对配置中心的回调有一定程度的通知失败
+    1.注册中心与配置中心都是center来提供能力，两者是一体化集成的
+    2.这里服务与center、provider与comsumer都是长连接的提供高可用的方案，这里的心跳检测存活分为两种，一种是重心跳，一种轻量级单向交互的心跳(该单向并不是指只有一方发送心跳！)
+    3.服务间设计由于有长连接的存在，因此center宕机对现有服务间的调用没有影响，但是对配置中心的回调有一定程度的通知失败
 
 
 # center集群架构
 ![dao-center-cluster](https://github.com/Suzzt/dao-cloud/assets/27397567/e9f65f16-2f34-4c4e-9667-2ad0550731f0)
 
-    架构说明
-        首先center cluster一个同步节点复制、相互独立的去中心化的集群方案
-        集群之间：center节点交互通过重心跳维持集群，加入或宕机在center中相互同步节点数据
-        center与服务之间：服务节点端通过拉取存活集群节点来轮询注册一个节点，一旦重试失败，换下一个存活节点，继续一直向center发送重心跳(即一直注册)
-        服务负载: center cluster节点加入或宕机时，center会自主发送协调server负载情况
+    首先center cluster一个同步节点复制、相互独立去中心化的集群方案
+    1.集群之间：center节点交互通过重心跳维持集群，加入或宕机在center中相互同步节点数据
+    2.center与服务之间：服务节点端通过拉取存活集群节点来轮询注册一个节点，一旦重试失败，换下一个存活节点，继续一直向center发送重心跳(即一直注册)
+    3.服务负载: center cluster节点加入或宕机时，center会自主发送协调server负载情况
 
 # 项目结构
     dao-cloud-core = 核心
@@ -39,7 +37,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     服务监控与链路追踪
         监控服务负载流量压力,追踪各服务间调用的完整链路,归置日志统一收集输出打印,让你知道每个节点性能消耗情况
     高性能高可用集群
-        center提供了高可用、更简单化启动集群能力
+        center提供了高可用、高性能、更简单化启动集群能力
 
 # dao-协议
     +---------+---------+--------------+----------------+----------------+----------------+
@@ -52,6 +50,14 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 # 快速开始
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
+    dao-cloud-center依赖pom
+    <dependency>
+        <groupId>org.junmo</groupId>
+        <artifactId>dao-cloud-center</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>   
+
+    dao-cloud 能力依赖pom
     <dependency>
         <groupId>org.junmo</groupId>
         <artifactId>dao-cloud-spring-boot-starter</artifactId>
