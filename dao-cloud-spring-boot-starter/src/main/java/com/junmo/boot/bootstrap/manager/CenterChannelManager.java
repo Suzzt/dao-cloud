@@ -23,6 +23,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -45,12 +46,14 @@ public class CenterChannelManager {
 
     private static final Bootstrap BOOTSTRAP = new Bootstrap();
 
+    private static final String DEFAULT_LOCAL_IP = "127.0.0.1";
+
     private static int CONNECT_PORT = 5551;
 
     private static Thread timer;
 
     public static void init(String centerIp) throws InterruptedException {
-        CURRENT_USE_CENTER_IP = centerIp;
+        CURRENT_USE_CENTER_IP = StringUtils.hasLength(centerIp) ? centerIp : DEFAULT_LOCAL_IP;
         inquire();
         timer = new Thread(new InquireClusterTimer());
         timer.start();
