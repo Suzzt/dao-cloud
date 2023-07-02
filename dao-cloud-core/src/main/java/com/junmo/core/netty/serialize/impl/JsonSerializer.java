@@ -3,6 +3,8 @@ package com.junmo.core.netty.serialize.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
+import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.netty.serialize.ClassCodec;
 import com.junmo.core.netty.serialize.DaoSerializer;
 
@@ -26,6 +28,23 @@ public class JsonSerializer implements DaoSerializer {
     public <T> T deserialize(byte[] bytes, Class<T> classOfT) {
         String contentJson = new String(bytes);
         Gson gson = new GsonBuilder().registerTypeAdapter(Class.class, new ClassCodec()).create();
-        return gson.fromJson(contentJson, classOfT);
+        T t = gson.fromJson(contentJson, classOfT);
+        if (t instanceof RpcRequestModel) {
+            RpcRequestModel rpcRequestModel = (RpcRequestModel) t;
+            Object[] parameterValueNew = new Object[rpcRequestModel.getParameterTypes().length];
+            Object[] parameterValue = rpcRequestModel.getParameterValue();
+            Class[] parameterTypes = rpcRequestModel.getParameterTypes();
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class type = parameterTypes[i];
+                Object value = parameterValue[i];
+                if (value instanceof LinkedTreeMap) {
+                    LinkedTreeMap<String, Object> valueMap = (LinkedTreeMap<String, Object>) value;
+                    parameterValueNew[i] = gson.fromJson(gson.toJson(valueMap), type);
+                }
+            }
+            rpcRequestModel.setParameterValue(parameterValueNew);
+            return (T) rpcRequestModel;
+        }
+        return t;
     }
 }
