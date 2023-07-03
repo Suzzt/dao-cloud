@@ -145,7 +145,7 @@ public class ClusterCenterConnector {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SYNC_CLUSTER_SERVER_MESSAGE, MainProperties.serialize, clusterSyncDataModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());
+                log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());
             }
         });
     }
