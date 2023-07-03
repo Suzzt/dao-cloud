@@ -9,5 +9,7 @@ package com.junmo.core.util;
 public class DaoCloudConstant {
     public static final String MAGIC_NUMBER = "dao";
 
+    public static final int CENTER_IP = 5551;
+
     public static final String CENTER_HOST = "dao.cloud.config.com";
 }

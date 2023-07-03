@@ -12,6 +12,7 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.DaoCloudConstant;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -47,8 +48,6 @@ public class CenterChannelManager {
     private static final Bootstrap BOOTSTRAP = new Bootstrap();
 
     private static final String DEFAULT_LOCAL_IP = "127.0.0.1";
-
-    private static int CONNECT_PORT = 5551;
 
     private static Thread timer;
 
@@ -107,7 +106,7 @@ public class CenterChannelManager {
     public static void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
-        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, CONNECT_PORT);
+        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_IP);
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -133,7 +132,7 @@ public class CenterChannelManager {
     public static void reconnect() {
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
-                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, CONNECT_PORT);
+                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_IP);
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) {

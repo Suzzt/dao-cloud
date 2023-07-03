@@ -6,6 +6,7 @@ import com.junmo.center.core.handler.*;
 import com.junmo.center.web.CenterController;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
@@ -50,8 +51,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
      */
     public static byte SERIALIZE_TYPE = 0;
 
-    private final int port = 5551;
-
     @Value(value = "${server.servlet.context-path:#{null}}")
     private String contextPath;
 
@@ -84,13 +83,13 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new ServerRegisterHandler());
                         }
                     });
-                    Channel channel = serverBootstrap.bind(port).sync().channel();
+                    Channel channel = serverBootstrap.bind(DaoCloudConstant.CENTER_IP).sync().channel();
                     if (StringUtils.hasLength(contextProperties.getIp())) {
                         // join cluster
                         CenterClusterManager.inquireIpAddress = contextProperties.getIp();
                         CenterClusterManager.start();
                     }
-                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", port);
+                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_IP);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
                     log.error("dao-cloud center start interrupted error", e);

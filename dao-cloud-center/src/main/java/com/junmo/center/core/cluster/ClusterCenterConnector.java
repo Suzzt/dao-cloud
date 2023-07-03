@@ -5,6 +5,7 @@ import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataModel;
 import com.junmo.core.netty.protocol.*;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -29,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 public class ClusterCenterConnector {
     private final Bootstrap bootstrap = new Bootstrap();
     private String connectIp;
-    private final int connectPort = 5551;
     private Channel clusterChannel;
     /**
      * fail mark count
@@ -84,7 +84,7 @@ public class ClusterCenterConnector {
     public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(connectIp, connectPort);
+        bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_IP);
         bootstrap.group(group);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
