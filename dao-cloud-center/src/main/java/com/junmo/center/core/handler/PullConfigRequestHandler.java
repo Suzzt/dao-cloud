@@ -5,6 +5,7 @@ import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.core.MainProperties;
 import com.junmo.core.model.ConfigMarkModel;
 import com.junmo.core.model.ConfigModel;
+import com.junmo.core.model.FullConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
@@ -31,6 +32,7 @@ public class PullConfigRequestHandler extends SimpleChannelInboundHandler<Config
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ConfigMarkModel configMarkModel) {
+        FullConfigModel fullConfigModel = new FullConfigModel();
         List<ConfigModel> configModels = Lists.newArrayList();
         Map<ProxyConfigModel, String> configMap = configCenterManager.getFullConfig();
         for (Map.Entry<ProxyConfigModel, String> entry : configMap.entrySet()) {
@@ -39,7 +41,8 @@ public class PullConfigRequestHandler extends SimpleChannelInboundHandler<Config
             configModel.setConfigValue(entry.getValue());
             configModels.add(configModel);
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, MainProperties.serialize, configModels);
+        fullConfigModel.setConfigModels(configModels);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, MainProperties.serialize, fullConfigModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send full config data error", future.cause());

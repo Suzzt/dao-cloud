@@ -60,8 +60,12 @@ public class CenterClusterManager {
     public static void start() throws InterruptedException {
         // get cluster alive node
         Set<String> aliveNodes = inquire();
+        // init cluster channel
         for (String aliveNode : aliveNodes) {
             joinCluster(aliveNode);
+        }
+        // sync init config
+        for (String aliveNode : aliveNodes) {
             loadConfig(aliveNode);
         }
     }
@@ -74,7 +78,7 @@ public class CenterClusterManager {
      */
     private static void loadConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = clusterMap.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, MainProperties.serialize, new ConfigMarkModel());
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, MainProperties.serialize, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         PullConfigResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
