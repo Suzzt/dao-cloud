@@ -1,6 +1,7 @@
 package com.junmo.center.core.cluster;
 
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
+import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataModel;
@@ -92,7 +93,8 @@ public class ClusterCenterConnector {
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
-                        .addLast(new InquireClusterCenterResponseHandler());
+                        .addLast(new InquireClusterCenterResponseHandler())
+                        .addLast(new PullConfigResponseHandler());
             }
         });
         try {
