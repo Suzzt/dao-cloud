@@ -37,6 +37,10 @@ public class ConfigCenterManager {
         cache = persistence.load();
     }
 
+    public Map<ProxyConfigModel, String> getFullConfig() {
+        return cache;
+    }
+
     /**
      * add or update config content
      *

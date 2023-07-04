@@ -8,7 +8,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class ResponseModel extends Model{
+public class ResponseModel extends Model {
     /**
      * error message
      */

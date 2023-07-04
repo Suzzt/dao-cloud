@@ -51,7 +51,8 @@ public class DbMysql implements Persistence {
         Integer port = mysqlSetting.getPort();
         String username = mysqlSetting.getUsername();
         String password = mysqlSetting.getPassword();
-        if (!StringUtils.hasLength(url) || (port == null || port < 0) || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
+        if (!StringUtils.hasLength(url) || (port == null || port < 0)
+                || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
             throw new DaoException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" + " mysql-setting:\n" + "      url: x\n" + "      port: x\n" + "      username: x\n" + "      password: x");
         }
         druidDataSource = new DruidDataSource();

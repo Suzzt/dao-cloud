@@ -3,16 +3,20 @@ package com.junmo.center.core;
 import com.google.common.collect.Maps;
 import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
+import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
+import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +28,11 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class CenterClusterManager {
+
+    private static Persistence persistence;
+    public static void setPersistence(Persistence persistence) {
+        CenterClusterManager.persistence = persistence;
+    }
 
     public static String inquireIpAddress;
 
@@ -53,6 +62,37 @@ public class CenterClusterManager {
         Set<String> aliveNodes = inquire();
         for (String aliveNode : aliveNodes) {
             joinCluster(aliveNode);
+            loadConfig(aliveNode);
+        }
+    }
+
+    /**
+     * load the config that is now overwritten in the cluster
+     *
+     * @param ip
+     * @throws InterruptedException
+     */
+    private static void loadConfig(String ip) throws InterruptedException {
+        ClusterCenterConnector clusterCenterConnector = clusterMap.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, MainProperties.serialize, new ConfigMarkModel());
+        Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        PullConfigResponseHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send full config data error", future.cause());
+            }
+        });
+        if (!promise.await(8, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< get full config data timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            List<ConfigModel> configModels = promise.getNow().getConfigModels();
+            for (ConfigModel configModel : configModels) {
+                persistence.storage(configModel);
+            }
+        } else {
+            throw new DaoException(promise.cause());
         }
     }
 

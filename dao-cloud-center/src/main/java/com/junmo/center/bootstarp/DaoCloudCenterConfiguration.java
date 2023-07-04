@@ -4,6 +4,7 @@ import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.handler.*;
 import com.junmo.center.web.CenterController;
+import com.junmo.core.expand.Persistence;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.util.DaoCloudConstant;
@@ -46,6 +47,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Resource
     private ConfigCenterManager configCenterManager;
 
+    @Resource
+    private Persistence persistence;
+
     /**
      * default hessian serialize
      */
@@ -54,13 +58,12 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:#{null}}")
     private String contextPath;
 
-    @Resource
-    private DaoCloudClusterCenterProperties contextProperties;
-
     @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
+            // init center cluster attribute persistence
+            CenterClusterManager.setPersistence(persistence);
             ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);
@@ -79,14 +82,16 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new AcceptHeartbeatClusterCenterHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
                             ch.pipeline().addLast(new PullServerHandler());
+                            ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
+                            ch.pipeline().addLast(new PullConfigResponseHandler());
                             ch.pipeline().addLast(new SyncClusterInformationHandler(configCenterManager));
                             ch.pipeline().addLast(new ServerRegisterHandler());
                         }
                     });
                     Channel channel = serverBootstrap.bind(DaoCloudConstant.CENTER_IP).sync().channel();
-                    if (StringUtils.hasLength(contextProperties.getIp())) {
+                    if (StringUtils.hasLength(DaoCloudClusterCenterProperties.ip)) {
                         // join cluster
-                        CenterClusterManager.inquireIpAddress = contextProperties.getIp();
+                        CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
                         CenterClusterManager.start();
                     }
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_IP);

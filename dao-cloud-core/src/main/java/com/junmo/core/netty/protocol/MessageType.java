@@ -22,7 +22,8 @@ public class MessageType {
     public static final byte PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE = 7;
     public static final byte INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE = 8;
     public static final byte INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE = 9;
-
+    public static final byte INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE = 10;
+    public static final byte INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE = 11;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -38,6 +39,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, ConfigModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, ClusterInquireMarkModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE, ClusterCenterNodeModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, ConfigMarkModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, FullConfigModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

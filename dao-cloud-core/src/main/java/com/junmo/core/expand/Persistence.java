@@ -22,12 +22,14 @@ public interface Persistence {
 
     /**
      * delete config
+     *
      * @param proxyConfigModel
      */
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
      * load init all config data
+     *
      * @return
      */
     Map<ProxyConfigModel, String> load();

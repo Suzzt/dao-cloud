@@ -1,6 +1,5 @@
 package com.junmo.center.bootstarp;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -9,7 +8,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @description:
  */
 @ConfigurationProperties(prefix = "dao-cloud.center.cluster")
-@Data
 public class DaoCloudClusterCenterProperties {
-    private String ip;
+    public static String ip;
+
+    public void setIp(String ip) {
+        DaoCloudClusterCenterProperties.ip = ip;
+    }
 }
