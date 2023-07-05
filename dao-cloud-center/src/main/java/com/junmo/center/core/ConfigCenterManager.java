@@ -10,7 +10,6 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -32,8 +31,7 @@ public class ConfigCenterManager {
     @Resource
     private Persistence persistence;
 
-    @Autowired
-    public ConfigCenterManager(Persistence persistence) {
+    public void init() {
         cache = persistence.load();
     }
 

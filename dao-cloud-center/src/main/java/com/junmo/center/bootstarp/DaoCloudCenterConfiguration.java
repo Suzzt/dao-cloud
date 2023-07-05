@@ -93,6 +93,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
                         CenterClusterManager.start();
                     }
+                    configCenterManager.init();
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_IP);
                     channel.closeFuture().sync();
                 } catch (InterruptedException e) {
