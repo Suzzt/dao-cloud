@@ -1,6 +1,7 @@
 package com.junmo.center.core.handler;
 
 import com.junmo.center.core.CenterClusterManager;
+import com.junmo.core.MainProperties;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -23,7 +24,7 @@ public class InquireClusterCenterRequestHandler extends SimpleChannelInboundHand
         ClusterCenterNodeModel clusterCenterNodeModel = new ClusterCenterNodeModel();
         InetSocketAddress localAddress = (InetSocketAddress) ctx.channel().localAddress();
         clusterCenterNodeModel.setClusterNodes(CenterClusterManager.aliveNode(localAddress.getHostString()));
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE, (byte) 0, clusterCenterNodeModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE, MainProperties.serialize, clusterCenterNodeModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send cluster node error", future.cause());

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 /**
  * @author: sucf
  * @date: 2022/10/28 20:29
- * @description: rpc SpringBoot Auto Configuration
+ * @description: dao-cloud SpringBoot Auto Configuration
  */
 @Configuration
 @EnableConfigurationProperties({DaoCloudServerProperties.class})

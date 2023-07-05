@@ -39,12 +39,10 @@ public class RpcProxy {
      * @return
      */
     public static <T> T build(Class<T> serviceClass, ProxyProviderModel proxyProviderModel, byte serialized, DaoLoadBalance daoLoadBalance, long timeout) {
-        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(serviceClass, proxyProviderModel, serialized, daoLoadBalance, timeout));
+        return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(proxyProviderModel, serialized, daoLoadBalance, timeout));
     }
 
     static class ProxyHandler implements InvocationHandler {
-
-        private Class<?> serviceClass;
 
         private ProxyProviderModel proxyProviderModel;
 
@@ -54,8 +52,7 @@ public class RpcProxy {
 
         private long timeout;
 
-        public ProxyHandler(Class<?> serviceClass, ProxyProviderModel proxyProviderModel, byte serialized, DaoLoadBalance daoLoadBalance, long timeout) {
-            this.serviceClass = serviceClass;
+        public ProxyHandler(ProxyProviderModel proxyProviderModel, byte serialized, DaoLoadBalance daoLoadBalance, long timeout) {
             this.proxyProviderModel = proxyProviderModel;
             this.serialized = serialized;
             this.daoLoadBalance = daoLoadBalance;
