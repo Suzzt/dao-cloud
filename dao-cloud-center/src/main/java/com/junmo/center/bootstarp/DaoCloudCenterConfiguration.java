@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -49,9 +48,6 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Resource
     private Persistence persistence;
-
-    @Resource
-    private ApplicationContext applicationContext;
 
     /**
      * default hessian serialize
