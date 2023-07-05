@@ -14,7 +14,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 
 
 # center集群架构
-![dao-center-cluster](https://github.com/Suzzt/dao-cloud/assets/27397567/e9f65f16-2f34-4c4e-9667-2ad0550731f0)
+![dao-center-cluster](https://github.com/Suzzt/dao-cloud/assets/27397567/70c3c971-faac-4423-8488-4d61df91b4a3)
 
     首先center cluster一个同步节点复制、相互独立去中心化的集群方案！
     1.集群之间：center节点交互通过重心跳维持集群，加入或宕机在center中相互同步节点数据
