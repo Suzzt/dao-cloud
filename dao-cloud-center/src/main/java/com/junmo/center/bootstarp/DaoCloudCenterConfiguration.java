@@ -17,12 +17,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +50,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Resource
     private Persistence persistence;
 
+    @Resource
+    private ApplicationContext applicationContext;
+
     /**
      * default hessian serialize
      */
@@ -58,13 +61,12 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:#{null}}")
     private String contextPath;
 
-    @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
             // init center cluster attribute persistence
             CenterClusterManager.setPersistence(persistence);
-            ThreadPoolFactory.GLOBAL_THREAD_POOL.submit(() -> {
+            ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup();
                 NioEventLoopGroup worker = new NioEventLoopGroup(4);
                 try {
@@ -96,11 +98,12 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     configCenterManager.init();
                     log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_IP);
                     channel.closeFuture().sync();
-                } catch (InterruptedException e) {
-                    log.error("dao-cloud center start interrupted error", e);
+                } catch (Exception e) {
+                    log.error("dao-cloud center start error", e);
                 } finally {
                     boss.shutdownGracefully();
                     worker.shutdownGracefully();
+                    System.exit(1);
                 }
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
@@ -120,6 +123,3 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
         return new CenterController();
     }
 }
-
-
-
