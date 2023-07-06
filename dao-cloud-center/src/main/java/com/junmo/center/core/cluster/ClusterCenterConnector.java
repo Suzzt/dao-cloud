@@ -39,6 +39,10 @@ public class ClusterCenterConnector {
     private int failMark = 0;
     private ClusterTimerTask clusterTimerTask;
 
+    /**
+     * @param connectIp
+     * @param flag：turn on the timer to connect to the cluster heartbeat
+     */
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
