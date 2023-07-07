@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: sucf
  * @date: 2023/3/12 22:27
- * @description: center cluster
+ * @description: center cluster manager
  */
 @Slf4j
 public class CenterClusterManager {
@@ -157,38 +157,6 @@ public class CenterClusterManager {
         clusterCenterConnector.cancel();
     }
 
-//    public static class SyncServerHandler {
-//        /**
-//         * notify other cluster nodes
-//         */
-//        public static void notice(ClusterSyncDataModel clusterSyncDataModel) {
-//            Set<Map.Entry<String, ClusterCenterConnector>> set = clusterMap.entrySet();
-//            for (Map.Entry<String, ClusterCenterConnector> entry : set) {
-//                ClusterCenterConnector connector = entry.getValue();
-//                connector.getChannel().writeAndFlush(clusterSyncDataModel).addListeners(future -> {
-//                    if (!future.isSuccess()) {
-//                        log.error("send sync server error", future.cause());
-//                    }
-//                });
-//            }
-//        }
-//
-//        /**
-//         * receive processing
-//         *
-//         * @param clusterSyncDataModel
-//         */
-//        public static void accept(ClusterSyncDataModel clusterSyncDataModel) {
-//            RegisterProviderModel registerProviderModel = clusterSyncDataModel.getRegisterProviderModel();
-//            if (clusterSyncDataModel.getType() == (byte) -1) {
-//                RegisterCenterManager.delete(registerProviderModel);
-//            } else {
-//                RegisterCenterManager.register(registerProviderModel);
-//            }
-//        }
-//
-//    }
-
     /**
      * inquire cluster ip
      * 由集群配置ip来获取集群中的所有center节点.
@@ -227,7 +195,6 @@ public class CenterClusterManager {
         }
         if (promise.isSuccess()) {
             Set<String> aliveNodes = promise.getNow().getClusterNodes();
-            // aliveNodes.add(inquireIpAddress);
             return aliveNodes;
         } else {
             throw new DaoException(promise.cause());
