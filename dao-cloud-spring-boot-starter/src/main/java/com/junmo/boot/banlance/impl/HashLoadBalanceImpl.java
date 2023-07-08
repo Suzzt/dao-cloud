@@ -13,7 +13,7 @@ import java.util.Set;
 public class HashLoadBalanceImpl extends DaoLoadBalance {
     @Override
     public Client route(Set<Client> availableClients) {
-
+        // 有缘人自己实现吧
         return null;
     }
 }

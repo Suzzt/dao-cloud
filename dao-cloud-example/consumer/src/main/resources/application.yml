@@ -9,7 +9,6 @@ server:
 dao-cloud:
   enable: true
   server:
-    enable: true
     proxy: demo2
     corePoolSize: 3
     maxPoolSize: 40
