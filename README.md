@@ -6,7 +6,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 # 系统架构
 ![dao-cloud](https://user-images.githubusercontent.com/27397567/223003214-f6839f9d-d6fe-40c8-bba6-1cae2f0fa749.jpg)
 
-![组件架构](https://github.com/Suzzt/dao-cloud/assets/27397567/f86afb6b-74bd-4676-93c1-f5d86cf207ed)
+![组件架构](https://github.com/Suzzt/dao-cloud/assets/27397567/e9ffd50b-706f-4509-a9b7-a6c79d3a20fa)
 
     整个系统不严格重度依赖任何中间价组件即可启动，只需要一个操作系统依赖！
     1.注册中心与配置中心都是center来提供能力，两者是一体化集成的
