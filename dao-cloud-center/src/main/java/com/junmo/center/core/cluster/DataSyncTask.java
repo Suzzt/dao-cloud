@@ -44,6 +44,7 @@ public class DataSyncTask implements Runnable {
                     }
                     failMark++;
                 }
+                break;
             } catch (Throwable e) {
                 log.error("an unexpected situation has been interrupted", e);
                 if (failMark >= 3) {
