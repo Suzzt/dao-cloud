@@ -24,7 +24,7 @@ public class DataSyncTask implements Runnable {
     private ClusterSyncDataModel clusterSyncDataModel;
 
     public DataSyncTask(ClusterCenterConnector clusterCenterConnector, ClusterSyncDataModel clusterSyncDataModel) {
-        this.failMark = 0;
+        this.failMark = 1;
         this.clusterCenterConnector = clusterCenterConnector;
         this.clusterSyncDataModel = clusterSyncDataModel;
     }
