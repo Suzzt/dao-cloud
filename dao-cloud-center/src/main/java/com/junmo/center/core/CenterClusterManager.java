@@ -1,7 +1,9 @@
 package com.junmo.center.core;
 
+import cn.hutool.core.util.IdUtil;
 import com.google.common.collect.Maps;
 import com.junmo.center.core.cluster.ClusterCenterConnector;
+import com.junmo.center.core.cluster.DataSyncTask;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.core.MainProperties;
@@ -10,6 +12,7 @@ import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
@@ -19,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,11 +34,14 @@ import java.util.concurrent.TimeUnit;
 public class CenterClusterManager {
 
     private static Persistence persistence;
+
     public static void setPersistence(Persistence persistence) {
         CenterClusterManager.persistence = persistence;
     }
 
     public static String inquireIpAddress;
+
+    private static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
 
     /**
      * cluster info
@@ -127,10 +134,12 @@ public class CenterClusterManager {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
             ClusterSyncDataModel clusterSyncDataModel = new ClusterSyncDataModel();
+            clusterSyncDataModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
             clusterSyncDataModel.setType(type);
             clusterSyncDataModel.setProxyConfigModel(proxyConfigModel);
             clusterSyncDataModel.setConfigJson(configJson);
-            clusterCenterConnector.syncData(clusterSyncDataModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector,clusterSyncDataModel);
+            syncDataThreadPoolExecutor.execute(dataSyncTask);
         }
     }
 

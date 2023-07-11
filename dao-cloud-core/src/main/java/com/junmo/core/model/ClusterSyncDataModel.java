@@ -8,7 +8,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class ClusterSyncDataModel extends Model {
+public class ClusterSyncDataModel extends NumberingModel {
     /**
      * type
      * -2: remove the configuration from the configuration center

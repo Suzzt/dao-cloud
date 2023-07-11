@@ -5,19 +5,19 @@ import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataModel;
+import com.junmo.core.model.FullConfigModel;
 import com.junmo.core.netty.protocol.*;
 import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -147,6 +147,11 @@ public class ClusterCenterConnector {
         });
     }
 
+    /**
+     * sync data to cluster node
+     *
+     * @param clusterSyncDataModel
+     */
     public void syncData(ClusterSyncDataModel clusterSyncDataModel) {
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SYNC_CLUSTER_SERVER_MESSAGE, MainProperties.serialize, clusterSyncDataModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {

@@ -32,12 +32,12 @@ public class ThreadPoolFactory {
                 60L,
                 TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(2000),
-                r -> new Thread(r, "dao-cloud-rpc, " + serverType + "-serverHandlerPool-" + r.hashCode()),
+                r -> new Thread(r, "dao-cloud: " + serverType + "-serverHandlerPool-" + r.hashCode()),
                 new RejectedExecutionHandler() {
                     @SneakyThrows
                     @Override
                     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-                        throw new Exception("dao-cloud-rpc " + serverType + " Thread pool is exhausted!");
+                        throw new Exception("dao-cloud: " + serverType + " Thread pool is exhausted!");
                     }
                 });
         return serverHandlerPool;
