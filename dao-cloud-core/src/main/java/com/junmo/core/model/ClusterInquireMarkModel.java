@@ -6,5 +6,5 @@ package com.junmo.core.model;
  * @date: 2023/4/17 00:03
  * @description:
  */
-public class ClusterInquireMarkModel extends NumberingModel{
+public class ClusterInquireMarkModel extends Model{
 }

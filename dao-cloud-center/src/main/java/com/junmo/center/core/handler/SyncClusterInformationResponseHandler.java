@@ -1,9 +1,11 @@
 package com.junmo.center.core.handler;
 
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.NumberingModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +22,10 @@ public class SyncClusterInformationResponseHandler extends SimpleChannelInboundH
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NumberingModel numberingModel) throws Exception {
         Promise promise = PROMISE_MAP.remove(numberingModel.getSequenceId());
-        promise.setSuccess(numberingModel.getSequenceId());
+        if (StringUtils.hasLength(numberingModel.getErrorMessage())) {
+            promise.setFailure(new DaoException(numberingModel.getErrorMessage()));
+        } else {
+            promise.setSuccess(numberingModel.getSequenceId());
+        }
     }
 }

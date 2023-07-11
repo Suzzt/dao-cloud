@@ -6,5 +6,4 @@ package com.junmo.core.model;
  * @description:
  */
 public class ConfigMarkModel extends Model {
-
 }
