@@ -1,5 +1,6 @@
 package com.junmo.center.core.cluster;
 
+import com.google.gson.Gson;
 import com.junmo.center.core.handler.SyncClusterInformationResponseHandler;
 import com.junmo.core.model.ClusterSyncDataModel;
 import com.junmo.core.model.ServerNodeModel;
@@ -31,24 +32,26 @@ public class DataSyncTask implements Runnable {
 
     @Override
     public void run() {
+        Gson gson = new Gson();
         while (true) {
             try {
                 DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
                 SyncClusterInformationResponseHandler.PROMISE_MAP.put(clusterSyncDataModel.getSequenceId(), promise);
                 clusterCenterConnector.syncData(clusterSyncDataModel);
                 if (!promise.await(3, TimeUnit.SECONDS) || !promise.isSuccess()) {
-                    log.error("<<<<<<<<<<<<<< sync data to cluster error. already error count = {} >>>>>>>>>>>>>>", failMark);
+                    log.error("<<<<<<<<<<<<<< sync data = {} to cluster error. already error count = {} >>>>>>>>>>>>>>", gson.toJson(clusterSyncDataModel), failMark);
                     if (failMark >= 3) {
-                        log.error("data has been synchronized to the cluster more than 3 times");
+                        log.error("data = {} has been synchronized to the cluster more than 3 times", gson.toJson(clusterSyncDataModel));
                         return;
                     }
                     failMark++;
                 }
+                log.info("sync data = {} to cluster success", gson.toJson(clusterSyncDataModel));
                 break;
             } catch (Throwable e) {
                 log.error("an unexpected situation has been interrupted", e);
                 if (failMark >= 3) {
-                    log.error("data has been synchronized to the cluster more than 3 times");
+                    log.error("data = {} has been synchronized to the cluster more than 3 times", gson.toJson(clusterSyncDataModel));
                     return;
                 }
                 failMark++;
