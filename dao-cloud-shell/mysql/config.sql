@@ -12,7 +12,7 @@ CREATE TABLE dao_cloud.config
     UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
-  DEFAULT CHARSET = utf8 COMMENT ='配置中心存储';
+  DEFAULT CHARSET = utf8 COMMENT ='配置中心存储内容表';
 # example data
 INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value)
 VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0, 'Welcome to dao-cloud!');
