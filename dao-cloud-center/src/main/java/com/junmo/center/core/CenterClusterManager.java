@@ -116,10 +116,10 @@ public class CenterClusterManager {
     public static void syncRegisterToCluster(byte type, RegisterProviderModel registerProviderModel) {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
-            ClusterSyncDataModel clusterSyncDataModel = new ClusterSyncDataModel();
-            clusterSyncDataModel.setType(type);
-            clusterSyncDataModel.setRegisterProviderModel(registerProviderModel);
-            clusterCenterConnector.syncData(clusterSyncDataModel);
+            ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
+            clusterSyncDataRequestModel.setType(type);
+            clusterSyncDataRequestModel.setRegisterProviderModel(registerProviderModel);
+            clusterCenterConnector.syncData(clusterSyncDataRequestModel);
         }
     }
 
@@ -133,12 +133,12 @@ public class CenterClusterManager {
     public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
         for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
-            ClusterSyncDataModel clusterSyncDataModel = new ClusterSyncDataModel();
-            clusterSyncDataModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
-            clusterSyncDataModel.setType(type);
-            clusterSyncDataModel.setProxyConfigModel(proxyConfigModel);
-            clusterSyncDataModel.setConfigJson(configJson);
-            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector,clusterSyncDataModel);
+            ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
+            clusterSyncDataRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            clusterSyncDataRequestModel.setType(type);
+            clusterSyncDataRequestModel.setProxyConfigModel(proxyConfigModel);
+            clusterSyncDataRequestModel.setConfigJson(configJson);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, clusterSyncDataRequestModel);
             syncDataThreadPoolExecutor.execute(dataSyncTask);
         }
     }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author: sucf
- * @date: 2023/5/30 00:11
+ * @date: 2023/7/15 23:30
  * @description:
  */
 @Data
@@ -17,7 +17,4 @@ public class ClusterSyncDataModel extends NumberingModel {
      * 2: save the configuration from the configuration center
      */
     private byte type;
-    private RegisterProviderModel registerProviderModel;
-    private ProxyConfigModel proxyConfigModel;
-    private String configJson;
 }

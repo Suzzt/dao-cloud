@@ -1,7 +1,7 @@
 package com.junmo.center.core.handler;
 
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.NumberingModel;
+import com.junmo.core.model.ClusterSyncDataResponseModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
@@ -15,17 +15,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date: 2023/7/11 18:23
  * @description: 回应cluster数据同步
  */
-public class SyncClusterInformationResponseHandler extends SimpleChannelInboundHandler<NumberingModel> {
+public class SyncClusterInformationResponseHandler extends SimpleChannelInboundHandler<ClusterSyncDataResponseModel> {
 
     public static final Map<Long, Promise> PROMISE_MAP = new ConcurrentHashMap<>();
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, NumberingModel numberingModel) throws Exception {
-        Promise promise = PROMISE_MAP.remove(numberingModel.getSequenceId());
-        if (StringUtils.hasLength(numberingModel.getErrorMessage())) {
-            promise.setFailure(new DaoException(numberingModel.getErrorMessage()));
-        } else {
-            promise.setSuccess(numberingModel.getSequenceId());
+    protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataResponseModel clusterSyncDataResponseModel) throws Exception {
+        if (clusterSyncDataResponseModel.getType() == -2 || clusterSyncDataResponseModel.getType() == 2) {
+            // 只有配置同步需要检验返回响应,这里是排除掉服务节点的数据同步
+            Promise promise = PROMISE_MAP.remove(clusterSyncDataResponseModel.getSequenceId());
+            if (StringUtils.hasLength(clusterSyncDataResponseModel.getErrorMessage())) {
+                promise.setFailure(new DaoException(clusterSyncDataResponseModel.getErrorMessage()));
+            } else {
+                promise.setSuccess(clusterSyncDataResponseModel.getSequenceId());
+            }
         }
     }
 }

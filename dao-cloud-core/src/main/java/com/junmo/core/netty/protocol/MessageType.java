@@ -41,8 +41,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_NODE_RESPONSE_MESSAGE, ClusterCenterNodeModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, ConfigMarkModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, FullConfigModel.class);
-        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, ClusterSyncDataModel.class);
-        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, NumberingModel.class);
+        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, ClusterSyncDataRequestModel.class);
+        MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, ClusterSyncDataResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

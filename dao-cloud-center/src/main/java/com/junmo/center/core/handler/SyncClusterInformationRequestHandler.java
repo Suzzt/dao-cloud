@@ -3,8 +3,8 @@ package com.junmo.center.core.handler;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.core.MainProperties;
-import com.junmo.core.model.ClusterSyncDataModel;
-import com.junmo.core.model.NumberingModel;
+import com.junmo.core.model.ClusterSyncDataRequestModel;
+import com.junmo.core.model.ClusterSyncDataResponseModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @description: 请求处理cluster数据同步
  */
 @Slf4j
-public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<ClusterSyncDataModel> {
+public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<ClusterSyncDataRequestModel> {
 
     private ConfigCenterManager configCenterManager;
 
@@ -33,34 +33,35 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataModel clusterSyncDataModel) {
-        NumberingModel numberingModel = new NumberingModel();
-        numberingModel.setSequenceId(clusterSyncDataModel.getSequenceId());
+    protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataRequestModel clusterSyncDataRequestModel) {
+        ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
+        clusterSyncDataResponseModel.setSequenceId(clusterSyncDataRequestModel.getSequenceId());
+        clusterSyncDataResponseModel.setType(clusterSyncDataRequestModel.getType());
         try {
-            if (clusterSyncDataModel.getType() == -2) {
-                if (!expireHashMap.exists(clusterSyncDataModel.getSequenceId())) {
-                    configCenterManager.delete(clusterSyncDataModel.getProxyConfigModel());
+            if (clusterSyncDataRequestModel.getType() == -2) {
+                if (!expireHashMap.exists(clusterSyncDataRequestModel.getSequenceId())) {
+                    configCenterManager.delete(clusterSyncDataRequestModel.getProxyConfigModel());
                 }
-            } else if (clusterSyncDataModel.getType() == -1) {
-                RegisterProviderModel registerProviderModel = clusterSyncDataModel.getRegisterProviderModel();
+            } else if (clusterSyncDataRequestModel.getType() == -1) {
+                RegisterProviderModel registerProviderModel = clusterSyncDataRequestModel.getRegisterProviderModel();
                 RegisterCenterManager.down(registerProviderModel);
-            } else if (clusterSyncDataModel.getType() == 1) {
-                RegisterProviderModel registerProviderModel = clusterSyncDataModel.getRegisterProviderModel();
+            } else if (clusterSyncDataRequestModel.getType() == 1) {
+                RegisterProviderModel registerProviderModel = clusterSyncDataRequestModel.getRegisterProviderModel();
                 RegisterCenterManager.register(registerProviderModel);
-            } else if (clusterSyncDataModel.getType() == 2) {
-                if (!expireHashMap.exists(clusterSyncDataModel.getSequenceId())) {
-                    configCenterManager.save(clusterSyncDataModel.getProxyConfigModel(), clusterSyncDataModel.getConfigJson());
+            } else if (clusterSyncDataRequestModel.getType() == 2) {
+                if (!expireHashMap.exists(clusterSyncDataRequestModel.getSequenceId())) {
+                    configCenterManager.save(clusterSyncDataRequestModel.getProxyConfigModel(), clusterSyncDataRequestModel.getConfigJson());
                 }
             }
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, numberingModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
             ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
                 if (!future.isSuccess()) {
                     log.error("data sync response message", future.cause());
                 }
             });
         } catch (Throwable t) {
-            numberingModel.setErrorMessage(t.getMessage());
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, numberingModel);
+            clusterSyncDataResponseModel.setErrorMessage(t.getMessage());
+            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
             ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
                 if (!future.isSuccess()) {
                     log.error("data sync response message", future.cause());
