@@ -12,8 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 // 这是一个dao-cloud的center
 @EnableDaoCloudCenter
-public class WebAdminApplication {
+public class DaoCloudAdminApplication {
     public static void main(String[] args) {
-        SpringApplication.run(WebAdminApplication.class, args);
+        SpringApplication.run(DaoCloudAdminApplication.class, args);
     }
 }
