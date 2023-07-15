@@ -21,14 +21,11 @@ public class SyncClusterInformationResponseHandler extends SimpleChannelInboundH
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataResponseModel clusterSyncDataResponseModel) throws Exception {
-        if (clusterSyncDataResponseModel.getType() == -2 || clusterSyncDataResponseModel.getType() == 2) {
-            // 只有配置同步需要检验返回响应,这里是排除掉服务节点的数据同步
-            Promise promise = PROMISE_MAP.remove(clusterSyncDataResponseModel.getSequenceId());
-            if (StringUtils.hasLength(clusterSyncDataResponseModel.getErrorMessage())) {
-                promise.setFailure(new DaoException(clusterSyncDataResponseModel.getErrorMessage()));
-            } else {
-                promise.setSuccess(clusterSyncDataResponseModel.getSequenceId());
-            }
+        Promise promise = PROMISE_MAP.remove(clusterSyncDataResponseModel.getSequenceId());
+        if (StringUtils.hasLength(clusterSyncDataResponseModel.getErrorMessage())) {
+            promise.setFailure(new DaoException(clusterSyncDataResponseModel.getErrorMessage()));
+        } else {
+            promise.setSuccess(clusterSyncDataResponseModel.getSequenceId());
         }
     }
 }

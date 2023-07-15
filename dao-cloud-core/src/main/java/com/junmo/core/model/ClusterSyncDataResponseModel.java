@@ -5,5 +5,5 @@ package com.junmo.core.model;
  * @date: 2023/7/15 23:31
  * @description:
  */
-public class ClusterSyncDataResponseModel extends ClusterSyncDataModel {
+public class ClusterSyncDataResponseModel extends NumberingModel {
 }

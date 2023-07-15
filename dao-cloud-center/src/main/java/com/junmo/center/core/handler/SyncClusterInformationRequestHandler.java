@@ -1,5 +1,6 @@
 package com.junmo.center.core.handler;
 
+import com.google.gson.Gson;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.core.MainProperties;
@@ -34,14 +35,12 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataRequestModel clusterSyncDataRequestModel) {
-        ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
-        clusterSyncDataResponseModel.setSequenceId(clusterSyncDataRequestModel.getSequenceId());
-        clusterSyncDataResponseModel.setType(clusterSyncDataRequestModel.getType());
         try {
             if (clusterSyncDataRequestModel.getType() == -2) {
                 if (!expireHashMap.exists(clusterSyncDataRequestModel.getSequenceId())) {
                     configCenterManager.delete(clusterSyncDataRequestModel.getProxyConfigModel());
                 }
+                configAnswer(ctx, clusterSyncDataRequestModel);
             } else if (clusterSyncDataRequestModel.getType() == -1) {
                 RegisterProviderModel registerProviderModel = clusterSyncDataRequestModel.getRegisterProviderModel();
                 RegisterCenterManager.down(registerProviderModel);
@@ -52,21 +51,31 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 if (!expireHashMap.exists(clusterSyncDataRequestModel.getSequenceId())) {
                     configCenterManager.save(clusterSyncDataRequestModel.getProxyConfigModel(), clusterSyncDataRequestModel.getConfigJson());
                 }
+                configAnswer(ctx, clusterSyncDataRequestModel);
             }
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
-            ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
-                if (!future.isSuccess()) {
-                    log.error("data sync response message", future.cause());
-                }
-            });
         } catch (Throwable t) {
-            clusterSyncDataResponseModel.setErrorMessage(t.getMessage());
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
-            ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
-                if (!future.isSuccess()) {
-                    log.error("data sync response message", future.cause());
-                }
-            });
+            log.error("cluster sync data={} accept handle error", t, new Gson().toJson(clusterSyncDataRequestModel));
+            if (clusterSyncDataRequestModel.getType() == -2 || clusterSyncDataRequestModel.getType() == 2) {
+                ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
+                clusterSyncDataResponseModel.setErrorMessage(t.getMessage());
+                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
+                ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
+                    if (!future.isSuccess()) {
+                        log.error("data sync response message", future.cause());
+                    }
+                });
+            }
         }
+    }
+
+    private void configAnswer(ChannelHandlerContext ctx, ClusterSyncDataRequestModel clusterSyncDataRequestModel) {
+        ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
+        clusterSyncDataResponseModel.setSequenceId(clusterSyncDataRequestModel.getSequenceId());
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
+        ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("data sync response message", future.cause());
+            }
+        });
     }
 }
