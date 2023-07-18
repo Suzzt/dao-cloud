@@ -70,6 +70,7 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("<<<<<<<<<< config error {} >>>>>>>>>>", ctx.channel(), cause);
+        log.error("<<<<<<<<<< send message error {} >>>>>>>>>>", ctx.channel(), cause);
+        ctx.fireExceptionCaught(cause);
     }
 }

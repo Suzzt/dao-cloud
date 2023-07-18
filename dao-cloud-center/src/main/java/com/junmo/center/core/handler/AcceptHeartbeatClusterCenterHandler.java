@@ -33,6 +33,7 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         if (ip != null) {
             CenterClusterManager.remove(ip);
+            ctx.channel().close();
         }
         super.channelUnregistered(ctx);
     }
@@ -45,6 +46,7 @@ public class AcceptHeartbeatClusterCenterHandler extends SimpleChannelInboundHan
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                 String clientIP = inetSocketAddress.getAddress().getHostAddress();
                 CenterClusterManager.remove(clientIP);
+                ctx.channel().close();
             }
         } else {
             super.userEventTriggered(ctx, evt);

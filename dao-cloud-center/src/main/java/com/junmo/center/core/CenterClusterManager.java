@@ -163,7 +163,9 @@ public class CenterClusterManager {
     public static void remove(String ip) {
         log.info("down center node(ip = {})", ip);
         ClusterCenterConnector clusterCenterConnector = clusterMap.remove(ip);
-        clusterCenterConnector.cancel();
+        if (clusterCenterConnector != null) {
+            clusterCenterConnector.cancel();
+        }
     }
 
     /**

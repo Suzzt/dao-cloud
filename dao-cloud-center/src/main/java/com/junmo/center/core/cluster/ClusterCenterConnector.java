@@ -73,6 +73,7 @@ public class ClusterCenterConnector {
 
     public void cancel() {
         clusterTimerTask.remove = true;
+        clusterChannel.close();
     }
 
     /**
@@ -119,7 +120,7 @@ public class ClusterCenterConnector {
                 log.info(">>>>>>>>> send heart beat cluster (ip={}) success <<<<<<<<<", connectIp);
             } else {
                 log.error("<<<<<<<<< send heart beat cluster (ip={}) error <<<<<<<<<", connectIp);
-                if (failMark <= 3) {
+                if (failMark <= 300) {
                     reconnect();
                     sendHeartbeat();
                 } else {
