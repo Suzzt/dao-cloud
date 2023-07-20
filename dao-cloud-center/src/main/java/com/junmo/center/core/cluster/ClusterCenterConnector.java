@@ -106,6 +106,10 @@ public class ClusterCenterConnector {
                 sendHeartbeat();
             }
         });
+        if (failMark > 2) {
+            state = false;
+        }
+        failMark++;
     }
 
     private void reconnect() {
@@ -145,5 +149,6 @@ public class ClusterCenterConnector {
 
     public void clearFailMark() {
         this.failMark = 0;
+        this.state = true;
     }
 }
