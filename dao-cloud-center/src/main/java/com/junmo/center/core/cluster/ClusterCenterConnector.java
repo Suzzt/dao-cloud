@@ -40,13 +40,9 @@ public class ClusterCenterConnector {
 
     /**
      * @param connectIp
-     * @param flag：turn on the timer to connect to the cluster heartbeat
      */
-    public ClusterCenterConnector(String connectIp, boolean flag) {
+    public ClusterCenterConnector(String connectIp) {
         this.connectIp = connectIp;
-        if (flag) {
-            sendHeartbeat();
-        }
     }
 
     public String getConnectIp() {

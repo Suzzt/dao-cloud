@@ -172,7 +172,7 @@ public class CenterClusterManager {
     public static void joinCluster(String ip) {
         log.info("add a new or heartbeat (ip = {}) node cluster", ip);
         if (ALL_HISTORY_CLUSTER_MAP.get(ip) == null) {
-            ALL_HISTORY_CLUSTER_MAP.put(ip, new ClusterCenterConnector(ip, true));
+            ALL_HISTORY_CLUSTER_MAP.put(ip, new ClusterCenterConnector(ip));
         }
     }
 
