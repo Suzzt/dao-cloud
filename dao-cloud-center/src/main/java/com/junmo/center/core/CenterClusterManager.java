@@ -11,9 +11,17 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.ThreadPoolFactory;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -200,8 +208,21 @@ public class CenterClusterManager {
      * @return
      */
     public static Set<String> inquire() throws InterruptedException {
-        ClusterCenterConnector connector = new ClusterCenterConnector(inquireIpAddress, false);
-        Channel channel = connector.getChannel();
+        NioEventLoopGroup group = new NioEventLoopGroup();
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.channel(NioSocketChannel.class);
+        bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_IP);
+        bootstrap.group(group);
+        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel ch) {
+                ch.pipeline()
+                        .addLast(new ProtocolFrameDecoder())
+                        .addLast(new DaoMessageCoder())
+                        .addLast(new InquireClusterCenterResponseHandler());
+            }
+        });
+        Channel channel = bootstrap.connect().sync().channel();
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
@@ -216,6 +237,8 @@ public class CenterClusterManager {
             log.error("<<<<<<<<<<<<<< inquire cluster ips timeout >>>>>>>>>>>>>>");
             throw new DaoException("promise await timeout");
         }
+        channel.close().sync();
+        group.shutdownGracefully().sync();
         if (promise.isSuccess()) {
             Set<String> aliveNodes = promise.getNow().getClusterNodes();
             return aliveNodes;

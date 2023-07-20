@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class ClusterCenterConnector {
     private final Bootstrap bootstrap = new Bootstrap();
     private String connectIp;
-    private Channel clusterChannel;
+    private volatile Channel clusterChannel;
     /**
      * fail mark count
      */
