@@ -55,7 +55,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         client.destroy();
         ClientManager.remove(proxyProviderModel, client);
-        log.info(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
+        log.error(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         super.channelUnregistered(ctx);
     }
 
