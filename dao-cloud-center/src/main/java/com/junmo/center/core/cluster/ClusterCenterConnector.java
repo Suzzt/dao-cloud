@@ -103,7 +103,6 @@ public class ClusterCenterConnector {
                 log.error("<<<<<<<<< retry = {} send heart beat cluster (ip={}) error <<<<<<<<<", failMark, connectIp);
                 state = false;
                 reconnect();
-                sendHeartbeat();
             }
         });
         if (failMark > 2) {
