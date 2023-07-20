@@ -1,5 +1,6 @@
 package com.junmo.boot.bootstrap.unit;
 
+import com.junmo.boot.handler.ClientPingPongMessageHandler;
 import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
@@ -47,7 +48,7 @@ public class Client {
      * fail mark count
      * if >3. it will be eliminated
      */
-    private int failMark = 0;
+    private volatile int failMark = 0;
 
     @Override
     public boolean equals(Object o) {
@@ -125,6 +126,7 @@ public class Client {
     private void connect() {
         group = new NioEventLoopGroup();
         RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxyProviderModel, this);
+        ClientPingPongMessageHandler clientPingPongMessageHandler = new ClientPingPongMessageHandler(this);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.remoteAddress(this.ip, this.port);
         bootstrap.group(group);
@@ -135,7 +137,8 @@ public class Client {
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
                         .addLast("clientIdleHandler", new IdleStateHandler(2, 0, 0, TimeUnit.SECONDS))
-                        .addLast(rpcClientMessageHandler);
+                        .addLast(rpcClientMessageHandler)
+                        .addLast(clientPingPongMessageHandler);
                 log.info(">>>>>>>>>> dao-cloud-rpc connect server (ip = {},port = {}) success <<<<<<<<<<<<", ip, port);
             }
         });

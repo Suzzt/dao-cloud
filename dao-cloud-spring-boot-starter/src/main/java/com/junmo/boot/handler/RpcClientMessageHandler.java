@@ -1,7 +1,7 @@
 package com.junmo.boot.handler;
 
-import com.junmo.boot.bootstrap.unit.Client;
 import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.boot.bootstrap.unit.Client;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcResponseModel;
@@ -62,8 +62,15 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            // send heartbeat packet
-            sendHeartBeat(ctx);
+            int failMark = client.getFailMark();
+            if (failMark >= 3) {
+                client.destroy();
+                ClientManager.remove(proxyProviderModel, client);
+                log.error("<<<<<<<<<<< server (connect address = {}) down >>>>>>>>>>>", ctx.channel().remoteAddress());
+            } else{
+                // send heartbeat packet
+                sendHeartBeat(ctx);
+            }
         } else {
             super.userEventTriggered(ctx, evt);
         }
@@ -73,20 +80,10 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         Channel channel = ctx.channel();
         HeartbeatPacket heartbeatPacket = new HeartbeatPacket();
         channel.writeAndFlush(heartbeatPacket).addListener(future -> {
-            if (future.isSuccess()) {
-                // clear fail mark
-                client.clearFailMark();
-            } else {
-                int failMark = client.getFailMark();
-                if (failMark >= 3) {
-                    client.destroy();
-                    ClientManager.remove(proxyProviderModel, client);
-                    log.error("<<<<<<<<<<< server (connect address = {}) down >>>>>>>>>>>", ctx.channel().remoteAddress());
-                } else {
-                    client.addFailMark();
-                    client.reconnect();
-                }
+            if (!future.isSuccess()) {
+                client.reconnect();
             }
+            client.addFailMark();
         });
     }
 }
