@@ -44,17 +44,30 @@ public class CenterClusterManager {
     private static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
 
     /**
-     * cluster info
+     * history cluster info
      * key: ip
-     * value: cluster interaction connector
+     * value: cluster interaction connector. in each connector there is a connection request that is constantly likely to be retried
      */
-    private static Map<String, ClusterCenterConnector> clusterMap = Maps.newHashMap();
+    private static final Map<String, ClusterCenterConnector> ALL_HISTORY_CLUSTER_MAP = Maps.newHashMap();
 
+    public static synchronized void add() {
+
+    }
+
+    /**
+     * alive node
+     *
+     * @param localAddressIp
+     * @return
+     */
     public static Set<String> aliveNode(String localAddressIp) {
         Set<String> set = new HashSet<>();
         set.add(localAddressIp);
-        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
-            set.add(entry.getKey());
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector connector = entry.getValue();
+            if (connector.isActive()) {
+                set.add(entry.getKey());
+            }
         }
         return set;
     }
@@ -84,7 +97,7 @@ public class CenterClusterManager {
      * @throws InterruptedException
      */
     private static void loadConfig(String ip) throws InterruptedException {
-        ClusterCenterConnector clusterCenterConnector = clusterMap.get(ip);
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, MainProperties.serialize, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         PullConfigResponseHandler.promise = promise;
@@ -114,7 +127,7 @@ public class CenterClusterManager {
      * @param registerProviderModel
      */
     public static void syncRegisterToCluster(byte type, RegisterProviderModel registerProviderModel) {
-        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
             ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
             clusterSyncDataRequestModel.setType(type);
@@ -131,7 +144,7 @@ public class CenterClusterManager {
      * @param configJson
      */
     public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
-        for (Map.Entry<String, ClusterCenterConnector> entry : clusterMap.entrySet()) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
             ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
             clusterSyncDataRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
@@ -150,8 +163,8 @@ public class CenterClusterManager {
      */
     public static void joinCluster(String ip) {
         log.info("add a new or heartbeat (ip = {}) node cluster", ip);
-        if (clusterMap.get(ip) == null) {
-            clusterMap.put(ip, new ClusterCenterConnector(ip, true));
+        if (ALL_HISTORY_CLUSTER_MAP.get(ip) == null) {
+            ALL_HISTORY_CLUSTER_MAP.put(ip, new ClusterCenterConnector(ip, true));
         }
     }
 
@@ -160,11 +173,10 @@ public class CenterClusterManager {
      *
      * @param ip
      */
-    public static void remove(String ip) {
-        log.info("down center node(ip = {})", ip);
-        ClusterCenterConnector clusterCenterConnector = clusterMap.remove(ip);
+    public static void down(String ip) {
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.remove(ip);
         if (clusterCenterConnector != null) {
-            clusterCenterConnector.cancel();
+            log.info("down center node(ip = {})", ip);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.junmo.center.core.cluster;
 
+import com.junmo.center.core.handler.ClusterResponseHandler;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.center.core.handler.SyncClusterInformationResponseHandler;
@@ -8,7 +9,6 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataRequestModel;
 import com.junmo.core.netty.protocol.*;
 import com.junmo.core.util.DaoCloudConstant;
-import com.junmo.core.util.DaoTimer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -17,8 +17,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -35,10 +34,9 @@ public class ClusterCenterConnector {
     private Channel clusterChannel;
     /**
      * fail mark count
-     * if >3. it will be eliminated
      */
     private int failMark = 0;
-    private ClusterTimerTask clusterTimerTask;
+    private volatile boolean state;
 
     /**
      * @param connectIp
@@ -47,33 +45,8 @@ public class ClusterCenterConnector {
     public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
         if (flag) {
-            this.clusterTimerTask = new ClusterTimerTask();
             sendHeartbeat();
-            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(clusterTimerTask, 5, TimeUnit.SECONDS);
         }
-    }
-
-    private class ClusterTimerTask implements TimerTask {
-        private boolean remove;
-
-        @Override
-        public void run(Timeout timeout) {
-            if (remove) {
-                return;
-            }
-            try {
-                sendHeartbeat();
-            } catch (Exception e) {
-                log.error("<<<<<<<<< join cluster error >>>>>>>>>", e);
-            } finally {
-                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
-            }
-        }
-    }
-
-    public void cancel() {
-        clusterTimerTask.remove = true;
-        clusterChannel.close();
     }
 
     /**
@@ -88,20 +61,28 @@ public class ClusterCenterConnector {
         return clusterChannel;
     }
 
+    public boolean isActive() {
+        return state;
+    }
+
     public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_IP);
         bootstrap.group(group);
+        ClusterResponseHandler clusterRequestHandler = new ClusterResponseHandler(this);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
+                state = true;
                 ch.pipeline()
                         .addLast(new ProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
+                        .addLast(new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS))
                         .addLast(new InquireClusterCenterResponseHandler())
                         .addLast(new SyncClusterInformationResponseHandler())
-                        .addLast(new PullConfigResponseHandler());
+                        .addLast(new PullConfigResponseHandler())
+                        .addLast(clusterRequestHandler);
             }
         });
         try {
@@ -119,13 +100,10 @@ public class ClusterCenterConnector {
             if (future.isSuccess()) {
                 log.info(">>>>>>>>> send heart beat cluster (ip={}) success <<<<<<<<<", connectIp);
             } else {
-                log.error("<<<<<<<<< send heart beat cluster (ip={}) error <<<<<<<<<", connectIp);
-                if (failMark <= 300) {
-                    reconnect();
-                    sendHeartbeat();
-                } else {
-                    cancel();
-                }
+                log.error("<<<<<<<<< retry = {} send heart beat cluster (ip={}) error <<<<<<<<<", failMark, connectIp);
+                state = false;
+                reconnect();
+                sendHeartbeat();
             }
         });
     }
@@ -135,18 +113,19 @@ public class ClusterCenterConnector {
             clusterChannel.eventLoop().schedule(() -> {
                 bootstrap.connect().addListener(new ChannelFutureListener() {
                     @Override
-                    public void operationComplete(ChannelFuture future) throws Exception {
+                    public void operationComplete(ChannelFuture future) {
                         if (future.isSuccess()) {
                             clusterChannel = future.channel();
                             failMark = 0;
+                            state = true;
                             log.info(">>>>>>>>> reconnect center cluster success. <<<<<<<<<< :)bingo(:");
                         } else {
+                            log.error("<<<<<<<<<< reconnect = {} center cluster error >>>>>>>>>>", failMark, future.cause());
                             failMark++;
-                            log.error("<<<<<<<<<< reconnect center cluster error >>>>>>>>>>", future.cause());
                         }
                     }
                 });
-            }, 5, TimeUnit.SECONDS);
+            }, 1, TimeUnit.SECONDS);
         });
     }
 
@@ -162,5 +141,9 @@ public class ClusterCenterConnector {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());
             }
         });
+    }
+
+    public void clearFailMark() {
+        this.failMark = 0;
     }
 }
