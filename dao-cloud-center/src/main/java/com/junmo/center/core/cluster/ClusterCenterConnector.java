@@ -49,6 +49,10 @@ public class ClusterCenterConnector {
         }
     }
 
+    public String getConnectIp() {
+        return connectIp;
+    }
+
     /**
      * get center channel
      *

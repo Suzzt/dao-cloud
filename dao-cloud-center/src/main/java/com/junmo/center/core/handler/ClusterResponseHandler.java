@@ -1,5 +1,6 @@
 package com.junmo.center.core.handler;
 
+import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.core.model.HeartbeatModel;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,6 +25,13 @@ public class ClusterResponseHandler extends SimpleChannelInboundHandler<Heartbea
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel heartbeatModel) throws Exception {
         connector.clearFailMark();
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        CenterClusterManager.down(connector.getConnectIp());
+        ctx.channel().close();
+        super.channelUnregistered(ctx);
     }
 
     @Override
