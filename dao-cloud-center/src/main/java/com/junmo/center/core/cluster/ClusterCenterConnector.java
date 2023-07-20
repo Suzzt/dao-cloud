@@ -125,7 +125,6 @@ public class ClusterCenterConnector {
                             log.info(">>>>>>>>> reconnect center cluster success. <<<<<<<<<< :)bingo(:");
                         } else {
                             log.error("<<<<<<<<<< reconnect = {} center cluster error >>>>>>>>>>", failMark, future.cause());
-                            failMark++;
                         }
                     }
                 });
