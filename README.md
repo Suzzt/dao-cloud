@@ -95,7 +95,7 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
     先启动provider,再启动consumer(其实启反也可以)
     3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo (rpc调用测试)
-    还有其他test-demo也放在该工程中
+    还有其他test-demo也都放在工程dao-cloud-example中
 
 **本项目是由作者利用平时自由时间创建或迭代,所有的微服务异常情况没办法测试全,未在真实项目上实践过! 请酌情考虑使用,出事故拒不负责(^_^)! 有问题请提issues;**
     
