@@ -30,18 +30,36 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Client {
 
+    /**
+     * 锁对象. 单例加载channel
+     */
     private final Object lock = new Object();
 
     private ProxyProviderModel proxyProviderModel;
 
+    /**
+     * rpc provider ip
+     */
     private String ip;
 
+    /**
+     * rpc provider port
+     */
     private int port;
 
+    /**
+     * 长连接可操作的channel
+     */
     private volatile Channel channel;
 
+    /**
+     * 客户端Bootstrap
+     * */
     Bootstrap bootstrap = new Bootstrap();
 
+    /**
+     * 客户端NioEventLoopGroup
+     */
     private NioEventLoopGroup group;
 
     /**
