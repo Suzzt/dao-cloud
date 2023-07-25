@@ -106,7 +106,7 @@ public class CenterChannelManager {
     public static void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
-        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_IP);
+        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_CENTER_PORT);
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -132,7 +132,7 @@ public class CenterChannelManager {
     public static void reconnect() {
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
-                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_IP);
+                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_CENTER_PORT);
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) {

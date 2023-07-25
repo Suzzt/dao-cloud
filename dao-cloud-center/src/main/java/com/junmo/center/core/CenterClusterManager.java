@@ -211,7 +211,7 @@ public class CenterClusterManager {
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_IP);
+        bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_CENTER_PORT);
         bootstrap.group(group);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override

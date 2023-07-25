@@ -18,7 +18,10 @@ import org.springframework.util.CollectionUtils;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author: sucf
@@ -114,5 +117,35 @@ public class RpcProxy {
             }
         }
     }
+
+    public static void main(String[] args) {
+//        List<String> list = new CopyOnWriteArrayList<>();
+//        list.add("a");
+//        list.add("b");
+//        list.add("c");
+//        list.add("d");
+//        Iterator<String> itr = list.iterator();
+//        while (itr.hasNext()) {
+//            String s = itr.next();
+//            if (s.equals("b")) {
+//                list.remove(s);
+//            }
+//        }
+//        System.out.println(list);
+        int i = 111;
+        Object[] objects = new Object[1];
+        objects[0] = 333;
+        dd(objects,i);
+        System.out.println(i);
+        System.out.println(objects[0]);
+
+    }
+
+    public static void dd(Object[] objects, int i){
+        objects[0] = 444;
+        System.out.println(objects[0]+"djoid");
+        i = 222;
+    }
+
 
 }

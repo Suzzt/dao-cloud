@@ -84,14 +84,14 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new ServerRegisterHandler());
                         }
                     });
-                    Channel channel = serverBootstrap.bind(DaoCloudConstant.CENTER_IP).sync().channel();
+                    Channel channel = serverBootstrap.bind(DaoCloudConstant.CENTER_CENTER_PORT).sync().channel();
                     if (StringUtils.hasLength(DaoCloudClusterCenterProperties.ip)) {
                         // join cluster
                         CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
                         CenterClusterManager.start();
                     }
                     configCenterManager.init();
-                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_IP);
+                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_CENTER_PORT);
                     channel.closeFuture().sync();
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
