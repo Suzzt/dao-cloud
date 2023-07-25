@@ -54,6 +54,9 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
 
     private ProxyProviderModel proxyProviderModel;
 
+    /**
+     * 客户端对象信息
+     */
     private Client client;
 
     public RpcClientMessageHandler(ProxyProviderModel proxyProviderModel, Client client) {
@@ -83,6 +86,12 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         }
     }
 
+    /**
+     * 服务端远程关闭连接触发事件
+     *
+     * @param ctx
+     * @throws Exception
+     */
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         client.destroy();
@@ -91,6 +100,13 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         super.channelUnregistered(ctx);
     }
 
+    /**
+     * 发送心跳包到服务端触发事件
+     *
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
@@ -108,6 +124,11 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         }
     }
 
+    /**
+     * 发送心跳包
+     *
+     * @param ctx
+     */
     public void sendHeartBeat(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         HeartbeatPacket heartbeatPacket = new HeartbeatPacket();
