@@ -43,12 +43,14 @@ public class CenterClusterManager {
 
     private static Persistence persistence;
 
-    public static void setPersistence(Persistence persistence) {
-        CenterClusterManager.persistence = persistence;
-    }
-
+    /**
+     * 询问cluster节点ip
+     */
     public static String inquireIpAddress;
 
+    /**
+     * 异步线程池执行center cluster数据同步任务
+     */
     private static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
 
     /**
@@ -58,14 +60,19 @@ public class CenterClusterManager {
      */
     private static final Map<String, ClusterCenterConnector> ALL_HISTORY_CLUSTER_MAP = Maps.newHashMap();
 
-    public static synchronized void add() {
-
+    /**
+     * 载入持久化配置信息
+     *
+     * @param persistence
+     */
+    public static void setPersistence(Persistence persistence) {
+        CenterClusterManager.persistence = persistence;
     }
 
     /**
      * alive node
      *
-     * @param localAddressIp
+     * @param localAddressIp 自身节点ip
      * @return
      */
     public static Set<String> aliveNode(String localAddressIp) {
@@ -114,7 +121,7 @@ public class CenterClusterManager {
                 log.error("send full config data error", future.cause());
             }
         });
-        if (!promise.await(8, TimeUnit.SECONDS)) {
+        if (!promise.await(10, TimeUnit.SECONDS)) {
             log.error("<<<<<<<<<<<<<< get full config data timeout >>>>>>>>>>>>>>");
             throw new DaoException("promise await timeout");
         }
@@ -216,10 +223,7 @@ public class CenterClusterManager {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline()
-                        .addLast(new ProtocolFrameDecoder())
-                        .addLast(new DaoMessageCoder())
-                        .addLast(new InquireClusterCenterResponseHandler());
+                ch.pipeline().addLast(new ProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new InquireClusterCenterResponseHandler());
             }
         });
         Channel channel = bootstrap.connect().sync().channel();

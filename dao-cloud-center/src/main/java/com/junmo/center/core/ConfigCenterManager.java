@@ -26,11 +26,20 @@ import java.util.Set;
 @Slf4j
 public class ConfigCenterManager {
 
+    /**
+     * 缓存配置
+     */
     private Map<ProxyConfigModel, String> cache;
 
+    /**
+     * 配置信息的持久化
+     */
     @Resource
     private Persistence persistence;
 
+    /**
+     * 初始化拉取配置中心的配置信息到本地服务的缓存内存中
+     */
     public void init() {
         cache = persistence.load();
     }
@@ -68,6 +77,11 @@ public class ConfigCenterManager {
         }
     }
 
+    /**
+     * delete config
+     *
+     * @param proxyConfigModel
+     */
     public synchronized void delete(ProxyConfigModel proxyConfigModel) {
         cache.remove(proxyConfigModel);
         persistence.delete(proxyConfigModel);
@@ -82,6 +96,13 @@ public class ConfigCenterManager {
         return cache.get(proxyConfigModel);
     }
 
+    /**
+     * 获取配置信息
+     *
+     * @param proxy
+     * @param key
+     * @return
+     */
     public List<ConfigVO> getConfigVO(String proxy, String key) {
         List<ConfigVO> result = Lists.newArrayList();
         for (Map.Entry<ProxyConfigModel, String> entry : cache.entrySet()) {
