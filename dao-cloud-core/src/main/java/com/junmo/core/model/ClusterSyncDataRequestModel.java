@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * @author: sucf
  * @date: 2023/5/30 00:11
- * @description:
+ * @description: cluster 各个节点的数据同步
  */
 @Data
 public class ClusterSyncDataRequestModel extends NumberingModel {
@@ -17,7 +17,19 @@ public class ClusterSyncDataRequestModel extends NumberingModel {
      * 2: save the configuration from the configuration center
      */
     private byte type;
+
+    /**
+     * 注册服务信息
+     */
     private RegisterProviderModel registerProviderModel;
+
+    /**
+     * 配置类别信息
+     */
     private ProxyConfigModel proxyConfigModel;
+
+    /**
+     * 配置数据内容
+     */
     private String configJson;
 }

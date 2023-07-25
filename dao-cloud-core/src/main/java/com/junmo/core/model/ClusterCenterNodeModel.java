@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/3/12 22:22
- * @description:
+ * @description: cluster alive nodes
  */
 @Data
 public class ClusterCenterNodeModel extends Model {
