@@ -9,11 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: sucf
  * @date: 2023/1/15 12:29
- * @description:
+ * @description: 接收客户端ping pong
  */
 @Slf4j
 public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<HeartbeatModel> {
 
+    /**
+     * 处理来自rpc client长连接心跳, 返回一个心跳包给服务端
+     *
+     * @param ctx            the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
+     *                       belongs to
+     * @param heartbeatModel the message to handle
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HeartbeatModel heartbeatModel) {
         log.debug(">>>>>>>>>>> receive client (connect address = {}) heart beat packet <<<<<<<<<<<", ctx.channel().remoteAddress());
