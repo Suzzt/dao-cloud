@@ -125,7 +125,7 @@
         <div class="pull-right hidden-xs">
             <strong>去
                 <a href="https://github.com/Suzzt/dao-cloud" target="_blank">github</a>
-                看看
+                看源码!
             </strong>
         </div>
     </footer>
