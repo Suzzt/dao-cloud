@@ -53,6 +53,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 
 # 快速开始
+<img width="1809" alt="dao-cloud-web" src="https://github.com/Suzzt/dao-cloud/assets/27397567/a3db691a-4797-4ae2-94ee-694b1065e3d6">
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
     <dependency>
@@ -77,12 +78,11 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     通过注解EnableDaoCloudCenter标注在一个SpringBoot工程的启动类上,告诉这是dao-cloud的注册|配置中心(todo 页面)
     
     查看服务注册情况
-        http://127.0.0.1:5555/dao-cloud/register/server ==== 查看所有服务信息
-        http://127.0.0.1:5555/dao-cloud/register/proxy?proxy=demo&version=0 ==== 查看服务列表详情
+        <img width="1810" alt="image" src="https://github.com/Suzzt/dao-cloud/assets/27397567/c22babc0-7e1f-4f8d-b3f6-849f53dfa99a">
     
     配置中心管理
-        http://127.0.0.1:5555/dao-cloud/config/save ==== 更新配置信息
-        http://127.0.0.1:5555/dao-cloud/config/query ==== 获取配置信息
+        <img width="1810" alt="image" src="https://github.com/Suzzt/dao-cloud/assets/27397567/426376b2-d1a4-44eb-a70d-02cfb49e641d">
+
     DaoConfig这个类提供了服务对配置信息的获取、订阅(详情看dao-cloud-example示例)
         DaoConfig.getConf  ==== 获取配置
         DaoConfig.subscribe  ==== 订阅配置,在监听到订阅的配置发生变化时,做某些事(回调)
@@ -91,19 +91,12 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
 项目(dao-cloud-example)中有一个示例
 
     0.把公共的接口请放在api-common中,就是你要暴露出去的函数方法
-    1.先启动web工程(通过@EnableDaoCloudCenter注解搞定注册中心)
+    1.先启动web工程(通过@EnableDaoCloudCenter注解搞定注册中心).你可以访问 http://127.0.0.1:5555/dao-cloud/index.html 来打开页面管控整个页面(用户名:admin,密码:123456)
     2.然后就是provider与consumer,项目中提供了工程(dao-cloud-example)来示例使用
     先启动provider,再启动consumer(其实启反也可以)
     3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo (rpc调用测试)
     还有其他test-demo也都放在工程dao-cloud-example中
 
 **本项目是由作者利用平时自由时间创建或迭代,所有的微服务异常情况没办法测试全,未在真实项目上实践过! 请酌情考虑使用,出事故拒不负责(^_^)! 有问题请提issues;**
-    
-        
-
-
-
-   
-    
     
     
