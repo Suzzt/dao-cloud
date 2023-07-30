@@ -88,6 +88,22 @@ public class CenterClusterManager {
     }
 
     /**
+     * alive node size
+     *
+     * @return
+     */
+    public static int aliveNodeSize() {
+        int i = 0;
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector connector = entry.getValue();
+            if (connector.isActive()) {
+                i++;
+            }
+        }
+        return i;
+    }
+
+    /**
      * cluster start
      *
      * @throws InterruptedException

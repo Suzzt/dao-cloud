@@ -122,4 +122,13 @@ public class ConfigCenterManager {
         }
         return result;
     }
+
+    /**
+     * 配置数量
+     *
+     * @return
+     */
+    public int size() {
+        return cache.size();
+    }
 }

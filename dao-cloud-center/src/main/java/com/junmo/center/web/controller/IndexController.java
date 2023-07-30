@@ -1,5 +1,8 @@
 package com.junmo.center.web.controller;
 
+import com.junmo.center.core.CenterClusterManager;
+import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.PermissionInterceptor;
 import com.junmo.center.web.interceptor.Permissions;
 import com.junmo.core.ApiResult;
@@ -26,10 +29,25 @@ import java.util.Date;
 @Controller
 @RequestMapping(value = "dao-cloud")
 public class IndexController {
+
+    private ConfigCenterManager configCenterManager;
+
+    public IndexController(ConfigCenterManager configCenterManager) {
+        this.configCenterManager = configCenterManager;
+    }
+
     @RequestMapping(value = {"", "/", "index"})
-    public String index(Model model, HttpServletRequest request) {
-        model.addAttribute("registryNum", 2);
-        model.addAttribute("registryDataNum", 3);
+    public String index(Model model) {
+        // 当前节点存活集群数
+        model.addAttribute("aliveClusterNodeNum", CenterClusterManager.aliveNodeSize());
+        // 总接入服务数(provider + consumer)
+        model.addAttribute("serverNum", "todo");
+        // 注册服务数
+        model.addAttribute("providerNum", RegisterCenterManager.nodes());
+        // 注册方法可调用数
+        model.addAttribute("methodNum", RegisterCenterManager.methods());
+        // 配置条数
+        model.addAttribute("configNum", configCenterManager.size());
         return "index";
     }
 

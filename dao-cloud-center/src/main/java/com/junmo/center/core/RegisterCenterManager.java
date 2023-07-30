@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,6 +39,46 @@ public class RegisterCenterManager {
      */
     public static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
         return SERVER;
+    }
+
+    /**
+     * 服务可调用方法数
+     * distinct (key + provider + version)
+     *
+     * @return
+     */
+    public static int methods() {
+        int i = 0;
+        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
+        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
+            Map<ProviderModel, Set<ServerNodeModel>> map = entry.getValue();
+            for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : map.entrySet()) {
+                Set<ServerNodeModel> nodes = providerModelSetEntry.getValue();
+                if (nodes != null && nodes.size() > 0) {
+                    i++;
+                }
+            }
+        }
+        return i;
+    }
+
+    /**
+     * 服务节点数
+     * distinct (ip + port)
+     *
+     * @return
+     */
+    public static int nodes() {
+        Set<ServerNodeModel> temp = new HashSet<>();
+        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
+        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
+            Map<ProviderModel, Set<ServerNodeModel>> map = entry.getValue();
+            for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : map.entrySet()) {
+                Set<ServerNodeModel> nodes = providerModelSetEntry.getValue();
+                temp.addAll(nodes);
+            }
+        }
+        return temp.size();
     }
 
     /**
