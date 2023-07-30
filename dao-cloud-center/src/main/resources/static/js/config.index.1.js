@@ -8,8 +8,10 @@ $(function () {
             type: "post",
             data: function (d) {
                 var obj = {};
-                obj.page = d.start == 0 || d.start == null ? 1 : d.start;
-                obj.size = d.length == 0 || d.length == null ? 10 : d.length;
+                // obj.page = d.draw == 0 || d.draw == null ? 1 : d.draw;
+                // obj.size = d.length == 0 || d.length == null ? 10 : d.length;
+                obj.start = d.start;
+                obj.length = d.length;
                 obj.proxy = $('#proxy').val();
                 obj.key = $('#key').val();
                 obj.version = $('#version').val();

@@ -94,14 +94,13 @@ public class CenterController {
 
     @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ConfigDataVO getConfigProxy(String proxy, String key, @RequestParam(required = false, defaultValue = "1") int page,
-                                                  @RequestParam(required = false, defaultValue = "10") int size) {
+    public ConfigDataVO getConfigProxy(String proxy, String key, @RequestParam(required = false, defaultValue = "0") int start,
+                                       @RequestParam(required = false, defaultValue = "10") int length) {
         ConfigDataVO configDataVO = new ConfigDataVO();
         List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key);
         // 分页
-        int startIndex = (page - 1) * size;
-        int endIndex = Math.min(startIndex + size, list.size());
-        List<ConfigVO> data = list.subList(startIndex, endIndex);
+        int endIndex = Math.min(start + length, list.size());
+        List<ConfigVO> data = list.subList(start, endIndex);
         configDataVO.setRecordsTotal(list.size());
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
