@@ -75,20 +75,18 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
         <artifactId>dao-cloud-center</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
-    通过注解EnableDaoCloudCenter标注在一个SpringBoot工程的启动类上,告诉这是dao-cloud的注册|配置中心(todo 页面)
-    
-    查看服务注册情况
-    
-        <img width="1808" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/d1a70add-472a-4708-9285-6e79f8d7abe8">
-
-    配置中心管理
-    
-        <img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/7dbf78b6-cd83-4508-9a45-811b1f276e07">
+    通过注解EnableDaoCloudCenter标注在一个SpringBoot工程的启动类上,告诉这是dao-cloud的注册|配置中心(这里内嵌一个web页面)
 
     DaoConfig这个类提供了服务对配置信息的获取、订阅(详情看dao-cloud-example示例)
         DaoConfig.getConf  ==== 获取配置
         DaoConfig.subscribe  ==== 订阅配置,在监听到订阅的配置发生变化时,做某些事(回调)
         注意: 此外你在配置中心更改配置后,配置中心会自动刷新到服务上
+        
+服务注册管理
+<img width="1808" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/acf757f4-b60f-4f6a-9d2c-893999e2744c">
+
+配置中心管理
+<img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/379fbb3b-5ade-45f9-ab1c-3415d6f0e39a">
 
 项目(dao-cloud-example)中有一个示例
 
