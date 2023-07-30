@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: sucf
@@ -29,12 +29,22 @@ public class RegisterCenterManager {
      * key: provider + version
      * value: server nodes --->ip + port
      */
-    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new ConcurrentHashMap<>();
+    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
 
+    /**
+     * 获取整个注册中心服务信息
+     *
+     * @return
+     */
     public static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
         return SERVER;
     }
 
+    /**
+     * 注册节点
+     *
+     * @param registerProviderModel
+     */
     public static synchronized void register(RegisterProviderModel registerProviderModel) {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> registerProviders = registerProviderModel.getProviderModels();
@@ -44,6 +54,13 @@ public class RegisterCenterManager {
         }
     }
 
+    /**
+     * 增加节点
+     *
+     * @param proxy
+     * @param providerModel
+     * @param serverNodeModel
+     */
     public static synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
         if (SERVER.containsKey(proxy)) {
             Map<ProviderModel, Set<ServerNodeModel>> providerMap = SERVER.get(proxy);
@@ -63,7 +80,12 @@ public class RegisterCenterManager {
         log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, serverNodeModel);
     }
 
-    public static void down(RegisterProviderModel registerProviderModel) {
+    /**
+     * 移除节点
+     *
+     * @param registerProviderModel
+     */
+    public static synchronized void down(RegisterProviderModel registerProviderModel) {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> providerModels = registerProviderModel.getProviderModels();
         ServerNodeModel serverNodeModel = registerProviderModel.getServerNodeModel();
@@ -75,6 +97,13 @@ public class RegisterCenterManager {
         log.error(">>>>>>>>>>> down server proxy ({}, {}, {}) <<<<<<<<<<<", proxy, providerModels, serverNodeModel);
     }
 
+    /**
+     * 获取节点服务信息
+     *
+     * @param proxy
+     * @param providerModel
+     * @return
+     */
     public static Set<ServerNodeModel> getServers(String proxy, ProviderModel providerModel) {
         if (!StringUtils.hasLength(proxy)) {
             throw new DaoException("proxy = " + proxy + " is null");

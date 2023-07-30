@@ -79,7 +79,7 @@ public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedE
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
             }
             DaoService daoService = serviceBean.getClass().getAnnotation(DaoService.class);
-            String interfaces = serviceBean.getClass().getInterfaces()[0].getSimpleName();
+            String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
             ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);

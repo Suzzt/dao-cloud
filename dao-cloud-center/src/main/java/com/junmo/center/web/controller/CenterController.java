@@ -1,9 +1,11 @@
-package com.junmo.center.web;
+package com.junmo.center.web.controller;
 
 import com.google.common.collect.Lists;
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
+import com.junmo.center.web.interceptor.Permissions;
+import com.junmo.center.web.vo.ConfigDataVO;
 import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.center.web.vo.ServerVO;
 import com.junmo.core.ApiResult;
@@ -23,7 +25,7 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2022/11/19 18:16
- * @description:
+ * @description: 业务web接口
  */
 @Controller
 @RequestMapping(value = "dao-cloud")
@@ -32,8 +34,9 @@ public class CenterController {
     @Resource
     private ConfigCenterManager configCenterManager;
 
-    @RequestMapping(value = "/register/proxy")
+    @RequestMapping(value = "/registry/pageList")
     @ResponseBody
+    @Permissions(limit = false)
     public ApiResult<List<ServerVO>> getRegisterProxy(String proxy, String provider) {
         List<ServerVO> result = Lists.newArrayList();
         Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterCenterManager.getServer();
@@ -60,7 +63,7 @@ public class CenterController {
         return ApiResult.buildSuccess(result);
     }
 
-    @RequestMapping(value = "/register/server")
+    @RequestMapping(value = "/registry/server")
     @ResponseBody
     public ApiResult<Set<ServerNodeModel>> getServer(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
         Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterCenterManager.getServer();
@@ -71,27 +74,37 @@ public class CenterController {
 
     @RequestMapping(value = "/config/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult save(@Valid @RequestBody ConfigVO configVO) {
+    public ApiResult save(@Valid ConfigVO configVO) {
         ProxyConfigModel proxyConfigModel = new ProxyConfigModel();
         proxyConfigModel.setProxy(configVO.getProxy());
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
-        configCenterManager.save(proxyConfigModel, configVO.getValue());
-        CenterClusterManager.syncConfigToCluster((byte) 2, proxyConfigModel, configVO.getValue());
+        configCenterManager.save(proxyConfigModel, configVO.getContent());
+        CenterClusterManager.syncConfigToCluster((byte) 2, proxyConfigModel, configVO.getContent());
         return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult<List<ConfigVO>> delete(@RequestBody ProxyConfigModel proxyConfigModel) {
+    public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
         configCenterManager.delete(proxyConfigModel);
         CenterClusterManager.syncConfigToCluster((byte) -2, proxyConfigModel, null);
         return ApiResult.buildSuccess();
     }
 
-    @RequestMapping(value = "/config/query")
+    @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ApiResult<List<ConfigVO>> getConfigProxy(String proxy, String key) {
-        return ApiResult.buildSuccess(configCenterManager.getConfigVO(proxy, key));
+    public ConfigDataVO getConfigProxy(String proxy, String key, @RequestParam(required = false, defaultValue = "1") int page,
+                                                  @RequestParam(required = false, defaultValue = "10") int size) {
+        ConfigDataVO configDataVO = new ConfigDataVO();
+        List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key);
+        // 分页
+        int startIndex = (page - 1) * size;
+        int endIndex = Math.min(startIndex + size, list.size());
+        List<ConfigVO> data = list.subList(startIndex, endIndex);
+        configDataVO.setRecordsTotal(list.size());
+        configDataVO.setRecordsFiltered(list.size());
+        configDataVO.setData(data);
+        return configDataVO;
     }
 }

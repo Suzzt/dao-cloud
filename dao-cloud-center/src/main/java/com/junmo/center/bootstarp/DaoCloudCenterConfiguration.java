@@ -3,7 +3,11 @@ package com.junmo.center.bootstarp;
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.handler.*;
-import com.junmo.center.web.CenterController;
+import com.junmo.center.web.controller.CenterController;
+import com.junmo.center.web.controller.IndexController;
+import com.junmo.center.web.interceptor.CookieInterceptor;
+import com.junmo.center.web.interceptor.PermissionInterceptor;
+import com.junmo.center.web.interceptor.WebCenterConfig;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
@@ -40,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ComponentScan(value = "com.junmo.center.core.storage")
-@Import(ConfigCenterManager.class)
+@Import({ConfigCenterManager.class, WebCenterConfig.class})
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     @Resource
@@ -115,7 +119,29 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    public CookieInterceptor cookieInterceptor() {
+        return new CookieInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnWebApplication
+    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    public PermissionInterceptor permissionInterceptor() {
+        return new PermissionInterceptor();
+    }
+
+    @Bean
+    @ConditionalOnWebApplication
+    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
     public CenterController centerController() {
         return new CenterController();
     }
+
+    @Bean
+    @ConditionalOnWebApplication
+    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    public IndexController indexController() {
+        return new IndexController();
+    }
+
 }

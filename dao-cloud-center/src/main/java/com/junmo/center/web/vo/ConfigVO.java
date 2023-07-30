@@ -18,5 +18,5 @@ public class ConfigVO {
     @NotNull(message = "version不能为空")
     private Integer version;
     @NotNull(message = "value不能为空")
-    private String value;
+    private String content;
 }

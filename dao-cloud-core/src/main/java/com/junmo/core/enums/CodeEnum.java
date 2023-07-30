@@ -23,11 +23,14 @@ public enum CodeEnum {
      */
     PARAMETER_EXCEPTION_ERROR("A1000", "参数数据异常"),
 
-
+    /**
+     * 账号密码错误
+     */
+    PARAMETER_ACCOUNT_ERROR("A1001", "账号密码错误"),
     // B级别 系统错误,NPE
     /**
      * 系统内部报错,B一级宏观错误
-     *     后端确定不了的，选这个
+     * 后端确定不了的，选这个
      */
     SYSTEM_ERROR("B0001", "系统内部错误"),
     ;

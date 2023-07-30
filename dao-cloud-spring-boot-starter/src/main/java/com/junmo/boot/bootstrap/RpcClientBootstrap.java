@@ -62,7 +62,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                     }
                     DaoReference daoReference = field.getAnnotation(DaoReference.class);
                     String proxy = daoReference.proxy();
-                    String provider = StringUtils.hasLength(daoReference.provider()) ? daoReference.provider() : iface.getSimpleName();
+                    String provider = StringUtils.hasLength(daoReference.provider()) ? daoReference.provider() : iface.getName();
                     int version = daoReference.version();
                     Object serviceProxy;
                     try {

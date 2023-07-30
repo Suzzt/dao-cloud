@@ -117,7 +117,7 @@ public class ConfigCenterManager {
             configVO.setProxy(proxyConfigModel.getProxy());
             configVO.setKey(proxyConfigModel.getKey());
             configVO.setVersion(proxyConfigModel.getVersion());
-            configVO.setValue(entry.getValue());
+            configVO.setContent(entry.getValue());
             result.add(configVO);
         }
         return result;
