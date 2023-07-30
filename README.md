@@ -78,9 +78,11 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     通过注解EnableDaoCloudCenter标注在一个SpringBoot工程的启动类上,告诉这是dao-cloud的注册|配置中心(todo 页面)
     
     查看服务注册情况
+    
         <img width="1808" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/d1a70add-472a-4708-9285-6e79f8d7abe8">
 
     配置中心管理
+    
         <img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/7dbf78b6-cd83-4508-9a45-811b1f276e07">
 
     DaoConfig这个类提供了服务对配置信息的获取、订阅(详情看dao-cloud-example示例)
