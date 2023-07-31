@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * @author: sucf
  * @date: 2023/7/4 15:40
- * @description:
+ * @description: 处理拉取配置请求
  */
 @Slf4j
 public class PullConfigRequestHandler extends SimpleChannelInboundHandler<ConfigMarkModel> {

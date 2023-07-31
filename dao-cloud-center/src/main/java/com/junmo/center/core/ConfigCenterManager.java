@@ -44,6 +44,11 @@ public class ConfigCenterManager {
         cache = persistence.load();
     }
 
+    /**
+     * 获取所有日志
+     *
+     * @return
+     */
     public Map<ProxyConfigModel, String> getFullConfig() {
         return cache;
     }

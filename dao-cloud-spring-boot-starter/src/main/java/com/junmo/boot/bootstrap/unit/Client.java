@@ -54,7 +54,7 @@ public class Client {
 
     /**
      * 客户端Bootstrap
-     * */
+     */
     Bootstrap bootstrap = new Bootstrap();
 
     /**
@@ -109,6 +109,9 @@ public class Client {
         }
     }
 
+    /**
+     * reconnect
+     */
     public void reconnect() {
         channel.close().addListener(future -> {
             channel.eventLoop().schedule(() -> {
