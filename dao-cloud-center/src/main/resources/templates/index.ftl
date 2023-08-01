@@ -17,10 +17,10 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-<#--        <!-- Content Header (Page header) &ndash;&gt;-->
-<#--        <section class="content-header">-->
-<#--            <h1>系统报表</h1>-->
-<#--        </section>-->
+        <#--        <!-- Content Header (Page header) &ndash;&gt;-->
+        <#--        <section class="content-header">-->
+        <#--            <h1>系统报表</h1>-->
+        <#--        </section>-->
 
         <!-- Main content -->
         <section class="content">
@@ -43,24 +43,9 @@
                     </div>
                 </div>
 
-                <#-- 服务数量 -->
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green">
-                        <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
-                        <div class="info-box-content">
-                            <span class="info-box-text">服务总数量</span>
-                            <span class="info-box-number">${serverNum}</span>
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">服务中心接入的总服务数量</span>
-                        </div>
-                    </div>
-                </div>
-
                 <#-- 服务提供者数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box bg-yellow">
+                    <div class="info-box bg-green">
                         <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">服务提供者数量</span>
@@ -75,7 +60,7 @@
 
                 <#-- 服务提供者方法数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box bg-light-blue">
+                    <div class="info-box bg-yellow">
                         <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">服务方法数量</span>
@@ -90,7 +75,7 @@
 
                 <#-- 配置数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box bg-lime-active">
+                    <div class="info-box bg-light-blue">
                         <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">配置总数</span>
@@ -99,6 +84,21 @@
                                 <div class="progress-bar" style="width: 100%"></div>
                             </div>
                             <span class="progress-description">配置中心保存配置总数量 </span>
+                        </div>
+                    </div>
+                </div>
+
+                <#-- 配置订阅 -->
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="info-box bg-lime-active">
+                        <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">配置订阅数</span>
+                            <span class="info-box-number">${configSubscribeNum}</span>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">每个配置服务订阅数的总和数(不去重) </span>
                         </div>
                     </div>
                 </div>

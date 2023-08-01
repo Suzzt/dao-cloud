@@ -15,7 +15,26 @@ import java.util.Set;
  * @description: config channel manager
  */
 public class ConfigChannelManager {
+    /**
+     * 配置订阅的channel
+     */
     private final static Map<ProxyConfigModel, Set<Channel>> CONFIG_CHANNEL_MAP = Maps.newConcurrentMap();
+
+    /**
+     * 每个订阅服务数的总和
+     *
+     * @return
+     */
+    public static int size() {
+        int i = 0;
+        for (Map.Entry<ProxyConfigModel, Set<Channel>> entry : CONFIG_CHANNEL_MAP.entrySet()) {
+            Set<Channel> set = entry.getValue();
+            if (!CollectionUtils.isEmpty(set)) {
+                i = i + set.size();
+            }
+        }
+        return i;
+    }
 
     public static Set<Channel> getSubscribeChannel(ProxyConfigModel proxyConfigModel) {
         return CONFIG_CHANNEL_MAP.get(proxyConfigModel);

@@ -2,6 +2,7 @@ package com.junmo.center.web.controller;
 
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.ConfigChannelManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.PermissionInterceptor;
 import com.junmo.center.web.interceptor.Permissions;
@@ -40,14 +41,14 @@ public class IndexController {
     public String index(Model model) {
         // 当前节点存活集群数
         model.addAttribute("aliveClusterNodeNum", CenterClusterManager.aliveNodeSize());
-        // 总接入服务数(provider + consumer)
-        model.addAttribute("serverNum", "todo");
         // 注册服务数
         model.addAttribute("providerNum", RegisterCenterManager.nodes());
         // 注册方法可调用数
         model.addAttribute("methodNum", RegisterCenterManager.methods());
         // 配置条数
         model.addAttribute("configNum", configCenterManager.size());
+        // 每个配置服务订阅数的总和(不去重)
+        model.addAttribute("configSubscribeNum", ConfigChannelManager.size());
         return "index";
     }
 
