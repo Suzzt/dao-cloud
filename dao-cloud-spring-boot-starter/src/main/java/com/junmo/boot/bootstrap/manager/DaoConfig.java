@@ -5,10 +5,10 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.junmo.boot.bootstrap.unit.ConfigCallBack;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
-import com.junmo.core.MainProperties;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.DaoCloudConstant;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -121,7 +121,7 @@ public class DaoConfig {
         String jsonValue = CONFIG_OBJECT.get(proxyConfigModel);
         if (!StringUtils.hasLength(jsonValue)) {
             // no hit cache
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, MainProperties.serialize, proxyConfigModel);
+            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyConfigModel);
             DefaultPromise<String> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
             CenterConfigMessageHandler.PROMISE_MAP.put(proxyConfigModel, promise);
             CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {

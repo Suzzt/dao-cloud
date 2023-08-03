@@ -10,4 +10,6 @@ public class DaoCloudConstant {
     public static final String MAGIC_NUMBER = "dao";
 
     public static final int CENTER_CENTER_PORT = 5551;
+
+    public static final byte DEFAULT_SERIALIZE = 0;
 }

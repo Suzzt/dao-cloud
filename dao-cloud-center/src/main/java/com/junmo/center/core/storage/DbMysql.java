@@ -89,7 +89,7 @@ public class DbMysql implements Persistence {
     public Map<ProxyConfigModel, String> load() {
         // 判断下数据库表是否存在,存在就载入配置数据,不存在就创建表
         initialize();
-        Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
+        Map<ProxyConfigModel, String> map = Maps.newHashMap();
         Long count = count();
         if (count == 0) {
             // init example data

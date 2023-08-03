@@ -22,28 +22,27 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
     @Override
     protected void encode(ChannelHandlerContext ctx, DaoMessage msg, List<Object> out) throws Exception {
         ByteBuf byteBuf = ctx.alloc().buffer();
-        //====================================write====================================
-        //魔数 3bytes
+        // 魔数 3bytes
         byteBuf.writeBytes(msg.getMagicNumber());
-        //消息类型 1byte
+        // 消息类型 1byte
         byteBuf.writeByte(msg.getMessageType());
         if (msg.getMessageType() == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
             // heart beat packet
             byteBuf.writeByte(0xff);
             byteBuf.writeByte(0xff);
-            byteBuf.writeInt(0);
+            byteBuf.writeInt(0x0);
         } else {
             // business message
-            //版本 1byte
+            // 版本 1byte
             byteBuf.writeByte(msg.getVersion());
-            //序列化 1byte
+            // 序列化 1byte
             byteBuf.writeByte(msg.getSerializableType());
-            //获取内容的字节数组
+            // 获取内容的字节数组
             DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(msg.getSerializableType());
             byte[] bytes = daoSerializer.serialize(msg.getContent());
-            //内容对象长度 int 4bytes
+            // 内容对象长度 int 4bytes
             byteBuf.writeInt(bytes.length);
-            //内容数据
+            // 内容数据
             byteBuf.writeBytes(bytes);
         }
         out.add(byteBuf);
@@ -51,29 +50,27 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        //====================================read====================================
-        //魔数 3bytes
+        // 魔数 3bytes
         byte[] magicNumber = new byte[3];
         byteBuf.readBytes(magicNumber);
-        //消息类型 1byte
+        // 消息类型 1byte
         byte messageType = byteBuf.readByte();
         if (messageType == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
             // heart beat packet
             list.add(new HeartbeatModel());
         } else {
-            //版本 1byte
+            // 版本 1byte
             byte version = byteBuf.readByte();
-            //序列化 1byte
+            // 序列化 1byte
             byte serializableType = byteBuf.readByte();
-            //内容字节数 int 4bytes
+            // 内容字节数 int 4bytes
             int contentLength = byteBuf.readInt();
             byte[] bytes = new byte[contentLength];
             byteBuf.readBytes(bytes, 0, contentLength);
-            //根据不同的序列化方式解析
+            // 根据不同的序列化方式解析
             DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
             Model model = daoSerializer.deserialize(bytes, MessageType.getMessageModel(messageType));
             list.add(model);
         }
     }
-
 }

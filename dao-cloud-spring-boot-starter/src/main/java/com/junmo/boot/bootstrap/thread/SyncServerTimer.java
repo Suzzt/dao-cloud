@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: sucf
  * @date: 2023/2/1 17:14
- * @description:
+ * @description: 服务节点拉取定时器
  */
 @Slf4j
 public class SyncServerTimer implements Runnable {

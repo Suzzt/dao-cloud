@@ -6,7 +6,6 @@ import com.junmo.center.core.cluster.ClusterCenterConnector;
 import com.junmo.center.core.cluster.DataSyncTask;
 import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.center.core.handler.PullConfigResponseHandler;
-import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;
@@ -129,7 +128,7 @@ public class CenterClusterManager {
      */
     private static void loadConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, MainProperties.serialize, new ConfigMarkModel());
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         PullConfigResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -244,7 +243,7 @@ public class CenterClusterManager {
         });
         Channel channel = bootstrap.connect().sync().channel();
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         channel.writeAndFlush(daoMessage).addListener(future -> {

@@ -9,6 +9,9 @@ import lombok.Data;
  */
 @Data
 public class RpcRequestModel extends ResponseModel {
+    /**
+     * 序列id
+     */
     private long sequenceId;
 
     /**

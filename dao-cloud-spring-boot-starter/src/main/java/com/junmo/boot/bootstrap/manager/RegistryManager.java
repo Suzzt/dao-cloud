@@ -1,13 +1,13 @@
 package com.junmo.boot.bootstrap.manager;
 
 import com.junmo.boot.handler.CenterServerMessageHandler;
-import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
@@ -34,7 +34,7 @@ public class RegistryManager {
      * @throws Exception
      */
     public static Set<ServerNodeModel> pull(ProxyProviderModel proxyProviderModel) throws Exception {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, MainProperties.serialize, proxyProviderModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyProviderModel);
         DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
         CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -85,7 +85,7 @@ public class RegistryManager {
         if (channel == null) {
             throw new DaoException("connect config center error");
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, MainProperties.serialize, registerProviderModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, registerProviderModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());

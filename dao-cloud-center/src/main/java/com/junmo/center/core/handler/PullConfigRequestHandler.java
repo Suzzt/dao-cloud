@@ -2,13 +2,13 @@ package com.junmo.center.core.handler;
 
 import com.google.common.collect.Lists;
 import com.junmo.center.core.ConfigCenterManager;
-import com.junmo.core.MainProperties;
 import com.junmo.core.model.ConfigMarkModel;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.FullConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.DaoCloudConstant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class PullConfigRequestHandler extends SimpleChannelInboundHandler<Config
             configModels.add(configModel);
         }
         fullConfigModel.setConfigModels(configModels);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, MainProperties.serialize, fullConfigModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, fullConfigModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send full config data error", future.cause());

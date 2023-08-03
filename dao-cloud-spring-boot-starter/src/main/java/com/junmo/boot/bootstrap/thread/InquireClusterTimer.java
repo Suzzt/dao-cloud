@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: sucf
  * @date: 2023/6/7 23:37
- * @description:
+ * @description: 定时拉取集群节点信息
  */
 @Slf4j
 public class InquireClusterTimer implements Runnable {

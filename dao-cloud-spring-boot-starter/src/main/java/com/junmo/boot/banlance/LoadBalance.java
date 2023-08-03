@@ -11,10 +11,20 @@ import com.junmo.boot.banlance.impl.RoundLoadBalanceRoundImpl;
  */
 public enum LoadBalance {
 
+    /**
+     * random
+     */
     RANDOM(new RandomLoadBalanceImpl()),
-    HASH(new HashLoadBalanceImpl()),
-    ROUND(new RoundLoadBalanceRoundImpl());
 
+    /**
+     * hash
+     */
+    HASH(new HashLoadBalanceImpl()),
+
+    /**
+     * round
+     */
+    ROUND(new RoundLoadBalanceRoundImpl());
 
     public DaoLoadBalance daoLoadBalance;
 

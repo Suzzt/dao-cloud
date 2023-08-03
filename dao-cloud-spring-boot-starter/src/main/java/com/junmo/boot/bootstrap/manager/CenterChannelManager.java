@@ -4,7 +4,6 @@ import com.junmo.boot.bootstrap.thread.InquireClusterTimer;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
 import com.junmo.boot.handler.CenterServerMessageHandler;
 import com.junmo.boot.handler.InquireClusterCenterResponseHandler;
-import com.junmo.core.MainProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
@@ -63,7 +62,7 @@ public class CenterChannelManager {
      */
     public static void inquire() throws InterruptedException {
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, MainProperties.serialize, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(getChannel().eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {

@@ -3,12 +3,12 @@ package com.junmo.center.core.handler;
 import com.google.gson.Gson;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
-import com.junmo.core.MainProperties;
 import com.junmo.core.model.ClusterSyncDataRequestModel;
 import com.junmo.core.model.ClusterSyncDataResponseModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.ExpireHashMap;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -58,7 +58,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
             if (clusterSyncDataRequestModel.getType() == -2 || clusterSyncDataRequestModel.getType() == 2) {
                 ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
                 clusterSyncDataResponseModel.setErrorMessage(t.getMessage());
-                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
+                DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterSyncDataResponseModel);
                 ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("data sync response message", future.cause());
@@ -71,7 +71,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void configAnswer(ChannelHandlerContext ctx, ClusterSyncDataRequestModel clusterSyncDataRequestModel) {
         ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
         clusterSyncDataResponseModel.setSequenceId(clusterSyncDataRequestModel.getSequenceId());
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, MainProperties.serialize, clusterSyncDataResponseModel);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterSyncDataResponseModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("data sync response message", future.cause());
