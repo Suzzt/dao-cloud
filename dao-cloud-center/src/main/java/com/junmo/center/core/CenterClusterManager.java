@@ -57,7 +57,7 @@ public class CenterClusterManager {
      * key: ip
      * value: cluster interaction connector. in each connector there is a connection request that is constantly likely to be retried
      */
-    private static final Map<String, ClusterCenterConnector> ALL_HISTORY_CLUSTER_MAP = Maps.newHashMap();
+    private static final Map<String, ClusterCenterConnector> ALL_HISTORY_CLUSTER_MAP = Maps.newConcurrentMap();
 
     /**
      * 载入持久化配置信息
