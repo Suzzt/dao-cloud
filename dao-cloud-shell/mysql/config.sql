@@ -1,4 +1,5 @@
 # you must first create a dao_cloud
+CREATE DATABASE IF NOT EXISTS dao_cloud;
 CREATE TABLE dao_cloud.config
 (
     `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
