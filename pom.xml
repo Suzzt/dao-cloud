@@ -33,13 +33,13 @@
     </parent>
 
     <modules>
-        <!--rpc-core-->
+        <!--dao-cloud-core-->
         <module>dao-cloud-core</module>
-        <!--register config-->
+        <!--register+config center-->
         <module>dao-cloud-center</module>
         <!--example project-->
         <module>dao-cloud-example</module>
-        <!--rpc monitor-->
+        <!--monitor-->
         <module>dao-cloud-monitor</module>
         <!--api-SpringBoot-->
         <module>dao-cloud-spring-boot-starter</module>
