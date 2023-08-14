@@ -42,7 +42,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
 
     private Thread pullServerNodeThread;
 
-    private Set<Object> fields = new HashSet<>();
+    private final Set<Object> fields = new HashSet<>();
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
