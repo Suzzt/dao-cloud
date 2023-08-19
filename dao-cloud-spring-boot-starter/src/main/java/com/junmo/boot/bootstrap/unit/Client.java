@@ -55,7 +55,7 @@ public class Client {
     /**
      * 客户端Bootstrap
      */
-    Bootstrap bootstrap = new Bootstrap();
+    private Bootstrap bootstrap = new Bootstrap();
 
     /**
      * 客户端NioEventLoopGroup
