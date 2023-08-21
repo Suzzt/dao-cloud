@@ -15,12 +15,12 @@ import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -67,8 +67,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
             // init center cluster attribute persistence
             CenterClusterManager.setPersistence(persistence);
             ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
-                NioEventLoopGroup boss = new NioEventLoopGroup();
-                NioEventLoopGroup worker = new NioEventLoopGroup(4);
+                NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("dao-center-boss", true));
+                NioEventLoopGroup worker = new NioEventLoopGroup(4, new DefaultThreadFactory("dao-center-worker", true));
                 try {
                     ServerBootstrap serverBootstrap = new ServerBootstrap();
                     serverBootstrap.channel(NioServerSocketChannel.class);
@@ -88,7 +88,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new ServerRegisterHandler());
                         }
                     });
-                    Channel channel = serverBootstrap.bind(DaoCloudConstant.CENTER_CENTER_PORT).sync().channel();
+                    serverBootstrap.bind(DaoCloudConstant.CENTER_PORT).sync();
                     if (StringUtils.hasLength(DaoCloudClusterCenterProperties.ip)) {
                         // join cluster
                         CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
@@ -96,11 +96,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     }
                     // load config to cache
                     configCenterManager.init();
-                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_CENTER_PORT);
-                    channel.closeFuture().sync();
+                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
-                } finally {
                     boss.shutdownGracefully();
                     worker.shutdownGracefully();
                     System.exit(1);

@@ -67,7 +67,7 @@ public class ClusterCenterConnector {
     public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_CENTER_PORT);
+        bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_PORT);
         bootstrap.group(group);
         ClusterResponseHandler clusterRequestHandler = new ClusterResponseHandler(this);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {

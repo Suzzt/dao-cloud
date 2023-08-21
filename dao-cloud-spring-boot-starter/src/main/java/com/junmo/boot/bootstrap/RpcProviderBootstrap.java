@@ -11,7 +11,6 @@ import com.junmo.core.netty.serialize.SerializeStrategyFactory;
 import com.junmo.core.util.SystemUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -28,9 +27,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Slf4j
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
-public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
-
-    private Thread thread;
+public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * start
@@ -54,17 +51,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         }
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudServerProperties.corePoolSize, DaoCloudServerProperties.maxPoolSize);
-        thread = new Server(threadPoolProvider);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    @Override
-    public void destroy() {
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
-        }
-        log.debug(">>>>>>>>>>> dao-cloud-rpc provider server destroy <<<<<<<<<<<<");
+        new Server(threadPoolProvider).start();
     }
 
     @Override

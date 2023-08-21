@@ -13,12 +13,12 @@ import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
 import com.junmo.core.util.NetUtil;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * @description:
  */
 @Slf4j
-public class Server extends Thread {
+public class Server {
 
     private ThreadPoolExecutor threadPoolProvider;
 
@@ -39,10 +39,9 @@ public class Server extends Thread {
         this.threadPoolProvider = threadPoolProvider;
     }
 
-    @Override
-    public void run() {
-        NioEventLoopGroup boss = new NioEventLoopGroup();
-        NioEventLoopGroup worker = new NioEventLoopGroup(4);
+    public void start() {
+        NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("rpc-server-boss", true));
+        NioEventLoopGroup worker = new NioEventLoopGroup(4, new DefaultThreadFactory("rpc-server-worker", true));
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.channel(NioServerSocketChannel.class);
@@ -57,7 +56,7 @@ public class Server extends Thread {
                     ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
                 }
             });
-            Channel channel = serverBootstrap.bind(DaoCloudServerProperties.serverPort).sync().channel();
+            serverBootstrap.bind(DaoCloudServerProperties.serverPort).sync();
             log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudServerProperties.serverPort);
             // register service
             RegisterProviderModel registerProviderModel = new RegisterProviderModel();
@@ -66,12 +65,11 @@ public class Server extends Thread {
             registerProviderModel.setProviderModels(Sets.newHashSet(providerModels));
             registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudServerProperties.serverPort));
             RegistryManager.registry(registerProviderModel);
-            channel.closeFuture().sync();
         } catch (Exception e) {
-            log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>");
-        } finally {
+            log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>", e);
             boss.shutdownGracefully();
             worker.shutdownGracefully();
+            System.exit(1);
         }
     }
 }
