@@ -8,6 +8,7 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcRequestModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.util.concurrent.DefaultPromise;
@@ -74,19 +75,21 @@ public class RpcProxy {
                     method.getParameterTypes(),
                     args
             );
-            // load balance
+            // get client channel
             Client client;
             while (true) {
                 // 把出错的几率降到最低,选出合适的channel
-                Set<Client> clients = ClientManager.getClients(proxyProviderModel);
+                Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
+                Set<Client> clients = ClientManager.getSharedClient(providerNodes);
                 if (CollectionUtils.isEmpty(clients)) {
                     throw new DaoException("proxy = '" + proxyProviderModel.getProxy() + "', provider = '" + proxyProviderModel.getProviderModel() + "' no provider server");
                 }
+                // load balance
                 client = daoLoadBalance.route(clients);
                 if (client.getChannel().isActive()) {
                     break;
                 }
-                ClientManager.remove(proxyProviderModel, client);
+                ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageType.RPC_REQUEST_MESSAGE, serialized, requestModel);
             // push message

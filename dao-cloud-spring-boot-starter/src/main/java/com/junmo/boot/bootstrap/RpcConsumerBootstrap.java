@@ -5,8 +5,7 @@ import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.banlance.LoadBalance;
 import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.boot.bootstrap.manager.RegistryManager;
-import com.junmo.boot.bootstrap.thread.SyncServerTimer;
-import com.junmo.boot.bootstrap.unit.Client;
+import com.junmo.boot.bootstrap.thread.SyncProviderServerTimer;
 import com.junmo.boot.bootstrap.unit.RpcProxy;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
@@ -32,11 +31,11 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/1/12 11:11
- * @description: rpc client startup
+ * @description: rpc consumer startup
  */
 @Slf4j
 @Component
-public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
+public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
     private final Set<ProxyProviderModel> relyProxy = new HashSet<>();
 
@@ -47,7 +46,7 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         delayedLoad();
-        pullServerNodeThread = new Thread(new SyncServerTimer(relyProxy));
+        pullServerNodeThread = new Thread(new SyncProviderServerTimer(relyProxy));
         ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(pullServerNodeThread);
     }
 
@@ -69,12 +68,12 @@ public class RpcClientBootstrap implements ApplicationListener<ContextRefreshedE
                         // pull service node
                         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
                         Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
-                        Set<Client> clients = Sets.newLinkedHashSet();
+                        Set<ServerNodeModel> proxyProviders = Sets.newLinkedHashSet();
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                clients.add(new Client(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
+                                proxyProviders.add(serverNodeModel);
                             }
-                            ClientManager.addAll(proxyProviderModel, clients);
+                            ClientManager.add(proxyProviderModel, proxyProviders);
                         }
                         relyProxy.add(proxyProviderModel);
                         LoadBalance loadBalance = daoReference.loadBalance();

@@ -1,17 +1,16 @@
 package com.junmo.boot.bootstrap.unit;
 
+import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.boot.handler.ClientPingPongMessageHandler;
 import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -51,16 +50,6 @@ public class Client {
      * 长连接可操作的channel
      */
     private volatile Channel channel;
-
-    /**
-     * 客户端Bootstrap
-     */
-    private Bootstrap bootstrap = new Bootstrap();
-
-    /**
-     * 客户端NioEventLoopGroup
-     */
-    private NioEventLoopGroup group;
 
     /**
      * fail mark count
@@ -115,7 +104,7 @@ public class Client {
     public void reconnect() {
         channel.close().addListener(future -> {
             channel.eventLoop().schedule(() -> {
-                bootstrap.connect().addListener(new ChannelFutureListener() {
+                ClientManager.getRpcBootstrap().connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
@@ -137,7 +126,7 @@ public class Client {
         try {
             this.getChannel().close().sync();
         } catch (Exception e) {
-            group.shutdownGracefully();
+            log.error("(ip:{},port:{}) failed to close the connection", this.ip, this.port, e);
         }
     }
 
@@ -145,13 +134,10 @@ public class Client {
      * connect server
      */
     private void connect() {
-        group = new NioEventLoopGroup();
-        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(proxyProviderModel, this);
+        RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(this);
         ClientPingPongMessageHandler clientPingPongMessageHandler = new ClientPingPongMessageHandler(this);
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(this.ip, this.port);
-        bootstrap.group(group);
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+        ClientManager.getRpcBootstrap().remoteAddress(this.ip, this.port);
+        ClientManager.getRpcBootstrap().handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
@@ -164,10 +150,9 @@ public class Client {
             }
         });
         try {
-            this.channel = bootstrap.connect().sync().channel();
+            this.channel = ClientManager.getRpcBootstrap().connect().sync().channel();
         } catch (Exception e) {
             log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", e);
-            group.shutdownGracefully();
             throw new DaoException(e);
         }
     }

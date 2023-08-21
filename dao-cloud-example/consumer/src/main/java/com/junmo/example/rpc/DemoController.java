@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.junmo.boot.annotation.DaoReference;
 import com.junmo.boot.bootstrap.manager.DaoConfig;
 import com.junmo.boot.bootstrap.unit.ConfigCallBack;
+import com.junmo.common.Demo2Service;
 import com.junmo.common.DemoService;
 import com.junmo.common.dto.ParamDTO;
 import com.junmo.core.ApiResult;
@@ -25,12 +26,23 @@ public class DemoController {
     @DaoReference(proxy = "demo")
     private DemoService demoService;
 
+    @DaoReference(proxy = "demo")
+    private Demo2Service demo2Service;
+
     @RequestMapping("demo")
     public String demo() {
         long start = System.currentTimeMillis();
         String string1 = demoService.test("String1", 1, 1.1, 1L, true);
         long end = System.currentTimeMillis();
         return string1 + "====" + (end - start);
+    }
+
+    @RequestMapping("demo2")
+    public String demo2() {
+        long start = System.currentTimeMillis();
+        demo2Service.test();
+        long end = System.currentTimeMillis();
+        return "demo2" + "====" + (end - start);
     }
 
     @RequestMapping("complex-demo")

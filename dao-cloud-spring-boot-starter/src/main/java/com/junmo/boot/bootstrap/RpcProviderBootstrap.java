@@ -24,11 +24,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * @author sucf
  * @date 2022/12/29 16:30
- * @description: rpc server startup
+ * @description: rpc provider startup
  */
 @Slf4j
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
-public class RpcServerBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
+public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
     private Thread thread;
 

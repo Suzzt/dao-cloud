@@ -5,6 +5,7 @@ import com.junmo.boot.bootstrap.unit.Client;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcResponseModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -52,15 +53,12 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
      */
     public static final Map<Long, Promise<Object>> PROMISE_MAP = new ConcurrentHashMap<>();
 
-    private ProxyProviderModel proxyProviderModel;
-
     /**
      * 客户端对象信息
      */
     private Client client;
 
-    public RpcClientMessageHandler(ProxyProviderModel proxyProviderModel, Client client) {
-        this.proxyProviderModel = proxyProviderModel;
+    public RpcClientMessageHandler(Client client) {
         this.client = client;
     }
 
@@ -94,8 +92,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
      */
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        client.destroy();
-        ClientManager.remove(proxyProviderModel, client);
+        ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
         log.error(">>>>>>>>>>> server (connect address = {}) down <<<<<<<<<<<", ctx.channel().remoteAddress());
         super.channelUnregistered(ctx);
     }
@@ -112,8 +109,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         if (evt instanceof IdleStateEvent) {
             int failMark = client.getFailMark();
             if (failMark >= 3) {
-                client.destroy();
-                ClientManager.remove(proxyProviderModel, client);
+                ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
                 log.error("<<<<<<<<<<< server (connect address = {}) down >>>>>>>>>>>", ctx.channel().remoteAddress());
             } else {
                 // send heartbeat packet
