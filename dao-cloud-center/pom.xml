@@ -76,5 +76,13 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <!-- 我对应的maven版本是3.6.3, 只能依赖这个打包 -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
+        </plugins>
     </build>
 </project>
