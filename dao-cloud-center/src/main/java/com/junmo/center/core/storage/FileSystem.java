@@ -36,7 +36,7 @@ import java.util.Map;
 @ConditionalOnProperty(value = "dao-cloud.center.config.persistence", havingValue = "file-system")
 public class FileSystem implements Persistence {
 
-    private DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting;
+    private final DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting;
 
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
