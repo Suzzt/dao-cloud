@@ -94,6 +94,9 @@ public class ClusterCenterConnector {
         }
     }
 
+    /**
+     * send heartbeats to each other
+     */
     public void sendHeartbeat() {
         getChannel().writeAndFlush(new HeartbeatPacket()).addListeners(future -> {
             if (future.isSuccess()) {
@@ -110,6 +113,9 @@ public class ClusterCenterConnector {
         failMark++;
     }
 
+    /**
+     * reconnect cluster
+     */
     private void reconnect() {
         clusterChannel.close().addListener(future -> {
             clusterChannel.eventLoop().schedule(() -> {

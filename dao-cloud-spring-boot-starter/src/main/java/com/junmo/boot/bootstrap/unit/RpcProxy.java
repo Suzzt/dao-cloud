@@ -43,6 +43,9 @@ public class RpcProxy {
         return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(proxyProviderModel, serialized, daoLoadBalance, timeout));
     }
 
+    /**
+     * proxy rpc handler
+     */
     static class ProxyHandler implements InvocationHandler {
 
         private ProxyProviderModel proxyProviderModel;
