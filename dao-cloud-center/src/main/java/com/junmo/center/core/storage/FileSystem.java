@@ -7,6 +7,7 @@ import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.ConfigModel;
 import com.junmo.core.model.ProxyConfigModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ import java.util.Map;
  * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
  * </p>
  */
+@Slf4j
 @Component
 @ConditionalOnProperty(value = "dao-cloud.center.config.persistence", havingValue = "file-system")
 public class FileSystem implements Persistence {
@@ -70,9 +72,13 @@ public class FileSystem implements Persistence {
             for (String key : keys) {
                 List<String> versions = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + key);
                 for (String version : versions) {
-                    String value = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + key + File.separator + version);
-                    ProxyConfigModel proxyConfigModel = new ProxyConfigModel(proxy, key, Integer.parseInt(version));
-                    map.put(proxyConfigModel, value);
+                    try {
+                        String value = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + key + File.separator + version);
+                        ProxyConfigModel proxyConfigModel = new ProxyConfigModel(proxy, key, Integer.parseInt(version));
+                        map.put(proxyConfigModel, value);
+                    } catch (Exception e) {
+                        log.warn("Failed to load config data (proxy={}, key={}, version={}) from file", proxy, key, version);
+                    }
                 }
             }
         }
