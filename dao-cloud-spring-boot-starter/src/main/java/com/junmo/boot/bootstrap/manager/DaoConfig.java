@@ -34,7 +34,7 @@ public class DaoConfig {
     /**
      * config subscribe callback
      */
-    public static final Map<ProxyConfigModel, List<ConfigCallBack>> CONFIG_SUBSCRIBERS = Maps.newConcurrentMap();
+    private static final Map<ProxyConfigModel, List<ConfigCallBack>> CONFIG_SUBSCRIBERS = Maps.newConcurrentMap();
 
     /**
      * update the config object
