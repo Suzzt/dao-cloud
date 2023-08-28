@@ -38,13 +38,13 @@ $(function(){
 
     // left menu status v: js + server + cookie
     $('.sidebar-toggle').click(function(){
-        var dao-cloud_adminlte_settings = $.cookie('dao-cloud_adminlte_settings');	// on=open，off=close
-        if ('off' == dao-cloud_adminlte_settings) {
-            dao-cloud_adminlte_settings = 'on';
+        var dao_cloud_adminlte_settings = $.cookie('dao-cloud_adminlte_settings');	// on=open，off=close
+        if ('off' == dao_cloud_adminlte_settings) {
+            dao_dao_cloud_adminlte_settings = 'on';
         } else {
-            dao-cloud_adminlte_settings = 'off';
+            dao_dao_cloud_adminlte_settings = 'off';
         }
-        $.cookie('dao-cloud_adminlte_settings', dao-cloud_adminlte_settings, { expires: 7 });	//$.cookie('the_cookie', '', { expires: -1 });
+        $.cookie('dao-cloud_adminlte_settings', dao_cloud_adminlte_settings, { expires: 7 });	//$.cookie('the_cookie', '', { expires: -1 });
     });
 
 });

@@ -31,7 +31,7 @@
                 <#-- 集群节点数 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-aqua">
-                        <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
+                        <span class="info-box-icon"><i class="fa fa-navicon"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">集群节点数</span>
                             <span class="info-box-number">${aliveClusterNodeNum}</span>
@@ -46,7 +46,7 @@
                 <#-- 服务提供者数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green">
-                        <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
+                        <span class="info-box-icon"><i class="fa fa-cab"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">服务提供者数量</span>
                             <span class="info-box-number">${providerNum}</span>
@@ -61,7 +61,7 @@
                 <#-- 服务提供者方法数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-yellow">
-                        <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
+                        <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">服务方法数量</span>
                             <span class="info-box-number">${methodNum}</span>
@@ -91,7 +91,7 @@
                 <#-- 配置订阅 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-lime-active">
-                        <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
+                        <span class="info-box-icon"><i class="fa fa-umbrella"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">配置订阅数</span>
                             <span class="info-box-number">${configSubscribeNum}</span>
