@@ -20,7 +20,7 @@
         <module>api-common</module>
         <module>provider</module>
         <module>consumer</module>
-        <module>web</module>
+        <module>admin-web</module>
     </modules>
 
     <dependencies>
