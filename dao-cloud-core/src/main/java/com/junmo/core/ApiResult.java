@@ -54,7 +54,7 @@ public class ApiResult<T> {
         return result;
     }
 
-    public static <T> ApiResult<T> buildFail(String code,String errorMessage) {
+    public static <T> ApiResult<T> buildFail(String code, String errorMessage) {
         ApiResult<T> result = new ApiResult();
         result.setCode(code);
         result.setMessage(errorMessage);
@@ -66,22 +66,6 @@ public class ApiResult<T> {
         ApiResult<T> result = new ApiResult();
         result.setCode(codeEnum.getCode());
         result.setMessage(codeEnum.getText());
-        result.setSuccess(false);
-        return result;
-    }
-
-    public static <T> ApiResult<T> buildFail(String errorMessage) {
-        ApiResult<T> result = new ApiResult();
-        result.setCode(CodeEnum.PARAMETER_EXCEPTION_ERROR.getCode());
-        result.setMessage(errorMessage);
-        result.setSuccess(false);
-        return result;
-    }
-
-    public static <T> ApiResult<T> buildFail(){
-        ApiResult<T> result = new ApiResult();
-        result.setCode(CodeEnum.SYSTEM_ERROR.getCode());
-        result.setMessage(CodeEnum.SYSTEM_ERROR.getText());
         result.setSuccess(false);
         return result;
     }

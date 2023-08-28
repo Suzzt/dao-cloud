@@ -50,7 +50,7 @@ public class CenterClusterManager {
     /**
      * 异步线程池执行center cluster数据同步任务
      */
-    private static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
+    private final static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
 
     /**
      * history cluster info

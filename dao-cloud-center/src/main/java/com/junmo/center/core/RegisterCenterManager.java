@@ -64,9 +64,8 @@ public class RegisterCenterManager {
 
     /**
      * 服务节点数
-     * distinct (ip + port)
      *
-     * @return
+     * @return count distinct (ip + port)
      */
     public static int nodes() {
         Set<ServerNodeModel> temp = new HashSet<>();

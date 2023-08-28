@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
  * @date: 2023/3/1 15:08
  * @description: abstract template persistence
  */
+@Deprecated
 public abstract class AbstractPersistence implements Persistence {
     public void init() {
         if (StringUtils.hasLength(DaoCloudClusterCenterProperties.ip)) {
