@@ -4,9 +4,10 @@
       <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/Apache_License-2.0-33ccff" style="max-width: 100px; height: auto;">
+      <img src="https://img.shields.io/badge/maven-006633" style="max-width: 100px; height: auto;">
+      <img src="https://img.shields.io/badge/build-passing-green" style="max-width: 100px; height: auto;">
     </p>
 </div>
-
 
 # 项目介绍
 DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻雀虽小,五脏俱全;
