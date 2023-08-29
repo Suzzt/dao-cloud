@@ -3,7 +3,7 @@
     <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99">
     <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub">
     <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00">
-    <img src="https://img.shields.io/badge/license-2.0-33ccff">
+    <img src="https://img.shields.io/badge/Apache_License-2.0-33ccff">
   </p>
 </div>
 
