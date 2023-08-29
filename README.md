@@ -1,3 +1,9 @@
+<p align="center" style="display: flex; justify-content: center; gap: 20px;">
+  <img src="https://raster.shields.io/badge/dao_cloud-cluster-red.svg">
+  <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub">
+  <img src="https://raster.shields.io/badge/license-2.0-blue.svg">
+</p>
+
 # 项目介绍
 DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻雀虽小,五脏俱全;
 本项目追求轻量、易接入、自定义协议、高可用、高性能、高扩展、易上手等特性;
@@ -97,6 +103,10 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     3.验证! http://127.0.0.1:19998/dao-cloud-example-consumer/demo (rpc调用测试)
     还有其他test-demo也都放在工程dao-cloud-example中
 
-**本项目是由作者利用平时自由时间创建或迭代,所有的微服务异常情况没办法测试全,未在真实项目上实践过! 请酌情考虑使用,出事故拒不负责(^_^)! 有问题请提issues;**
+<p style="display: flex; align-items: center; font-size: 16px; font-weight: bold;">
+    本项目是由作者利用平时自由时间创建或迭代，感谢
+    <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png?_gl=1*1dm12e8*_ga*MTE5NTg5NzkyNC4xNTk1OTQyNTAy*_ga_9J976DJZ68*MTY5MzI0MTIwMi40My4wLjE2OTMyNDEyMDIuNjAuMC4w&_ga=2.181464359.1807781522.1693241203-1195897924.1595942502" style="height: 18px; margin-right: 5px;">
+    提供的license。所有的微服务异常情况没办法测试全，未在真实项目上实践过！请酌情考虑使用，出事故拒不负责(^_^)! 有问题请提issues;
+</p>
     
     
