@@ -1,11 +1,12 @@
-<div style="margin-top: 40px;margin-bottom: -33px;">
-  <p align="center" style="display: flex; justify-content: center; gap: 20px;">
-    <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99">
-    <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub">
-    <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00">
-    <img src="https://img.shields.io/badge/Apache_License-2.0-33ccff">
-  </p>
+<div style="margin-top: 40px; margin-bottom: -30px;">
+    <p align="center" style="display: flex; justify-content: center; gap: 20px;">
+      <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99" style="max-width: 100px; height: auto;">
+      <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub" style="max-width: 100px; height: auto;">
+      <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00" style="max-width: 100px; height: auto;">
+      <img src="https://img.shields.io/badge/Apache_License-2.0-33ccff" style="max-width: 100px; height: auto;">
+    </p>
 </div>
+
 
 # 项目介绍
 DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻雀虽小,五脏俱全;
