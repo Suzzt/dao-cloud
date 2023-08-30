@@ -23,6 +23,13 @@ public class ServiceManager {
         return serviceInvokers;
     }
 
+    /**
+     * add service invoker(Non-thread-safe)
+     *
+     * @param provider
+     * @param version
+     * @param serviceInvoker
+     */
     public static void addService(String provider, int version, ServiceInvoker serviceInvoker) {
         ProviderModel providerModel = new ProviderModel();
         providerModel.setProvider(provider);
@@ -30,6 +37,13 @@ public class ServiceManager {
         serviceInvokers.put(providerModel, serviceInvoker);
     }
 
+    /**
+     * get service all invoker
+     *
+     * @param provider
+     * @param version
+     * @return
+     */
     public static ServiceInvoker getServiceInvoker(String provider, int version) {
         ProviderModel providerModel = new ProviderModel();
         providerModel.setProvider(provider);
@@ -37,5 +51,4 @@ public class ServiceManager {
         ServiceInvoker serviceInvoker = serviceInvokers.get(providerModel);
         return serviceInvoker;
     }
-
 }

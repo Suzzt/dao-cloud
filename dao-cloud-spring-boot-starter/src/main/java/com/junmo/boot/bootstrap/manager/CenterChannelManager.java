@@ -50,6 +50,12 @@ public class CenterChannelManager {
 
     private static Thread timer;
 
+    /**
+     * init
+     *
+     * @param centerIp
+     * @throws InterruptedException
+     */
     public static void init(String centerIp) throws InterruptedException {
         CURRENT_USE_CENTER_IP = StringUtils.hasLength(centerIp) ? centerIp : DEFAULT_LOCAL_IP;
         inquire();
