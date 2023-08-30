@@ -1,6 +1,6 @@
 <div style="margin-top: 60px; margin-bottom: -30px;">
     <p align="center" style="display: flex; justify-content: center; gap: 20px;">
-        ![dao-cloud-logo](https://github.com/Suzzt/dao-cloud/assets/27397567/25cc81d6-7517-4370-a25e-f2272fa11077)
+        <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/25cc81d6-7517-4370-a25e-f2272fa11077" style="max-width: 100px; height: auto;">
     </p>
     <p align="center" style="display: flex; justify-content: center; gap: 20px;">
       <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99" style="max-width: 100px; height: auto;">
