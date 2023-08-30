@@ -1,5 +1,5 @@
 <div style="margin-top: 60px; margin-bottom: -30px;">
-    <p align="center" style="display: flex; justify-content: center; gap: 20px;">
+    <p align="center" style="display: flex; justify-content: center; gap: 10px;">
         <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/25cc81d6-7517-4370-a25e-f2272fa11077" style="max-width: 100px; height: auto;">
     </p>
     <p align="center" style="display: flex; justify-content: center; gap: 20px;">
