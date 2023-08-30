@@ -11,6 +11,20 @@
     <link rel="stylesheet"
           href="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 </head>
+<style>
+    /* 在小屏幕上设置 10px 的下间距 */
+    @media (max-width: 768px) {
+        .row + .row {
+            margin-top: 10px;
+        }
+    }
+    /* 在大屏幕上设置 20px 的下间距 */
+    @media (min-width: 769px) {
+        .row + .row {
+            margin-top: 20px;
+        }
+    }
+</style>
 <body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
