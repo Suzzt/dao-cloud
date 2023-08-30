@@ -64,7 +64,7 @@ public class IndexController {
     @RequestMapping(value = "login", method = RequestMethod.POST)
     @ResponseBody
     @Permissions(limit = false)
-    public ApiResult<String> loginDo(HttpServletRequest request, HttpServletResponse response, String userName, String password, String ifRemember) {
+    public ApiResult<String> login(HttpServletRequest request, HttpServletResponse response, String userName, String password, String ifRemember) {
         // valid
         if (PermissionInterceptor.ifLogin(request)) {
             return ApiResult.buildSuccess();

@@ -1,7 +1,7 @@
 <#macro commonStyle>
 
 <#-- favicon -->
-    <link rel="icon" href="${request.contextPath}/static/dao-cloud.png"/>
+    <link rel="icon" href="${request.contextPath}/static/dao-cloud-logo.png" sizes="64x64"/>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">

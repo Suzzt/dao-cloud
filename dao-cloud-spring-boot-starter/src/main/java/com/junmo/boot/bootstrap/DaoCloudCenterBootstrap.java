@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 public class DaoCloudCenterBootstrap {
     @PostConstruct
     public void init() {
-        // init the connection cluster
         try {
+            // init the connection cluster
             CenterChannelManager.init(DaoCloudCenterProperties.ip);
         } catch (InterruptedException e) {
             throw new DaoException(e);

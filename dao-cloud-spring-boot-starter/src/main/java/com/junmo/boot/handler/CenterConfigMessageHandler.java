@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 public class CenterConfigMessageHandler extends SimpleChannelInboundHandler<ConfigModel> {
+
     public static final Map<ProxyConfigModel, Promise<String>> PROMISE_MAP = new ConcurrentHashMap<>();
 
     @Override
