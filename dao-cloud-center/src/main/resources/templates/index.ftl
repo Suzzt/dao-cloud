@@ -106,8 +106,6 @@
         </section>
         <!-- /.content -->
     </div>
-    <!-- /.content-wrapper -->
-
     <!-- footer -->
     <@netCommon.commonFooter />
 </div>
