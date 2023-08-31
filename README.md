@@ -1,8 +1,8 @@
-<div style="margin-top: 60px; margin-bottom: -30px;">
+<div style="margin-top: 50px; margin-bottom: -30px;">
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
         <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/e1d2c6d9-d1f8-4bb3-917a-b0a4c9de3f3e" style="max-width: 100px; height: auto;">
     </p>
-    <p align="center" style="display: flex; justify-content: center; gap: 10px;">
+    <p align="center" style="margin-top: -10px; display: flex; justify-content: center; gap: 10px;">
       <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00" style="max-width: 100px; height: auto;">
