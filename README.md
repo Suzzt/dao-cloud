@@ -1,6 +1,6 @@
 <div style="margin-top: 60px; margin-bottom: -30px;">
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
-        <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/8e45dffa-64e4-4f08-b4b4-7cd20c72afd8" style="max-width: 100px; height: auto;">
+        <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/e1d2c6d9-d1f8-4bb3-917a-b0a4c9de3f3e" style="max-width: 100px; height: auto;">
     </p>
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
       <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99" style="max-width: 100px; height: auto;">
@@ -13,7 +13,7 @@
 </div>
 
 # 项目介绍
-DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻雀虽小,五脏俱全;
+DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻雀虽小,五脏俱全(完全自研开发且完全开源,放心使用);
 本项目追求轻量、易接入、自定义协议、高可用、高性能、高扩展、易上手等特性;
 致力于简化应用程序之间的RPC调用，并为应用程序提供方便、无代码入侵、稳定和高效的点对点远程微服务调用解决方案。对于开发人员来说,dao-cloud的提供了丰富的模型抽象和可扩展接口,为求一站式解决微服务带来的系统架构复杂度,包括路由、负载平衡、故障转移、性能监控、微服务治理等;
 
