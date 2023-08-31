@@ -2,7 +2,7 @@
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
         <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/e1d2c6d9-d1f8-4bb3-917a-b0a4c9de3f3e" style="max-width: 100px; height: auto;">
     </p>
-    <p align="center" style="margin-top: -30px; display: flex; justify-content: center; gap: 10px;">
+    <p align="center" style="display: flex; justify-content: center; gap: 10px;">
       <img src="https://img.shields.io/badge/dao_cloud-Microservices-33cc99" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/Source-github-d021d6?style=flat&logo=GitHub" style="max-width: 100px; height: auto;">
       <img src="https://img.shields.io/badge/JDK-1.8+-ffcc00" style="max-width: 100px; height: auto;">
@@ -46,7 +46,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     dao-cloud-monitor = 监控性能
     dao-cloud-example = 使用示例
 
-# dao-cloud提供了什么功能？
+# dao-cloud提供了什么能力？
     rpc服务调用
         提供服务之间的RPC调用能力,在轻量dao协议(tcp)下,降低你每次服务间调用的代价
     服务注册管理
