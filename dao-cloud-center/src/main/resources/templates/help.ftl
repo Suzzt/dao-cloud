@@ -27,12 +27,11 @@
                     <a target="_blank" href="https://github.com/Suzzt/dao-cloud" style="display: inline; font-size: 18px; font-weight: bold; color: red;">github</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a target="_blank" href="https://gitee.com/Suzzt0/dao-cloud" style="display: inline; font-size: 18px; font-weight: bold; color: red;">gitee</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 </p>
-                <br>
+                <p>该项目中有个案例, 所有的案例使用都在dao-cloud-example工程下有详细的示例</p>
                 <h1 style="font-weight: bold;">dao-cloud-center部署</h1>
                 <h3>在dao-cloud微服务框架中, 很幸运, 这注册中心与配置中心是一体的, 即dao-cloud-center !</h3>
-                <h4>1.建立dao-cloud-center</h4>
                 <p>
-                    a. 在你的SpringBoot的工程中引入 dao-cloud-center maven的pom依赖
+                    1. 在你的SpringBoot的工程中引入 dao-cloud-center maven的pom依赖
                     <br>
                 <p>
                 <pre>
@@ -42,10 +41,10 @@
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</pre>
                 </p>
-                    b. 然后用一个注解@EnableDaoCloudCenter搞定, 加在SpringBoot的启动类上, 这样单机版的dao-cloud-center就ok了
+                    2. 然后用一个注解@EnableDaoCloudCenter搞定, 加在SpringBoot的启动类上, 这样单机版的dao-cloud-center就ok了
                 </p>
                 </p>
-                    c. 如果你认为单机的dao-cloud-center不可靠, 可以把dao-cloud-center部署成集群。 在SpringBoot的yml中配置就行
+                    3. 如果你认为单机的dao-cloud-center不可靠, 可以把dao-cloud-center部署成集群。 在SpringBoot的yml中配置就行
                     <br>
                 <pre>
 dao-cloud:
@@ -56,7 +55,7 @@ dao-cloud:
         ip: 192.168.31.254 # 这里填一个cluster其中一台机器的ip就行</pre>
                 </p>
                 <p>
-                    d. 其他配置
+                    4. 其他配置
                     <br>
                 <pre>
 dao-cloud:
@@ -81,14 +80,19 @@ dao-cloud:
                     启动你的SpringBoot Application服务,恭喜你！dao-cloud-center搭建完成
                     如果你打开了你的可视化管理页面, 控制台中会打印可以访问center web的页面。账号：root 密码：123456
                 </p>
-
+                <h1 style="font-weight: bold;">服务暴露与消费</h1>
+                <p>
+                    1. 在你的SpringBoot的工程中引入 dao-cloud-spring-boot-starter maven的pom依赖, 这样你就拥有了暴露与消费的能力了
+                <pre>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.junmo&lt;/groupId&gt;
+    &lt;artifactId&gt;dao-cloud-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+                </p>
             </div>
         </section>
-        <!-- /.content -->
     </div>
-    <!-- /.content-wrapper -->
-
-    <!-- footer -->
     <@netCommon.commonFooter />
 </div>
 <@netCommon.commonScript />
