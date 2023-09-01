@@ -131,7 +131,7 @@
                                         color="black">*</font></label>
                             <div class="col-sm-9">
                                 <textarea class="textarea" name="data" maxlength="60000"
-                                          placeholder="请输入注册信息；限制为字符串数组JSON格式，如 [address,address2]"
+                                          placeholder="请输入注册信息；限制为字符串JSON格式"
                                           style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                             </div>
                         </div>
@@ -190,7 +190,7 @@
                                         color="black">*</font></label>
                             <div class="col-sm-9">
                                 <textarea class="textarea" name="data" maxlength="60000"
-                                          placeholder="请输入注册信息；限制为字符串数组JSON格式，如 [address,address2]"
+                                          placeholder="请输入注册信息；限制为字符串JSON格式"
                                           style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                             </div>
                         </div>
