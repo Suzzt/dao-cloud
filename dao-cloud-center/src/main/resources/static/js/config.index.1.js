@@ -107,7 +107,6 @@ $(function () {
                 dataType: "json",
                 success: function (data) {
                     if (data.code == "00000") {
-
                         layer.open({
                             title: "系统提示",
                             btn: ["确认"],
@@ -188,7 +187,7 @@ $(function () {
         submitHandler: function (form) {
 
             // valid
-            var dataJson = $("#addModal .form textarea[name='data']").val();
+            var dataJson = $("#addModal .form textarea[name='content']").val();
             if (dataJson) {
                 try {
                     $.parseJSON(dataJson);
@@ -297,7 +296,7 @@ $(function () {
         },
         submitHandler: function (form) {
             // valid
-            var dataJson = $("#addModal .form textarea[name='data']").val();
+            var dataJson = $("#addModal .form textarea[name='content']").val();
             if (dataJson) {
                 try {
                     $.parseJSON(dataJson);
