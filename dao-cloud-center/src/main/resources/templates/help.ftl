@@ -79,7 +79,7 @@ dao-cloud:
                     启动你的SpringBoot Application服务,恭喜你！dao-cloud-center搭建完成
                     如果你打开了你的可视化管理页面, 控制台中会打印可以访问center web的页面。账号：root 密码：123456
                 </p>
-                <h1 style="font-weight: bold;">服务暴露与消费</h1>
+                <h1 style="font-weight: bold;">服务暴露与消费、配置中心</h1>
                 <p>
                     1. 在你的SpringBoot的工程中引入 dao-cloud-spring-boot-starter maven的pom依赖, 这样你就拥有了暴露与消费的能力了
                 <pre>
