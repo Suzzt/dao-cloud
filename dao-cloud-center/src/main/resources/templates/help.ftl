@@ -22,15 +22,15 @@
         <!-- Main content -->
         <section class="content">
             <div class="callout callout-info">
-                <h1>项目地址</h1>
+                <h1 style="font-weight: bold;">项目地址</h1>
                 <p>
                     <a target="_blank" href="https://github.com/Suzzt/dao-cloud" style="display: inline; font-size: 18px; font-weight: bold; color: red;">github</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a target="_blank" href="https://gitee.com/Suzzt0/dao-cloud" style="display: inline; font-size: 18px; font-weight: bold; color: red;">gitee</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 </p>
                 <br>
-                <h1>服务部署</h1>
-                <h3>1.建立dao-cloud-center</h3>
-                <h4>在dao-cloud微服务框架中, 很幸运, 这注册中心与配置中心是一体的, 即dao-cloud-center !</h4>
+                <h1 style="font-weight: bold;">dao-cloud-center部署</h1>
+                <h3>在dao-cloud微服务框架中, 很幸运, 这注册中心与配置中心是一体的, 即dao-cloud-center !</h3>
+                <h4>1.建立dao-cloud-center</h4>
                 <p>
                     a. 在你的SpringBoot的工程中引入 dao-cloud-center maven的pom依赖
                     <br>
@@ -45,7 +45,7 @@
                     b. 然后用一个注解@EnableDaoCloudCenter搞定, 加在SpringBoot的启动类上, 这样单机版的dao-cloud-center就ok了
                 </p>
                 </p>
-                    c. 如果你认为单机的dao-cloud-center不可靠, 可以把dao-cloud-center部署成集群, 在SpringBoot的yml中配置就行
+                    c. 如果你认为单机的dao-cloud-center不可靠, 可以把dao-cloud-center部署成集群。 在SpringBoot的yml中配置就行
                     <br>
                 <pre>
 dao-cloud:
@@ -55,6 +55,33 @@ dao-cloud:
      cluster:
         ip: 192.168.31.254 # 这里填一个cluster其中一台机器的ip就行</pre>
                 </p>
+                <p>
+                    d. 其他配置
+                    <br>
+                <pre>
+dao-cloud:
+  center:
+    # 是否要开启可视化管理页面
+    dashboard: true
+    ############################ 配置中心 ############################
+    config:
+      persistence: file-system # file-system(本地文件)、mysql
+      # 配置文件存储地址, 不填的话, 默认就是/data/dao-cloud/config, 请自己评估配置文件存放位置
+      file-system-setting:
+        path-prefix: /data/dao-cloud/config
+      # 配置文件存放mysql的地址
+      # mysql-setting:
+      # url: 192.168.31.23
+      # port: 3306
+      # username: root
+      # password: JunMo123
+    ############################ 配置中心 ############################</pre>
+                </p>
+                <p>
+                    启动你的SpringBoot Application服务,恭喜你！dao-cloud-center搭建完成
+                    如果你打开了你的可视化管理页面, 控制台中会打印可以访问center web的页面。账号：root 密码：123456
+                </p>
+
             </div>
         </section>
         <!-- /.content -->
