@@ -67,6 +67,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 
 # 快速开始
+可以先看这个部署方案: http://47.95.39.37:5555/dao-cloud/help
 <img width="1809" alt="dao-cloud-web" src="https://github.com/Suzzt/dao-cloud/assets/27397567/a3db691a-4797-4ae2-94ee-694b1065e3d6">
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
