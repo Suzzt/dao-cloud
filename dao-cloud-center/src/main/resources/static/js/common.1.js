@@ -2,7 +2,7 @@ $(function(){
 
     // logout
     $("#logoutBtn").click(function(){
-        layer.confirm( "确认注销登录?" , {
+        layer.confirm( "确认退出登录?" , {
             icon: 3,
             title: "系统提示" ,
             btn: [ "确认", "取消" ]
@@ -11,7 +11,7 @@ $(function(){
 
             $.post(base_url + "/logout", function(data, status) {
                 if (data.code == "00000") {
-                    layer.msg( "注销成功" );
+                    layer.msg( "退出成功" );
                     setTimeout(function(){
                         window.location.href = base_url + "/";
                     }, 500);
@@ -19,7 +19,7 @@ $(function(){
                     layer.open({
                         title: I18n.system_tips ,
                         btn: [ I18n.system_ok ],
-                        content: (data.msg || "注销失败" ),
+                        content: (data.msg || "退出失败" ),
                         icon: '2'
                     });
                 }
