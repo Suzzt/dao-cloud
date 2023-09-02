@@ -116,28 +116,28 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Bean
     @ConditionalOnWebApplication
-    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
     public CookieInterceptor cookieInterceptor() {
         return new CookieInterceptor();
     }
 
     @Bean
     @ConditionalOnWebApplication
-    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
     public PermissionInterceptor permissionInterceptor() {
         return new PermissionInterceptor();
     }
 
     @Bean
     @ConditionalOnWebApplication
-    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web,dashboard", name = "enabled", matchIfMissing = true)
     public CenterController centerController() {
         return new CenterController();
     }
 
     @Bean
     @ConditionalOnWebApplication
-    @ConditionalOnProperty(prefix = "dao-cloud.center.dashboard", name = "enabled", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
     public IndexController indexController(ConfigCenterManager configCenterManager) {
         return new IndexController(configCenterManager);
     }

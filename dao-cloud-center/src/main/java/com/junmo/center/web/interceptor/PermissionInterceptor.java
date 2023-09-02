@@ -1,6 +1,7 @@
 package com.junmo.center.web.interceptor;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.method.HandlerMethod;
@@ -21,11 +22,13 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter implements 
     /**
      * 用户名
      */
+    @Value(value = "${dao-cloud.center.admin-web.username:#{admin}}")
     private String username = "admin";
 
     /**
      * 密码
      */
+    @Value(value = "${dao-cloud.center.admin-web.password:#{123456}}")
     private String password = "123456";
 
     @Override

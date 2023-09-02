@@ -59,8 +59,12 @@ dao-cloud:
                 <pre>
 dao-cloud:
   center:
-    # 是否要开启可视化管理页面
-    dashboard: true
+    admin-web:
+        # 是否要开启可视化管理页面
+        dashboard: true
+        # 设置登陆账号密码
+        username: root
+        password: 123456
     ############################ 配置中心 ############################
     config:
       persistence: file-system # file-system(本地文件)、mysql
@@ -71,13 +75,13 @@ dao-cloud:
       # mysql-setting:
       # url: 192.168.31.23
       # port: 3306
-      # username: root
+      # username: admin
       # password: JunMo123
     ############################ 配置中心 ############################</pre>
                 </p>
                 <p>
                     启动你的SpringBoot Application服务,恭喜你！dao-cloud-center搭建完成
-                    如果你打开了你的可视化管理页面, 控制台中会打印可以访问center web的页面。账号：root 密码：123456
+                    如果你打开了可视化管理页面的配置, 控制台中会打印可以访问center web的页面。账号：root 密码：123456
                 </p>
                 <h1 style="font-weight: bold;">服务暴露与消费、配置中心</h1>
                 <p>

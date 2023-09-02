@@ -55,7 +55,7 @@ $(function(){
                     layer.open({
                         title: "系统提示",
                         btn: [ "确认" ],
-                        content: (data.msg || "登陆失败" ),
+                        content: (data.msg || "账号或密码错误" ),
                         icon: '2'
                     });
                 }

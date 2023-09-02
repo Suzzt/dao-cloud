@@ -8,7 +8,12 @@ server:
 #    context-path: /dao-cloud
 dao-cloud:
   center:
-    dashboard: true
+    admin-web:
+      # 是否要开启可视化管理页面
+      dashboard: true
+      # 设置登陆账号密码
+      username: admin
+      password: 123456
     ############################ 集群方式 ############################
     # 配置第一个节点center必须是空，后续加入cluster中必须填写值。值可以是随便一个节点的ip地址
 #    cluster:
