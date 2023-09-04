@@ -49,7 +49,6 @@ public class ServiceInvoker {
             Class<?>[] parameterTypes = requestModel.getParameterTypes();
             Object[] parameters = requestModel.getParameterValue();
             Method method = serviceClass.getMethod(methodName, parameterTypes);
-            method.setAccessible(true);
             Object result = method.invoke(serviceBean, parameters);
             responseModel.setReturnValue(result);
         } catch (Throwable t) {
