@@ -96,7 +96,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     }
                     // load config to cache
                     configCenterManager.init();
-                    log.info(">>>>>>>>>>>> dao-cloud-center port:{} start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
+                    log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
                     boss.shutdownGracefully();

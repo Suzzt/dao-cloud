@@ -23,13 +23,13 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter implements 
      * 用户名
      */
     @Value(value = "${dao-cloud.center.admin-web.username:#{admin}}")
-    private String username = "admin";
+    private String username;
 
     /**
      * 密码
      */
     @Value(value = "${dao-cloud.center.admin-web.password:#{123456}}")
-    private String password = "123456";
+    private String password;
 
     @Override
     public void afterPropertiesSet() {
