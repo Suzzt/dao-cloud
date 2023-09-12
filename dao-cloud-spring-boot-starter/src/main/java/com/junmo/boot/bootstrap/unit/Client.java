@@ -83,7 +83,7 @@ public class Client {
     /**
      * get channel
      *
-     * @return
+     * @return available channel
      */
     public Channel getChannel() {
         if (this.channel != null) {
