@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: sucf
  * @date: 2023/1/15 15:03
- * @description:
+ * @description: rpc client unit
  */
 @Data
 @Slf4j
@@ -152,7 +152,7 @@ public class Client {
         try {
             this.channel = ClientManager.getRpcBootstrap().connect().sync().channel();
         } catch (Exception e) {
-            log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", e);
+            log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<",ip,port, e);
             throw new DaoException(e);
         }
     }
