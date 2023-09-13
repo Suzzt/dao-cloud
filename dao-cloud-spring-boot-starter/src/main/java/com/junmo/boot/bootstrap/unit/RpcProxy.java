@@ -3,7 +3,6 @@ package com.junmo.boot.bootstrap.unit;
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.manager.ClientManager;
-import com.junmo.boot.handler.RpcClientMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
@@ -11,6 +10,7 @@ import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.LongPromiseBuffer;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -95,21 +95,23 @@ public class RpcProxy {
                 ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
             }
             DaoMessage message = new DaoMessage((byte) 1, MessageType.RPC_REQUEST_MESSAGE, serialized, requestModel);
+
+            // 异步执行！ promise 对象来处理异步接收的结果线程
+            Promise<Object> promise = new DefaultPromise<>(client.getChannel().eventLoop());
+            LongPromiseBuffer.getInstance().put(sequenceId, promise);
+
             // push message
             client.getChannel().writeAndFlush(message).addListener(future -> {
                 if (!future.isSuccess()) {
-                    Promise<Object> promise = RpcClientMessageHandler.PROMISE_MAP.remove(sequenceId);
+                    LongPromiseBuffer.getInstance().remove(sequenceId);
                     promise.setFailure(future.cause());
                     log.error("<<<<<<<<<< send rpc do invoke message error >>>>>>>>>>", future.cause());
                 }
             });
 
-            // 异步！ promise 对象来处理异步接收的结果线程
-            DefaultPromise<Object> promise = new DefaultPromise<>(client.getChannel().eventLoop());
-            RpcClientMessageHandler.PROMISE_MAP.put(sequenceId, promise);
-
             // 等待 promise 结果
             if (!promise.await(timeout)) {
+                LongPromiseBuffer.getInstance().remove(sequenceId);
                 throw new DaoException("rpc do invoke time out");
             }
             if (promise.isSuccess()) {

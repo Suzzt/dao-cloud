@@ -9,7 +9,9 @@ import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoCloudConstant;
+import com.junmo.core.util.ProxyConfigPromiseBuffer;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -122,8 +124,8 @@ public class DaoConfig {
         if (!StringUtils.hasLength(jsonValue)) {
             // no hit cache
             DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyConfigModel);
-            DefaultPromise<String> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
-            CenterConfigMessageHandler.PROMISE_MAP.put(proxyConfigModel, promise);
+            Promise<String> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
+            ProxyConfigPromiseBuffer.getInstance().put(proxyConfigModel, promise);
             CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<<<<<< failed to fetch config({}) from config center error >>>>>>>>>>>>>>", proxyConfigModel, future.cause());

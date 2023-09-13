@@ -3,10 +3,10 @@ package com.junmo.boot.handler;
 import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.boot.bootstrap.unit.Client;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RpcResponseModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.HeartbeatPacket;
+import com.junmo.core.util.LongPromiseBuffer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -14,9 +14,6 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: sucf
@@ -47,13 +44,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResponseModel> {
 
     /**
-     * 异步调用promise容器
-     * key: 消息id(唯一)
-     * value: promise容器(返回rpc结果)
-     */
-    public static final Map<Long, Promise<Object>> PROMISE_MAP = new ConcurrentHashMap<>();
-
-    /**
      * 客户端对象信息
      */
     private Client client;
@@ -72,7 +62,7 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponseModel msg) {
         // get promise
-        Promise<Object> promise = PROMISE_MAP.remove(msg.getSequenceId());
+        Promise<Object> promise = LongPromiseBuffer.getInstance().remove(msg.getSequenceId());
         if (promise != null) {
             Object returnValue = msg.getReturnValue();
             String errorMessage = msg.getErrorMessage();

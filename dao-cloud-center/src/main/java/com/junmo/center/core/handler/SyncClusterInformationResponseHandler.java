@@ -2,13 +2,11 @@ package com.junmo.center.core.handler;
 
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataResponseModel;
+import com.junmo.core.util.LongPromiseBuffer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 import org.springframework.util.StringUtils;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: sucf
@@ -17,11 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SyncClusterInformationResponseHandler extends SimpleChannelInboundHandler<ClusterSyncDataResponseModel> {
 
-    public static final Map<Long, Promise> PROMISE_MAP = new ConcurrentHashMap<>();
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataResponseModel clusterSyncDataResponseModel) throws Exception {
-        Promise promise = PROMISE_MAP.remove(clusterSyncDataResponseModel.getSequenceId());
+        Promise promise = LongPromiseBuffer.getInstance().remove(clusterSyncDataResponseModel.getSequenceId());
         if (StringUtils.hasLength(clusterSyncDataResponseModel.getErrorMessage())) {
             promise.setFailure(new DaoException(clusterSyncDataResponseModel.getErrorMessage()));
         } else {

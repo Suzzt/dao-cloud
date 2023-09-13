@@ -1,13 +1,12 @@
 package com.junmo.center.core.cluster;
 
 import com.google.gson.Gson;
-import com.junmo.center.core.handler.SyncClusterInformationResponseHandler;
 import com.junmo.core.model.ClusterSyncDataRequestModel;
-import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.util.LongPromiseBuffer;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,8 +34,8 @@ public class DataSyncTask implements Runnable {
         Gson gson = new Gson();
         while (true) {
             try {
-                DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
-                SyncClusterInformationResponseHandler.PROMISE_MAP.put(clusterSyncDataRequestModel.getSequenceId(), promise);
+                Promise promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+                LongPromiseBuffer.getInstance().put(clusterSyncDataRequestModel.getSequenceId(), promise);
                 clusterCenterConnector.syncData(clusterSyncDataRequestModel);
                 if (!promise.await(3, TimeUnit.SECONDS) || !promise.isSuccess()) {
                     log.error("<<<<<<<<<<<<<< sync data = {} to cluster error. already error count = {} >>>>>>>>>>>>>>", gson.toJson(clusterSyncDataRequestModel), failMark);
