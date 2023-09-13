@@ -42,6 +42,7 @@ public class ClusterCenterConnector {
      */
     public ClusterCenterConnector(String connectIp) {
         this.connectIp = connectIp;
+        connect();
     }
 
     public String getConnectIp() {
