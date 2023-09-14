@@ -12,8 +12,20 @@ import com.junmo.core.netty.serialize.impl.JsonSerializer;
  * @description:
  */
 public enum Serializer {
+
+    /**
+     * hessian
+     */
     HESSIAN(SerializeStrategyFactory.HESSIAN, "hessian", new HessianSerializer()),
+
+    /**
+     * jdk
+     */
     JDK(SerializeStrategyFactory.JDK, "jdk", new JdkSerializer()),
+
+    /**
+     * json
+     */
     JSON(SerializeStrategyFactory.JSON, "json", new JsonSerializer());
 
     /**
