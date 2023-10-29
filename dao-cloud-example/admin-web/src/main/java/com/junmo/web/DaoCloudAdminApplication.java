@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @description:
  */
 @SpringBootApplication
-// 这是一个dao-cloud的center
+// 开启dao-cloud center注解
 @EnableDaoCloudCenter
 public class DaoCloudAdminApplication {
     public static void main(String[] args) {

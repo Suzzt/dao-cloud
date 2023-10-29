@@ -29,6 +29,11 @@ public class DemoController {
     @DaoReference(proxy = "demo")
     private Demo2Service demo2Service;
 
+    /**
+     * rpc调用测试
+     *
+     * @return
+     */
     @RequestMapping("demo")
     public String demo() {
         long start = System.currentTimeMillis();
@@ -37,6 +42,11 @@ public class DemoController {
         return string1 + "====" + (end - start);
     }
 
+    /**
+     * rpc调用测试
+     *
+     * @return
+     */
     @RequestMapping("demo2")
     public String demo2() {
         long start = System.currentTimeMillis();
@@ -45,6 +55,11 @@ public class DemoController {
         return "demo2" + "====" + (end - start);
     }
 
+    /**
+     * rpc调用测试(复杂聚合对象)
+     *
+     * @return
+     */
     @RequestMapping("complex-demo")
     public String complex() {
         long start = System.currentTimeMillis();
