@@ -133,7 +133,7 @@ public class DaoConfig {
             });
             try {
                 if (!promise.await(1, TimeUnit.SECONDS)) {
-                    log.error("<<<<<<<<<<<<<< pull config() timeout >>>>>>>>>>>>>>", proxyConfigModel);
+                    log.error("<<<<<<<<<<<<<< pull config({}) timeout >>>>>>>>>>>>>>", proxyConfigModel);
                     return null;
                 }
                 if (promise.isSuccess()) {
@@ -145,11 +145,11 @@ public class DaoConfig {
                     // put in the cache
                     update(proxyConfigModel, jsonValue);
                 } else {
-                    log.error("<<<<<<<<<<<<<< pull config() fail. >>>>>>>>>>>>>>", proxyConfigModel, promise.cause());
+                    log.error("<<<<<<<<<<<<<< pull config({}) fail. >>>>>>>>>>>>>>", proxyConfigModel, promise.cause());
                     return null;
                 }
             } catch (InterruptedException e) {
-                log.error("<<<<<<<<<<<<<< pull config() fail >>>>>>>>>>>>>>", proxyConfigModel, e);
+                log.error("<<<<<<<<<<<<<< pull config({}) fail >>>>>>>>>>>>>>", proxyConfigModel, e);
                 return null;
             }
         }

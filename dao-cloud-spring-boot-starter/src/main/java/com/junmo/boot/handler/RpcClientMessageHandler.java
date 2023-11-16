@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
  * @description: rpc-client handler
  * 关于服务端与客户端的心跳方案
  * 首先有一个问题? 怎么样感知判断心跳失败(客户端如何得知请求失败?), 心跳所有的设计来自这个问题
- * 应当是以客户端接收到失败响应为判断依据
+ * 应当是以客户端接收到事实的失败响应为判断依据
  * 所以该设计是由客户端侧通过IdleStateHandler读超时的特性设计发送心跳, 注意这里就是维持的心跳启始点
  * 客户端(读超时事件,记录{@link Client.failMark++}) ------发送心跳包------> 服务端(写超时事件)
  * 客户端(移除{@link Client.failMark}=0) <------回应心跳包------ 服务端(写超时事件)

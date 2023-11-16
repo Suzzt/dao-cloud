@@ -11,5 +11,6 @@ import org.springframework.context.ApplicationListener;
 public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEvent> {
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        // todo
     }
 }
