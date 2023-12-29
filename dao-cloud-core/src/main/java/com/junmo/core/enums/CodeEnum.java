@@ -27,12 +27,17 @@ public enum CodeEnum {
      * 账号密码错误
      */
     PARAMETER_ACCOUNT_ERROR("A1001", "账号密码错误"),
-    // B级别 系统错误,NPE
+
+    // G级别 网关侧错误
     /**
-     * 系统内部报错,B一级宏观错误
-     * 后端确定不了的，选这个
+     * 网关请求超时
      */
-    SYSTEM_ERROR("B0001", "系统内部错误"),
+    GATEWAY_REQUEST_TIMEOUT("G0000", "网关请求超时"),
+
+    /**
+     * 网关请求被限流
+     */
+    GATEWAY_REQUEST_LIMIT("G0001", "网关请求被限流"),
     ;
     private String code;
 
