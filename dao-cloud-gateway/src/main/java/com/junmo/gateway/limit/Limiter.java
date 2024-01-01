@@ -7,4 +7,10 @@ package com.junmo.gateway.limit;
  */
 public abstract class Limiter {
 
+    /**
+     * 限流是否通过
+     *
+     * @return true: 通过限流, false: 限流拦截
+     */
+    public abstract Boolean allow();
 }
