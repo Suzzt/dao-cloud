@@ -12,13 +12,19 @@ import org.springframework.context.event.ContextRefreshedEvent;
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        // load all service && start thread task pull service
+
+    }
+
     /**
      * start
      */
     public void start() {
+
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    }
+
 }
