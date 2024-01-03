@@ -2,7 +2,7 @@
 <html>
 <head>
     <#import "../common/common.macro.ftl" as netCommon>
-    <title>服务中心</title>
+    <title>网关中心</title>
     <@netCommon.commonStyle />
     <!-- DataTables -->
     <link rel="stylesheet"
@@ -39,7 +39,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <section class="content-header">
-            <h1>服务列表<small></small></h1>
+            <h1>网关配置<small></small></h1>
         </section>
 
         <!-- Main content -->
