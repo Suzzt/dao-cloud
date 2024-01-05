@@ -17,12 +17,17 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         // load all service && start thread task pull service
 
+        // registry center
     }
 
     /**
      * start
      */
-    public void start() {
+    public void load() {
+
+    }
+
+    public void registry() {
 
     }
 
