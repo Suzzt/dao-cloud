@@ -15,7 +15,7 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         // load all service && start thread task pull service
-        load();
+        loadPull();
         // registry center
         registry();
     }
@@ -23,7 +23,7 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
     /**
      * start
      */
-    public void load() {
+    public void loadPull() {
 
     }
 
