@@ -59,6 +59,15 @@ public class ClientManager {
     }
 
     /**
+     * Get a full service instance
+     *
+     * @return
+     */
+    public static Map<ProxyProviderModel, Set<ServerNodeModel>> GetFullServiceNodes() {
+        return null;
+    }
+
+    /**
      * add provider service node
      *
      * @param proxyProviderModel

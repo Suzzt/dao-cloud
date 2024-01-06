@@ -1,10 +1,20 @@
 package com.junmo.gateway.bootstrap.thread;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.google.common.collect.Sets;
+import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.boot.bootstrap.manager.RegistryManager;
+import com.junmo.core.model.ProxyProviderModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,7 +31,9 @@ public class PullServiceTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // todo 拉取所有服务节点
-                    pull();
+                    Map<ProxyProviderModel, Set<ServerNodeModel>> proxyProviderModelSetMap = ClientManager.GetFullServiceNodes();
+                    // Compared
+
                 } catch (Exception e) {
                     log.error("pull service node error", e);
                 } finally {
@@ -30,9 +42,5 @@ public class PullServiceTimer implements Runnable {
             }
         };
         DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 10, TimeUnit.SECONDS);
-    }
-
-    private void pull() {
-
     }
 }
