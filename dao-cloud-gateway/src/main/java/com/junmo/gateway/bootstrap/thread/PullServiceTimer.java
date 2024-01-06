@@ -21,7 +21,7 @@ public class PullServiceTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // todo 拉取所有服务节点
-
+                    pull();
                 } catch (Exception e) {
                     log.error("pull service node error", e);
                 } finally {
