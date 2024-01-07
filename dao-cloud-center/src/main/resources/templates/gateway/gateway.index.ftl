@@ -2,7 +2,7 @@
 <html>
 <head>
     <#import "../common/common.macro.ftl" as netCommon>
-    <title>服务中心</title>
+    <title>网关中心</title>
     <@netCommon.commonStyle />
     <!-- DataTables -->
     <link rel="stylesheet"
@@ -34,12 +34,12 @@
     <!-- header -->
     <@netCommon.commonHeader />
     <!-- left -->
-    <@netCommon.commonLeft "registry" />
+    <@netCommon.commonLeft "gateway" />
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <section class="content-header">
-            <h1>服务列表<small></small></h1>
+            <h1>网关配置<small></small></h1>
         </section>
 
         <!-- Main content -->
@@ -103,9 +103,6 @@
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">新增服务</h4>
-                </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">
                         <div class="form-group">
@@ -228,7 +225,7 @@
 <script src="${request.contextPath}/static/adminlte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 
-<script src="${request.contextPath}/static/js/registry.index.1.js"></script>
+<script src="${request.contextPath}/static/js/gateway.index.1.js"></script>
 
 </body>
 </html>
