@@ -21,5 +21,5 @@ public class GatewayServiceManager {
      * key: provider + version
      * value: server nodes --->ip + port
      */
-    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
+    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVICE_RESOURCE = new HashMap<>();
 }
