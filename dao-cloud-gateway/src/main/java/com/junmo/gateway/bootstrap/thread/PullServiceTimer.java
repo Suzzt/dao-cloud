@@ -7,6 +7,7 @@ import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoTimer;
+import com.junmo.gateway.manager.GatewayServiceManager;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +32,7 @@ public class PullServiceTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // todo 拉取所有服务节点
-                    Map<ProxyProviderModel, Set<ServerNodeModel>> proxyProviderModelSetMap = ClientManager.GetFullServiceNodes();
-                    // Compared
-
+                    GatewayServiceManager.reset(ClientManager.GetFullServiceNodes());
                 } catch (Exception e) {
                     log.error("pull service node error", e);
                 } finally {

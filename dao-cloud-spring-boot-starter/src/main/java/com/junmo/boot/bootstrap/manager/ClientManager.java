@@ -32,8 +32,8 @@ public class ClientManager {
 
     /**
      * clients
-     * key: proxy+provider+versionx
-     * value: channel clients
+     * key: proxy+provider+version
+     * value: service node clients
      */
     private final static Map<ProxyProviderModel, Set<ServerNodeModel>> SERVICE_NODES = new ConcurrentHashMap<>();
 

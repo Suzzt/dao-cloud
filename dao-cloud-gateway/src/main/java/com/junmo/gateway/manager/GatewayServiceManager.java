@@ -1,6 +1,7 @@
 package com.junmo.gateway.manager;
 
 import com.junmo.core.model.ProviderModel;
+import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 
 import java.util.HashMap;
@@ -21,5 +22,12 @@ public class GatewayServiceManager {
      * key: provider + version
      * value: server nodes --->ip + port
      */
-    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVICE_RESOURCE = new HashMap<>();
+    private static Map<ProxyProviderModel, Set<ServerNodeModel>> SERVICE_RESOURCE;
+
+    /**
+     * 重归置所有服务节点, 这个是一个兜底的解决方案
+     */
+    public static void reset(Map<ProxyProviderModel, Set<ServerNodeModel>> services) {
+        SERVICE_RESOURCE = services;
+    }
 }
