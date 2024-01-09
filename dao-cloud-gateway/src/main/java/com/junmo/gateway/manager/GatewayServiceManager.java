@@ -1,10 +1,8 @@
 package com.junmo.gateway.manager;
 
-import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 

@@ -25,6 +25,8 @@ public class MessageType {
     public static final byte INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE = 11;
     public static final byte SYNC_CLUSTER_SERVER_REQUEST_MESSAGE = 12;
     public static final byte SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE = 13;
+    public static final byte GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE = 14;
+    public static final byte GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE = 15;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 

@@ -12,7 +12,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -152,7 +151,7 @@ public class Client {
         try {
             this.channel = ClientManager.getRpcBootstrap().connect().sync().channel();
         } catch (Exception e) {
-            log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<",ip,port, e);
+            log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", ip, port, e);
             throw new DaoException(e);
         }
     }
