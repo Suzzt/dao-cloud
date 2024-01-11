@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: sucf
  * @date: 2024/1/3 23:25
- * @description:
+ * @description: Gateway Pull Service Instance Node Tasker
  */
 @Slf4j
-public class PullServiceTimer implements Runnable {
+public class GatewayPullServiceTimer implements Runnable {
     @Override
     public void run() {
         TimerTask task = new TimerTask() {

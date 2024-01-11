@@ -1,5 +1,8 @@
 package com.junmo.gateway.bootstrap;
 
+import com.junmo.boot.bootstrap.thread.SyncProviderServerTimer;
+import com.junmo.core.util.ThreadPoolFactory;
+import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -24,7 +27,8 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
      * start
      */
     public void loadPull() {
-
+        Thread timer = new Thread(new GatewayPullServiceTimer());
+        ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(timer);
     }
 
     public void registry() {
