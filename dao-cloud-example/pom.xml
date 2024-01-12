@@ -21,6 +21,7 @@
         <module>provider</module>
         <module>consumer</module>
         <module>admin-web</module>
+        <module>gateway</module>
     </modules>
 
     <dependencies>
