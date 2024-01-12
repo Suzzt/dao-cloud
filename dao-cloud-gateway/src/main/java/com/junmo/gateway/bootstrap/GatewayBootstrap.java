@@ -10,6 +10,7 @@ import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 /**
  * @author: sucf
@@ -17,6 +18,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * @description: gateway bootstrap
  */
 @Slf4j
+@Component
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
