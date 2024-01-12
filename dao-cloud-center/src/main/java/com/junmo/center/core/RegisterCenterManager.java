@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ProviderModel;
+import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,25 @@ public class RegisterCenterManager {
      */
     public static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
         return SERVER;
+    }
+
+    /**
+     * 获取整个注册中心服务信息(todo 看看这里SERVER对象数据结构后面能不能替换掉)
+     *
+     * @return
+     */
+    public static Map<ProxyProviderModel, Set<ServerNodeModel>> getServers() {
+        Map<ProxyProviderModel, Set<ServerNodeModel>> conversionObject = new HashMap<>();
+        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : SERVER.entrySet()) {
+            String proxy = entry.getKey();
+            Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
+            for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
+                ProviderModel providerModel = providerModelSetEntry.getKey();
+                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                conversionObject.put(proxyProviderModel, providerModelSetEntry.getValue());
+            }
+        }
+        return conversionObject;
     }
 
     /**
