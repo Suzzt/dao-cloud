@@ -117,7 +117,7 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
 
 <p style="display: flex; align-items: center; font-size: 16px; font-weight: bold;">
     本项目是由作者利用平时自由时间创建或迭代，感谢jetbrains
-    <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png?_gl=1*1dm12e8*_ga*MTE5NTg5NzkyNC4xNTk1OTQyNTAy*_ga_9J976DJZ68*MTY5MzI0MTIwMi40My4wLjE2OTMyNDEyMDIuNjAuMC4w&_ga=2.181464359.1807781522.1693241203-1195897924.1595942502" style="height: 17px; margin-right: 5px;">
+    <a href="https://www.jetbrains.com/?from=dao-cloud"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png?_gl=1*1dm12e8*_ga*MTE5NTg5NzkyNC4xNTk1OTQyNTAy*_ga_9J976DJZ68*MTY5MzI0MTIwMi40My4wLjE2OTMyNDEyMDIuNjAuMC4w&_ga=2.181464359.1807781522.1693241203-1195897924.1595942502" style="height: 17px; margin-right: 5px;"></a>
     提供的license。所有的微服务异常情况没办法测试全，未在真实项目上实践过！请酌情考虑使用，出事故拒不负责(^_^)! 有问题请提issues;
 </p>
     
