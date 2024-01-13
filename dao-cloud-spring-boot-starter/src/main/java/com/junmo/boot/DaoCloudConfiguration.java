@@ -20,6 +20,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties({DaoCloudServerProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
-@Import({DaoCloudServerProperties.class, DaoCloudCenterProperties.class, DaoCloudCenterBootstrap.class, RpcProviderBootstrap.class, RpcConsumerBootstrap.class, ConfigCenterBootstrap.class})
+@Import({DaoCloudServerProperties.class, DaoCloudCenterProperties.class,
+        DaoCloudCenterBootstrap.class, RpcProviderBootstrap.class,
+        RpcConsumerBootstrap.class, ConfigCenterBootstrap.class})
 public class DaoCloudConfiguration {
 }

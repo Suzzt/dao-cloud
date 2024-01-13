@@ -12,6 +12,7 @@ import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
 import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,9 @@ import java.util.Set;
  */
 @Slf4j
 @Component
+@DependsOn({"daoCloudServerProperties", "daoCloudCenterProperties",
+        "daoCloudCenterBootstrap", "rpcProviderBootstrap",
+        "rpcConsumerBootstrap", "configCenterBootstrap"})
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
