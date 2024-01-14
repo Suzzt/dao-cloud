@@ -15,6 +15,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties({GatewayProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
-@Import(GatewayBootstrap.class)
+@Import({GatewayBootstrap.class})
 public class DaoCloudConfiguration {
 }
