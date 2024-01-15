@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 /**
  * @author: sucf
  * @date: 2023/12/27 17:43
- * @description: Gateway Configuration stater
+ * @description: Gateway Configuration starter
  */
 @Configuration
 @EnableConfigurationProperties({GatewayProperties.class})

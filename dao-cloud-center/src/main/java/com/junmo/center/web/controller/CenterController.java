@@ -44,7 +44,7 @@ public class CenterController {
             if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
             }
-            proxy = entry.getKey();
+            String key = entry.getKey();
             Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
             for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
                 ProviderModel providerModel = providerModelSetEntry.getKey();
@@ -53,7 +53,7 @@ public class CenterController {
                 }
                 Set<ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
                 ServerVO serverVO = new ServerVO();
-                serverVO.setProxy(proxy);
+                serverVO.setProxy(key);
                 serverVO.setProvider(providerModel.getProvider());
                 serverVO.setVersion(providerModel.getVersion());
                 serverVO.setNumber(serverNodeModels.size());
