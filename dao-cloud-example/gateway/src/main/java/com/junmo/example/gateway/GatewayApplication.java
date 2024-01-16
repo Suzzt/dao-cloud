@@ -1,4 +1,4 @@
-package com.junmo.example;
+package com.junmo.example.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

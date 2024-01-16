@@ -23,7 +23,7 @@ public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<Gatew
         DaoMessage daoMessage;
         GatewayServiceNodeModel gatewayServiceNodeModel = new GatewayServiceNodeModel();
         try {
-            gatewayServiceNodeModel.setRegistryServiceNodes(RegisterCenterManager.getServers());
+            gatewayServiceNodeModel.setRegistryServiceNodes(RegisterCenterManager.gatewayServers());
         } catch (Exception e) {
             gatewayServiceNodeModel.setErrorMessage(e.getMessage());
         }

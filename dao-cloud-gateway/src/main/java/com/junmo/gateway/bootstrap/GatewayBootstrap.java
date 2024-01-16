@@ -33,6 +33,18 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
         loadPull();
         // registry center
         registry();
+        // 打开网关端口
+        openGateway(0, 9999);
+    }
+
+    /**
+     * 开启一个统一网关的入口, 这里可以是http或者dao协议.
+     *
+     * @param type
+     * @param port
+     */
+    private void openGateway(int type, int port) {
+
     }
 
     /**
@@ -48,7 +60,7 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
      */
     public void registry() {
         RegisterProviderModel gatewayNodeModel = new RegisterProviderModel();
-        gatewayNodeModel.setProxy("dao-cloud-gateway");
+        gatewayNodeModel.setProxy(DaoCloudConstant.GATEWAY_PROXY);
         Set<ProviderModel> providerModels = new HashSet<>();
         // version todo 这个后面做成可配置化的,这个是有用的,区分环境
         ProviderModel providerModel = new ProviderModel("gateway", 0);
