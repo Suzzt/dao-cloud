@@ -9,22 +9,22 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "dao-cloud.gateway")
 public class GatewayProperties {
-    public static int corePoolSize;
-    public static int maxPoolSize;
+    public int corePoolSize;
+    public int maxPoolSize;
 
-    public static int getCorePoolSize() {
+    public int getCorePoolSize() {
         return corePoolSize;
     }
 
-    public static void setCorePoolSize(int corePoolSize) {
-        GatewayProperties.corePoolSize = corePoolSize;
+    public void setCorePoolSize(int corePoolSize) {
+        this.corePoolSize = corePoolSize;
     }
 
-    public static int getMaxPoolSize() {
+    public int getMaxPoolSize() {
         return maxPoolSize;
     }
 
-    public static void setMaxPoolSize(int maxPoolSize) {
-        GatewayProperties.maxPoolSize = maxPoolSize;
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
     }
 }

@@ -8,6 +8,6 @@ package com.junmo.gateway.limit;
 public class CountLimiter extends Limiter {
     @Override
     public Boolean allow() {
-        return null;
+        return true;
     }
 }

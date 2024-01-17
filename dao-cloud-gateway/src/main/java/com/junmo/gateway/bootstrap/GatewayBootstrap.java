@@ -10,6 +10,7 @@ import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
 import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
+import com.junmo.gateway.properties.GatewayProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -25,6 +26,12 @@ import java.util.Set;
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
+    private GatewayProperties gatewayProperties;
+
+    public GatewayBootstrap(GatewayProperties gatewayProperties) {
+        this.gatewayProperties = gatewayProperties;
+    }
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         // Newly added gateway handler
@@ -33,18 +40,6 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
         loadPull();
         // registry center
         registry();
-        // 打开网关端口
-        openGateway(0, 9999);
-    }
-
-    /**
-     * 开启一个统一网关的入口, 这里可以是http或者dao协议.
-     *
-     * @param type
-     * @param port
-     */
-    private void openGateway(int type, int port) {
-
     }
 
     /**
