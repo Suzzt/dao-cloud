@@ -39,7 +39,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     4.center与服务数据: 通过心跳channel发送数据(config、server-info)同步，这里采用异步发送，并要求响应返回结果，在失败下会一定重试，并做了幂等
 
 # 网关设计架构
-![网关设计](https://github.com/Suzzt/dao-cloud/assets/27397567/98a69d87-6433-464d-ba8a-ffed9dd59bdd)
+![网关设计](https://github.com/Suzzt/dao-cloud/assets/27397567/d4195cb7-7ffd-4a8f-b3bd-ac4e34acfe78)
 
 # 项目结构
     dao-cloud-core = 核心
