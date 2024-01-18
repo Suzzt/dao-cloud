@@ -20,10 +20,13 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
 @Import({GatewayBootstrap.class})
 public class DaoCloudConfiguration {
+    @Bean
+    public Dispatcher dispatcher(Limiter limiter) {
+        return new Dispatcher(limiter);
+    }
 
     @Bean
-    public Dispatcher dispatcher() {
-        Limiter limiter = new CountLimiter();
-        return new Dispatcher(limiter);
+    public Limiter limiter() {
+        return new CountLimiter();
     }
 }
