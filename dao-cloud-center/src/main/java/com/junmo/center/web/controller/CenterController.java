@@ -7,6 +7,7 @@ import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.Permissions;
 import com.junmo.center.web.vo.ConfigDataVO;
 import com.junmo.center.web.vo.ConfigVO;
+import com.junmo.center.web.vo.GatewayServiceVO;
 import com.junmo.center.web.vo.ServerVO;
 import com.junmo.core.ApiResult;
 import com.junmo.core.model.ProviderModel;
@@ -14,7 +15,10 @@ import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.model.ServerNodeModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -105,5 +109,12 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
+    }
+
+    @RequestMapping(value = "/gateway/pageList")
+    @ResponseBody
+    public ApiResult<List<GatewayServiceVO>> getServices(String proxy, String provider, String version, String method, @RequestParam(required = false, defaultValue = "0") int start,
+                                                         @RequestParam(required = false, defaultValue = "10") int length) {
+        return null;
     }
 }
