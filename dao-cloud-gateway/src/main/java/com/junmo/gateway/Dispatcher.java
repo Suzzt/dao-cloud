@@ -1,5 +1,6 @@
 package com.junmo.gateway;
 
+import cn.hutool.core.util.IdUtil;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.model.RpcRequestModel;
@@ -51,11 +52,22 @@ public class Dispatcher {
             return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_LIMIT);
         }
         // todo 这里应该是一个责任链的方式在处理请求
-        return null;
+        long sequenceId = IdUtil.getSnowflake(1, 1).nextId();
+        String provider = null;
+        int version = 0;
+        String methodName = null;
+        Class<?> returnType = null;
+        Class[] parameterTypes = null;
+        Object[] parameterValue = null;
+        RpcRequestModel rpcRequestModel = new RpcRequestModel(sequenceId, provider, version, methodName, returnType, parameterTypes, parameterValue);
+        RpcResponseModel rpcResponseModel = invoke(rpcRequestModel);
+        if (!StringUtils.hasLength(rpcResponseModel.getErrorMessage())) {
+            return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_ERROR);
+        }
+        return (T) rpcResponseModel.getReturnValue();
     }
 
     public RpcResponseModel invoke(RpcRequestModel rpcRequestModel) {
-        // 这里要加载进来所有的center中proxy服务
         return null;
     }
 
