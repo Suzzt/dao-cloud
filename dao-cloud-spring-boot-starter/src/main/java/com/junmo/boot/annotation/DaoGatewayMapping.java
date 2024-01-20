@@ -10,16 +10,15 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface DaoGatewayMethod {
-
-    /**
-     * 以gateway admin web ui为最终标准
-     */
-    String mapping();
+public @interface DaoGatewayMapping {
 
     /**
      * 限流类型
      */
     String limit();
 
+    /**
+     * 以gateway admin web ui为最终标准
+     */
+    String value();
 }

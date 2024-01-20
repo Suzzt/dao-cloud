@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Component
-public @interface DaoGatewayEnabled {
+public @interface DaoGatewayController {
     String limit() default "count";
 
     int version() default 0;
