@@ -1,11 +1,24 @@
 package com.junmo.gateway;
 
 import cn.hutool.core.util.IdUtil;
+import com.google.common.collect.Lists;
+import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.boot.bootstrap.unit.Client;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
+import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.MessageType;
+import com.junmo.core.util.LongPromiseBuffer;
+import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.limit.Limiter;
+import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -21,6 +36,7 @@ import java.io.IOException;
  * @description: 转发分发处理器
  */
 @RestController
+@Slf4j
 public class Dispatcher {
 
     private Limiter limiter;
@@ -51,7 +67,16 @@ public class Dispatcher {
         if (!limiter.allow()) {
             return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_LIMIT);
         }
-        // todo 这里应该是一个责任链的方式在处理请求
+
+        // 处理拦截器的责任链请求
+        List<Interceptor> interceptors = Lists.newArrayList();
+        for (Interceptor interceptor : interceptors) {
+            if(!interceptor.action()){
+                return null;
+            }
+        }
+
+        // 发起转发路由请求
         long sequenceId = IdUtil.getSnowflake(1, 1).nextId();
         String provider = null;
         int version = 0;
@@ -62,6 +87,7 @@ public class Dispatcher {
         RpcRequestModel rpcRequestModel = new RpcRequestModel(sequenceId, provider, version, methodName, returnType, parameterTypes, parameterValue);
         RpcResponseModel rpcResponseModel = invoke(rpcRequestModel);
         if (!StringUtils.hasLength(rpcResponseModel.getErrorMessage())) {
+            log.error("Gateway request failed", rpcResponseModel.getErrorMessage());
             return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_ERROR);
         }
         return (T) rpcResponseModel.getReturnValue();
@@ -70,5 +96,4 @@ public class Dispatcher {
     public RpcResponseModel invoke(RpcRequestModel rpcRequestModel) {
         return null;
     }
-
 }
