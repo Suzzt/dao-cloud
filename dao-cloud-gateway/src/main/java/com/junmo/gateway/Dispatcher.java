@@ -70,23 +70,6 @@ public class Dispatcher {
         return doService();
     }
 
-    /**
-     * 网关请求主入口(get)
-     *
-     * @param proxy
-     * @param provider
-     * @param version
-     * @param request
-     * @param response
-     */
-    @RequestMapping("api/{proxy}/{provider}/{version}")
-    public <T> T get(@PathVariable String proxy, @PathVariable String provider, @PathVariable String version, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version)) {
-            return null;
-        }
-        return doService();
-    }
-
     public <T> T doService() {
         // 先判断限流
         if (!limiter.allow()) {
