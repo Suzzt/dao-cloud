@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,7 +44,7 @@ public class Dispatcher {
      * @param request
      * @param response
      */
-    @RequestMapping("api/{proxy}/{provider}/{version}/{method}")
+    @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.GET)
     public <T> T goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable String version,
                        @PathVariable String method, HttpServletRequest request, HttpServletResponse response) {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
@@ -61,7 +62,7 @@ public class Dispatcher {
      * @param request
      * @param response
      */
-    @RequestMapping("api/{proxy}/{provider}/{version}")
+    @RequestMapping(value="api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
     public <T> T goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable String version,
                         @PathVariable String method, HttpServletRequest request, HttpServletResponse response) {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
