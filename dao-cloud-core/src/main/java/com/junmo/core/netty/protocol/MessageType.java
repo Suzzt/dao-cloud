@@ -15,8 +15,8 @@ public class MessageType {
     public static final byte REGISTRY_REQUEST_MESSAGE = 0;
     public static final byte PULL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
     public static final byte PULL_REGISTRY_SERVER_RESPONSE_MESSAGE = 3;
-    public static final byte RPC_REQUEST_MESSAGE = 4;
-    public static final byte RPC_RESPONSE_MESSAGE = 5;
+    public static final byte SERVICE_RPC_REQUEST_MESSAGE = 4;
+    public static final byte SERVICE_RPC_RESPONSE_MESSAGE = 5;
     public static final byte PULL_REGISTRY_CONFIG_REQUEST_MESSAGE = 6;
     public static final byte PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE = 7;
     public static final byte INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE = 8;
@@ -27,6 +27,8 @@ public class MessageType {
     public static final byte SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE = 13;
     public static final byte GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE = 14;
     public static final byte GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE = 15;
+    public static final byte GATEWAY_RPC_REQUEST_MESSAGE = 16;
+    public static final byte GATEWAY_RPC_RESPONSE_MESSAGE = 17;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -35,8 +37,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(REGISTRY_REQUEST_MESSAGE, RegisterProviderModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_SERVER_REQUEST_MESSAGE, ProxyProviderModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, ProxyProviderServerModel.class);
-        MESSAGE_TYPE_MAP.put(RPC_REQUEST_MESSAGE, RpcRequestModel.class);
-        MESSAGE_TYPE_MAP.put(RPC_RESPONSE_MESSAGE, RpcResponseModel.class);
+        MESSAGE_TYPE_MAP.put(SERVICE_RPC_REQUEST_MESSAGE, RpcRequestModel.class);
+        MESSAGE_TYPE_MAP.put(SERVICE_RPC_RESPONSE_MESSAGE, RpcResponseModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, ProxyConfigModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, ConfigModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, ClusterInquireMarkModel.class);

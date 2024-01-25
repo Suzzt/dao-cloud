@@ -94,7 +94,7 @@ public class RpcProxy {
                 }
                 ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
             }
-            DaoMessage message = new DaoMessage((byte) 1, MessageType.RPC_REQUEST_MESSAGE, serialized, requestModel);
+            DaoMessage message = new DaoMessage((byte) 1, MessageType.SERVICE_RPC_REQUEST_MESSAGE, serialized, requestModel);
 
             // 异步执行！ promise 对象来处理异步接收的结果线程
             Promise<Object> promise = new DefaultPromise<>(client.getChannel().eventLoop());

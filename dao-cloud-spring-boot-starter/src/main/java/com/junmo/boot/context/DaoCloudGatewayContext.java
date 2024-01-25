@@ -1,4 +1,4 @@
-package com.junmo.gateway.context;
+package com.junmo.boot.context;
 
 /**
  * @author: sucf
@@ -7,6 +7,9 @@ package com.junmo.gateway.context;
  */
 public class DaoCloudGatewayContext {
 
+    /**
+     * 资源数据
+     */
     public static ThreadLocal<Object> THREAD_LOCAL = new ThreadLocal<>();
 
     /**

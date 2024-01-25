@@ -9,15 +9,23 @@ import com.junmo.core.model.RpcResponseModel;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.limit.Limiter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
+import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -50,6 +58,7 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             return null;
         }
+        // 获取到入参参数信息
         return doService();
     }
 
@@ -62,7 +71,7 @@ public class Dispatcher {
      * @param request
      * @param response
      */
-    @RequestMapping(value="api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
+    @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
     public <T> T goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable String version,
                         @PathVariable String method, HttpServletRequest request, HttpServletResponse response) {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
