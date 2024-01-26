@@ -4,25 +4,16 @@ import cn.hutool.core.util.IdUtil;
 import com.google.common.collect.Lists;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
-import com.junmo.core.model.RpcRequestModel;
-import com.junmo.core.model.RpcResponseModel;
+import com.junmo.core.model.GatewayRequestModel;
+import com.junmo.core.model.GatewayResponseModel;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.limit.Limiter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
-import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
-import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,8 +49,9 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             return null;
         }
-        // 获取到入参参数信息
-        return doService();
+        // 获取到入参参数信息（todo）
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel();
+        return doService(gatewayRequestModel);
     }
 
     /**
@@ -77,10 +69,12 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             return null;
         }
-        return doService();
+        // 获取到入参参数信息（todo）
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel();
+        return doService(gatewayRequestModel);
     }
 
-    public <T> T doService() {
+    public <T> T doService(GatewayRequestModel gatewayRequestModel) {
         // 先判断限流
         if (!limiter.allow()) {
             return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_LIMIT);
@@ -95,23 +89,17 @@ public class Dispatcher {
         }
 
         // 发起转发路由请求
-        long sequenceId = IdUtil.getSnowflake(1, 1).nextId();
-        String provider = null;
-        int version = 0;
-        String methodName = null;
-        Class<?> returnType = null;
-        Class[] parameterTypes = null;
-        Object[] parameterValue = null;
-        RpcRequestModel rpcRequestModel = new RpcRequestModel(sequenceId, provider, version, methodName, returnType, parameterTypes, parameterValue);
-        RpcResponseModel rpcResponseModel = invoke(rpcRequestModel);
-        if (!StringUtils.hasLength(rpcResponseModel.getErrorMessage())) {
-            log.error("Gateway request failed", rpcResponseModel.getErrorMessage());
+        GatewayResponseModel gatewayResponseModel = invoke(gatewayRequestModel);
+        if (!StringUtils.hasLength(gatewayResponseModel.getErrorMessage())) {
+            log.error("Gateway request failed", gatewayResponseModel.getErrorMessage());
             return (T) ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_ERROR);
         }
-        return (T) rpcResponseModel.getReturnValue();
+        return (T) gatewayResponseModel.getReturnValue();
     }
 
-    public RpcResponseModel invoke(RpcRequestModel rpcRequestModel) {
+    public GatewayResponseModel invoke(GatewayRequestModel gatewayRequestModel) {
+        long sequenceId = IdUtil.getSnowflake(1, 1).nextId();
+        gatewayRequestModel.setSequenceId(sequenceId);
         return null;
     }
 }

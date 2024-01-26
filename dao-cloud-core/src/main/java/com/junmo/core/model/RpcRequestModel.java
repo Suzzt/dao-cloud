@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: rpc 请求模型封装
  */
 @Data
-public class RpcRequestModel extends ResponseModel {
+public class RpcRequestModel extends Model {
     /**
      * 序列id
      */
