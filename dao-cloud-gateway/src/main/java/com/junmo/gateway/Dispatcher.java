@@ -2,6 +2,7 @@ package com.junmo.gateway;
 
 import cn.hutool.core.util.IdUtil;
 import com.google.common.collect.Lists;
+import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.model.GatewayRequestModel;

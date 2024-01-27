@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author: sucf
  * @date: 2023/1/13 17:22
- * @description:
+ * @description: dao-cloud transfer protocol type
  */
 public class MessageType {
     public static final byte PING_PONG_HEART_BEAT_MESSAGE = -1;
@@ -49,6 +49,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, ClusterSyncDataResponseModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, GatewayPullServiceMarkModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, GatewayServiceNodeModel.class);
+        MESSAGE_TYPE_MAP.put(GATEWAY_RPC_REQUEST_MESSAGE, GatewayRequestModel.class);
+        MESSAGE_TYPE_MAP.put(GATEWAY_RPC_RESPONSE_MESSAGE, GatewayResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

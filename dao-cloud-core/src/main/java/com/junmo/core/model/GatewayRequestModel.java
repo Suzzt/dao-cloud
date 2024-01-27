@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: 网关请求模型
  */
 @Data
-public class GatewayRequestModel {
+public class GatewayRequestModel extends Model {
 
     /**
      * 序列id
