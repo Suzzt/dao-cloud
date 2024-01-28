@@ -8,27 +8,7 @@ import lombok.Data;
  * @description: 网关请求模型
  */
 @Data
-public class GatewayRequestModel extends Model {
-
-    /**
-     * 序列id
-     */
-    private long sequenceId;
-
-    /**
-     * 调用接口名，在服务端找到它对应的实现
-     */
-    private String provider;
-
-    /**
-     * 版本
-     */
-    private int version;
-
-    /**
-     * 调用接口中方法名
-     */
-    private String methodName;
+public class GatewayRequestModel extends ServiceRequestModel {
 
     /**
      * 请求参数(json)
@@ -39,4 +19,12 @@ public class GatewayRequestModel extends Model {
      * 请求header(json)
      */
     private String header;
+
+    public GatewayRequestModel(String provider, int version, String methodName, String params, String header) {
+        this.provider = provider;
+        this.version = version;
+        this.methodName = methodName;
+        this.params = params;
+        this.header = header;
+    }
 }
