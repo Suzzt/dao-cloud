@@ -1,5 +1,7 @@
 package com.junmo.gateway;
 
+import com.junmo.boot.banlance.DaoLoadBalance;
+import com.junmo.boot.banlance.impl.RoundLoadBalance;
 import com.junmo.gateway.bootstrap.GatewayBootstrap;
 import com.junmo.gateway.limit.CountLimiter;
 import com.junmo.gateway.limit.Limiter;
@@ -21,12 +23,17 @@ import org.springframework.context.annotation.Import;
 @Import({GatewayBootstrap.class})
 public class DaoCloudConfiguration {
     @Bean
-    public Dispatcher dispatcher(Limiter limiter) {
-        return new Dispatcher(limiter);
+    public Dispatcher dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
+        return new Dispatcher(limiter, daoLoadBalance);
     }
 
     @Bean
     public Limiter limiter() {
         return new CountLimiter();
+    }
+
+    @Bean
+    public DaoLoadBalance daoLoadBalance() {
+        return new RoundLoadBalance();
     }
 }

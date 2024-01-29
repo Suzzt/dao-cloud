@@ -1,8 +1,8 @@
 package com.junmo.boot.banlance;
 
-import com.junmo.boot.banlance.impl.HashLoadBalanceImpl;
-import com.junmo.boot.banlance.impl.RandomLoadBalanceImpl;
-import com.junmo.boot.banlance.impl.RoundLoadBalanceRoundImpl;
+import com.junmo.boot.banlance.impl.HashLoadBalance;
+import com.junmo.boot.banlance.impl.RandomLoadBalance;
+import com.junmo.boot.banlance.impl.RoundLoadBalance;
 
 /**
  * @author: sucf
@@ -14,17 +14,17 @@ public enum LoadBalance {
     /**
      * random
      */
-    RANDOM(new RandomLoadBalanceImpl()),
+    RANDOM(new RandomLoadBalance()),
 
     /**
      * hash
      */
-    HASH(new HashLoadBalanceImpl()),
+    HASH(new HashLoadBalance()),
 
     /**
      * round
      */
-    ROUND(new RoundLoadBalanceRoundImpl());
+    ROUND(new RoundLoadBalance());
 
     public DaoLoadBalance daoLoadBalance;
 

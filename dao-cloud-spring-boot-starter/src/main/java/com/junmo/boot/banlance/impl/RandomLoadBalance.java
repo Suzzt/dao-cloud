@@ -11,7 +11,7 @@ import java.util.Set;
  * @date: 2023/1/11 22:39
  * @description:
  */
-public class RandomLoadBalanceImpl extends DaoLoadBalance {
+public class RandomLoadBalance extends DaoLoadBalance {
     @Override
     public Client route(Set<Client> availableClients) {
         Client[] clients = availableClients.toArray(new Client[availableClients.size()]);

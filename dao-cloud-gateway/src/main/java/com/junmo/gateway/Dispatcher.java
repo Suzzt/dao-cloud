@@ -1,13 +1,11 @@
 package com.junmo.gateway;
 
-import cn.hutool.core.util.IdUtil;
 import com.google.common.collect.Lists;
 import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.unit.ClientInvoker;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.model.GatewayRequestModel;
-import com.junmo.core.model.GatewayResponseModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.limit.Limiter;
@@ -33,8 +31,11 @@ public class Dispatcher {
 
     private Limiter limiter;
 
-    public Dispatcher(Limiter limiter) {
+    private DaoLoadBalance daoLoadBalance;
+
+    public Dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
         this.limiter = limiter;
+        this.daoLoadBalance = daoLoadBalance;
     }
 
     /**
@@ -95,7 +96,6 @@ public class Dispatcher {
         }
 
         // 发起转发路由请求
-        DaoLoadBalance daoLoadBalance = null;
         byte serializable = 0;
         long timeout = 0L;
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
