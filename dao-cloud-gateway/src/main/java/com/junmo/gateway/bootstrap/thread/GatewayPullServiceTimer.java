@@ -1,6 +1,7 @@
 package com.junmo.gateway.bootstrap.thread;
 
 import com.junmo.boot.bootstrap.manager.CenterChannelManager;
+import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayPullServiceMarkModel;
 import com.junmo.core.model.GatewayServiceNodeModel;
@@ -9,7 +10,6 @@ import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
 import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
-import com.junmo.gateway.manager.GatewayServiceManager;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
@@ -44,7 +44,7 @@ public class GatewayPullServiceTimer implements Runnable {
                         throw new DaoException("promise await timeout");
                     }
                     if (promise.isSuccess()) {
-                        GatewayServiceManager.reset(promise.getNow().getRegistryServiceNodes());
+                        ClientManager.reset(promise.getNow().getRegistryServiceNodes());
                     } else {
                         throw new DaoException(promise.cause());
                     }
