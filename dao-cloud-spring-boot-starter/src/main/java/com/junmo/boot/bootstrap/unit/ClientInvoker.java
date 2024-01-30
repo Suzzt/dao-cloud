@@ -13,7 +13,6 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -22,7 +21,7 @@ import java.util.Set;
  * @description: client invoke handler
  */
 @Slf4j
-public class ClientInvoker implements Serializable {
+public class ClientInvoker {
 
     private ProxyProviderModel proxyProviderModel;
 

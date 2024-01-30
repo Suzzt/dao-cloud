@@ -3,6 +3,7 @@ package com.junmo.boot.bootstrap.thread;
 import com.google.common.collect.Sets;
 import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.boot.bootstrap.manager.ServiceManager;
+import com.junmo.boot.handler.GatewayServiceMessageHandler;
 import com.junmo.boot.handler.RpcServerMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudServerProperties;
@@ -53,6 +54,7 @@ public class Server {
                     ch.pipeline().addLast(new DaoMessageCoder());
                     ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                     ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
+                    ch.pipeline().addLast(new GatewayServiceMessageHandler());
                     ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
                 }
             });
