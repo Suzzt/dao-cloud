@@ -122,7 +122,7 @@
                                         color="red">*</font></label>
                             <div class="col-sm-9">
                                 <textarea class="textarea" name="content" maxlength="60000"
-                                          placeholder="请输入注册信息；限制为字符串JSON格式"
+                                          placeholder="请输入配置信息；限制为字符串JSON格式；或者直接文本格式；eg: 'hello world' or '{'dao-cloud':'hello world'}'"
                                           style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                             </div>
                         </div>
@@ -170,7 +170,7 @@
                                         color="red">*</font></label>
                             <div class="col-sm-9">
                                 <textarea class="textarea" name="content" maxlength="10000"
-                                          placeholder="请输入注册信息；限制为字符串JSON格式"
+                                          placeholder="请输入配置信息；限制为字符串JSON格式；或者直接文本格式；eg: 'hello world' or '{'dao-cloud':'hello world'}'"
                                           style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                             </div>
                         </div>

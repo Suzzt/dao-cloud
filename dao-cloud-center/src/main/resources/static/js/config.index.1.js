@@ -149,7 +149,8 @@ $(function () {
             },
             version: {
                 required: true,
-                rangelength: [1, 8]
+                rangelength: [1, 8],
+                number: true
             },
             content: {
                 required: true,
@@ -186,19 +187,17 @@ $(function () {
         },
         submitHandler: function (form) {
 
-            // valid
-            var dataJson = $("#addModal .form textarea[name='content']").val();
-            if (dataJson) {
-                try {
-                    $.parseJSON(dataJson);
-                } catch (e) {
-                    layer.open({
-                        icon: '2',
-                        content: "注册信息格式非法必须是json <br>" + e
-                    });
-                    return;
-                }
-            }
+            // var dataJson = $("#addModal .form textarea[name='content']").val();
+            // if (dataJson) {
+            //     console.log(dataJson)
+            //     if(!isJSON(dataJson)){
+            //         layer.open({
+            //             icon: '2',
+            //             content: "配置信息必须是json格式或直接文本!"
+            //         });
+            //         return;
+            //     }
+            // }
 
             // post
             $.post(base_url + "/config/save", $("#addModal .form").serialize(), function (data, status) {
@@ -225,6 +224,7 @@ $(function () {
             });
         }
     });
+
     $("#addModal").on('hide.bs.modal', function () {
         $("#addModal .form")[0].reset();
         addModalValidate.resetForm();
@@ -259,7 +259,8 @@ $(function () {
             },
             version: {
                 required: true,
-                rangelength: [1, 8]
+                rangelength: [1, 8],
+                number: true
             },
             content: {
                 required: true,
@@ -296,18 +297,19 @@ $(function () {
         },
         submitHandler: function (form) {
             // valid
-            var dataJson = $("#addModal .form textarea[name='content']").val();
-            if (dataJson) {
-                try {
-                    $.parseJSON(dataJson);
-                } catch (e) {
-                    layer.open({
-                        icon: '2',
-                        content: "注册信息格式非法必须是json <br>" + e
-                    });
-                    return;
-                }
-            }
+            // var dataJson = $("#updateModal .form textarea[name='content']").val();
+            // if (dataJson) {
+            //     try {
+            //         console.log(dataJson)
+            //         $.parseJSON(dataJson);
+            //     } catch (e) {
+            //         layer.open({
+            //             icon: '2',
+            //             content: "配置信息格式非法! 必须是json格式或直接文本1 <br>" + e
+            //         });
+            //         return;
+            //     }
+            // }
 
             // post
             $.post(base_url + "/config/save", $("#updateModal .form").serialize(), function (data, status) {
