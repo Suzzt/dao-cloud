@@ -2,6 +2,7 @@ package com.junmo.gateway;
 
 import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.banlance.impl.RoundLoadBalance;
+import com.junmo.boot.bootstrap.DaoCloudCenterBootstrap;
 import com.junmo.gateway.bootstrap.GatewayBootstrap;
 import com.junmo.gateway.limit.CountLimiter;
 import com.junmo.gateway.limit.Limiter;
@@ -20,8 +21,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableConfigurationProperties({GatewayProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
-@Import({GatewayBootstrap.class})
-public class DaoCloudConfiguration {
+@Import({DaoCloudCenterBootstrap.class, GatewayBootstrap.class})
+public class DaoCloudGatewayConfiguration {
     @Bean
     public Dispatcher dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
         return new Dispatcher(limiter, daoLoadBalance);
