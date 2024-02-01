@@ -41,6 +41,8 @@ public class IndexController {
     public String index(Model model) {
         // 当前节点存活集群数
         model.addAttribute("aliveClusterNodeNum", CenterClusterManager.aliveNodeSize());
+        // 当前节点存活集群数
+        model.addAttribute("gatewayNodeNum", RegisterCenterManager.gatewayCountNodes());
         // 注册服务数
         model.addAttribute("providerNum", RegisterCenterManager.nodes());
         // 注册方法可调用数

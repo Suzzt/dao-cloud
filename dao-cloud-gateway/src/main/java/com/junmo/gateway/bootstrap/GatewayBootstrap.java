@@ -58,7 +58,7 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
         gatewayNodeModel.setProxy(DaoCloudConstant.GATEWAY_PROXY);
         Set<ProviderModel> providerModels = new HashSet<>();
         // version todo 这个后面做成可配置化的,这个是有用的,区分环境
-        ProviderModel providerModel = new ProviderModel("gateway", 0);
+        ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, 0);
         providerModels.add(providerModel);
         gatewayNodeModel.setProviderModels(providerModels);
         gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudConstant.GATEWAY_PORT));
