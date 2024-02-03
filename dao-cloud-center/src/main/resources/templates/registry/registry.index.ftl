@@ -16,12 +16,14 @@
         width: auto !important;
         max-width: calc(100% - 40px);
     }
-         /* 在小屏幕上设置 10px 的下间距 */
+
+    /* 在小屏幕上设置 10px 的下间距 */
     @media (max-width: 768px) {
         .row + .row {
             margin-top: 10px;
         }
     }
+
     /* 在大屏幕上设置 20px 的下间距 */
     @media (min-width: 769px) {
         .row + .row {
@@ -39,7 +41,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <section class="content-header">
-            <h1>服务列表<small></small></h1>
+            <h1>服务管理<small></small></h1>
         </section>
 
         <!-- Main content -->
@@ -74,6 +76,7 @@
                                     <th name="provider">provider</th>
                                     <th name="env">version</th>
                                     <th name="number">注册节点数</th>
+                                    <th name="limit">限流</th>
                                 </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -86,6 +89,49 @@
 
         </section>
     </div>
+
+    <div class="modal fade" id="limitWindow" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">限流设置</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal form" role="form">
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">限流算法 <font
+                                        color="red">*</font></label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="limitAlgorithm">
+                                    <option value="" selected disabled>请选择限流算法</option>
+                                    <option value="1">计数</option>
+                                    <option value="2">令牌</option>
+                                    <option value="3">漏桶</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">限流数量 <font
+                                        color="red">*</font></label>
+                            <div class="col-sm-9"><input type="number" class="form-control" name="limitNumber"
+                                                         maxlength="10"
+                                                         placeholder="请输入允许每秒能通过的请求数据"></div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-8 col-sm-offset-4 col-sm-4 col-md-offset-3 col-md-6 col-lg-offset-4 col-lg-2">
+                                <button type="submit" class="btn btn-primary btn-block">保存</button>
+                            </div>
+                            <div class="col-xs-2 col-sm-4 col-md-3 col-lg-2">
+                                <button type="button" class="btn btn-default btn-block" data-dismiss="modal">取消
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="popup" class="container" style="display: none;">
         <div class="table-responsive">
             <table id="popup-list" class="table table-striped">

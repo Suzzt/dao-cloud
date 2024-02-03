@@ -11,7 +11,7 @@ $(function () {
                 obj.version = $('#version').val();
                 return obj;
             }
-        }, "searching": false, "ordering": false, //"scrollX": true,	// X轴滚动条，取消自适应
+        }, "searching": false, "ordering": false,
         "columns": [{data: 'proxy'}, {data: 'provider'}, {data: 'version'}, {
             data: 'number', ordering: true, render: function (data, type, row) {
                 if (data != 0) {
@@ -19,7 +19,15 @@ $(function () {
                 } else {
                     return '0';
                 }
-
+            }
+        }, {
+            data: 'limit', ordering: true, render: function (data, type, row) {
+                // 网关就直接跳过
+                if (row.proxy == "dao-cloud-gateway" && row.provider == "gateway") {
+                    return '';
+                }
+                //
+                return '<a href="javascript:;" class="limitModel">设置</a>';
             }
         }], "language": {
             "sProcessing": "处理中...",
@@ -43,10 +51,10 @@ $(function () {
         }
     });
 
-    // table data
-    var tableData = {};
+    $("#data_list").on('click', '.limitModel', function () {
+        $('#limitWindow').modal({backdrop: false, keyboard: false}).modal('show');
+    });
 
-    // msg 弹框
     $("#data_list").on('click', '.showData', function () {
         var proxy = $(this).attr("proxy");
         var provider = $(this).attr("provider");
