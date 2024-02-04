@@ -26,8 +26,24 @@ $(function () {
                 if (row.proxy == "dao-cloud-gateway" && row.provider == "gateway") {
                     return '';
                 }
-                //
-                return '<a href="javascript:;" class="limitModel">设置</a>';
+
+                if(row.limit == null){
+                    return '<a href="javascript:;" className="limitModel">设置</a>'
+                }
+
+                var limitAlgorithm;
+                if (row.limit.limitAlgorithm == 1) {
+                    limitAlgorithm = '计数'
+                } else if (row.limit.limitAlgorithm == 2) {
+                    limitAlgorithm = '令牌'
+                } else {
+                    limitAlgorithm = '漏桶'
+                }
+                var limitNumber = row.limit.limitNumber;
+                return '<div>' +
+                    limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="limitModel">设置</a>' +
+                    '</div>';
             }
         }], "language": {
             "sProcessing": "处理中...",
