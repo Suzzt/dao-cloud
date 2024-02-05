@@ -1,7 +1,9 @@
 package com.junmo.core.expand;
 
 import com.junmo.core.model.ConfigModel;
+import com.junmo.core.model.GatewayModel;
 import com.junmo.core.model.ProxyConfigModel;
+import com.junmo.core.model.ProxyProviderModel;
 
 import java.util.Map;
 
@@ -21,6 +23,13 @@ public interface Persistence {
     void storage(ConfigModel configModel);
 
     /**
+     * storage gateway
+     *
+     * @param gatewayModel
+     */
+    void storage(GatewayModel gatewayModel);
+
+    /**
      * delete config
      *
      * @param proxyConfigModel
@@ -28,9 +37,18 @@ public interface Persistence {
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
+     * delete config
+     *
+     * @param proxyProviderModel
+     */
+    void delete(ProxyProviderModel proxyProviderModel);
+
+
+    /**
      * load init all config data
      *
      * @return
      */
     Map<ProxyConfigModel, String> load();
+
 }

@@ -1,9 +1,6 @@
 package com.junmo.center.web.controller;
 
-import com.junmo.center.core.CenterClusterManager;
-import com.junmo.center.core.ConfigCenterManager;
-import com.junmo.center.core.ConfigChannelManager;
-import com.junmo.center.core.RegisterCenterManager;
+import com.junmo.center.core.*;
 import com.junmo.center.web.interceptor.PermissionInterceptor;
 import com.junmo.center.web.interceptor.Permissions;
 import com.junmo.core.ApiResult;
@@ -33,8 +30,11 @@ public class IndexController {
 
     private ConfigCenterManager configCenterManager;
 
-    public IndexController(ConfigCenterManager configCenterManager) {
+    public GatewayCenterManager gatewayCenterManager;
+
+    public IndexController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
         this.configCenterManager = configCenterManager;
+        this.gatewayCenterManager = gatewayCenterManager;
     }
 
     @RequestMapping(value = {"", "/", "index"})

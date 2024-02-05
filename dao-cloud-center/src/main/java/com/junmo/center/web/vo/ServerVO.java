@@ -1,6 +1,6 @@
 package com.junmo.center.web.vo;
 
-import com.junmo.core.model.ServiceModel;
+import com.junmo.core.model.LimitModel;
 import lombok.Data;
 
 /**
@@ -18,5 +18,5 @@ public class ServerVO {
 
     private Integer number;
 
-    private ServiceModel.LimitModel limit;
+    private LimitModel limit;
 }

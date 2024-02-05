@@ -20,8 +20,9 @@ dao-cloud:
 #      ip: 192.168.31.254
     ############################ 集群方式 ############################
     ############################ 配置中心 ############################
-    config:
-      persistence: file-system # file-system(本地文件)、mysql
+    # 存储方式：file-system(本地文件)、mysql
+    storage:
+      way: file-system
       # 配置文件存储地址
       file-system-setting:
         path-prefix: /data/dao-cloud/config

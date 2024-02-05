@@ -10,10 +10,10 @@ import com.junmo.center.web.vo.ConfigVO;
 import com.junmo.center.web.vo.GatewayServiceVO;
 import com.junmo.center.web.vo.ServerVO;
 import com.junmo.core.ApiResult;
+import com.junmo.core.model.LimitModel;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.ProxyConfigModel;
 import com.junmo.core.model.ServerNodeModel;
-import com.junmo.core.model.ServiceModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +64,7 @@ public class CenterController {
                 serverVO.setNumber(serverNodeModels.size());
 
                 // mock todo
-                serverVO.setLimit(new ServiceModel.LimitModel(1, 200));
+                serverVO.setLimit(new LimitModel(1, 200));
                 result.add(serverVO);
             }
         }

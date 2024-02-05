@@ -8,7 +8,9 @@ import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.ConfigModel;
+import com.junmo.core.model.GatewayModel;
 import com.junmo.core.model.ProxyConfigModel;
+import com.junmo.core.model.ProxyProviderModel;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ConditionalOnProperty(value = "dao-cloud.center.config.persistence", havingValue = "mysql")
+@ConditionalOnProperty(value = "dao-cloud.center.storage.way", havingValue = "mysql")
 public class DbMysql implements Persistence {
 
     private final String connect_template = "jdbc:mysql://%s:%s/dao_cloud?characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true";
@@ -110,6 +112,16 @@ public class DbMysql implements Persistence {
             }
         }
         return map;
+    }
+
+    @Override
+    public void storage(GatewayModel gatewayModel) {
+
+    }
+
+    @Override
+    public void delete(ProxyProviderModel proxyProviderModel) {
+
     }
 
     private void insertOrUpdate(ConfigModel configModel) {

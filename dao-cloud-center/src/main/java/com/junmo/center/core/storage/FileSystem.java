@@ -5,8 +5,8 @@ import cn.hutool.core.io.FileUtil;
 import com.google.common.collect.Maps;
 import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
 import com.junmo.core.expand.Persistence;
-import com.junmo.core.model.ConfigModel;
-import com.junmo.core.model.ProxyConfigModel;
+import com.junmo.core.model.*;
+import com.junmo.core.util.DaoCloudConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/2/27 23:55
+ * @author sucf
+ * @date 2023/2/27 23:55
  * @description: data in local file system data persistence
  * <p>
  * config data is written to the file system.
@@ -33,39 +33,74 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ConditionalOnProperty(value = "dao-cloud.center.config.persistence", havingValue = "file-system")
+@ConditionalOnProperty(value = "dao-cloud.center.storage.way", havingValue = "file-system")
 public class FileSystem implements Persistence {
 
-    private final DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting;
+    /**
+     * Config Storage Path
+     */
+    private final String configStoragePath;
+
+    /**
+     * Gateway Storage Path
+     */
+    private final String gatewayStoragePath;
 
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
-        this.fileSystemSetting = fileSystemSetting;
         String pathPrefix = fileSystemSetting.getPathPrefix();
         if (!StringUtils.hasLength(pathPrefix)) {
-            fileSystemSetting.setPathPrefix("/data/dao-cloud/config");
+            fileSystemSetting.setPathPrefix("/data/dao-cloud/data_storage");
         }
+        this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
+        this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
     }
 
     @Override
     public void storage(ConfigModel configModel) {
         ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
-        String path = makePath(proxyConfigModel);
+        String proxy = proxyConfigModel.getProxy();
+        String key = proxyConfigModel.getKey();
+        int version = proxyConfigModel.getVersion();
+        String path = makePath(proxy, key, version, configStoragePath);
         String configValue = configModel.getConfigValue();
         write(path, configValue);
     }
 
     @Override
     public void delete(ProxyConfigModel proxyConfigModel) {
-        String path = makePath(proxyConfigModel);
+        String proxy = proxyConfigModel.getProxy();
+        String provider = proxyConfigModel.getKey();
+        int version = proxyConfigModel.getVersion();
+        String path = makePath(proxy, provider, version, configStoragePath);
+        FileUtil.del(path);
+    }
+
+    @Override
+    public void storage(GatewayModel gatewayModel) {
+        String proxy = gatewayModel.getProxy();
+        String key = gatewayModel.getProviderModel().getProvider();
+        int version = gatewayModel.getProviderModel().getVersion();
+        String path = makePath(proxy, key, version, gatewayStoragePath);
+        LimitModel limitModel = gatewayModel.getLimitModel();
+        String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber();
+        write(path, content);
+    }
+
+    @Override
+    public void delete(ProxyProviderModel proxyProviderModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(proxy, provider, version, gatewayStoragePath);
         FileUtil.del(path);
     }
 
     @Override
     public Map<ProxyConfigModel, String> load() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
-        String prefixPath = fileSystemSetting.getPathPrefix();
+        String prefixPath = configStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
             List<String> keys = loopDirs(prefixPath + File.separator + proxy);
@@ -85,12 +120,8 @@ public class FileSystem implements Persistence {
         return map;
     }
 
-    public String makePath(ProxyConfigModel proxyConfigModel) {
-        String proxy = proxyConfigModel.getProxy();
-        String key = proxyConfigModel.getKey();
-        int version = proxyConfigModel.getVersion();
-        String prefix = fileSystemSetting.getPathPrefix();
-        return prefix + File.separator + proxy + File.separator + key + File.separator + version;
+    public String makePath(String proxy, String provider, int version, String prefix) {
+        return prefix + File.separator + proxy + File.separator + provider + File.separator + version;
     }
 
     public List<String> loopDirs(String path) {
