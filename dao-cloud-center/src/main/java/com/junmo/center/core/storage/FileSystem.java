@@ -71,18 +71,18 @@ public class FileSystem implements Persistence {
     @Override
     public void delete(ProxyConfigModel proxyConfigModel) {
         String proxy = proxyConfigModel.getProxy();
-        String provider = proxyConfigModel.getKey();
+        String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String path = makePath(proxy, provider, version, configStoragePath);
+        String path = makePath(proxy, key, version, configStoragePath);
         FileUtil.del(path);
     }
 
     @Override
     public void storage(GatewayModel gatewayModel) {
-        String proxy = gatewayModel.getProxy();
-        String key = gatewayModel.getProviderModel().getProvider();
-        int version = gatewayModel.getProviderModel().getVersion();
-        String path = makePath(proxy, key, version, gatewayStoragePath);
+        String proxy = gatewayModel.getProxyProviderModel().getProxy();
+        String provider = gatewayModel.getProxyProviderModel().getProviderModel().getProvider();
+        int version = gatewayModel.getProxyProviderModel().getProviderModel().getVersion();
+        String path = makePath(proxy, provider, version, gatewayStoragePath);
         LimitModel limitModel = gatewayModel.getLimitModel();
         String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber();
         write(path, content);
@@ -98,7 +98,7 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public Map<ProxyConfigModel, String> load() {
+    public Map<ProxyConfigModel, String> loadConfig() {
         Map<ProxyConfigModel, String> map = Maps.newConcurrentMap();
         String prefixPath = configStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
@@ -118,6 +118,11 @@ public class FileSystem implements Persistence {
             }
         }
         return map;
+    }
+
+    @Override
+    public Map<ProxyProviderModel, LimitModel> loadGateway() {
+        return null;
     }
 
     public String makePath(String proxy, String provider, int version, String prefix) {

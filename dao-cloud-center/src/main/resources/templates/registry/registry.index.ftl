@@ -90,7 +90,7 @@
         </section>
     </div>
 
-    <div class="modal fade" id="limitWindow" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="openLimitModelWindow" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

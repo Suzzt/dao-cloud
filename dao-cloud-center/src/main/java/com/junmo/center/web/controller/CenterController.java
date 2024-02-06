@@ -3,12 +3,10 @@ package com.junmo.center.web.controller;
 import com.google.common.collect.Lists;
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.Permissions;
-import com.junmo.center.web.vo.ConfigDataVO;
-import com.junmo.center.web.vo.ConfigVO;
-import com.junmo.center.web.vo.GatewayServiceVO;
-import com.junmo.center.web.vo.ServerVO;
+import com.junmo.center.web.vo.*;
 import com.junmo.core.ApiResult;
 import com.junmo.core.model.LimitModel;
 import com.junmo.core.model.ProviderModel;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +33,14 @@ import java.util.Set;
 @RequestMapping(value = "dao-cloud")
 public class CenterController {
 
-    @Resource
     private ConfigCenterManager configCenterManager;
+
+    private GatewayCenterManager gatewayCenterManager;
+
+    public CenterController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        this.configCenterManager = configCenterManager;
+        this.gatewayCenterManager = gatewayCenterManager;
+    }
 
     @RequestMapping(value = "/registry/pageList")
     @ResponseBody
@@ -80,6 +83,20 @@ public class CenterController {
         return ApiResult.buildSuccess(serverNodeModels);
     }
 
+    @RequestMapping(value = "/gateway/limit_save", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult save(@Valid GatewayLimitVO gatewayLimitVO) {
+        gatewayCenterManager.save(gatewayLimitVO);
+        return ApiResult.buildSuccess();
+    }
+
+    @RequestMapping(value = "/gateway/limit_clear", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult clear(@Valid ServiceBaseVO serviceBaseVO) {
+        gatewayCenterManager.clear(serviceBaseVO);
+        return ApiResult.buildSuccess();
+    }
+
     @RequestMapping(value = "/config/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult save(@Valid ConfigVO configVO) {
@@ -113,12 +130,5 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
-    }
-
-    @RequestMapping(value = "/gateway/pageList")
-    @ResponseBody
-    public ApiResult<List<GatewayServiceVO>> getServices(String proxy, String provider, String version, String method, @RequestParam(required = false, defaultValue = "0") int start,
-                                                         @RequestParam(required = false, defaultValue = "10") int length) {
-        return null;
     }
 }

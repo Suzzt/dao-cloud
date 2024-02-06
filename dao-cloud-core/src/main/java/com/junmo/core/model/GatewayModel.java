@@ -6,21 +6,17 @@ import lombok.Data;
 /**
  * @author: sucf
  * @date: 2024/2/3 23:54
- * @description:
+ * @description: Gateway Model
  */
 @Data
 public class GatewayModel extends Model {
 
-    private String proxy;
-
-    private ProviderModel providerModel;
+    private ProxyProviderModel proxyProviderModel;
 
     private LimitModel limitModel;
 
-    public GatewayModel(String proxy, ProviderModel providerModel, LimitModel limitModel) {
-        this.proxy = proxy;
-        this.providerModel = providerModel;
+    public GatewayModel(ProxyProviderModel proxyProviderModel, LimitModel limitModel) {
+        this.proxyProviderModel = proxyProviderModel;
         this.limitModel = limitModel;
     }
-
 }

@@ -1,9 +1,6 @@
 package com.junmo.core.expand;
 
-import com.junmo.core.model.ConfigModel;
-import com.junmo.core.model.GatewayModel;
-import com.junmo.core.model.ProxyConfigModel;
-import com.junmo.core.model.ProxyProviderModel;
+import com.junmo.core.model.*;
 
 import java.util.Map;
 
@@ -49,6 +46,13 @@ public interface Persistence {
      *
      * @return
      */
-    Map<ProxyConfigModel, String> load();
+    Map<ProxyConfigModel, String> loadConfig();
+
+    /**
+     * load init all gateway data
+     *
+     * @return
+     */
+    Map<ProxyProviderModel, LimitModel> loadGateway();
 
 }

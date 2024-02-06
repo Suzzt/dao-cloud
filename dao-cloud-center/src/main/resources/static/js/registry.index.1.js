@@ -27,8 +27,8 @@ $(function () {
                     return '';
                 }
 
-                if(row.limit == null){
-                    return '<a href="javascript:;" className="limitModel">设置</a>'
+                if (row.limit == null) {
+                    return '<a href="javascript:;" className="openLimitModelWindow">设置</a>'
                 }
 
                 var limitAlgorithm;
@@ -41,8 +41,9 @@ $(function () {
                 }
                 var limitNumber = row.limit.limitNumber;
                 return '<div>' +
-                    limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="limitModel">设置</a>' +
+                    limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">设置</a>&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="clearLimit" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
                     '</div>';
             }
         }], "language": {
@@ -67,8 +68,52 @@ $(function () {
         }
     });
 
-    $("#data_list").on('click', '.limitModel', function () {
-        $('#limitWindow').modal({backdrop: false, keyboard: false}).modal('show');
+    $("#data_list").on('click', '.openLimitModelWindow', function () {
+        $('#openLimitModelWindow').modal({backdrop: false, keyboard: false}).modal('show');
+    });
+
+    $("#data_list").on('click', '.clearLimit', function () {
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+        layer.confirm("确认清空该设置?", {
+            icon: 3,
+            title: "系统提示",
+            btn: ["确认", "取消"]
+        }, function (index) {
+            layer.close(index);
+
+            $.ajax({
+                type: 'POST',
+                url: base_url + "/gateway/limit_clear",
+                data: {
+                    "proxy": proxy,
+                    "provider": provider,
+                    "version": version
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == "00000") {
+                        layer.open({
+                            title: "系统提示",
+                            btn: ["确认"],
+                            content: "删除成功",
+                            icon: '1',
+                            end: function (layero, index) {
+                                dataTable.fnDraw(false);
+                            }
+                        });
+                    } else {
+                        layer.open({
+                            title: "系统提示",
+                            btn: ["确认"],
+                            content: (data.msg || "删除失败"),
+                            icon: '2'
+                        });
+                    }
+                }
+            });
+        });
     });
 
     $("#data_list").on('click', '.showData', function () {
