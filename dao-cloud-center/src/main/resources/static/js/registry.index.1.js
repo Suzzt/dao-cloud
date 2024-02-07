@@ -28,7 +28,7 @@ $(function () {
                 }
 
                 if (row.limit == null) {
-                    return '<a href="javascript:;" className="openLimitModelWindow">设置</a>'
+                    return '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">设置</a>'
                 }
 
                 var limitAlgorithm;
@@ -42,7 +42,7 @@ $(function () {
                 var limitNumber = row.limit.limitNumber;
                 return '<div>' +
                     limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">设置</a>&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '" limitAlgorithm="' + row.limit.limitAlgorithm + '" limitNumber="' + limitNumber + '">设置</a>&nbsp;&nbsp;' +
                     '<a href="javascript:;" class="clearLimit" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
                     '</div>';
             }
@@ -69,7 +69,74 @@ $(function () {
     });
 
     $("#data_list").on('click', '.openLimitModelWindow', function () {
+        var limitNumber = $(this).attr("limitNumber");
+        var limitAlgorithm = $(this).attr("limitAlgorithm");
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+        $("#openLimitModelWindow .form input[name='proxy']").val(proxy);
+        $("#openLimitModelWindow .form input[name='provider']").val(provider);
+        $("#openLimitModelWindow .form input[name='version']").val(version);
+        if (limitNumber != null && limitAlgorithm != null) {
+            // update
+            $("#openLimitModelWindow .form select[name='limitAlgorithm']").val(limitAlgorithm);
+            $("#openLimitModelWindow .form input[name='limitNumber']").val(limitNumber);
+        }
         $('#openLimitModelWindow').modal({backdrop: false, keyboard: false}).modal('show');
+    });
+
+    $("#openLimitModelWindow").on('hide.bs.modal', function () {
+        $("#openLimitModelWindow .form")[0].reset();
+        openLimitModelWindowValidate.resetForm();
+        $("#openLimitModelWindow .form .form-group").removeClass("has-error");
+    });
+
+    var openLimitModelWindowValidate = $("#openLimitModelWindow .form").validate({
+        errorElement: 'span',
+        errorClass: 'help-block',
+        focusInvalid: true,
+        rules: {
+        },
+        messages: {
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        success: function (label) {
+            label.closest('.form-group').removeClass('has-error');
+            label.remove();
+        },
+        errorPlacement: function (error, element) {
+            element.parent('div').append(error);
+        },
+        submitHandler: function (form) {
+            $.post(base_url + "/gateway/limit_save", $("#openLimitModelWindow .form").serialize(), function (data, status) {
+                if (data.code == "00000") {
+                    $('#openLimitModelWindow').modal('hide');
+                    layer.open({
+                        title: "系统提示",
+                        btn: ["确认"],
+                        content: "更新成功",
+                        icon: '1',
+                        end: function (layero, index) {
+                            dataTable.fnDraw(false);
+                        }
+                    });
+                } else {
+                    layer.open({
+                        title: "系统提示",
+                        btn: ["确认"],
+                        content: (data.msg || "更新失败"),
+                        icon: '2'
+                    });
+                }
+            });
+        }
+    });
+    $("#updateModal").on('hide.bs.modal', function () {
+        $("#updateModal .form")[0].reset();
+        updateModalValidate.resetForm();
+        $("#updateModal .form .form-group").removeClass("has-error");
     });
 
     $("#data_list").on('click', '.clearLimit', function () {

@@ -1,5 +1,7 @@
 package com.junmo.center.web.vo;
 
+import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 
 /**
@@ -7,6 +9,7 @@ import javax.validation.constraints.NotNull;
  * @date: 2024/2/6 00:13
  * @description:
  */
+@Data
 public class ServiceBaseVO {
 
     @NotNull(message = "proxy不能为空")

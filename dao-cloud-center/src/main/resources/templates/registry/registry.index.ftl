@@ -104,9 +104,9 @@
                             <div class="col-sm-9">
                                 <select class="form-control" name="limitAlgorithm">
                                     <option value="" selected disabled>请选择限流算法</option>
-                                    <option value="1">计数</option>
-                                    <option value="2">令牌</option>
-                                    <option value="3">漏桶</option>
+                                    <option value=1>计数</option>
+                                    <option value=2>令牌</option>
+                                    <option value=3>漏桶</option>
                                 </select>
                             </div>
                         </div>
@@ -116,6 +116,17 @@
                             <div class="col-sm-9"><input type="number" class="form-control" name="limitNumber"
                                                          maxlength="10"
                                                          placeholder="请输入允许每秒能通过的请求数据"></div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="proxy" style="display: none;">
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="provider" style="display: none;">
+                            </div>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" name="version" style="display: none;">
+                            </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-offset-2 col-xs-8 col-sm-offset-4 col-sm-4 col-md-offset-3 col-md-6 col-lg-offset-4 col-lg-2">

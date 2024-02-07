@@ -43,9 +43,10 @@ public class GatewayCenterManager {
         String key = gatewayLimitVO.getKey();
         Integer version = gatewayLimitVO.getVersion();
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, key, version);
-        cache.put(proxyProviderModel, gatewayLimitVO.getLimit());
+        LimitModel limitModel = new LimitModel(gatewayLimitVO.getLimitAlgorithm(), gatewayLimitVO.getLimitNumber());
+        cache.put(proxyProviderModel, limitModel);
         // Storage persistence
-        persistence.storage(new GatewayModel(proxyProviderModel, gatewayLimitVO.getLimit()));
+        persistence.storage(new GatewayModel(proxyProviderModel, limitModel));
         // TODO: sync other cluster node
     }
 

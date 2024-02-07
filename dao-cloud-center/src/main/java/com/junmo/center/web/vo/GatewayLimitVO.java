@@ -1,6 +1,5 @@
 package com.junmo.center.web.vo;
 
-import com.junmo.core.model.LimitModel;
 import lombok.Data;
 
 /**
@@ -12,7 +11,12 @@ import lombok.Data;
 public class GatewayLimitVO extends ServiceBaseVO {
 
     /**
-     * 限流
+     * 限流算法
      */
-    private LimitModel limit;
+    private Integer limitAlgorithm;
+
+    /**
+     * 限流数量
+     */
+    private Integer limitNumber;;
 }
