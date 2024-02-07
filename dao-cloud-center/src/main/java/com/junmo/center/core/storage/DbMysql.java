@@ -35,7 +35,7 @@ public class DbMysql implements Persistence {
 
     private DruidDataSource druidDataSource;
 
-    private final String create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" +
+    private final String config_create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" +
             "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
             "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" +
             "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" +
@@ -45,7 +45,19 @@ public class DbMysql implements Persistence {
             "  `value` longtext NOT NULL COMMENT '配置值',\n" +
             "  PRIMARY KEY (`id`),\n" +
             "  UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" +
-            ") ENGINE = InnoDB AUTO_INCREMENT = 1 CHARSET = utf8 COMMENT '配置中心存储'";
+            ") ENGINE = InnoDB COMMENT '配置中心存储'";
+
+    private final String gateway_limiter_create_table = "CREATE TABLE IF NOT EXISTS `gateway_limiter` (\n" +
+            "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
+            "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" +
+            "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" +
+            "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
+            "  `provider` varchar(255) NOT NULL COMMENT 'service provider',\n" +
+            "  `version` varchar(255) NOT NULL COMMENT 'service version',\n" +
+            "  `limit_algorithm` int(11) NOT NULL COMMENT '限流算法: 1=计数, 2=令牌, 3=漏桶',\n" +
+            "  `limit_number` int(11) NOT NULL COMMENT '限流数量',\n" +
+            "  PRIMARY KEY (`id`)\n" +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='网关限流配置'";
 
     private final String insert_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
@@ -78,7 +90,8 @@ public class DbMysql implements Persistence {
      */
     private void initialize() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute(create_table);
+            statement.execute(config_create_table);
+            statement.execute(gateway_limiter_create_table);
         } catch (Exception e) {
             throw new DaoException(e);
         }
