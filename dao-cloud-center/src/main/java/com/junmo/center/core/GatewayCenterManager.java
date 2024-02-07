@@ -38,6 +38,11 @@ public class GatewayCenterManager {
         cache = persistence.loadGateway();
     }
 
+    /**
+     * Save gateway current limiting configuration
+     *
+     * @param gatewayLimitVO
+     */
     public void save(GatewayLimitVO gatewayLimitVO) {
         String proxy = gatewayLimitVO.getProxy();
         String key = gatewayLimitVO.getKey();
@@ -50,6 +55,11 @@ public class GatewayCenterManager {
         // TODO: sync other cluster node
     }
 
+    /**
+     * Clear gateway current limiting configuration
+     *
+     * @param serviceBaseVO
+     */
     public void clear(ServiceBaseVO serviceBaseVO) {
         String proxy = serviceBaseVO.getProxy();
         String key = serviceBaseVO.getKey();
@@ -58,5 +68,15 @@ public class GatewayCenterManager {
         cache.remove(proxyProviderModel);
         persistence.delete(proxyProviderModel);
         // TODO: sync other cluster node
+    }
+
+    /**
+     * Get current limit information
+     *
+     * @param proxyProviderModel
+     * @return
+     */
+    public LimitModel getLimiter(ProxyProviderModel proxyProviderModel) {
+        return cache.get(proxyProviderModel);
     }
 }

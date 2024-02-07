@@ -122,7 +122,7 @@
                                 <input type="text" class="form-control" name="proxy" style="display: none;">
                             </div>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="provider" style="display: none;">
+                                <input type="text" class="form-control" name="key" style="display: none;">
                             </div>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control" name="version" style="display: none;">

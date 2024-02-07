@@ -1,6 +1,7 @@
 package com.junmo.center.web.vo;
 
-import lombok.Data;
+
+import org.springframework.core.annotation.AliasFor;
 
 import javax.validation.constraints.NotNull;
 
@@ -9,13 +10,14 @@ import javax.validation.constraints.NotNull;
  * @date: 2024/2/6 00:13
  * @description:
  */
-@Data
 public class ServiceBaseVO {
 
     @NotNull(message = "proxy不能为空")
     private String proxy;
+
     @NotNull(message = "key不能为空")
     private String key;
+
     @NotNull(message = "version不能为空")
     private Integer version;
 

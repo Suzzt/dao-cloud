@@ -75,7 +75,7 @@ $(function () {
         var provider = $(this).attr("provider");
         var version = $(this).attr("version");
         $("#openLimitModelWindow .form input[name='proxy']").val(proxy);
-        $("#openLimitModelWindow .form input[name='provider']").val(provider);
+        $("#openLimitModelWindow .form input[name='key']").val(provider);
         $("#openLimitModelWindow .form input[name='version']").val(version);
         if (limitNumber != null && limitAlgorithm != null) {
             // update
@@ -95,10 +95,8 @@ $(function () {
         errorElement: 'span',
         errorClass: 'help-block',
         focusInvalid: true,
-        rules: {
-        },
-        messages: {
-        },
+        rules: {},
+        messages: {},
         highlight: function (element) {
             $(element).closest('.form-group').addClass('has-error');
         },
@@ -116,27 +114,22 @@ $(function () {
                     layer.open({
                         title: "系统提示",
                         btn: ["确认"],
-                        content: "更新成功",
+                        content: "网关限流设置成功",
                         icon: '1',
                         end: function (layero, index) {
-                            dataTable.fnDraw(false);
+                            dataTable.api().ajax.reload();
                         }
                     });
                 } else {
                     layer.open({
                         title: "系统提示",
                         btn: ["确认"],
-                        content: (data.msg || "更新失败"),
+                        content: (data.msg || "网关限流设置失败"),
                         icon: '2'
                     });
                 }
             });
         }
-    });
-    $("#updateModal").on('hide.bs.modal', function () {
-        $("#updateModal .form")[0].reset();
-        updateModalValidate.resetForm();
-        $("#updateModal .form .form-group").removeClass("has-error");
     });
 
     $("#data_list").on('click', '.clearLimit', function () {

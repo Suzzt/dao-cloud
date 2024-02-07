@@ -8,13 +8,13 @@ import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.Permissions;
 import com.junmo.center.web.vo.*;
 import com.junmo.core.ApiResult;
-import com.junmo.core.model.LimitModel;
-import com.junmo.core.model.ProviderModel;
-import com.junmo.core.model.ProxyConfigModel;
-import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -49,7 +49,7 @@ public class CenterController {
             if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
             }
-            String key = entry.getKey();
+            String proxyKey = entry.getKey();
             Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
             for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
                 ProviderModel providerModel = providerModelSetEntry.getKey();
@@ -58,13 +58,14 @@ public class CenterController {
                 }
                 Set<ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
                 ServerVO serverVO = new ServerVO();
-                serverVO.setProxy(key);
+                serverVO.setProxy(proxyKey);
                 serverVO.setProvider(providerModel.getProvider());
                 serverVO.setVersion(providerModel.getVersion());
                 serverVO.setNumber(serverNodeModels.size());
 
-                // mock todo
-                serverVO.setLimit(new LimitModel(1, 200));
+                // get limiter
+                LimitModel limiter = gatewayCenterManager.getLimiter(new ProxyProviderModel(proxyKey, providerModel));
+                serverVO.setLimit(limiter);
                 result.add(serverVO);
             }
         }

@@ -122,7 +122,30 @@ public class FileSystem implements Persistence {
 
     @Override
     public Map<ProxyProviderModel, LimitModel> loadGateway() {
-        return null;
+        Map<ProxyProviderModel, LimitModel> map = Maps.newConcurrentMap();
+        String prefixPath = gatewayStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> providers = loopDirs(prefixPath + File.separator + proxy);
+            for (String provider : providers) {
+                List<String> versions = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider);
+                for (String version : versions) {
+                    try {
+                        String value = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
+                        if (value == null) {
+                            continue;
+                        }
+                        String[] split = value.split("#");
+                        LimitModel limitModel = new LimitModel(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, Integer.parseInt(version));
+                        map.put(proxyProviderModel, limitModel);
+                    } catch (Exception e) {
+                        log.warn("Failed to load gateway limit data (proxy={}, provider={}, version={}) from file", proxy, provider, version);
+                    }
+                }
+            }
+        }
+        return map;
     }
 
     public String makePath(String proxy, String provider, int version, String prefix) {
