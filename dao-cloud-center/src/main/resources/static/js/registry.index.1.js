@@ -148,7 +148,7 @@ $(function () {
                 url: base_url + "/gateway/limit_clear",
                 data: {
                     "proxy": proxy,
-                    "provider": provider,
+                    "key": provider,
                     "version": version
                 },
                 dataType: "json",
@@ -157,17 +157,17 @@ $(function () {
                         layer.open({
                             title: "系统提示",
                             btn: ["确认"],
-                            content: "删除成功",
+                            content: "清空成功",
                             icon: '1',
                             end: function (layero, index) {
-                                dataTable.fnDraw(false);
+                                dataTable.api().ajax.reload();
                             }
                         });
                     } else {
                         layer.open({
                             title: "系统提示",
                             btn: ["确认"],
-                            content: (data.msg || "删除失败"),
+                            content: (data.msg || "清空失败"),
                             icon: '2'
                         });
                     }

@@ -63,7 +63,7 @@ public class FileSystem implements Persistence {
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String path = makePath(proxy, key, version, configStoragePath);
+        String path = makePath(configStoragePath, proxy, key, String.valueOf(version));
         String configValue = configModel.getConfigValue();
         write(path, configValue);
     }
@@ -73,8 +73,11 @@ public class FileSystem implements Persistence {
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
-        String path = makePath(proxy, key, version, configStoragePath);
+        String path = makePath(configStoragePath, proxy, key, String.valueOf(version));
         FileUtil.del(path);
+        // file gc
+        FileUtil.del(makePath(configStoragePath, proxy, key));
+        FileUtil.del(makePath(configStoragePath, proxy));
     }
 
     @Override
@@ -82,7 +85,7 @@ public class FileSystem implements Persistence {
         String proxy = gatewayModel.getProxyProviderModel().getProxy();
         String provider = gatewayModel.getProxyProviderModel().getProviderModel().getProvider();
         int version = gatewayModel.getProxyProviderModel().getProviderModel().getVersion();
-        String path = makePath(proxy, provider, version, gatewayStoragePath);
+        String path = makePath(gatewayStoragePath, proxy, provider, String.valueOf(version));
         LimitModel limitModel = gatewayModel.getLimitModel();
         String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber();
         write(path, content);
@@ -93,8 +96,13 @@ public class FileSystem implements Persistence {
         String proxy = proxyProviderModel.getProxy();
         String provider = proxyProviderModel.getProviderModel().getProvider();
         int version = proxyProviderModel.getProviderModel().getVersion();
-        String path = makePath(proxy, provider, version, gatewayStoragePath);
+        String path = makePath(gatewayStoragePath, proxy, provider, String.valueOf(version));
         FileUtil.del(path);
+        // file gc
+        String directory = makePath(gatewayStoragePath, proxy, provider);
+        FileUtil.del(directory);
+        FileUtil.del(makePath(gatewayStoragePath, proxy));
+        FileUtil.del(makePath(gatewayStoragePath));
     }
 
     @Override
@@ -148,8 +156,11 @@ public class FileSystem implements Persistence {
         return map;
     }
 
-    public String makePath(String proxy, String provider, int version, String prefix) {
-        return prefix + File.separator + proxy + File.separator + provider + File.separator + version;
+    public String makePath(String prefix, String... modules) {
+        for (String directory : modules) {
+            prefix = prefix + File.separator + directory;
+        }
+        return prefix;
     }
 
     public List<String> loopDirs(String path) {
@@ -168,5 +179,9 @@ public class FileSystem implements Persistence {
 
     public void write(String path, String data) {
         FileUtil.writeUtf8String(data, path);
+    }
+
+    public void fileGC() {
+
     }
 }
