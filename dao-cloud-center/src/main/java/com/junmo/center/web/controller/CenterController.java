@@ -3,20 +3,19 @@ package com.junmo.center.web.controller;
 import com.google.common.collect.Lists;
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.center.web.interceptor.Permissions;
-import com.junmo.center.web.vo.ConfigDataVO;
-import com.junmo.center.web.vo.ConfigVO;
-import com.junmo.center.web.vo.ServerVO;
+import com.junmo.center.web.vo.*;
 import com.junmo.core.ApiResult;
-import com.junmo.core.model.ProviderModel;
-import com.junmo.core.model.ProxyConfigModel;
-import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,14 @@ import java.util.Set;
 @RequestMapping(value = "dao-cloud")
 public class CenterController {
 
-    @Resource
     private ConfigCenterManager configCenterManager;
+
+    private GatewayCenterManager gatewayCenterManager;
+
+    public CenterController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        this.configCenterManager = configCenterManager;
+        this.gatewayCenterManager = gatewayCenterManager;
+    }
 
     @RequestMapping(value = "/registry/pageList")
     @ResponseBody
@@ -44,7 +49,7 @@ public class CenterController {
             if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
             }
-            proxy = entry.getKey();
+            String proxyKey = entry.getKey();
             Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
             for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
                 ProviderModel providerModel = providerModelSetEntry.getKey();
@@ -53,10 +58,14 @@ public class CenterController {
                 }
                 Set<ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
                 ServerVO serverVO = new ServerVO();
-                serverVO.setProxy(proxy);
+                serverVO.setProxy(proxyKey);
                 serverVO.setProvider(providerModel.getProvider());
                 serverVO.setVersion(providerModel.getVersion());
                 serverVO.setNumber(serverNodeModels.size());
+
+                // get limiter
+                LimitModel limiter = gatewayCenterManager.getLimiter(new ProxyProviderModel(proxyKey, providerModel));
+                serverVO.setLimit(limiter);
                 result.add(serverVO);
             }
         }
@@ -70,6 +79,20 @@ public class CenterController {
         Map<ProviderModel, Set<ServerNodeModel>> providerModels = server.get(proxy);
         Set<ServerNodeModel> serverNodeModels = providerModels.get(new ProviderModel(provider, version));
         return ApiResult.buildSuccess(serverNodeModels);
+    }
+
+    @RequestMapping(value = "/gateway/limit_save", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult save(@Valid GatewayLimitVO gatewayLimitVO) {
+        gatewayCenterManager.save(gatewayLimitVO);
+        return ApiResult.buildSuccess();
+    }
+
+    @RequestMapping(value = "/gateway/limit_clear", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult clear(@Valid ServiceBaseVO serviceBaseVO) {
+        gatewayCenterManager.clear(serviceBaseVO);
+        return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/config/save", method = RequestMethod.POST)

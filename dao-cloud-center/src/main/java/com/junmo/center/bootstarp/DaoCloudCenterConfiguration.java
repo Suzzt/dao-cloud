@@ -2,6 +2,7 @@ package com.junmo.center.bootstarp;
 
 import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
+import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.handler.*;
 import com.junmo.center.web.controller.CenterController;
 import com.junmo.center.web.controller.IndexController;
@@ -44,11 +45,14 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ComponentScan(value = "com.junmo.center.core.storage")
-@Import({ConfigCenterManager.class, WebCenterConfig.class})
+@Import({ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class})
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     @Resource
     private ConfigCenterManager configCenterManager;
+
+    @Resource
+    private GatewayCenterManager gatewayCenterManager;
 
     @Resource
     private Persistence persistence;
@@ -82,6 +86,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new InquireClusterCenterRequestHandler());
                             ch.pipeline().addLast(new ClusterRequestHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
+                            ch.pipeline().addLast(new GatewayPullServiceHandler());
                             ch.pipeline().addLast(new PullServerHandler());
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
                             ch.pipeline().addLast(new SyncClusterInformationRequestHandler(configCenterManager));
@@ -96,6 +101,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     }
                     // load config to cache
                     configCenterManager.init();
+                    // load gateway to cache
+                    gatewayCenterManager.init();
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
@@ -131,15 +138,15 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web,dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController centerController() {
-        return new CenterController();
+    public CenterController centerController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        return new CenterController(configCenterManager, gatewayCenterManager);
     }
 
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
-    public IndexController indexController(ConfigCenterManager configCenterManager) {
-        return new IndexController(configCenterManager);
+    public IndexController indexController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        return new IndexController(configCenterManager, gatewayCenterManager);
     }
 
 }

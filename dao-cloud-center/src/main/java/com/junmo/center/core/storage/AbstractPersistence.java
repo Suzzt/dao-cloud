@@ -17,7 +17,7 @@ public abstract class AbstractPersistence implements Persistence {
 
         } else {
             // stand-alone mode starts
-            load();
+            loadConfig();
         }
     }
 }

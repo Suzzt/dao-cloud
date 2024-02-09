@@ -109,11 +109,11 @@
                 <li class="nav-click <#if pageName == "registry">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/registry"><i
                                 class="fa fa-circle-o text-orange"></i><span>服务中心</span></a></li>
-                <li class="nav-click <#if pageName == "gateway">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/gateway"><i
-                                class="fa fa-circle-o text-blue"></i><span>网关中心</span></a></li>
+<#--                <li class="nav-click <#if pageName == "gateway">active</#if>"><a-->
+<#--                            href="${request.contextPath}/dao-cloud/gateway"><i-->
+<#--                                class="fa fa-circle-o text-blue"></i><span>网关中心</span></a></li>-->
                 <li class="nav-click <#if pageName == "config">active</#if>"><a href="${request.contextPath}/dao-cloud/config"><i
-                                class="fa fa-circle-o text-yellow"></i><span>配置中心</span></a></li>
+                                class="fa fa-circle-o text-blue"></i><span>配置中心</span></a></li>
                 <li class="nav-click <#if pageName == "help">active</#if>"><a href="${request.contextPath}/dao-cloud/help"><i
                                 class="fa fa-circle-o text-green"></i><span>使用教程</span></a></li>
             </ul>

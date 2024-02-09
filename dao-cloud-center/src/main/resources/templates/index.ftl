@@ -28,17 +28,32 @@
             <!-- 报表导航 -->
             <div class="row">
 
-                <#-- 集群节点数 -->
+                <#-- center集群节点数 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-aqua">
                         <span class="info-box-icon"><i class="fa fa-navicon"></i></span>
                         <div class="info-box-content">
-                            <span class="info-box-text">集群节点数</span>
+                            <span class="info-box-text">center集群节点数</span>
                             <span class="info-box-number">${aliveClusterNodeNum}</span>
                             <div class="progress">
                                 <div class="progress-bar" style="width: 100%"></div>
                             </div>
-                            <span class="progress-description">当前节点接入且存活集群节点数量</span>
+                            <span class="progress-description">当前节点接入且存活center集群节点数量</span>
+                        </div>
+                    </div>
+                </div>
+
+                <#-- 网关集群节点数 -->
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="info-box bg-teal">
+                        <span class="info-box-icon"><i class="fa fa-hourglass-half"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">网关集群节点数</span>
+                            <span class="info-box-number">${gatewayNodeNum}</span>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 100%"></div>
+                            </div>
+                            <span class="progress-description">整套网关集群节点数量</span>
                         </div>
                     </div>
                 </div>

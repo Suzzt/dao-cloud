@@ -11,5 +11,13 @@ public class DaoCloudConstant {
 
     public static final int CENTER_PORT = 5551;
 
+    public static final int GATEWAY_PORT = 6666;
+
     public static final byte DEFAULT_SERIALIZE = 0;
+
+    public static final String CONFIG = "config";
+
+    public static final String GATEWAY = "gateway";
+
+    public static final String GATEWAY_PROXY = "dao-cloud-gateway";
 }

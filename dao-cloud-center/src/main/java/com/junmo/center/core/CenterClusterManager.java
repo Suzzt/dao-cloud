@@ -50,7 +50,7 @@ public class CenterClusterManager {
     /**
      * 异步线程池执行center cluster数据同步任务
      */
-    private final static ThreadPoolExecutor syncDataThreadPoolExecutor = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
+    private final static ThreadPoolExecutor SYNC_DATA_THREAD_POOL_EXECUTOR = ThreadPoolFactory.makeThreadPool("center-cluster-data-sync", 1, 20);
 
     /**
      * history cluster info
@@ -92,7 +92,8 @@ public class CenterClusterManager {
      * @return
      */
     public static int aliveNodeSize() {
-        int i = 0;
+        // count yourself in the count
+        int i = 1;
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector connector = entry.getValue();
             if (connector.isActive()) {
@@ -182,12 +183,13 @@ public class CenterClusterManager {
             clusterSyncDataRequestModel.setProxyConfigModel(proxyConfigModel);
             clusterSyncDataRequestModel.setConfigJson(configJson);
             DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, clusterSyncDataRequestModel);
-            syncDataThreadPoolExecutor.execute(dataSyncTask);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }
 
     /**
      * join cluster
+     * This is an idempotent behavior
      *
      * @param ip
      */

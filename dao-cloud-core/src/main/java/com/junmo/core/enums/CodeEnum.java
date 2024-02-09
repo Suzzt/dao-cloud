@@ -30,14 +30,19 @@ public enum CodeEnum {
 
     // G级别 网关侧错误
     /**
+     * 网关请求失败
+     */
+    GATEWAY_REQUEST_ERROR("G0000", "网关请求失败"),
+
+    /**
      * 网关请求超时
      */
-    GATEWAY_REQUEST_TIMEOUT("G0000", "网关请求超时"),
+    GATEWAY_REQUEST_TIMEOUT("G0001", "网关请求超时"),
 
     /**
      * 网关请求被限流
      */
-    GATEWAY_REQUEST_LIMIT("G0001", "网关请求被限流"),
+    GATEWAY_REQUEST_LIMIT("G0002", "网关请求被限流"),
     ;
     private String code;
 

@@ -1,4 +1,4 @@
-package com.junmo.web;
+package com.junmo.example.center;
 
 import com.junmo.center.bootstarp.EnableDaoCloudCenter;
 import org.springframework.boot.SpringApplication;

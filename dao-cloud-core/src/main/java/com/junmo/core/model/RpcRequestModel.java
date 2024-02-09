@@ -8,39 +8,24 @@ import lombok.Data;
  * @description: rpc 请求模型封装
  */
 @Data
-public class RpcRequestModel extends ResponseModel {
-    /**
-     * 序列id
-     */
-    private long sequenceId;
+public class RpcRequestModel extends ServiceRequestModel {
 
-    /**
-     * 调用接口名，在服务端找到它对应的实现
-     */
-    private String provider;
-    /**
-     * 版本
-     */
-    private int version;
-    /**
-     * 调用接口中方法名
-     */
-    private String methodName;
-    /**
-     * 方法返回类型
-     */
-    private Class<?> returnType;
     /**
      * 方法参数类型数组
      */
     private Class[] parameterTypes;
+
     /**
      * 方法参数值数组
      */
     private Object[] parameterValue;
 
-    public RpcRequestModel(long sequenceId, String provider, int version, String methodName, Class<?> returnType, Class[] parameterTypes, Object[] parameterValue) {
-        this.sequenceId = sequenceId;
+    /**
+     * 方法返回类型
+     */
+    protected Class<?> returnType;
+
+    public RpcRequestModel(String provider, int version, String methodName, Class[] parameterTypes, Object[] parameterValue, Class<?> returnType) {
         this.provider = provider;
         this.version = version;
         this.methodName = methodName;

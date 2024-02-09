@@ -41,7 +41,7 @@ public class ConfigCenterManager {
      * 初始化拉取配置中心的配置信息到本地服务的缓存内存中
      */
     public void init() {
-        cache = persistence.load();
+        cache = persistence.loadConfig();
     }
 
     /**

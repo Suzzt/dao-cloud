@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 /**
  * @author: sucf
  * @date: 2023/2/15 22:33
- * @description: rpc service invoke handler
+ * @description: service invoke handler
  */
 @Slf4j
 public class ServiceInvoker {
@@ -56,5 +56,9 @@ public class ServiceInvoker {
             responseModel.setErrorMessage(t.getMessage());
         }
         return responseModel;
+    }
+
+    public Object getServiceBean() {
+        return serviceBean;
     }
 }

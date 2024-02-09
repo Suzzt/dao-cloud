@@ -42,7 +42,7 @@ public class DaoMessage<T> {
 
     /**
      * 序列化方式类型
-     * see com.junmo.core.enums.Serializer
+     * @see com.junmo.core.enums.Serializer
      * 1byte
      */
     private byte serializableType;

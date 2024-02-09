@@ -8,9 +8,9 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/7/6 23:59
- * @description:
+ * @description: Hash Load Balance
  */
-public class HashLoadBalanceImpl extends DaoLoadBalance {
+public class HashLoadBalance extends DaoLoadBalance {
     @Override
     public Client route(Set<Client> availableClients) {
         // 有缘人自己实现吧

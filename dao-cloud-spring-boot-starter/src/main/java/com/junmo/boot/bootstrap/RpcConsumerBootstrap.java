@@ -19,7 +19,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -27,14 +26,12 @@ import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * @author: sucf
  * @date: 2023/1/12 11:11
  * @description: rpc consumer startup
  */
 @Slf4j
-@Component
 public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
     private final Set<ProxyProviderModel> relyProxy = new HashSet<>();

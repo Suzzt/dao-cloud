@@ -3,6 +3,7 @@ package com.junmo.boot.bootstrap.thread;
 import com.google.common.collect.Sets;
 import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.boot.bootstrap.manager.ServiceManager;
+import com.junmo.boot.handler.GatewayServiceMessageHandler;
 import com.junmo.boot.handler.RpcServerMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudServerProperties;
@@ -11,6 +12,7 @@ import com.junmo.core.model.RegisterProviderModel;
 import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessageCoder;
 import com.junmo.core.netty.protocol.ProtocolFrameDecoder;
+import com.junmo.core.resolver.MethodArgumentResolverHandler;
 import com.junmo.core.util.NetUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -19,6 +21,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Set;
@@ -34,9 +37,17 @@ import java.util.concurrent.TimeUnit;
 public class Server {
 
     private ThreadPoolExecutor threadPoolProvider;
+    private MethodArgumentResolverHandler methodArgumentResolverHandler = MethodArgumentResolverHandler.DEFAULT_RESOLVER;
 
     public Server(ThreadPoolExecutor threadPoolProvider) {
         this.threadPoolProvider = threadPoolProvider;
+    }
+
+    public Server(ThreadPoolExecutor threadPoolProvider, MethodArgumentResolverHandler methodArgumentResolverHandler) {
+        this(threadPoolProvider);
+        this.methodArgumentResolverHandler = Objects.isNull(methodArgumentResolverHandler)
+            ? MethodArgumentResolverHandler.DEFAULT_RESOLVER
+            : methodArgumentResolverHandler;
     }
 
     public void start() {
@@ -53,6 +64,7 @@ public class Server {
                     ch.pipeline().addLast(new DaoMessageCoder());
                     ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                     ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
+                    ch.pipeline().addLast(new GatewayServiceMessageHandler(methodArgumentResolverHandler));
                     ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
                 }
             });
