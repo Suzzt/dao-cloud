@@ -1,5 +1,6 @@
 package com.junmo.core.model;
 
+import java.util.Map;
 import lombok.Data;
 
 /**
@@ -11,20 +12,15 @@ import lombok.Data;
 public class GatewayRequestModel extends ServiceRequestModel {
 
     /**
-     * 请求参数(json)
+     * http 请求信息
      */
-    private String params;
+    private HttpServletRequestModel request;
 
-    /**
-     * 请求header(json)
-     */
-    private String header;
 
-    public GatewayRequestModel(String provider, int version, String methodName, String params, String header) {
+    public GatewayRequestModel(String provider, int version, String methodName, HttpServletRequestModel request) {
         this.provider = provider;
         this.version = version;
         this.methodName = methodName;
-        this.params = params;
-        this.header = header;
+        this.request = request;
     }
 }

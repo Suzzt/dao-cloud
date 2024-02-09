@@ -5,8 +5,11 @@ import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.unit.ClientInvoker;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.enums.Serializer;
 import com.junmo.core.model.GatewayRequestModel;
+import com.junmo.core.model.HttpServletRequestModel;
 import com.junmo.core.model.ProxyProviderModel;
+import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.limit.Limiter;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +51,14 @@ public class Dispatcher {
      * @param response
      */
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.GET)
-    public ApiResult goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable(value = "0") String version,
-                           @PathVariable String method, HttpServletRequest request, HttpServletResponse response) {
+    public ApiResult goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
+                           @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
             return null;
         }
-        // 获取到入参参数信息（todo）
-        String header = null;
-        String params = null;
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, params, header);
+        HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
         return doService(proxy, gatewayRequestModel);
     }
 
@@ -70,14 +72,14 @@ public class Dispatcher {
      * @param response
      */
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
-    public ApiResult goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable(value = "0") String version,
-                            @PathVariable String method, HttpServletRequest request, HttpServletResponse response) {
+    public ApiResult goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
+                            @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             return null;
         }
-        String header = null;
-        String params = null;
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, params, header);
+        HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
         return doService(proxy, gatewayRequestModel);
     }
 
@@ -96,8 +98,8 @@ public class Dispatcher {
         }
 
         // 发起转发路由请求
-        byte serializable = 0;
-        long timeout = 0L;
+        byte serializable = Serializer.HESSIAN.getType();
+        long timeout = 5L;
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
         Object result;

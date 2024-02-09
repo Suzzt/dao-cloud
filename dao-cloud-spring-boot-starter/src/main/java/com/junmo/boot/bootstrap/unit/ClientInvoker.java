@@ -42,11 +42,11 @@ public class ClientInvoker {
     }
 
     public Object invoke(GatewayRequestModel gatewayRequestModel) throws InterruptedException {
-        return doInvoke(gatewayRequestModel, MessageType.SERVICE_RPC_REQUEST_MESSAGE);
+        return doInvoke(gatewayRequestModel, MessageType.GATEWAY_RPC_REQUEST_MESSAGE);
     }
 
     public Object invoke(RpcRequestModel rpcRequestModel) throws InterruptedException {
-        return doInvoke(rpcRequestModel, MessageType.GATEWAY_RPC_REQUEST_MESSAGE);
+        return doInvoke(rpcRequestModel, MessageType.SERVICE_RPC_REQUEST_MESSAGE);
     }
 
     public Object doInvoke(ServiceRequestModel model, byte messageType) throws InterruptedException {

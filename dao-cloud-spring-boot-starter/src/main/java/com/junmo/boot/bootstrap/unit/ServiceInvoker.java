@@ -57,4 +57,8 @@ public class ServiceInvoker {
         }
         return responseModel;
     }
+
+    public Object getServiceBean() {
+        return serviceBean;
+    }
 }

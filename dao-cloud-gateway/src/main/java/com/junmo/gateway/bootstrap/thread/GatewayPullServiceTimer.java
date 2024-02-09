@@ -5,6 +5,8 @@ import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayPullServiceMarkModel;
 import com.junmo.core.model.GatewayServiceNodeModel;
+import com.junmo.core.model.ProxyProviderModel;
+import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoCloudConstant;
@@ -13,9 +15,12 @@ import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
+import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author: sucf
@@ -44,7 +49,14 @@ public class GatewayPullServiceTimer implements Runnable {
                         throw new DaoException("promise await timeout");
                     }
                     if (promise.isSuccess()) {
-                        ClientManager.reset(promise.getNow().getRegistryServiceNodes());
+                        Map<ProxyProviderModel, Set<ServerNodeModel>> map = promise.getNow().getRegistryServiceNodes();
+                        ClientManager.reset(map);
+                        if(!CollectionUtils.isEmpty(map)) {
+                            map.forEach((proxyProviderModel, proxyProviders) -> {
+                                ClientManager.add(proxyProviderModel, proxyProviders);
+                            });
+                        }
+
                     } else {
                         throw new DaoException(promise.cause());
                     }

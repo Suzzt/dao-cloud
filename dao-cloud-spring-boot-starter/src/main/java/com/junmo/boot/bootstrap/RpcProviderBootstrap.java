@@ -8,9 +8,11 @@ import com.junmo.boot.bootstrap.unit.ServiceInvoker;
 import com.junmo.boot.properties.DaoCloudServerProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.netty.serialize.SerializeStrategyFactory;
+import com.junmo.core.resolver.MethodArgumentResolverHandler;
 import com.junmo.core.util.SystemUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,6 +31,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
+    @Autowired(required = false)
+    private MethodArgumentResolverHandler methodArgumentResolverHandler;
     /**
      * start
      */
@@ -51,7 +55,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         }
         // make thread pool
         ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudServerProperties.corePoolSize, DaoCloudServerProperties.maxPoolSize);
-        new Server(threadPoolProvider).start();
+        new Server(threadPoolProvider, methodArgumentResolverHandler).start();
     }
 
     @Override
