@@ -180,8 +180,4 @@ public class FileSystem implements Persistence {
     public void write(String path, String data) {
         FileUtil.writeUtf8String(data, path);
     }
-
-    public void fileGC() {
-
-    }
 }

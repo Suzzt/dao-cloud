@@ -117,9 +117,4 @@ public class IndexController {
     public String config() {
         return "config/config.index";
     }
-
-    @RequestMapping("gateway")
-    public String gateway() {
-        return "gateway/gateway.index";
-    }
 }
