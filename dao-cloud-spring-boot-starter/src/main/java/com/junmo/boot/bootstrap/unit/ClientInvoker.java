@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
@@ -84,7 +85,7 @@ public class ClientInvoker {
         });
 
         // 等待 promise 结果
-        if (!promise.await(timeout)) {
+        if (!promise.await(timeout * 1_100)) {
             LongPromiseBuffer.getInstance().remove(sequenceId);
             throw new DaoException("rpc do invoke time out");
         }
