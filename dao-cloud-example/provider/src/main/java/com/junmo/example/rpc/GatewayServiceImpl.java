@@ -24,7 +24,16 @@ public class GatewayServiceImpl implements GatewayService {
     }
 
     @Override
-    public String test1(ParamDTO paramDTO) {
+    public String gatewayTest1(ParamDTO paramDTO) {
         return JSONUtil.toJsonStr(paramDTO);
+    }
+
+    @Override
+    public Param2DTO gatewayTest2(ParamDTO paramDTO) {
+        Param2DTO param2DTO = new Param2DTO();
+        param2DTO.setString2(paramDTO.getString());
+        param2DTO.setByteValue2(paramDTO.getByteValue());
+        param2DTO.setInteger2(paramDTO.getInteger());
+        return param2DTO;
     }
 }

@@ -7,8 +7,6 @@ import com.junmo.core.model.GatewayRequestModel;
 import com.junmo.core.model.HttpParameterBinderResult;
 import com.junmo.core.model.HttpServletRequestModel;
 import com.junmo.core.model.RpcRequestModel;
-import com.junmo.core.model.RpcResponseModel;
-import com.junmo.core.resolver.MethodArgumentResolver;
 import com.junmo.core.resolver.MethodArgumentResolverHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -61,7 +59,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             binderResult.getParameterValues(),
             binderResult.getReturnType()
             );
-
+        requestModel.setSequenceId(gatewayRequestModel.getSequenceId());
         return requestModel;
     }
 

@@ -13,5 +13,7 @@ public interface GatewayService {
 
     ParamDTO complex(ParamDTO paramDTO, Param2DTO param2DTO);
 
-    String test1(ParamDTO paramDTO);
+    String gatewayTest1(ParamDTO paramDTO);
+
+    Param2DTO gatewayTest2(ParamDTO paramDTO);
 }
