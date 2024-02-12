@@ -21,28 +21,29 @@ $(function () {
                 }
             }
         }, {
-            data: 'limit', ordering: true, render: function (data, type, row) {
+            data: 'gateway', ordering: true, render: function (data, type, row) {
                 // 网关就直接跳过
                 if (row.proxy == "dao-cloud-gateway" && row.provider == "gateway") {
                     return '';
                 }
 
-                if (row.limit == null) {
+                if (row.gateway == null) {
                     return '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">设置</a>'
                 }
 
                 var limitAlgorithm;
-                if (row.limit.limitAlgorithm == 1) {
+                if (row.gateway.limitModel.limitAlgorithm == 1) {
                     limitAlgorithm = '计数'
-                } else if (row.limit.limitAlgorithm == 2) {
+                } else if (row.gateway.limitModel.limitAlgorithm == 2) {
                     limitAlgorithm = '令牌'
                 } else {
                     limitAlgorithm = '漏桶'
                 }
-                var limitNumber = row.limit.limitNumber;
+                var limitNumber = row.gateway.limitModel.limitNumber;
+                var timeout = row.gateway.timeout;
                 return '<div>' +
-                    limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '" limitAlgorithm="' + row.limit.limitAlgorithm + '" limitNumber="' + limitNumber + '">设置</a>&nbsp;&nbsp;' +
+                    limitAlgorithm + '&nbsp;&nbsp;[' + limitNumber + ']&nbsp;&nbsp;[' + timeout + ']&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+
+                    '<a href="javascript:;" class="openLimitModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '" limitAlgorithm="' + row.gateway.limitModel.limitAlgorithm + '" limitNumber="' + limitNumber + '"+ timeout="' + timeout + '">设置</a>&nbsp;&nbsp;' +
                     '<a href="javascript:;" class="clearLimit" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
                     '</div>';
             }
@@ -69,18 +70,20 @@ $(function () {
     });
 
     $("#data_list").on('click', '.openLimitModelWindow', function () {
-        var limitNumber = $(this).attr("limitNumber");
-        var limitAlgorithm = $(this).attr("limitAlgorithm");
         var proxy = $(this).attr("proxy");
         var provider = $(this).attr("provider");
         var version = $(this).attr("version");
+        var limitNumber = $(this).attr("limitNumber");
+        var limitAlgorithm = $(this).attr("limitAlgorithm");
+        var timeout = $(this).attr("timeout");
         $("#openLimitModelWindow .form input[name='proxy']").val(proxy);
         $("#openLimitModelWindow .form input[name='key']").val(provider);
         $("#openLimitModelWindow .form input[name='version']").val(version);
-        if (limitNumber != null && limitAlgorithm != null) {
+        if (limitNumber != null && limitAlgorithm != null && timeout !=null) {
             // update
             $("#openLimitModelWindow .form select[name='limitAlgorithm']").val(limitAlgorithm);
             $("#openLimitModelWindow .form input[name='limitNumber']").val(limitNumber);
+            $("#openLimitModelWindow .form input[name='timeout']").val(timeout);
         }
         $('#openLimitModelWindow').modal({backdrop: false, keyboard: false}).modal('show');
     });

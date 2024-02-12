@@ -145,7 +145,7 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public Map<ProxyProviderModel, LimitModel> loadGateway() {
+    public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
         return null;
     }
 

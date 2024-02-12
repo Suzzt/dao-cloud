@@ -76,7 +76,7 @@
                                     <th name="provider">provider</th>
                                     <th name="env">version</th>
                                     <th name="number">注册节点数</th>
-                                    <th name="limit">限流</th>
+                                    <th name="gateway">网关设置</th>
                                 </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -94,7 +94,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">限流设置</h4>
+                    <h4 class="modal-title">网关设置</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">
@@ -116,6 +116,13 @@
                             <div class="col-sm-9"><input type="number" class="form-control" name="limitNumber"
                                                          maxlength="10"
                                                          placeholder="请输入允许每秒能通过的请求数据"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">超时时间 <font
+                                        color="red">*</font></label>
+                            <div class="col-sm-9"><input type="timeout" class="form-control" name="timeout"
+                                                         maxlength="10"
+                                                         placeholder="请输入超时时间(到服务调用的时间)"></div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-9">

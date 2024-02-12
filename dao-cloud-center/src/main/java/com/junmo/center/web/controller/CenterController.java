@@ -63,9 +63,9 @@ public class CenterController {
                 serverVO.setVersion(providerModel.getVersion());
                 serverVO.setNumber(serverNodeModels.size());
 
-                // get limiter
-                LimitModel limiter = gatewayCenterManager.getLimiter(new ProxyProviderModel(proxyKey, providerModel));
-                serverVO.setLimit(limiter);
+                // get gateway config
+                GatewayConfigModel gateway = gatewayCenterManager.getGatewayConfig(new ProxyProviderModel(proxyKey, providerModel));
+                serverVO.setGateway(gateway);
                 result.add(serverVO);
             }
         }
@@ -83,8 +83,8 @@ public class CenterController {
 
     @RequestMapping(value = "/gateway/limit_save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult save(@Valid GatewayLimitVO gatewayLimitVO) {
-        gatewayCenterManager.save(gatewayLimitVO);
+    public ApiResult save(@Valid GatewayVO gatewayVO) {
+        gatewayCenterManager.save(gatewayVO);
         return ApiResult.buildSuccess();
     }
 

@@ -13,10 +13,10 @@ public class GatewayModel extends Model {
 
     private ProxyProviderModel proxyProviderModel;
 
-    private LimitModel limitModel;
+    private GatewayConfigModel gatewayConfigModel;
 
-    public GatewayModel(ProxyProviderModel proxyProviderModel, LimitModel limitModel) {
+    public GatewayModel(ProxyProviderModel proxyProviderModel, GatewayConfigModel gatewayConfigModel) {
         this.proxyProviderModel = proxyProviderModel;
-        this.limitModel = limitModel;
+        this.gatewayConfigModel = gatewayConfigModel;
     }
 }

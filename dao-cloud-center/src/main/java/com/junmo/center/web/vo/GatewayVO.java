@@ -8,7 +8,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class GatewayLimitVO extends ServiceBaseVO {
+public class GatewayVO extends ServiceBaseVO {
 
     /**
      * 限流算法
@@ -18,5 +18,10 @@ public class GatewayLimitVO extends ServiceBaseVO {
     /**
      * 限流数量
      */
-    private Integer limitNumber;;
+    private Integer limitNumber;
+
+    /**
+     * 超时时间
+     */
+    private Long timeout;
 }

@@ -53,6 +53,6 @@ public interface Persistence {
      *
      * @return
      */
-    Map<ProxyProviderModel, LimitModel> loadGateway();
+    Map<ProxyProviderModel, GatewayConfigModel> loadGateway();
 
 }

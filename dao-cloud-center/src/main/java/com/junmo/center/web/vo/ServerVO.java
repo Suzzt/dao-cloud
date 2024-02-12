@@ -1,5 +1,6 @@
 package com.junmo.center.web.vo;
 
+import com.junmo.core.model.GatewayConfigModel;
 import com.junmo.core.model.LimitModel;
 import lombok.Data;
 
@@ -18,5 +19,5 @@ public class ServerVO {
 
     private Integer number;
 
-    private LimitModel limit;
+    private GatewayConfigModel gateway;
 }

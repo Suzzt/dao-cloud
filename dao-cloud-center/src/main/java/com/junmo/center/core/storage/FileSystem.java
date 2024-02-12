@@ -86,8 +86,8 @@ public class FileSystem implements Persistence {
         String provider = gatewayModel.getProxyProviderModel().getProviderModel().getProvider();
         int version = gatewayModel.getProxyProviderModel().getProviderModel().getVersion();
         String path = makePath(gatewayStoragePath, proxy, provider, String.valueOf(version));
-        LimitModel limitModel = gatewayModel.getLimitModel();
-        String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber();
+        LimitModel limitModel = gatewayModel.getGatewayConfigModel().getLimitModel();
+        String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber() + "#" + gatewayModel.getGatewayConfigModel().getTimeout();
         write(path, content);
     }
 
@@ -129,8 +129,8 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public Map<ProxyProviderModel, LimitModel> loadGateway() {
-        Map<ProxyProviderModel, LimitModel> map = Maps.newConcurrentMap();
+    public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
+        Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newConcurrentMap();
         String prefixPath = gatewayStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
@@ -144,9 +144,12 @@ public class FileSystem implements Persistence {
                             continue;
                         }
                         String[] split = value.split("#");
+                        GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
                         LimitModel limitModel = new LimitModel(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
+                        gatewayConfigModel.setLimitModel(limitModel);
+                        gatewayConfigModel.setTimeout(Long.parseLong(split[2]));
                         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, Integer.parseInt(version));
-                        map.put(proxyProviderModel, limitModel);
+                        map.put(proxyProviderModel, gatewayConfigModel);
                     } catch (Exception e) {
                         log.warn("Failed to load gateway limit data (proxy={}, provider={}, version={}) from file", proxy, provider, version);
                     }
