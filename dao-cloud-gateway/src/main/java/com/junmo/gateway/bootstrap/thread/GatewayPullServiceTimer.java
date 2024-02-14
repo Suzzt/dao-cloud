@@ -11,6 +11,8 @@ import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
+import com.junmo.gateway.Dispatcher;
+import com.junmo.gateway.global.GatewayConfig;
 import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -49,8 +51,10 @@ public class GatewayPullServiceTimer implements Runnable {
                         throw new DaoException("promise await timeout");
                     }
                     if (promise.isSuccess()) {
-                        Map<ProxyProviderModel, Set<ServerNodeModel>> map = promise.getNow().getRegistryServiceNodes();
+                        GatewayServiceNodeModel gatewayServiceNodeModel = promise.getNow();
+                        Map<ProxyProviderModel, Set<ServerNodeModel>> map = gatewayServiceNodeModel.getServices();
                         ClientManager.reset(map);
+                        GatewayConfig.reset(gatewayServiceNodeModel.getConfig());
                         if(!CollectionUtils.isEmpty(map)) {
                             map.forEach((proxyProviderModel, proxyProviders) -> {
                                 ClientManager.add(proxyProviderModel, proxyProviders);

@@ -6,11 +6,13 @@ import com.junmo.boot.bootstrap.unit.ClientInvoker;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.enums.Serializer;
+import com.junmo.core.model.GatewayConfigModel;
 import com.junmo.core.model.GatewayRequestModel;
 import com.junmo.core.model.HttpServletRequestModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
+import com.junmo.gateway.global.GatewayConfig;
 import com.junmo.gateway.limit.Limiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -53,7 +55,7 @@ public class Dispatcher {
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.GET)
     public ApiResult goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
                            @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
-        throws Exception {
+            throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
             return null;
         }
@@ -74,7 +76,7 @@ public class Dispatcher {
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
     public ApiResult goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
                             @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
-        throws Exception {
+            throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             return null;
         }
@@ -99,8 +101,13 @@ public class Dispatcher {
 
         // 发起转发路由请求
         byte serializable = Serializer.HESSIAN.getType();
-        long timeout = 5L;
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
+        GatewayConfigModel gatewayConfig = GatewayConfig.getGatewayConfig(proxyProviderModel);
+        Long timeout = gatewayConfig.getTimeout();
+        // default timeout 10s
+        if (timeout == null || timeout <= 0) {
+            timeout = 10L;
+        }
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
         Object result;
         try {

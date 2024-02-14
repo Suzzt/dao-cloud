@@ -19,7 +19,7 @@ public class PullServiceNodeMessageHandler extends SimpleChannelInboundHandler<G
     public static Promise<GatewayServiceNodeModel> promise;
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, GatewayServiceNodeModel gatewayServiceNodeModel) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, GatewayServiceNodeModel gatewayServiceNodeModel) {
         String errorMessage = gatewayServiceNodeModel.getErrorMessage();
         if (StringUtils.hasLength(errorMessage)) {
             log.error("<<<<<<<<<<<< The gateway failed to pull all nodes. >>>>>>>>>>>>");

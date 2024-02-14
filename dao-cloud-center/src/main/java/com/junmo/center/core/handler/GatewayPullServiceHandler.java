@@ -1,6 +1,7 @@
 package com.junmo.center.core.handler;
 
 import com.junmo.center.bootstarp.DaoCloudCenterConfiguration;
+import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
 import com.junmo.core.model.GatewayPullServiceMarkModel;
 import com.junmo.core.model.GatewayServiceNodeModel;
@@ -18,12 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<GatewayPullServiceMarkModel> {
 
+    private GatewayCenterManager gatewayCenterManager;
+
+    public GatewayPullServiceHandler(GatewayCenterManager gatewayCenterManager) {
+        this.gatewayCenterManager = gatewayCenterManager;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, GatewayPullServiceMarkModel gatewayPullServiceMarkModel) throws Exception {
         DaoMessage daoMessage;
         GatewayServiceNodeModel gatewayServiceNodeModel = new GatewayServiceNodeModel();
         try {
-            gatewayServiceNodeModel.setRegistryServiceNodes(RegisterCenterManager.gatewayServers());
+            gatewayServiceNodeModel.setServices(RegisterCenterManager.gatewayServers());
+            gatewayServiceNodeModel.setConfig(gatewayCenterManager.getGatewayConfig());
         } catch (Exception e) {
             gatewayServiceNodeModel.setErrorMessage(e.getMessage());
         }

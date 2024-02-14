@@ -3,9 +3,9 @@ package com.junmo.center.web.vo;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/2/6 00:15
- * @description:
+ * @author sucf
+ * @date 2024/2/6 00:15
+ * @description 网关设置对象
  */
 @Data
 public class GatewayVO extends ServiceBaseVO {

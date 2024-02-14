@@ -12,5 +12,6 @@ import java.util.Set;
  */
 @Data
 public class GatewayServiceNodeModel extends ResponseModel {
-    private Map<ProxyProviderModel, Set<ServerNodeModel>> registryServiceNodes;
+    private Map<ProxyProviderModel, Set<ServerNodeModel>> services;
+    private Map<ProxyProviderModel, GatewayConfigModel> config;
 }

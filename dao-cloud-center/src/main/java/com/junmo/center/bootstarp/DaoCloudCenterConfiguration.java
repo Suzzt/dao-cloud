@@ -86,7 +86,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new InquireClusterCenterRequestHandler());
                             ch.pipeline().addLast(new ClusterRequestHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
-                            ch.pipeline().addLast(new GatewayPullServiceHandler());
+                            ch.pipeline().addLast(new GatewayPullServiceHandler(gatewayCenterManager));
                             ch.pipeline().addLast(new PullServerHandler());
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
                             ch.pipeline().addLast(new SyncClusterInformationRequestHandler(configCenterManager));

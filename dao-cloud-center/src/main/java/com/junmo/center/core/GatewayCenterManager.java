@@ -83,4 +83,13 @@ public class GatewayCenterManager {
     public GatewayConfigModel getGatewayConfig(ProxyProviderModel proxyProviderModel) {
         return cache.get(proxyProviderModel);
     }
+
+    /**
+     * Get full gateway information
+     *
+     * @return
+     */
+    public Map<ProxyProviderModel, GatewayConfigModel> getGatewayConfig() {
+        return cache;
+    }
 }
