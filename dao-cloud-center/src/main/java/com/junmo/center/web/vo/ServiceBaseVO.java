@@ -1,8 +1,6 @@
 package com.junmo.center.web.vo;
 
 
-import org.springframework.core.annotation.AliasFor;
-
 import javax.validation.constraints.NotNull;
 
 /**
