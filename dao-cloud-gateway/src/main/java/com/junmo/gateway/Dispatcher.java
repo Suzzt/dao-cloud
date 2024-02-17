@@ -12,7 +12,7 @@ import com.junmo.core.model.HttpServletRequestModel;
 import com.junmo.core.model.ProxyProviderModel;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
-import com.junmo.gateway.global.GatewayConfig;
+import com.junmo.gateway.global.GatewayServiceConfig;
 import com.junmo.gateway.limit.Limiter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -57,7 +57,7 @@ public class Dispatcher {
                            @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
-            return null;
+            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION);
         }
         HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
@@ -78,7 +78,7 @@ public class Dispatcher {
                             @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
-            return null;
+            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION);
         }
         HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
@@ -102,7 +102,10 @@ public class Dispatcher {
         // 发起转发路由请求
         byte serializable = Serializer.HESSIAN.getType();
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
-        GatewayConfigModel gatewayConfig = GatewayConfig.getGatewayConfig(proxyProviderModel);
+        GatewayConfigModel gatewayConfig = GatewayServiceConfig.getGatewayConfig(proxyProviderModel);
+        if (gatewayConfig == null) {
+            return ApiResult.buildFail(CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
+        }
         Long timeout = gatewayConfig.getTimeout();
         // default timeout 10s
         if (timeout == null || timeout <= 0) {

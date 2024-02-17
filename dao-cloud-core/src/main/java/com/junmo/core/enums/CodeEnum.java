@@ -43,6 +43,16 @@ public enum CodeEnum {
      * 网关请求被限流
      */
     GATEWAY_REQUEST_LIMIT("G0002", "网关请求被限流"),
+
+    /**
+     * 网关请求参数缺失
+     */
+    GATEWAY_REQUEST_PARAM_DELETION("G0003", "网关请求必要参数缺失"),
+
+    /**
+     * 服务接口不存在
+     */
+    GATEWAY_SERVICE_NOT_EXIST("G0004", "服务接口不存在"),
     ;
     private String code;
 

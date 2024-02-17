@@ -10,7 +10,7 @@ import java.util.Map;
  * @date: 2024/2/14 22:13
  * @description:
  */
-public class GatewayConfig {
+public class GatewayServiceConfig {
 
     private static Map<ProxyProviderModel, GatewayConfigModel> data;
 
