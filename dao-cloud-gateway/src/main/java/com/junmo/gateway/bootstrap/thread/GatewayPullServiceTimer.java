@@ -16,12 +16,12 @@ import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Map;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.concurrent.TimeUnit;
-import org.springframework.util.CollectionUtils;
 
 /**
  * @author: sucf
@@ -54,7 +54,7 @@ public class GatewayPullServiceTimer implements Runnable {
                         Map<ProxyProviderModel, Set<ServerNodeModel>> map = gatewayServiceNodeModel.getServices();
                         ClientManager.reset(map);
                         GatewayServiceConfig.reset(gatewayServiceNodeModel.getConfig());
-                        if(!CollectionUtils.isEmpty(map)) {
+                        if (!CollectionUtils.isEmpty(map)) {
                             map.forEach((proxyProviderModel, proxyProviders) -> {
                                 ClientManager.add(proxyProviderModel, proxyProviders);
                             });

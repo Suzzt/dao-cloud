@@ -8,12 +8,9 @@ import com.junmo.core.model.ServerNodeModel;
 import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
-import com.junmo.gateway.Dispatcher;
 import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
 import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
-import com.junmo.gateway.properties.GatewayProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -27,12 +24,6 @@ import java.util.Set;
  */
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
-
-    private GatewayProperties gatewayProperties;
-
-    public GatewayBootstrap(GatewayProperties gatewayProperties) {
-        this.gatewayProperties = gatewayProperties;
-    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
