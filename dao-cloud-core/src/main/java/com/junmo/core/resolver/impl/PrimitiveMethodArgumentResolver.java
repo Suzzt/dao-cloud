@@ -1,6 +1,7 @@
 package com.junmo.core.resolver.impl;
 
 import com.junmo.core.model.HttpServletRequestModel;
+import com.junmo.core.model.HttpServletResponse;
 import com.junmo.core.resolver.AbstractMethodArgumentResolver;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import java.lang.reflect.Parameter;
@@ -22,13 +23,13 @@ public class PrimitiveMethodArgumentResolver extends AbstractMethodArgumentResol
     }
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
         Class<?> type = parameter.getType();
         return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class;
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
         String name = parameter.getName();
         Class<?> type = parameter.getType();
         Map<String, String[]> getParam = Optional.ofNullable(httpServletRequest.getParams())

@@ -10,6 +10,10 @@ import lombok.Data;
 @Data
 public class RpcRequestModel extends ServiceRequestModel {
 
+    private boolean http;
+
+    private HttpServletResponse httpServletResponse;
+
     /**
      * 方法参数类型数组
      */

@@ -6,10 +6,13 @@ import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayRequestModel;
 import com.junmo.core.model.HttpParameterBinderResult;
 import com.junmo.core.model.HttpServletRequestModel;
+import com.junmo.core.model.HttpServletResponse;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.resolver.MethodArgumentResolverHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -60,6 +63,8 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             binderResult.getReturnType()
             );
         requestModel.setSequenceId(gatewayRequestModel.getSequenceId());
+        requestModel.setHttp(true);
+        requestModel.setHttpServletResponse(binderResult.getHttpServletResponse());
         return requestModel;
     }
 
@@ -70,12 +75,17 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         Method method = Arrays.stream(methods).filter(m -> m.getName().equals(methodName)).findFirst()
             .orElseThrow(() -> new DaoException(String.format("未找到服务：%s#%s", clss.getName(), methodName)));
         Parameter[] parameters = method.getParameters();
+        HttpServletResponse httpServletResponse = this.createDefaultResponse();
         if(Objects.isNull(parameters) || parameters.length == 0) {
             HttpParameterBinderResult result = new HttpParameterBinderResult();
+            result.setReturnType(method.getReturnType());
+            result.setHttpServletResponse(httpServletResponse);
+            result.setParameterTypes(new Class<?>[0]);
+            result.setParameterValues(new Object[0]);
             return result;
         }
         List<Object> parameterValueList = Arrays.stream(parameters)
-            .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest))
+            .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest, httpServletResponse))
             .collect(Collectors.toList());
 
         HttpParameterBinderResult result = new HttpParameterBinderResult();
@@ -83,6 +93,15 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             .collect(Collectors.toList()).toArray(new Class<?>[0]));
         result.setParameterValues(parameterValueList.toArray());
         result.setReturnType(method.getReturnType());
+        result.setHttpServletResponse(httpServletResponse);
         return result;
+    }
+
+    private HttpServletResponse createDefaultResponse() {
+        HttpServletResponse httpServletResponse = new HttpServletResponse();
+        httpServletResponse.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(),
+            HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
+        httpServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
+        return httpServletResponse;
     }
 }

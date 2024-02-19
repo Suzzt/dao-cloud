@@ -2,9 +2,8 @@ package com.junmo.boot.bootstrap.unit;
 
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Method;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: sucf
