@@ -7,7 +7,12 @@ import com.junmo.boot.bootstrap.RpcConsumerBootstrap;
 import com.junmo.boot.bootstrap.RpcProviderBootstrap;
 import com.junmo.boot.properties.DaoCloudCenterProperties;
 import com.junmo.boot.properties.DaoCloudServerProperties;
+import com.junmo.core.converter.StringToCharConverter;
+import com.junmo.core.resolver.MethodArgumentResolver;
 import com.junmo.core.resolver.MethodArgumentResolverHandler;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.format.support.FormattingConversionService;
 
 
 /**
@@ -31,11 +37,20 @@ import org.springframework.core.convert.ConversionService;
 public class DaoCloudConfiguration {
 
     @Bean
-    public MethodArgumentResolverHandler methodArgumentResolverHandler(@Autowired(required = false) ConversionService conversionService) {
+    public ConversionService customerConversionService() {
+        FormattingConversionService conversionService = new FormattingConversionService();
+        conversionService.addConverter(new StringToCharConverter());
+        return conversionService;
+    }
+
+    @Bean
+    public MethodArgumentResolverHandler methodArgumentResolverHandler(@Autowired(required = false) ConversionService customerConversionService,
+        @Autowired(required = false)List<MethodArgumentResolver> resolverList) {
         // conversionService 可自定义
-        MethodArgumentResolverHandler resolverHandler = new MethodArgumentResolverHandler(conversionService);
+        MethodArgumentResolverHandler resolverHandler = new MethodArgumentResolverHandler(customerConversionService);
 //        如果当前满足不了你的参数解析需求，可以自己扩展，然后可以自己加排序
-//        resolverHandler.addCustomerResolver();
+        Optional.ofNullable(resolverList).orElse(Collections.emptyList())
+                .forEach(resolverHandler::addCustomerResolver);
         return resolverHandler;
     }
 }
