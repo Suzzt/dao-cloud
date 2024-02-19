@@ -5,6 +5,9 @@ import com.junmo.boot.annotation.DaoService;
 import com.junmo.common.GatewayService;
 import com.junmo.common.dto.Param2DTO;
 import com.junmo.common.dto.ParamDTO;
+import com.junmo.core.model.HttpServletResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author: sucf
@@ -35,5 +38,12 @@ public class GatewayServiceImpl implements GatewayService {
         param2DTO.setByteValue2(paramDTO.getByteValue());
         param2DTO.setInteger2(paramDTO.getInteger());
         return param2DTO;
+    }
+
+    @Override
+    public void gatewayTest3(HttpServletResponse response) {
+        response.addHeader("Content-Disposition", "attachment;filename=xx.txt");
+        response.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(), "application/vnd.ms-excel");
+        response.setBodyData("hello world!".getBytes(StandardCharsets.UTF_8));
     }
 }
