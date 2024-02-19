@@ -6,6 +6,7 @@ import com.junmo.boot.bootstrap.unit.ClientInvoker;
 import com.junmo.core.ApiResult;
 import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.enums.Serializer;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayConfigModel;
 import com.junmo.core.model.GatewayRequestModel;
 import com.junmo.core.model.HttpServletRequestModel;
@@ -14,6 +15,8 @@ import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.global.GatewayServiceConfig;
 import com.junmo.gateway.limit.Limiter;
+import java.util.Collections;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,15 +56,15 @@ public class Dispatcher {
      * @param response
      */
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.GET)
-    public ApiResult goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
+    public void goGet(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
                            @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
-            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION);
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
         HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
-        return doService(proxy, gatewayRequestModel);
+        this.doService(proxy, gatewayRequestModel, response);
     }
 
     /**
@@ -74,28 +77,29 @@ public class Dispatcher {
      * @param response
      */
     @RequestMapping(value = "api/{proxy}/{provider}/{version}/{method}", method = RequestMethod.POST)
-    public ApiResult goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
+    public void goPost(@PathVariable String proxy, @PathVariable String provider, @PathVariable() String version,
                             @PathVariable String method, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
-            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION);
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
         HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
-        return doService(proxy, gatewayRequestModel);
+        this.doService(proxy, gatewayRequestModel, response);
+
     }
 
-    public ApiResult doService(String proxy, GatewayRequestModel gatewayRequestModel) {
+    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) {
         // 先判断限流
         if (!limiter.allow()) {
-            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_LIMIT);
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
         }
 
         // 处理拦截器的责任链请求
         List<Interceptor> interceptors = Lists.newArrayList();
         for (Interceptor interceptor : interceptors) {
             if (!interceptor.action()) {
-                return null;
+                return;
             }
         }
 
@@ -104,7 +108,8 @@ public class Dispatcher {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
         GatewayConfigModel gatewayConfig = GatewayServiceConfig.getGatewayConfig(proxyProviderModel);
         if (gatewayConfig == null) {
-            return ApiResult.buildFail(CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
+            throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
+
         }
         Long timeout = gatewayConfig.getTimeout();
         // default timeout 10s
@@ -112,12 +117,14 @@ public class Dispatcher {
             timeout = 10L;
         }
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
-        Object result;
+        com.junmo.core.model.HttpServletResponse result;
         try {
-            result = clientInvoker.invoke(gatewayRequestModel);
+            result = (com.junmo.core.model.HttpServletResponse)clientInvoker.invoke(gatewayRequestModel);
+            Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
+                .forEach(response::addHeader);
         } catch (InterruptedException e) {
-            return ApiResult.buildFail(CodeEnum.GATEWAY_REQUEST_LIMIT);
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
+
         }
-        return ApiResult.buildSuccess(result);
     }
 }

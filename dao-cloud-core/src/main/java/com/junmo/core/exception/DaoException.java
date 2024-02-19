@@ -6,6 +6,8 @@ package com.junmo.core.exception;
  * @description:
  */
 public class DaoException extends RuntimeException {
+
+    private String code;
     public DaoException(String msg) {
         super(msg);
     }
@@ -16,5 +18,10 @@ public class DaoException extends RuntimeException {
 
     public DaoException(String msg, Throwable t) {
         super(msg, t);
+    }
+
+    public DaoException(String code, String msg) {
+        super(msg);
+        this.code = code;
     }
 }
