@@ -24,13 +24,17 @@ public class MethodArgumentResolverHandler {
     private List<MethodArgumentResolver> resolverList;
 
     public MethodArgumentResolverHandler() {
-        this.resolverList = new ArrayList<>();
-        this.addDefaultResolvers();
+        this.init();
     }
 
     public MethodArgumentResolverHandler(ConversionService conversionService) {
-        this();
         this.conversionService = conversionService;
+        this.init();
+    }
+
+    private void init() {
+        this.resolverList = new ArrayList<>();
+        this.addDefaultResolvers();
     }
 
     public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest,

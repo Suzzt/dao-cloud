@@ -2,6 +2,7 @@ package com.junmo.common;
 
 import com.junmo.common.dto.Param2DTO;
 import com.junmo.common.dto.ParamDTO;
+import com.junmo.core.model.HttpServletResponse;
 
 /**
  * @author: sucf
@@ -16,4 +17,6 @@ public interface GatewayService {
     String gatewayTest1(ParamDTO paramDTO);
 
     Param2DTO gatewayTest2(ParamDTO paramDTO);
+
+    void gatewayTest3(HttpServletResponse response);
 }

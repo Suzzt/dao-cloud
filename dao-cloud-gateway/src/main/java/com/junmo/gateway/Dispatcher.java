@@ -12,6 +12,8 @@ import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.global.GatewayServiceConfig;
 import com.junmo.gateway.limit.Limiter;
+import java.io.IOException;
+import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -124,13 +126,16 @@ public class Dispatcher {
         }
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
         com.junmo.core.model.HttpServletResponse result;
-        try {
+        try (OutputStream outputStream = response.getOutputStream()){
             result = (com.junmo.core.model.HttpServletResponse) clientInvoker.invoke(gatewayRequestModel);
             Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
                     .forEach(response::addHeader);
+            outputStream.write(result.getBodyData());
         } catch (InterruptedException e) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
 
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
