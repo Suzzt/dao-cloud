@@ -21,4 +21,6 @@ public class HttpParameterBinderResult {
     private Object[] parameterValues;
 
     private Class<?> returnType;
+
+    private HttpServletResponse httpServletResponse;
 }

@@ -3,6 +3,7 @@ package com.junmo.core.resolver.impl;
 import cn.hutool.json.JSONUtil;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.HttpServletRequestModel;
+import com.junmo.core.model.HttpServletResponse;
 import com.junmo.core.resolver.MethodArgumentResolver;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -19,7 +20,7 @@ import org.springframework.util.ClassUtils;
 public class JsonMethodArgumentResolver implements MethodArgumentResolver {
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
         String contentType = httpServletRequest.getHeads().get(HttpHeaderNames.CONTENT_TYPE.toString());
         contentType = Objects.isNull(contentType) ? "" : contentType;
         String[] headerArr = HttpGenericInvokeUtils.splitHeaderContentType(contentType);
@@ -33,7 +34,7 @@ public class JsonMethodArgumentResolver implements MethodArgumentResolver {
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
         byte[] bodyData = httpServletRequest.getBodyData();
         try {
             String jsonData = new String(bodyData, "UTF-8");

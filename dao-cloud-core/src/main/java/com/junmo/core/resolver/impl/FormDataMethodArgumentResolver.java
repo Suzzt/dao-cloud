@@ -2,6 +2,7 @@ package com.junmo.core.resolver.impl;
 
 import com.junmo.core.binder.WebDataBinder;
 import com.junmo.core.model.HttpServletRequestModel;
+import com.junmo.core.model.HttpServletResponse;
 import com.junmo.core.resolver.AbstractMethodArgumentResolver;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -28,7 +29,7 @@ public class FormDataMethodArgumentResolver extends AbstractMethodArgumentResolv
     }
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
         String contentType = Optional.ofNullable(httpServletRequest.getHeads().get("content-type")).orElse("");
         Class<?> type = parameter.getType();
         contentType = Objects.isNull(contentType) ? "" : contentType;
@@ -40,7 +41,7 @@ public class FormDataMethodArgumentResolver extends AbstractMethodArgumentResolv
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest) {
+    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
 
         Constructor<?> ctor = BeanUtils.getResolvableConstructor(parameter.getType());
         Object target = BeanUtils.instantiateClass(ctor);

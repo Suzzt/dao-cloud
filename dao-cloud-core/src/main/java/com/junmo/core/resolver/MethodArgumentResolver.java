@@ -1,6 +1,7 @@
 package com.junmo.core.resolver;
 
 import com.junmo.core.model.HttpServletRequestModel;
+import com.junmo.core.model.HttpServletResponse;
 import java.lang.reflect.Parameter;
 
 /**
@@ -9,7 +10,7 @@ import java.lang.reflect.Parameter;
  */
 public interface MethodArgumentResolver {
 
-    boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest);
+    boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse);
 
-    Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest);
+    Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse);
 }
