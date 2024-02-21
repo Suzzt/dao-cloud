@@ -9,6 +9,12 @@ import lombok.Data;
  */
 @Data
 public class ResponseModel extends Model {
+
+    /**
+     * error code
+     */
+    private String errorCode;
+
     /**
      * error message
      */

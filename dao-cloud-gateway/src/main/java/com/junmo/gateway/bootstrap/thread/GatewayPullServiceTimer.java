@@ -52,7 +52,6 @@ public class GatewayPullServiceTimer implements Runnable {
                     if (promise.isSuccess()) {
                         GatewayServiceNodeModel gatewayServiceNodeModel = promise.getNow();
                         Map<ProxyProviderModel, Set<ServerNodeModel>> map = gatewayServiceNodeModel.getServices();
-                        ClientManager.reset(map);
                         GatewayServiceConfig.reset(gatewayServiceNodeModel.getConfig());
                         if (!CollectionUtils.isEmpty(map)) {
                             map.forEach((proxyProviderModel, proxyProviders) -> {

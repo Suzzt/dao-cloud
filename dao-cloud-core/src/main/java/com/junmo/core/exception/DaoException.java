@@ -24,4 +24,7 @@ public class DaoException extends RuntimeException {
         super(msg);
         this.code = code;
     }
+    public String getCode() {
+        return code;
+    }
 }

@@ -28,26 +28,37 @@ public enum CodeEnum {
      */
     PARAMETER_ACCOUNT_ERROR("A1001", "账号密码错误"),
 
-    // G级别 网关侧错误
+    // D级别 dao-cloud服务交互侧
+    /**
+     * dao-cloud内部未知错误
+     */
+    SERVICE_UNKNOWN_ERROR("D0001", "服务未知错误"),
+
+    // G级别 网关侧
     /**
      * 网关请求失败
      */
-    GATEWAY_REQUEST_ERROR("G0000", "网关请求失败"),
+    GATEWAY_REQUEST_SUCCESS("G0000", "网关请求成功"),
+
+    /**
+     * 网关请求失败
+     */
+    GATEWAY_REQUEST_ERROR("G0001", "网关请求失败"),
 
     /**
      * 网关请求超时
      */
-    GATEWAY_REQUEST_TIMEOUT("G0001", "网关请求超时"),
+    GATEWAY_REQUEST_TIMEOUT("G0002", "网关请求超时"),
 
     /**
      * 网关请求被限流
      */
-    GATEWAY_REQUEST_LIMIT("G0002", "网关请求被限流"),
+    GATEWAY_REQUEST_LIMIT("G0003", "网关请求被限流"),
 
     /**
      * 网关请求参数缺失
      */
-    GATEWAY_REQUEST_PARAM_DELETION("G0003", "网关请求必要参数缺失"),
+    GATEWAY_REQUEST_PARAM_DELETION("G0004", "网关请求必要参数缺失"),
 
     /**
      * 服务接口不存在

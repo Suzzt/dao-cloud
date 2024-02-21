@@ -11,6 +11,7 @@ import java.util.Map;
  * @description: dao-cloud transfer protocol type
  */
 public class MessageType {
+    public static final byte GLOBAL_DAO_EXCEPTION_MESSAGE = -9;
     public static final byte PING_PONG_HEART_BEAT_MESSAGE = -1;
     public static final byte REGISTRY_REQUEST_MESSAGE = 0;
     public static final byte PULL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
@@ -33,6 +34,7 @@ public class MessageType {
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
     static {
+        MESSAGE_TYPE_MAP.put(GLOBAL_DAO_EXCEPTION_MESSAGE, GlobalExceptionModel.class);
         MESSAGE_TYPE_MAP.put(PING_PONG_HEART_BEAT_MESSAGE, HeartbeatModel.class);
         MESSAGE_TYPE_MAP.put(REGISTRY_REQUEST_MESSAGE, RegisterProviderModel.class);
         MESSAGE_TYPE_MAP.put(PULL_REGISTRY_SERVER_REQUEST_MESSAGE, ProxyProviderModel.class);

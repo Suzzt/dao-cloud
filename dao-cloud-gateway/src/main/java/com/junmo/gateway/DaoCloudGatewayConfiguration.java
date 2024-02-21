@@ -5,6 +5,7 @@ import com.junmo.boot.banlance.impl.RoundLoadBalance;
 import com.junmo.boot.bootstrap.DaoCloudCenterBootstrap;
 import com.junmo.boot.properties.DaoCloudCenterProperties;
 import com.junmo.gateway.bootstrap.GatewayBootstrap;
+import com.junmo.gateway.global.GlobalGatewayExceptionHandler;
 import com.junmo.gateway.limit.CountLimiter;
 import com.junmo.gateway.limit.Limiter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,6 +25,11 @@ public class DaoCloudGatewayConfiguration {
     @Bean
     public Dispatcher dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
         return new Dispatcher(limiter, daoLoadBalance);
+    }
+
+    @Bean
+    public GlobalGatewayExceptionHandler globalGatewayExceptionHandler() {
+        return new GlobalGatewayExceptionHandler();
     }
 
     @Bean

@@ -132,7 +132,7 @@ public class Dispatcher {
                     .forEach(response::addHeader);
             outputStream.write(result.getBodyData());
         } catch (InterruptedException e) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR.getCode(), CodeEnum.GATEWAY_REQUEST_ERROR.getText());
 
         } catch (IOException e) {
             throw new RuntimeException(e);

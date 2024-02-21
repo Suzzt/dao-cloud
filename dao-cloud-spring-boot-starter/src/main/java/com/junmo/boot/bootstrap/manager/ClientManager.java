@@ -59,13 +59,6 @@ public class ClientManager {
     }
 
     /**
-     * The gateway loads all service information
-     */
-    public static void reset(Map<ProxyProviderModel, Set<ServerNodeModel>> nodes) {
-        SERVICE_NODES = nodes;
-    }
-
-    /**
      * add provider service node
      *
      * @param proxyProviderModel

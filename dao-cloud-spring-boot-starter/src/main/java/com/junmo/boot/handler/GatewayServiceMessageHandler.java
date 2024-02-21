@@ -3,16 +3,13 @@ package com.junmo.boot.handler;
 import com.junmo.boot.bootstrap.manager.ServiceManager;
 import com.junmo.boot.bootstrap.unit.ServiceInvoker;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.GatewayRequestModel;
-import com.junmo.core.model.HttpParameterBinderResult;
-import com.junmo.core.model.HttpServletRequestModel;
-import com.junmo.core.model.HttpServletResponse;
-import com.junmo.core.model.RpcRequestModel;
+import com.junmo.core.model.*;
 import com.junmo.core.resolver.MethodArgumentResolverHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -103,5 +100,10 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
         httpServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
         return httpServletResponse;
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        // todo
     }
 }

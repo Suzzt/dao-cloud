@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.boot.bootstrap.manager.ServiceManager;
 import com.junmo.boot.handler.GatewayServiceMessageHandler;
+import com.junmo.boot.handler.NettyGlobalTriggerExceptionHandler;
 import com.junmo.boot.handler.RpcServerMessageHandler;
 import com.junmo.boot.handler.ServerPingPongMessageHandler;
 import com.junmo.boot.properties.DaoCloudServerProperties;
@@ -66,6 +67,7 @@ public class Server {
                     ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
                     ch.pipeline().addLast(new GatewayServiceMessageHandler(methodArgumentResolverHandler));
                     ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
+                    ch.pipeline().addLast(new NettyGlobalTriggerExceptionHandler());
                 }
             });
             serverBootstrap.bind(DaoCloudServerProperties.serverPort).sync();
