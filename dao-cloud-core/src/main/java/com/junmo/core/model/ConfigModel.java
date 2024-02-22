@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: 配置中心配置对象
  */
 @Data
-public class ConfigModel extends ResponseModel {
+public class ConfigModel extends ErrorResponseModel {
     /**
      * 配置类别
      * 用于区分定位唯一

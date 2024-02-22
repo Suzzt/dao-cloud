@@ -29,7 +29,6 @@ public class MessageType {
     public static final byte GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE = 14;
     public static final byte GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE = 15;
     public static final byte GATEWAY_RPC_REQUEST_MESSAGE = 16;
-    public static final byte GATEWAY_RPC_RESPONSE_MESSAGE = 17;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -52,7 +51,6 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, GatewayPullServiceMarkModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, GatewayServiceNodeModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_RPC_REQUEST_MESSAGE, GatewayRequestModel.class);
-        MESSAGE_TYPE_MAP.put(GATEWAY_RPC_RESPONSE_MESSAGE, GatewayResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

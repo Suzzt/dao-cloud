@@ -86,7 +86,6 @@ public class Dispatcher {
         HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
-
     }
 
     public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) {

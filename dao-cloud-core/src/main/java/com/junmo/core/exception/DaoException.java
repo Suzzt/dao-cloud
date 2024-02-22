@@ -7,7 +7,8 @@ package com.junmo.core.exception;
  */
 public class DaoException extends RuntimeException {
 
-    private String code;
+    public String code;
+
     public DaoException(String msg) {
         super(msg);
     }

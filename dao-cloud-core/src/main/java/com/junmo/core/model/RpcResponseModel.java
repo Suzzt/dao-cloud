@@ -1,5 +1,6 @@
 package com.junmo.core.model;
 
+import com.junmo.core.enums.CodeEnum;
 import lombok.Data;
 
 /**
@@ -8,7 +9,16 @@ import lombok.Data;
  * @description: rpc 返回模型封装
  */
 @Data
-public class RpcResponseModel extends ResponseModel {
+public class RpcResponseModel extends ErrorResponseModel {
+
+    public static RpcResponseModel builder(long sequenceId, CodeEnum codeEnum) {
+        RpcResponseModel responseModel = new RpcResponseModel();
+        responseModel.setSequenceId(sequenceId);
+        responseModel.setErrorCode(codeEnum.getCode());
+        responseModel.setErrorMessage(codeEnum.getText());
+        return responseModel;
+    }
+
     private long sequenceId;
 
     /**

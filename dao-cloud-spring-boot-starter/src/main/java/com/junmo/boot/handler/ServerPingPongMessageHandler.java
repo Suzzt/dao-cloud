@@ -30,5 +30,4 @@ public class ServerPingPongMessageHandler extends SimpleChannelInboundHandler<He
             }
         });
     }
-
 }

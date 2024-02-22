@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
@@ -93,7 +92,7 @@ public class ClientInvoker {
             client.clearFailMark();
             return promise.getNow();
         } else {
-            throw new DaoException(promise.cause());
+            throw (DaoException) promise.cause();
         }
     }
 }

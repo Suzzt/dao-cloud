@@ -61,9 +61,30 @@ public enum CodeEnum {
     GATEWAY_REQUEST_PARAM_DELETION("G0004", "网关请求必要参数缺失"),
 
     /**
-     * 服务接口不存在
+     * 网关服务接口不存在
      */
-    GATEWAY_SERVICE_NOT_EXIST("G0004", "服务接口不存在"),
+    GATEWAY_SERVICE_NOT_EXIST("G0005", "网关服务接口不存在"),
+
+    /**
+     * 网关参数处理绑定失败
+     */
+    GATEWAY_PARAM_PROCESS_BINDING_FAILED("G0006", "网关参数处理绑定失败"),
+
+    // S级别 service
+    /**
+     * 服务提供者不存在
+     */
+    SERVICE_PROVIDER_NOT_EXIST("S0001", "服务提供者不存在"),
+
+    /**
+     * 服务提供者方法(函数)不存在
+     */
+    SERVICE_PROVIDER_METHOD_NOT_EXIST("S0002", "服务提供者方法(函数)不存在"),
+
+    /**
+     * 服务调用失败
+     */
+    SERVICE_INVOKE_ERROR("S0003", "服务调用失败"),
     ;
     private String code;
 

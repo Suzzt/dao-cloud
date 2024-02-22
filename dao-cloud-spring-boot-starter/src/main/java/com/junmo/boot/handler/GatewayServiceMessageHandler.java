@@ -2,13 +2,19 @@ package com.junmo.boot.handler;
 
 import com.junmo.boot.bootstrap.manager.ServiceManager;
 import com.junmo.boot.bootstrap.unit.ServiceInvoker;
-import com.junmo.core.exception.DaoException;
+import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.NoMatchMethodException;
 import com.junmo.core.model.*;
+import com.junmo.core.netty.protocol.DaoMessage;
+import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.resolver.MethodArgumentResolverHandler;
+import com.junmo.core.util.DaoCloudConstant;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -22,6 +28,7 @@ import java.util.stream.Collectors;
  * @date: 2024/1/30 11:24
  * @description: 网关请求处理响应, 该请求会打到rpc服务调用的handler上
  */
+@Slf4j
 public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<GatewayRequestModel> {
 
     private MethodArgumentResolverHandler methodArgumentResolverHandler;
@@ -32,7 +39,30 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, GatewayRequestModel gatewayRequestModel) {
-        RpcRequestModel rpcRequestModel = wrapper(gatewayRequestModel);
+        RpcRequestModel rpcRequestModel;
+        try {
+            rpcRequestModel = wrapper(gatewayRequestModel);
+        } catch (NoMatchMethodException e) {
+            log.error("网关请求方法不存在", e);
+            RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());
+                }
+            });
+            return;
+        } catch (Exception e) {
+            log.error("网关参数绑定失败", e);
+            RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_PARAM_PROCESS_BINDING_FAILED);
+            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
+                if (!future.isSuccess()) {
+                    log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());
+                }
+            });
+            return;
+        }
         // 将加工后的对象传递到下一个rpc处理器
         ctx.fireChannelRead(rpcRequestModel);
     }
@@ -46,19 +76,19 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
     private RpcRequestModel wrapper(GatewayRequestModel gatewayRequestModel) {
 
         ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(gatewayRequestModel.getProvider(),
-            gatewayRequestModel.getVersion());
+                gatewayRequestModel.getVersion());
         Object serviceBean = serviceInvoker.getServiceBean();
         HttpParameterBinderResult binderResult = this.binderHttpArgs(serviceBean.getClass(), gatewayRequestModel.getMethodName(), gatewayRequestModel.getRequest());
 
         //String provider, int version, String methodName, Class[] parameterTypes, Object[] parameterValue, Class<?> returnType
         RpcRequestModel requestModel = new RpcRequestModel(
-            gatewayRequestModel.getProvider(),
-            gatewayRequestModel.getVersion(),
-            gatewayRequestModel.getMethodName(),
-            binderResult.getParameterTypes(),
-            binderResult.getParameterValues(),
-            binderResult.getReturnType()
-            );
+                gatewayRequestModel.getProvider(),
+                gatewayRequestModel.getVersion(),
+                gatewayRequestModel.getMethodName(),
+                binderResult.getParameterTypes(),
+                binderResult.getParameterValues(),
+                binderResult.getReturnType()
+        );
         requestModel.setSequenceId(gatewayRequestModel.getSequenceId());
         requestModel.setHttp(true);
         requestModel.setHttpServletResponse(binderResult.getHttpServletResponse());
@@ -70,10 +100,10 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         Method[] methods = clss.getMethods();
         // 目前http请求的方式不支持重载，后续有空再迭代
         Method method = Arrays.stream(methods).filter(m -> m.getName().equals(methodName)).findFirst()
-            .orElseThrow(() -> new DaoException(String.format("未找到服务：%s#%s", clss.getName(), methodName)));
+                .orElseThrow(() -> new NoMatchMethodException());
         Parameter[] parameters = method.getParameters();
         HttpServletResponse httpServletResponse = this.createDefaultResponse();
-        if(Objects.isNull(parameters) || parameters.length == 0) {
+        if (Objects.isNull(parameters) || parameters.length == 0) {
             HttpParameterBinderResult result = new HttpParameterBinderResult();
             result.setReturnType(method.getReturnType());
             result.setHttpServletResponse(httpServletResponse);
@@ -82,12 +112,12 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             return result;
         }
         List<Object> parameterValueList = Arrays.stream(parameters)
-            .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest, httpServletResponse))
-            .collect(Collectors.toList());
+                .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest, httpServletResponse))
+                .collect(Collectors.toList());
 
         HttpParameterBinderResult result = new HttpParameterBinderResult();
         result.setParameterTypes(Arrays.stream(parameters).map(Parameter::getType)
-            .collect(Collectors.toList()).toArray(new Class<?>[0]));
+                .collect(Collectors.toList()).toArray(new Class<?>[0]));
         result.setParameterValues(parameterValueList.toArray());
         result.setReturnType(method.getReturnType());
         result.setHttpServletResponse(httpServletResponse);
@@ -97,13 +127,8 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
     private HttpServletResponse createDefaultResponse() {
         HttpServletResponse httpServletResponse = new HttpServletResponse();
         httpServletResponse.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(),
-            HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
+                HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
         httpServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
         return httpServletResponse;
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // todo
     }
 }

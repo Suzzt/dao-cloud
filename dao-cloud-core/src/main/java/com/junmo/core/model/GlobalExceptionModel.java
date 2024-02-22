@@ -8,14 +8,11 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class GlobalExceptionModel extends Model {
+public class GlobalExceptionModel extends ErrorResponseModel {
 
     /**
      * request message type
      */
     private byte messageType;
 
-    private String errorCode;
-
-    private String errorMessage;
 }

@@ -10,6 +10,6 @@ import java.util.List;
  * @description:
  */
 @Data
-public class FullConfigModel extends ResponseModel {
+public class FullConfigModel extends ErrorResponseModel {
     private List<ConfigModel> configModels;
 }

@@ -10,7 +10,7 @@ import java.util.Set;
  * @description:
  */
 @Data
-public class ProxyProviderServerModel extends ResponseModel {
+public class ProxyProviderServerModel extends ErrorResponseModel {
     private String proxy;
 
     private ProviderModel providerModel;

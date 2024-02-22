@@ -28,10 +28,9 @@ import org.springframework.util.StringUtils;
  * 具体思路:
  * 客户端: 设计一个超时事件任务, 这里设计的读事件超时, 在超时中发送心跳包的定时任务
  * bootstrap.handler(new ChannelInitializer<NioSocketChannel>() {
- *      @Override
- *      protected void initChannel(NioSocketChannel ch) throws Exception {
- *          ch.pipeline().addLast("clientIdleHandler", new IdleStateHandler(2, 0, 0));
- *      }
+ * @Override protected void initChannel(NioSocketChannel ch) throws Exception {
+ * ch.pipeline().addLast("clientIdleHandler", new IdleStateHandler(2, 0, 0));
+ * }
  * });
  * 服务端: 设计一个超时事件任务, 就是监听读、写事件. 一种是监听客户端发送的心跳读入事件, 一种回心跳包写出去到客户端
  * bootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
@@ -67,8 +66,9 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
         if (promise != null) {
             Object returnValue = msg.getReturnValue();
             String errorMessage = msg.getErrorMessage();
+            String errorCode = msg.getErrorCode();
             if (StringUtils.hasLength(errorMessage)) {
-                promise.setFailure(new DaoException(errorMessage));
+                promise.setFailure(new DaoException(errorCode, errorMessage));
             } else {
                 promise.setSuccess(returnValue);
             }

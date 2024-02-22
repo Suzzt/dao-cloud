@@ -1,9 +1,11 @@
 package com.junmo.boot.bootstrap.unit;
 
+import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.model.RpcRequestModel;
 import com.junmo.core.model.RpcResponseModel;
-import java.lang.reflect.Method;
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Method;
 
 /**
  * @author: sucf
@@ -32,14 +34,13 @@ public class ServiceInvoker {
      * @return
      */
     public RpcResponseModel doInvoke(RpcRequestModel requestModel) {
+        if (serviceBean == null) {
+            return RpcResponseModel.builder(requestModel.getSequenceId(), CodeEnum.SERVICE_PROVIDER_NOT_EXIST);
+        }
+
         //  make response
         RpcResponseModel responseModel = new RpcResponseModel();
         responseModel.setSequenceId(requestModel.getSequenceId());
-
-        if (serviceBean == null) {
-            responseModel.setErrorMessage("provider not exists method");
-            return responseModel;
-        }
 
         try {
             // invoke method
@@ -50,9 +51,12 @@ public class ServiceInvoker {
             Method method = serviceClass.getMethod(methodName, parameterTypes);
             Object result = method.invoke(serviceBean, parameters);
             responseModel.setReturnValue(result);
+        } catch (NoSuchMethodException e) {
+            log.error("<<<<<<<<<<< dao-cloud invoke no match found for method = {}. >>>>>>>>>>>>", requestModel.getMethodName(), e);
+            responseModel = RpcResponseModel.builder(requestModel.getSequenceId(), CodeEnum.SERVICE_PROVIDER_METHOD_NOT_EXIST);
         } catch (Throwable t) {
-            log.error("<<<<<<<<<<< dao-cloud provider invoke method error >>>>>>>>>>>>", t);
-            responseModel.setErrorMessage(t.getMessage());
+            log.error("<<<<<<<<<<< dao-cloud provider(method = {}) invoke method error. >>>>>>>>>>>>", requestModel.getMethodName(), t);
+            responseModel = RpcResponseModel.builder(requestModel.getSequenceId(), CodeEnum.SERVICE_INVOKE_ERROR);
         }
         return responseModel;
     }
