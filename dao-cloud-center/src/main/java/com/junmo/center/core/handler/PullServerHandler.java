@@ -2,10 +2,9 @@ package com.junmo.center.core.handler;
 
 import com.junmo.center.bootstarp.DaoCloudCenterConfiguration;
 import com.junmo.center.core.RegisterCenterManager;
-import com.junmo.core.model.ProviderModel;
-import com.junmo.core.model.ProxyProviderModel;
-import com.junmo.core.model.ProxyProviderServerModel;
-import com.junmo.core.model.ServerNodeModel;
+import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
+import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
 import com.junmo.core.netty.protocol.MessageType;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +32,8 @@ public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProvider
             serverNodeModels = RegisterCenterManager.getServers(proxy, providerModel);
             daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
         } catch (Exception e) {
-            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, e.getMessage()));
+            log.error("<<<<<<<<<<< Failed to pull service list >>>>>>>>>>>>", e);
+            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(CodeEnum.PULL_SERVICE_NODE_ERROR));
         }
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {

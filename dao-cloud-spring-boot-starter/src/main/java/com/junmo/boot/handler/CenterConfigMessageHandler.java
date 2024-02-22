@@ -9,7 +9,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 /**
  * @author: sucf
@@ -28,11 +27,11 @@ public class CenterConfigMessageHandler extends SimpleChannelInboundHandler<Conf
             DaoConfig.refresh(configModel.getProxyConfigModel(), configModel.getConfigValue());
         } else {
             // self pull
-            String errorMessage = configModel.getErrorMessage();
-            if (StringUtils.hasLength(errorMessage)) {
-                configPromise.setFailure(new DaoException(errorMessage));
-            } else {
+            DaoException daoException = configModel.getDaoException();
+            if (daoException == null) {
                 configPromise.setSuccess(configValue);
+            } else {
+                configPromise.setFailure(daoException);
             }
         }
     }

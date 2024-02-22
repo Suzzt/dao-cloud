@@ -1,5 +1,7 @@
 package com.junmo.core.model;
 
+import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
 import lombok.Data;
 
 import java.util.Set;
@@ -11,6 +13,7 @@ import java.util.Set;
  */
 @Data
 public class ProxyProviderServerModel extends ErrorResponseModel {
+
     private String proxy;
 
     private ProviderModel providerModel;
@@ -23,7 +26,7 @@ public class ProxyProviderServerModel extends ErrorResponseModel {
         this.serverNodeModes = serverNodeModes;
     }
 
-    public ProxyProviderServerModel(String proxy, ProviderModel providerModel, String errorMessage) {
-        this.errorMessage = errorMessage;
+    public ProxyProviderServerModel(CodeEnum codeEnum) {
+        setDaoException(new DaoException(codeEnum));
     }
 }

@@ -13,7 +13,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 /**
  * @author: sucf
@@ -55,22 +54,20 @@ public class RpcClientMessageHandler extends SimpleChannelInboundHandler<RpcResp
     /**
      * 接收rpc 调用返回结果
      *
-     * @param ctx the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
-     *            belongs to
-     * @param msg the message to handle
+     * @param ctx           the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
+     *                      belongs to
+     * @param responseModel the response message to handle
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcResponseModel msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcResponseModel responseModel) {
         // get promise
-        Promise<Object> promise = LongPromiseBuffer.getInstance().remove(msg.getSequenceId());
+        Promise<Object> promise = LongPromiseBuffer.getInstance().remove(responseModel.getSequenceId());
         if (promise != null) {
-            Object returnValue = msg.getReturnValue();
-            String errorMessage = msg.getErrorMessage();
-            String errorCode = msg.getErrorCode();
-            if (StringUtils.hasLength(errorMessage)) {
-                promise.setFailure(new DaoException(errorCode, errorMessage));
+            DaoException daoException = responseModel.getDaoException();
+            if (daoException == null) {
+                promise.setSuccess(responseModel.getReturnValue());
             } else {
-                promise.setSuccess(returnValue);
+                promise.setFailure(daoException);
             }
         }
     }

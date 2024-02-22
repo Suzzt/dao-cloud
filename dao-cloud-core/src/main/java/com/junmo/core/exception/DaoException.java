@@ -1,12 +1,21 @@
 package com.junmo.core.exception;
 
+import com.junmo.core.enums.CodeEnum;
+
+import java.io.Serializable;
+
 /**
  * @author: sucf
  * @date: 2023/1/9 10:38
  * @description:
  */
-public class DaoException extends RuntimeException {
+public class DaoException extends RuntimeException implements Serializable {
 
+    /**
+     * 错误码
+     *
+     * @see com.junmo.core.enums.CodeEnum
+     */
     public String code;
 
     public DaoException(String msg) {
@@ -25,6 +34,11 @@ public class DaoException extends RuntimeException {
         super(msg);
         this.code = code;
     }
+
+    public DaoException(CodeEnum errorInfo) {
+        this(errorInfo.getCode(), errorInfo.getText());
+    }
+
     public String getCode() {
         return code;
     }

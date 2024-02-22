@@ -3,6 +3,8 @@ package com.junmo.center.core.handler;
 import com.junmo.center.bootstarp.DaoCloudCenterConfiguration;
 import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.RegisterCenterManager;
+import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayPullServiceMarkModel;
 import com.junmo.core.model.GatewayServiceNodeModel;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -33,7 +35,7 @@ public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<Gatew
             gatewayServiceNodeModel.setServices(RegisterCenterManager.gatewayServers());
             gatewayServiceNodeModel.setConfig(gatewayCenterManager.getGatewayConfig());
         } catch (Exception e) {
-            gatewayServiceNodeModel.setErrorMessage(e.getMessage());
+            gatewayServiceNodeModel.setDaoException(new DaoException(CodeEnum.PULL_SERVICE_NODE_ERROR));
         }
         daoMessage = new DaoMessage((byte) 1, MessageType.GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, gatewayServiceNodeModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {

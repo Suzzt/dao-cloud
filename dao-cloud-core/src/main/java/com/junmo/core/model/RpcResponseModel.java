@@ -1,6 +1,7 @@
 package com.junmo.core.model;
 
 import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
 import lombok.Data;
 
 /**
@@ -14,8 +15,7 @@ public class RpcResponseModel extends ErrorResponseModel {
     public static RpcResponseModel builder(long sequenceId, CodeEnum codeEnum) {
         RpcResponseModel responseModel = new RpcResponseModel();
         responseModel.setSequenceId(sequenceId);
-        responseModel.setErrorCode(codeEnum.getCode());
-        responseModel.setErrorMessage(codeEnum.getText());
+        responseModel.setDaoException(new DaoException(codeEnum));
         return responseModel;
     }
 

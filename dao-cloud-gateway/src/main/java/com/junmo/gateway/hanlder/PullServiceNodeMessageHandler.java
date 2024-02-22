@@ -6,7 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 /**
  * @author: sucf
@@ -20,13 +19,13 @@ public class PullServiceNodeMessageHandler extends SimpleChannelInboundHandler<G
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, GatewayServiceNodeModel gatewayServiceNodeModel) {
-        String errorMessage = gatewayServiceNodeModel.getErrorMessage();
-        if (StringUtils.hasLength(errorMessage)) {
-            log.error("<<<<<<<<<<<< The gateway failed to pull all nodes. >>>>>>>>>>>>");
-            promise.setFailure(new DaoException(errorMessage));
-        } else {
+        DaoException daoException = gatewayServiceNodeModel.getDaoException();
+        if (daoException == null) {
             log.info(">>>>>>>>>>>> The gateway successfully pulled all nodes. <<<<<<<<<<<<");
             promise.setSuccess(gatewayServiceNodeModel);
+        } else {
+            log.error("<<<<<<<<<<<< The gateway failed to pull all nodes. >>>>>>>>>>>>");
+            promise.setFailure(daoException);
         }
     }
 }

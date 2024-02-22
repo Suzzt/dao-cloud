@@ -1,6 +1,7 @@
 package com.junmo.boot.handler;
 
 import com.junmo.core.enums.CodeEnum;
+import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GlobalExceptionModel;
 import com.junmo.core.model.Model;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -30,8 +31,7 @@ public class NettyGlobalTriggerExceptionHandler extends SimpleChannelInboundHand
         // TODO 这里最好打印下请求信息
         log.error("An unknown error occurred in the component, which is a bad sign", cause);
         GlobalExceptionModel exceptionModel = new GlobalExceptionModel();
-        exceptionModel.setErrorCode(CodeEnum.SERVICE_UNKNOWN_ERROR.getCode());
-        exceptionModel.setErrorMessage(CodeEnum.SERVICE_UNKNOWN_ERROR.getText());
+        exceptionModel.setDaoException(new DaoException(CodeEnum.SERVICE_UNKNOWN_ERROR));
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.GLOBAL_DAO_EXCEPTION_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, exceptionModel);
         ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess()) {

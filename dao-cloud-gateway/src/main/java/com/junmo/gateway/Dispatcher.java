@@ -12,8 +12,6 @@ import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.global.GatewayServiceConfig;
 import com.junmo.gateway.limit.Limiter;
-import java.io.IOException;
-import java.io.OutputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -88,7 +87,7 @@ public class Dispatcher {
         this.doService(proxy, gatewayRequestModel, response);
     }
 
-    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) {
+    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
         // 先判断限流
         if (!limiter.allow()) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
@@ -125,16 +124,13 @@ public class Dispatcher {
         }
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
         com.junmo.core.model.HttpServletResponse result;
-        try (OutputStream outputStream = response.getOutputStream()){
-            result = (com.junmo.core.model.HttpServletResponse) clientInvoker.invoke(gatewayRequestModel);
+        result = (com.junmo.core.model.HttpServletResponse) clientInvoker.invoke(gatewayRequestModel);
+        try (OutputStream outputStream = response.getOutputStream()) {
             Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
                     .forEach(response::addHeader);
             outputStream.write(result.getBodyData());
-        } catch (InterruptedException e) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR.getCode(), CodeEnum.GATEWAY_REQUEST_ERROR.getText());
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
         }
     }
 }

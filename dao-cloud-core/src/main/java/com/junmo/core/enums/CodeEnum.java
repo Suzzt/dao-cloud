@@ -34,6 +34,11 @@ public enum CodeEnum {
      */
     SERVICE_UNKNOWN_ERROR("D0001", "服务未知错误"),
 
+    /**
+     * 拉取节点失败
+     */
+    PULL_SERVICE_NODE_ERROR("D0002", "拉取服务节点失败"),
+
     // G级别 网关侧
     /**
      * 网关请求失败

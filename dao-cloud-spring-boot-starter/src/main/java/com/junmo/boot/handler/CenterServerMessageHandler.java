@@ -12,7 +12,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -34,13 +33,13 @@ public class CenterServerMessageHandler extends SimpleChannelInboundHandler<Prox
         ProviderModel providerModel = proxyProviderServerModel.getProviderModel();
         Promise<Set<ServerNodeModel>> pullPromise = PROMISE_MAP.remove(new ProxyProviderModel(proxy, providerModel));
         Set<ServerNodeModel> serverNodeModes = proxyProviderServerModel.getServerNodeModes();
-        String errorMessage = proxyProviderServerModel.getErrorMessage();
-        if (StringUtils.hasLength(errorMessage)) {
-            log.error("<<<<<<<<<<<< pull (proxy = {}, provider = {}, server node = {}) error. >>>>>>>>>>>>", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
-            pullPromise.setFailure(new DaoException(errorMessage));
-        } else {
+        DaoException daoException = proxyProviderServerModel.getDaoException();
+        if (daoException == null) {
             log.info(">>>>>>>>>>>> pull (proxy = {}, provider = {}, server node = {}) success. <<<<<<<<<<<<", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
             pullPromise.setSuccess(serverNodeModes);
+        } else {
+            log.error("<<<<<<<<<<<< pull (proxy = {}, provider = {}, server node = {}) error. >>>>>>>>>>>>", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
+            pullPromise.setFailure(daoException);
         }
     }
 
