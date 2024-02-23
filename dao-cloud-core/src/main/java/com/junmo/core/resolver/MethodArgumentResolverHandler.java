@@ -10,7 +10,9 @@ import com.junmo.core.resolver.impl.RequestResponseMethodArgumentResolver;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author wuzhenhong
@@ -59,7 +61,12 @@ public class MethodArgumentResolverHandler {
     /**
      * 添加自定义解析器
      */
-    public void addCustomerResolver(MethodArgumentResolver argumentResolver) {
-        this.resolverList.add(argumentResolver);
+    public void addCustomerResolvers(List<MethodArgumentResolver> argumentResolverList) {
+        if(CollectionUtils.isEmpty(argumentResolverList)) {
+            return;
+        }
+        this.resolverList.addAll(argumentResolverList);
+        // 排序
+        AnnotationAwareOrderComparator.sort(this.resolverList);
     }
 }

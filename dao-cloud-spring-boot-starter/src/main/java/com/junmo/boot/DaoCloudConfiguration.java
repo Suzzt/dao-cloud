@@ -57,8 +57,7 @@ public class DaoCloudConfiguration {
         // conversionService 可自定义
         MethodArgumentResolverHandler resolverHandler = new MethodArgumentResolverHandler(customerConversionService);
 //        如果当前满足不了你的参数解析需求，可以自己扩展，然后可以自己加排序
-        Optional.ofNullable(resolverList).orElse(Collections.emptyList())
-                .forEach(resolverHandler::addCustomerResolver);
+        resolverHandler.addCustomerResolvers(resolverList);
         return resolverHandler;
     }
 }
