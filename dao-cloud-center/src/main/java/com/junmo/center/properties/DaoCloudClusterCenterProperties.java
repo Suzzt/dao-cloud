@@ -1,4 +1,4 @@
-package com.junmo.center.bootstarp;
+package com.junmo.center.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -3,7 +3,7 @@ package com.junmo.center.core.storage;
 
 import cn.hutool.core.io.FileUtil;
 import com.google.common.collect.Maps;
-import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.center.properties.DaoCloudConfigCenterProperties;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;
 import com.junmo.core.util.DaoCloudConstant;

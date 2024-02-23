@@ -4,7 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.junmo.center.bootstarp.DaoCloudConfigCenterProperties;
+import com.junmo.center.properties.DaoCloudConfigCenterProperties;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.expand.Persistence;
 import com.junmo.core.model.*;

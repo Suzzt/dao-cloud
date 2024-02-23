@@ -1,5 +1,7 @@
 package com.junmo.center.bootstarp;
 
+import com.junmo.center.properties.DaoCloudClusterCenterProperties;
+import com.junmo.center.properties.DaoCloudConfigCenterProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;
 

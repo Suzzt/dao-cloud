@@ -1,6 +1,6 @@
 package com.junmo.center.core.storage;
 
-import com.junmo.center.bootstarp.DaoCloudClusterCenterProperties;
+import com.junmo.center.properties.DaoCloudClusterCenterProperties;
 import com.junmo.core.expand.Persistence;
 import org.springframework.util.StringUtils;
 

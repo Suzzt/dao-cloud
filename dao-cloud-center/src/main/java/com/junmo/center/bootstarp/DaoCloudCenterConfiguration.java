@@ -4,6 +4,7 @@ import com.junmo.center.core.CenterClusterManager;
 import com.junmo.center.core.ConfigCenterManager;
 import com.junmo.center.core.GatewayCenterManager;
 import com.junmo.center.core.handler.*;
+import com.junmo.center.properties.DaoCloudClusterCenterProperties;
 import com.junmo.center.web.controller.CenterController;
 import com.junmo.center.web.controller.IndexController;
 import com.junmo.center.web.interceptor.CookieInterceptor;

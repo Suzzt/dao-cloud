@@ -43,7 +43,6 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         try {
             rpcRequestModel = wrapper(gatewayRequestModel);
         } catch (NoMatchMethodException e) {
-            log.error("网关请求方法不存在", e);
             RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
