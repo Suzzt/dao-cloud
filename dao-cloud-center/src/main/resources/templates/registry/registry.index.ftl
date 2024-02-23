@@ -122,7 +122,7 @@
                                         color="red">*</font></label>
                             <div class="col-sm-9"><input type="timeout" class="form-control" name="timeout"
                                                          maxlength="10"
-                                                         placeholder="请输入超时时间(到服务调用的时间)"></div>
+                                                         placeholder="请输入调用超时时间(单位是秒)"></div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-9">

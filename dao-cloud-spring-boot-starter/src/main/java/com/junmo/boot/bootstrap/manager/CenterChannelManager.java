@@ -116,12 +116,7 @@ public class CenterChannelManager {
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ProtocolFrameDecoder())
-                        .addLast(new DaoMessageCoder())
-                        .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
-                        .addLast(new InquireClusterCenterResponseHandler())
-                        .addLast(new CenterConfigMessageHandler())
-                        .addLast(new CenterServerMessageHandler());
+                ch.pipeline().addLast(new ProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS)).addLast(new InquireClusterCenterResponseHandler()).addLast(new CenterConfigMessageHandler()).addLast(new CenterServerMessageHandler());
             }
         });
         try {
@@ -145,7 +140,7 @@ public class CenterChannelManager {
                             CONNECT_CENTER_CHANNEL = future.channel();
                             log.info(">>>>>>>>> reconnect center node(ip={}) success. <<<<<<<<<< :)bingo(:", CURRENT_USE_CENTER_IP);
                         } else {
-                            log.error("<<<<<<<<<< reconnect center node(ip={}) error >>>>>>>>>>", CURRENT_USE_CENTER_IP, future.cause());
+                            log.error("<<<<<<<<<< reconnect center node(ip={}) error. >>>>>>>>>>", CURRENT_USE_CENTER_IP, future.cause());
                             shuffle();
                         }
                     }

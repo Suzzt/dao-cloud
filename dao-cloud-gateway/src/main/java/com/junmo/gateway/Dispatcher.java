@@ -5,9 +5,9 @@ import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.manager.ClientManager;
 import com.junmo.boot.bootstrap.unit.ClientInvoker;
 import com.junmo.core.enums.CodeEnum;
-import com.junmo.core.enums.Serializer;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.*;
+import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.HttpGenericInvokeUtils;
 import com.junmo.gateway.auth.Interceptor;
 import com.junmo.gateway.global.GatewayServiceConfig;
@@ -101,14 +101,12 @@ public class Dispatcher {
             }
         }
 
-        // 发起转发路由请求
-        byte serializable = Serializer.HESSIAN.getType();
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
         Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
         if (providerNodes == null) {
             throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
-
         }
+
         GatewayConfigModel gatewayConfig = GatewayServiceConfig.getGatewayConfig(proxyProviderModel);
         // gateway timout config
         Long timeout;
@@ -122,7 +120,9 @@ public class Dispatcher {
                 timeout = 30L;
             }
         }
-        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serializable, timeout);
+
+        // 发起转发路由请求
+        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
         com.junmo.core.model.HttpServletResponse result;
         result = (com.junmo.core.model.HttpServletResponse) clientInvoker.invoke(gatewayRequestModel);
         try (OutputStream outputStream = response.getOutputStream()) {
