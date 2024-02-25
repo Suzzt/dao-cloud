@@ -4,6 +4,7 @@ import com.junmo.boot.bootstrap.thread.InquireClusterTimer;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
 import com.junmo.boot.handler.CenterServerMessageHandler;
 import com.junmo.boot.handler.InquireClusterCenterResponseHandler;
+import com.junmo.boot.handler.GatewayPullServiceNodeMessageHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
@@ -116,7 +117,13 @@ public class CenterChannelManager {
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS)).addLast(new InquireClusterCenterResponseHandler()).addLast(new CenterConfigMessageHandler()).addLast(new CenterServerMessageHandler());
+                ch.pipeline().addLast(new ProtocolFrameDecoder())
+                        .addLast(new DaoMessageCoder())
+                        .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
+                        .addLast(new InquireClusterCenterResponseHandler())
+                        .addLast(new CenterConfigMessageHandler())
+                        .addLast(new CenterServerMessageHandler())
+                        .addLast(new GatewayPullServiceNodeMessageHandler());
             }
         });
         try {
@@ -129,7 +136,10 @@ public class CenterChannelManager {
         }
     }
 
-    public static void reconnect() {
+    public static synchronized void reconnect() {
+        if (CONNECT_CENTER_CHANNEL.isActive()) {
+            return;
+        }
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
                 BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_PORT);

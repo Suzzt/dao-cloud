@@ -12,7 +12,7 @@ import com.junmo.core.netty.protocol.MessageType;
 import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.DaoTimer;
 import com.junmo.gateway.global.GatewayServiceConfig;
-import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
+import com.junmo.boot.handler.GatewayPullServiceNodeMessageHandler;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
@@ -39,7 +39,7 @@ public class GatewayPullServiceTimer implements Runnable {
                     // 从注册中心拉取所有服务节点数据
                     DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayPullServiceMarkModel());
                     DefaultPromise<GatewayServiceNodeModel> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
-                    PullServiceNodeMessageHandler.promise = promise;
+                    GatewayPullServiceNodeMessageHandler.promise = promise;
                     CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
                         if (!future.isSuccess()) {
                             promise.setFailure(future.cause());

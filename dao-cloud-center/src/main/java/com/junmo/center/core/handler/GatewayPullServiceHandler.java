@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: sucf
  * @date: 2024/1/12 22:53
- * @description:
+ * @description: Gateway pull service node handler(All server info)
  */
 @Slf4j
 public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<GatewayPullServiceMarkModel> {

@@ -1,6 +1,5 @@
 package com.junmo.gateway.bootstrap;
 
-import com.junmo.boot.bootstrap.manager.CenterChannelManager;
 import com.junmo.boot.bootstrap.manager.RegistryManager;
 import com.junmo.core.model.ProviderModel;
 import com.junmo.core.model.RegisterProviderModel;
@@ -9,7 +8,6 @@ import com.junmo.core.util.DaoCloudConstant;
 import com.junmo.core.util.NetUtil;
 import com.junmo.core.util.ThreadPoolFactory;
 import com.junmo.gateway.bootstrap.thread.GatewayPullServiceTimer;
-import com.junmo.gateway.hanlder.PullServiceNodeMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -27,8 +25,6 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        // Newly added gateway handler
-        CenterChannelManager.getChannel().pipeline().addLast(new PullServiceNodeMessageHandler());
         // load all service && start thread task pull service
         loadPull();
         // registry center

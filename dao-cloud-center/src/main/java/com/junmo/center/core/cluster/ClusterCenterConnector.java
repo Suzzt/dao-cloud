@@ -117,7 +117,10 @@ public class ClusterCenterConnector {
     /**
      * reconnect cluster
      */
-    private void reconnect() {
+    private synchronized void reconnect() {
+        if (clusterChannel.isActive()) {
+            return;
+        }
         clusterChannel.close().addListener(future -> {
             clusterChannel.eventLoop().schedule(() -> {
                 bootstrap.connect().addListener(new ChannelFutureListener() {

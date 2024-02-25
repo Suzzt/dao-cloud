@@ -3,6 +3,7 @@ package com.junmo.boot.bootstrap.unit;
 import cn.hutool.core.util.IdUtil;
 import com.junmo.boot.banlance.DaoLoadBalance;
 import com.junmo.boot.bootstrap.manager.ClientManager;
+import com.junmo.core.enums.CodeEnum;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.*;
 import com.junmo.core.netty.protocol.DaoMessage;
@@ -59,7 +60,8 @@ public class ClientInvoker {
             Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
             Set<Client> clients = ClientManager.getSharedClient(providerNodes);
             if (CollectionUtils.isEmpty(clients)) {
-                throw new DaoException("proxy = '" + proxyProviderModel.getProxy() + "', provider = '" + proxyProviderModel.getProviderModel() + "' no provider server");
+                log.error("proxy = '{}', provider = '{}' no provider server", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel());
+                throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
             }
             // load balance
             client = daoLoadBalance.route(clients);

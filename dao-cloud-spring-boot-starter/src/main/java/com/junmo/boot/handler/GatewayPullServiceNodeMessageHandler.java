@@ -1,4 +1,4 @@
-package com.junmo.gateway.hanlder;
+package com.junmo.boot.handler;
 
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.GatewayServiceNodeModel;
@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: sucf
  * @date: 2024/1/11 23:37
- * @description: Gateway pull service node handler
+ * @description: Gateway pull service node handler(All server info)
  */
 @Slf4j
-public class PullServiceNodeMessageHandler extends SimpleChannelInboundHandler<GatewayServiceNodeModel> {
+public class GatewayPullServiceNodeMessageHandler extends SimpleChannelInboundHandler<GatewayServiceNodeModel> {
 
     public static Promise<GatewayServiceNodeModel> promise;
 
