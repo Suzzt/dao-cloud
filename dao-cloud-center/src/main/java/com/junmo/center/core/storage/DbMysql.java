@@ -35,35 +35,21 @@ public class DbMysql implements Persistence {
 
     private DruidDataSource druidDataSource;
 
-    private final String config_create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" +
-            "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
-            "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" +
-            "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" +
-            "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
-            "  `key` varchar(255) NOT NULL COMMENT 'key',\n" +
-            "  `version` int(11) NOT NULL COMMENT 'config版本',\n" +
-            "  `value` longtext NOT NULL COMMENT '配置值',\n" +
-            "  PRIMARY KEY (`id`),\n" +
-            "  UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" +
-            ") ENGINE = InnoDB COMMENT '配置中心存储'";
+    private final String config_create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" + "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" + "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" + "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" + "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" + "  `key` varchar(255) NOT NULL COMMENT 'key',\n" + "  `version` int(11) NOT NULL COMMENT 'config版本',\n" + "  `value` longtext NOT NULL COMMENT '配置值',\n" + "  PRIMARY KEY (`id`),\n" + "  UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" + ") ENGINE = InnoDB COMMENT '配置中心存储'";
 
-    private final String gateway_limiter_create_table = "CREATE TABLE IF NOT EXISTS `gateway_limiter` (\n" +
-            "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
-            "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" +
-            "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" +
-            "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
-            "  `provider` varchar(255) NOT NULL COMMENT 'service provider',\n" +
-            "  `version` varchar(255) NOT NULL COMMENT 'service version',\n" +
-            "  `limit_algorithm` int(11) NOT NULL COMMENT '限流算法: 1=计数, 2=令牌, 3=漏桶',\n" +
-            "  `limit_number` int(11) NOT NULL COMMENT '限流数量',\n" +
-            "  PRIMARY KEY (`id`)\n" +
-            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='网关限流配置'";
+    private final String gateway_limiter_create_table = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" + "(\n" + "    `id`              bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" + "    `gmt_create`      datetime     NOT NULL COMMENT '创建时间',\n" + "    `gmt_modified`    datetime     NOT NULL COMMENT '修改时间',\n" + "    `proxy`           varchar(255) NOT NULL COMMENT 'server proxy mark',\n" + "    `provider`        varchar(255) NOT NULL COMMENT 'service provider',\n" + "    `version`         int(11) NOT NULL COMMENT 'service version',\n" + "    `timeout`         bigint(10)   NOT NULL COMMENT '请求超时时间',\n" + "    `limit_algorithm` int(1)      NOT NULL COMMENT '限流算法: 1=计数, 2=令牌, 3=漏桶',\n" + "    `limit_number`    int(11)      NOT NULL COMMENT '限流数量',\n" + "    PRIMARY KEY (`id`)\n" + ") ENGINE = InnoDB\n" + "  DEFAULT CHARSET = utf8 COMMENT ='网关配置';";
 
-    private final String insert_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
+    private final String insert_config_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
-    private final String update_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
+    private final String insert_gateway_sql_template = "INSERT INTO dao_cloud.gateway_config (gmt_create, gmt_modified, proxy, `provider`, version, timeout, limit_algorithm, limit_number) VALUES (now(), now(), ?, ?, ?, ?, ?, ?)";
 
-    private final String delete_sql_template = "DELETE FROM config WHERE PROXY = ? and `key` = ? and value = ?";
+    private final String update_config_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
+
+    private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, limit_number=? WHERE proxy=? AND `provider`=? AND version=?";
+
+    private final String delete_config_sql_template = "DELETE FROM config WHERE proxy = ? and `key` = ? and value = ?";
+
+    private final String delete_gateway_config_sql_template = "DELETE FROM gateway_config WHERE proxy = ? and `provider` = ? and version = ?";
 
     @Autowired
     public DbMysql(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
@@ -72,8 +58,7 @@ public class DbMysql implements Persistence {
         Integer port = mysqlSetting.getPort();
         String username = mysqlSetting.getUsername();
         String password = mysqlSetting.getPassword();
-        if (!StringUtils.hasLength(url) || (port == null || port < 0)
-                || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
+        if (!StringUtils.hasLength(url) || (port == null || port < 0) || !StringUtils.hasLength(username) || !StringUtils.hasLength(password)) {
             throw new DaoException(" if configured to persistence = 'mysql', then there must be a mysql parameter.please configure in YAML or properties\n" + " mysql-setting:\n" + "      url: x\n" + "      port: x\n" + "      username: x\n" + "      password: x");
         }
         druidDataSource = new DruidDataSource();
@@ -83,6 +68,8 @@ public class DbMysql implements Persistence {
         druidDataSource.setUsername(username);
         druidDataSource.setPassword(password);
         druidDataSource.setMaxActive(20);
+        // 判断下数据库表是否存在,不存在就创建表(config、gateway_config)
+        initialize();
     }
 
     /**
@@ -104,13 +91,19 @@ public class DbMysql implements Persistence {
 
     @Override
     public void delete(ProxyConfigModel proxyConfigModel) {
-        delete(proxyConfigModel.getProxy(), proxyConfigModel.getKey(), proxyConfigModel.getVersion());
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_config_sql_template)) {
+            preparedStatement.setString(1, proxyConfigModel.getProxy());
+            preparedStatement.setString(2, proxyConfigModel.getKey());
+            preparedStatement.setInt(3, proxyConfigModel.getVersion());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
     public Map<ProxyConfigModel, String> loadConfig() {
-        // 判断下数据库表是否存在,存在就载入配置数据,不存在就创建表
-        initialize();
         Map<ProxyConfigModel, String> map = Maps.newHashMap();
         Long count = count();
         if (count == 0) {
@@ -125,7 +118,7 @@ public class DbMysql implements Persistence {
         int limit = 500;
         long page = count / limit;
         for (int i = 0; i <= page; i++) {
-            List<ConfigPO> configPOList = queryList(i, limit);
+            List<ConfigPO> configPOList = queryConfigList(i, limit);
             for (ConfigPO configPO : configPOList) {
                 ProxyConfigModel proxyConfigModel = new ProxyConfigModel(configPO.getProxy(), configPO.getKey(), configPO.getVersion());
                 map.put(proxyConfigModel, configPO.getValue());
@@ -136,17 +129,64 @@ public class DbMysql implements Persistence {
 
     @Override
     public void storage(GatewayModel gatewayModel) {
-
+        insertOrUpdate(gatewayModel);
     }
 
     @Override
     public void delete(ProxyProviderModel proxyProviderModel) {
-
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_gateway_config_sql_template)) {
+            preparedStatement.setString(1, proxyProviderModel.getProxy());
+            preparedStatement.setString(2, proxyProviderModel.getProviderModel().getProvider());
+            preparedStatement.setInt(3, proxyProviderModel.getProviderModel().getVersion());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql delete gateway config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
     public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
-        return null;
+        Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newHashMap();
+        Long count = count();
+        int limit = 500;
+        long page = count / limit;
+        for (int i = 0; i <= page; i++) {
+            List<GatewayConfigPO> gatewayConfigPOList = queryGatewayConfigList(i, limit);
+            for (GatewayConfigPO gatewayConfigPO : gatewayConfigPOList) {
+                String proxy = gatewayConfigPO.getProxy();
+                String provider = gatewayConfigPO.getProvider();
+                int version = gatewayConfigPO.getVersion();
+                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+                GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
+                gatewayConfigModel.setTimeout(gatewayConfigPO.getTimeout());
+                gatewayConfigModel.setLimitModel(gatewayConfigPO.getLimit());
+                map.put(proxyProviderModel, gatewayConfigModel);
+            }
+        }
+        return map;
+    }
+
+    private void insertOrUpdate(GatewayModel gatewayModel) {
+        ProxyProviderModel proxyProviderModel = gatewayModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select count(1) from gateway_config where proxy=? and `provider`=? and version=?")) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            if (result.getLong(1) == 0) {
+                insert(gatewayModel);
+            } else {
+                update(gatewayModel);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< insertOrUpdate delete config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
     }
 
     private void insertOrUpdate(ConfigModel configModel) {
@@ -177,7 +217,7 @@ public class DbMysql implements Persistence {
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
         String configValue = configModel.getConfigValue();
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_sql_template)) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_config_sql_template)) {
             preparedStatement.setString(1, proxy);
             preparedStatement.setString(2, key);
             preparedStatement.setInt(3, version);
@@ -189,13 +229,33 @@ public class DbMysql implements Persistence {
         }
     }
 
+    public void insert(GatewayModel gatewayModel) {
+        ProxyProviderModel proxyProviderModel = gatewayModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        GatewayConfigModel gatewayConfigModel = gatewayModel.getGatewayConfigModel();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_gateway_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            preparedStatement.setLong(4, gatewayConfigModel.getTimeout());
+            preparedStatement.setInt(5, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
+            preparedStatement.setInt(6, gatewayConfigModel.getLimitModel().getLimitNumber());
+            preparedStatement.execute();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql insert gateway_config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
     public void update(ConfigModel configModel) {
         ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
         String proxy = proxyConfigModel.getProxy();
         String key = proxyConfigModel.getKey();
         int version = proxyConfigModel.getVersion();
         String configValue = configModel.getConfigValue();
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_sql_template)) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_config_sql_template)) {
             preparedStatement.setString(1, configValue);
             preparedStatement.setString(2, proxy);
             preparedStatement.setString(3, key);
@@ -207,14 +267,22 @@ public class DbMysql implements Persistence {
         }
     }
 
-    private void delete(String proxy, String key, int version) {
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_sql_template)) {
-            preparedStatement.setString(1, proxy);
-            preparedStatement.setString(2, key);
-            preparedStatement.setInt(3, version);
+    public void update(GatewayModel gatewayModel) {
+        ProxyProviderModel proxyProviderModel = gatewayModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        GatewayConfigModel gatewayConfigModel = gatewayModel.getGatewayConfigModel();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_gateway_config_sql_template)) {
+            preparedStatement.setLong(1, gatewayConfigModel.getTimeout());
+            preparedStatement.setInt(2, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
+            preparedStatement.setInt(3, gatewayConfigModel.getLimitModel().getLimitNumber());
+            preparedStatement.setString(4, proxy);
+            preparedStatement.setString(5, provider);
+            preparedStatement.setInt(6, version);
             preparedStatement.executeUpdate();
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql update gateway config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -231,14 +299,14 @@ public class DbMysql implements Persistence {
         }
     }
 
-    private List<ConfigPO> queryList(int index, int size) {
+    private List<ConfigPO> queryConfigList(int index, int size) {
         List<ConfigPO> list = Lists.newArrayList();
         try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select * from config limit ?, ?");) {
             preparedStatement.setInt(1, index);
             preparedStatement.setInt(2, size);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                ConfigPO configPO = conversion(resultSet);
+                ConfigPO configPO = configConversion(resultSet);
                 list.add(configPO);
             }
         } catch (Exception e) {
@@ -248,7 +316,24 @@ public class DbMysql implements Persistence {
         return list;
     }
 
-    private ConfigPO conversion(ResultSet result) throws SQLException {
+    private List<GatewayConfigPO> queryGatewayConfigList(int index, int size) {
+        List<GatewayConfigPO> list = Lists.newArrayList();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select * from gateway_config limit ?, ?");) {
+            preparedStatement.setInt(1, index);
+            preparedStatement.setInt(2, size);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                GatewayConfigPO gatewayConfigPO = gatewayConfigConversion(resultSet);
+                list.add(gatewayConfigPO);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+        return list;
+    }
+
+    private ConfigPO configConversion(ResultSet result) throws SQLException {
         ConfigPO configPO = new ConfigPO();
         configPO.setId(result.getLong("id"));
         configPO.setCreateTime(result.getDate("gmt_create"));
@@ -260,20 +345,17 @@ public class DbMysql implements Persistence {
         return configPO;
     }
 
-    private ConfigPO query(String proxy, String key, int value) {
-        try (DruidPooledConnection connection = druidDataSource.getConnection()) {
-            String sql = "select * from config where proxy = '%s' and `key` = '%s' and value = %s";
-            ResultSet result = connection.createStatement().executeQuery(String.format(sql, proxy, key, value));
-            if (result.next()) {
-                ConfigPO configPO = conversion(result);
-                return configPO;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
-            throw new DaoException(e);
-        }
+    private GatewayConfigPO gatewayConfigConversion(ResultSet result) throws SQLException {
+        GatewayConfigPO gatewayConfigPO = new GatewayConfigPO();
+        gatewayConfigPO.setId(result.getLong("id"));
+        gatewayConfigPO.setCreateTime(result.getDate("gmt_create"));
+        gatewayConfigPO.setUpdateTime(result.getDate("gmt_modified"));
+        gatewayConfigPO.setProxy(result.getString("proxy"));
+        gatewayConfigPO.setProvider(result.getString("provider"));
+        gatewayConfigPO.setVersion(result.getInt("version"));
+        LimitModel limitModel = new LimitModel(result.getInt("limit_algorithm"), result.getInt("limit_number"));
+        gatewayConfigPO.setLimit(limitModel);
+        return gatewayConfigPO;
     }
 
     @Data
@@ -285,5 +367,17 @@ public class DbMysql implements Persistence {
         private String key;
         private int version;
         private String value;
+    }
+
+    @Data
+    private class GatewayConfigPO {
+        private Long id;
+        private Date createTime;
+        private Date updateTime;
+        private String proxy;
+        private String provider;
+        private int version;
+        private Long timeout;
+        private LimitModel limit;
     }
 }

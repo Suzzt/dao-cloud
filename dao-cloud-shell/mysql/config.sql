@@ -1,6 +1,7 @@
 # you must first create a dao_cloud
 CREATE DATABASE IF NOT EXISTS dao_cloud;
-CREATE TABLE dao_cloud.config
+# config
+CREATE TABLE IF NOT EXISTS dao_cloud.config
 (
     `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
     `gmt_create`   datetime     NOT NULL COMMENT '创建时间',
@@ -14,6 +15,6 @@ CREATE TABLE dao_cloud.config
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8 COMMENT ='配置中心存储内容表';
-# example data
+# example init data
 INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value)
 VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0, 'Welcome to dao-cloud!');
