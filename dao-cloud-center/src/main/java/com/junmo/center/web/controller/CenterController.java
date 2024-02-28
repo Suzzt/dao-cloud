@@ -84,14 +84,22 @@ public class CenterController {
     @RequestMapping(value = "/gateway/limit_save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult save(@Valid GatewayVO gatewayVO) {
-        gatewayCenterManager.save(gatewayVO);
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getKey(), gatewayVO.getVersion());
+        GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
+        LimitModel limitModel = new LimitModel(gatewayVO.getLimitAlgorithm(), gatewayVO.getLimitNumber());
+        gatewayConfigModel.setLimitModel(limitModel);
+        gatewayConfigModel.setTimeout(gatewayVO.getTimeout());
+        gatewayCenterManager.save(proxyProviderModel, gatewayConfigModel);
+        CenterClusterManager.syncGatewayConfigToCluster((byte) 3, proxyProviderModel, gatewayConfigModel);
         return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/gateway/limit_clear", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult clear(@Valid ServiceBaseVO serviceBaseVO) {
-        gatewayCenterManager.clear(serviceBaseVO);
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(serviceBaseVO.getProxy(), serviceBaseVO.getKey(), serviceBaseVO.getVersion());
+        gatewayCenterManager.clear(proxyProviderModel);
+        CenterClusterManager.syncGatewayConfigToCluster((byte) -3, proxyProviderModel, null);
         return ApiResult.buildSuccess();
     }
 

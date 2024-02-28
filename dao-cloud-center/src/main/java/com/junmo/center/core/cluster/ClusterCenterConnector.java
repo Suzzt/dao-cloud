@@ -5,7 +5,7 @@ import com.junmo.center.core.handler.InquireClusterCenterResponseHandler;
 import com.junmo.center.core.handler.PullConfigResponseHandler;
 import com.junmo.center.core.handler.SyncClusterInformationResponseHandler;
 import com.junmo.core.exception.DaoException;
-import com.junmo.core.model.ClusterSyncDataRequestModel;
+import com.junmo.core.model.AbstractShareClusterRequestModel;
 import com.junmo.core.netty.protocol.*;
 import com.junmo.core.util.DaoCloudConstant;
 import io.netty.bootstrap.Bootstrap;
@@ -141,12 +141,12 @@ public class ClusterCenterConnector {
     }
 
     /**
-     * sync data to cluster node
+     * Share and synchronize to all cluster nodes
      *
-     * @param clusterSyncDataRequestModel
+     * @param requestModel
      */
-    public void syncData(ClusterSyncDataRequestModel clusterSyncDataRequestModel) {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterSyncDataRequestModel);
+    public void share(AbstractShareClusterRequestModel requestModel) {
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());

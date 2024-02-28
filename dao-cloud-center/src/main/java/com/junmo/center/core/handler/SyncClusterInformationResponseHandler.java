@@ -1,12 +1,10 @@
 package com.junmo.center.core.handler;
 
-import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterSyncDataResponseModel;
 import com.junmo.core.util.LongPromiseBuffer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
-import org.springframework.util.StringUtils;
 
 /**
  * @author: sucf
@@ -18,10 +16,10 @@ public class SyncClusterInformationResponseHandler extends SimpleChannelInboundH
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ClusterSyncDataResponseModel clusterSyncDataResponseModel) throws Exception {
         Promise promise = LongPromiseBuffer.getInstance().remove(clusterSyncDataResponseModel.getSequenceId());
-        if (StringUtils.hasLength(clusterSyncDataResponseModel.getErrorMessage())) {
-            promise.setFailure(new DaoException(clusterSyncDataResponseModel.getErrorMessage()));
-        } else {
+        if (clusterSyncDataResponseModel.getDaoException() == null) {
             promise.setSuccess(clusterSyncDataResponseModel.getSequenceId());
+        } else {
+            promise.setFailure(clusterSyncDataResponseModel.getDaoException());
         }
     }
 }

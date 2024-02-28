@@ -35,6 +35,16 @@ public enum CodeEnum {
     SERVICE_UNKNOWN_ERROR("D0001", "服务未知错误"),
 
     /**
+     * 同步数据处理不了意外的类型
+     */
+    SYNC_DATA_EXTRA_TYPE_ERROR("D0002", "同步数据处理不了意外的类型"),
+
+    /**
+     * 集群间同步数据发生了错误
+     */
+    SYNC_SHARE_CLUSTER_DATA_ERROR("D0002", "同步数据发生了错误"),
+
+    /**
      * 拉取节点失败
      */
     PULL_SERVICE_NODE_ERROR("D0002", "拉取服务节点失败"),

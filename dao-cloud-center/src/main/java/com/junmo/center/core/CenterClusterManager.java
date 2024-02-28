@@ -119,6 +119,7 @@ public class CenterClusterManager {
         for (String aliveNode : aliveNodes) {
             loadConfig(aliveNode);
         }
+        // sync init gateway config todo
     }
 
     /**
@@ -160,10 +161,10 @@ public class CenterClusterManager {
     public static void syncRegisterToCluster(byte type, RegisterProviderModel registerProviderModel) {
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
-            ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
-            clusterSyncDataRequestModel.setType(type);
-            clusterSyncDataRequestModel.setRegisterProviderModel(registerProviderModel);
-            clusterCenterConnector.syncData(clusterSyncDataRequestModel);
+            ServiceShareClusterRequestModel serviceShareClusterRequestModel = new ServiceShareClusterRequestModel();
+            serviceShareClusterRequestModel.setType(type);
+            serviceShareClusterRequestModel.setRegisterProviderModel(registerProviderModel);
+            clusterCenterConnector.share(serviceShareClusterRequestModel);
         }
     }
 
@@ -177,12 +178,32 @@ public class CenterClusterManager {
     public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
-            ClusterSyncDataRequestModel clusterSyncDataRequestModel = new ClusterSyncDataRequestModel();
-            clusterSyncDataRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
-            clusterSyncDataRequestModel.setType(type);
-            clusterSyncDataRequestModel.setProxyConfigModel(proxyConfigModel);
-            clusterSyncDataRequestModel.setConfigJson(configJson);
-            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, clusterSyncDataRequestModel);
+            ConfigShareClusterRequestModel configShareClusterRequestModel = new ConfigShareClusterRequestModel();
+            configShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            configShareClusterRequestModel.setType(type);
+            configShareClusterRequestModel.setProxyConfigModel(proxyConfigModel);
+            configShareClusterRequestModel.setConfigJson(configJson);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, configShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
+     * synchronized gateway config info to cluster
+     *
+     * @param type
+     * @param proxyProviderModel
+     * @param gatewayConfigModel
+     */
+    public static void syncGatewayConfigToCluster(byte type, ProxyProviderModel proxyProviderModel, GatewayConfigModel gatewayConfigModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            GatewayShareClusterRequestModel gatewayShareClusterRequestModel = new GatewayShareClusterRequestModel();
+            gatewayShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            gatewayShareClusterRequestModel.setType(type);
+            gatewayShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
+            gatewayShareClusterRequestModel.setGatewayConfigModel(gatewayConfigModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, gatewayShareClusterRequestModel);
             SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }

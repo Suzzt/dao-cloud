@@ -66,6 +66,7 @@ public class ConfigCenterManager {
         config.setProxyConfigModel(proxyConfigModel);
         config.setConfigValue(jsonValue);
         persistence.storage(config);
+        // Notification subscription service for callback
         Set<Channel> subscribeChannels = ConfigChannelManager.getSubscribeChannel(proxyConfigModel);
         if (!CollectionUtils.isEmpty(subscribeChannels)) {
             for (Channel channel : subscribeChannels) {
