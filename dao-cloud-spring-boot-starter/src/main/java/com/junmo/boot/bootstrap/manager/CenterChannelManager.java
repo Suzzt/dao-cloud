@@ -3,8 +3,8 @@ package com.junmo.boot.bootstrap.manager;
 import com.junmo.boot.bootstrap.thread.InquireClusterTimer;
 import com.junmo.boot.handler.CenterConfigMessageHandler;
 import com.junmo.boot.handler.CenterServerMessageHandler;
-import com.junmo.boot.handler.InquireClusterCenterResponseHandler;
 import com.junmo.boot.handler.GatewayPullServiceNodeMessageHandler;
+import com.junmo.boot.handler.InquireClusterCenterResponseHandler;
 import com.junmo.core.exception.DaoException;
 import com.junmo.core.model.ClusterCenterNodeModel;
 import com.junmo.core.model.ClusterInquireMarkModel;
@@ -165,6 +165,7 @@ public class CenterChannelManager {
     private static void shuffle() {
         if (CLUSTER_CENTER_IP_ITERATOR.hasNext()) {
             CURRENT_USE_CENTER_IP = CLUSTER_CENTER_IP_ITERATOR.next();
+            log.info("Switch to the new center node. the address is ip = {}", CURRENT_USE_CENTER_IP);
         }
     }
 }
