@@ -355,6 +355,7 @@ public class DbMysql implements Persistence {
         gatewayConfigPO.setVersion(result.getInt("version"));
         LimitModel limitModel = new LimitModel(result.getInt("limit_algorithm"), result.getInt("limit_number"));
         gatewayConfigPO.setLimit(limitModel);
+        gatewayConfigPO.setTimeout(result.getLong("timeout"));
         return gatewayConfigPO;
     }
 
