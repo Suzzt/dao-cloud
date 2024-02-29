@@ -35,7 +35,7 @@
                 <p>
                 <pre>
 &lt;dependency&gt;
-    &lt;groupId&gt;org.junmo&lt;/groupId&gt;
+    &lt;groupId&gt;org.dao&lt;/groupId&gt;
     &lt;artifactId&gt;dao-cloud-center&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</pre>
@@ -88,7 +88,7 @@ dao-cloud:
                     1. 在你的SpringBoot的工程中引入 dao-cloud-spring-boot-starter maven的pom依赖, 这样你就拥有了暴露与消费的能力了
                 <pre>
 &lt;dependency&gt;
-    &lt;groupId&gt;org.junmo&lt;/groupId&gt;
+    &lt;groupId&gt;org.dao&lt;/groupId&gt;
     &lt;artifactId&gt;dao-cloud-spring-boot-starter&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</pre>
