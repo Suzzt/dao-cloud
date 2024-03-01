@@ -33,14 +33,13 @@
     <modules>
         <!--dao-cloud-core-->
         <module>dao-cloud-core</module>
-        <!--register+config center-->
+        <!--register+config center starter-->
         <module>dao-cloud-center</module>
         <!--example project-->
         <module>dao-cloud-example</module>
-        <!--monitor-->
-        <module>dao-cloud-monitor</module>
-        <!--api-SpringBoot-->
+        <!--dao-cloud-spring-boot-starter-->
         <module>dao-cloud-spring-boot-starter</module>
+        <!--dao-cloud-gateway starter-->
         <module>dao-cloud-gateway</module>
     </modules>
 
