@@ -2,8 +2,8 @@ package com.dao.cloud.core.resolver.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -20,7 +20,7 @@ import org.springframework.util.ClassUtils;
 public class JsonMethodArgumentResolver implements MethodArgumentResolver {
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public boolean support(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
         String contentType = httpServletRequest.getHeads().get(HttpHeaderNames.CONTENT_TYPE.toString());
         contentType = Objects.isNull(contentType) ? "" : contentType;
         String[] headerArr = HttpGenericInvokeUtils.splitHeaderContentType(contentType);
@@ -34,7 +34,7 @@ public class JsonMethodArgumentResolver implements MethodArgumentResolver {
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
         byte[] bodyData = httpServletRequest.getBodyData();
         try {
             String jsonData = new String(bodyData, "UTF-8");

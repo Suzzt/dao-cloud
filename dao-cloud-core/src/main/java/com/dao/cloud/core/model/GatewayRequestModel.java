@@ -13,10 +13,10 @@ public class GatewayRequestModel extends ServiceRequestModel {
     /**
      * http 请求信息
      */
-    private HttpServletRequestModel request;
+    private DaoCloudServletRequest request;
 
 
-    public GatewayRequestModel(String provider, int version, String methodName, HttpServletRequestModel request) {
+    public GatewayRequestModel(String provider, int version, String methodName, DaoCloudServletRequest request) {
         this.provider = provider;
         this.version = version;
         this.methodName = methodName;

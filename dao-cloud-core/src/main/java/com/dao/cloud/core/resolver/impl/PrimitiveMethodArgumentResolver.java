@@ -1,7 +1,7 @@
 package com.dao.cloud.core.resolver.impl;
 
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.resolver.AbstractMethodArgumentResolver;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 
@@ -24,13 +24,13 @@ public class PrimitiveMethodArgumentResolver extends AbstractMethodArgumentResol
     }
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public boolean support(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
         Class<?> type = parameter.getType();
         return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class;
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
         String name = parameter.getName();
         Class<?> type = parameter.getType();
         Map<String, String[]> getParam = Optional.ofNullable(httpServletRequest.getParams())

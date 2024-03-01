@@ -1,8 +1,8 @@
 package com.dao.cloud.core.resolver.impl;
 
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 
 import java.lang.reflect.Parameter;
 import org.springframework.core.Ordered;
@@ -14,19 +14,19 @@ import org.springframework.core.Ordered;
 public class RequestResponseMethodArgumentResolver implements MethodArgumentResolver, Ordered {
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest,
-        HttpServletResponse httpServletResponse) {
+    public boolean support(Parameter parameter, DaoCloudServletRequest httpServletRequest,
+        DaoCloudServletResponse daoCloudServletResponse) {
         Class<?> clazz = parameter.getType();
-        return clazz == HttpServletRequestModel.class || clazz == HttpServletResponse.class;
+        return clazz == DaoCloudServletRequest.class || clazz == DaoCloudServletResponse.class;
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest,
-        HttpServletResponse httpServletResponse) {
+    public Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest,
+        DaoCloudServletResponse daoCloudServletResponse) {
         Class<?> clazz = parameter.getType();
-        return clazz == HttpServletRequestModel.class
+        return clazz == DaoCloudServletRequest.class
             ? httpServletRequest
-            : httpServletResponse;
+            : daoCloudServletResponse;
     }
 
     @Override

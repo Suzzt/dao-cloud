@@ -9,7 +9,7 @@ import lombok.Data;
  * @date 2024/2/7 14:37
  */
 @Data
-public class HttpServletRequestModel implements Serializable {
+public class DaoCloudServletRequest implements Serializable {
 
     /**
      * http 请求方法
