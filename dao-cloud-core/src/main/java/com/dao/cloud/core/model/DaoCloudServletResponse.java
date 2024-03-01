@@ -10,7 +10,7 @@ import lombok.Data;
  * @date 2024/2/7 14:37
  */
 @Data
-public class HttpServletResponse implements Serializable {
+public class DaoCloudServletResponse implements Serializable {
 
     /**
      * 响应头
@@ -21,7 +21,7 @@ public class HttpServletResponse implements Serializable {
      */
     private byte[] bodyData;
 
-    public HttpServletResponse() {
+    public DaoCloudServletResponse() {
         this.heads = new HashMap<>();
     }
 

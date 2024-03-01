@@ -5,7 +5,7 @@ import com.dao.cloud.starter.annotation.DaoService;
 import com.dao.cloud.common.GatewayService;
 import com.dao.cloud.common.dto.Param2DTO;
 import com.dao.cloud.common.dto.ParamDTO;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import java.nio.charset.StandardCharsets;
 
@@ -41,7 +41,7 @@ public class GatewayServiceImpl implements GatewayService {
     }
 
     @Override
-    public void gatewayTest3(HttpServletResponse response) {
+    public void gatewayTest3(DaoCloudServletResponse response) {
         response.addHeader("Content-Disposition", "attachment;filename=xx.txt");
         response.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(), "application/vnd.ms-excel");
         response.setBodyData("hello world!".getBytes(StandardCharsets.UTF_8));

@@ -90,28 +90,29 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         );
         requestModel.setSequenceId(gatewayRequestModel.getSequenceId());
         requestModel.setHttp(true);
-        requestModel.setHttpServletResponse(binderResult.getHttpServletResponse());
+        requestModel.setDaoCloudServletResponse(binderResult.getDaoCloudServletResponse());
         return requestModel;
     }
 
-    private HttpParameterBinderResult binderHttpArgs(Class<?> clss, String methodName, HttpServletRequestModel httpServletRequest) {
+    private HttpParameterBinderResult binderHttpArgs(Class<?> clss, String methodName, DaoCloudServletRequest httpServletRequest) {
 
         Method[] methods = clss.getMethods();
         // 目前http请求的方式不支持重载，后续有空再迭代
         Method method = Arrays.stream(methods).filter(m -> m.getName().equals(methodName)).findFirst()
                 .orElseThrow(() -> new NoMatchMethodException());
         Parameter[] parameters = method.getParameters();
-        HttpServletResponse httpServletResponse = this.createDefaultResponse();
+        DaoCloudServletResponse daoCloudServletResponse = this.createDefaultResponse();
         if (Objects.isNull(parameters) || parameters.length == 0) {
             HttpParameterBinderResult result = new HttpParameterBinderResult();
             result.setReturnType(method.getReturnType());
-            result.setHttpServletResponse(httpServletResponse);
+            result.setDaoCloudServletResponse(daoCloudServletResponse);
             result.setParameterTypes(new Class<?>[0]);
             result.setParameterValues(new Object[0]);
             return result;
         }
         List<Object> parameterValueList = Arrays.stream(parameters)
-                .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest, httpServletResponse))
+                .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest,
+                    daoCloudServletResponse))
                 .collect(Collectors.toList());
 
         HttpParameterBinderResult result = new HttpParameterBinderResult();
@@ -119,15 +120,15 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
                 .collect(Collectors.toList()).toArray(new Class<?>[0]));
         result.setParameterValues(parameterValueList.toArray());
         result.setReturnType(method.getReturnType());
-        result.setHttpServletResponse(httpServletResponse);
+        result.setDaoCloudServletResponse(daoCloudServletResponse);
         return result;
     }
 
-    private HttpServletResponse createDefaultResponse() {
-        HttpServletResponse httpServletResponse = new HttpServletResponse();
-        httpServletResponse.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(),
+    private DaoCloudServletResponse createDefaultResponse() {
+        DaoCloudServletResponse daoCloudServletResponse = new DaoCloudServletResponse();
+        daoCloudServletResponse.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(),
                 HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
-        httpServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
-        return httpServletResponse;
+        daoCloudServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
+        return daoCloudServletResponse;
     }
 }

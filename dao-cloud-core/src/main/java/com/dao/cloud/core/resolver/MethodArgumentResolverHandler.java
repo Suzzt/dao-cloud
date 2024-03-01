@@ -1,8 +1,8 @@
 package com.dao.cloud.core.resolver;
 
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.resolver.impl.FormDataMethodArgumentResolver;
 import com.dao.cloud.core.resolver.impl.JsonMethodArgumentResolver;
 import com.dao.cloud.core.resolver.impl.PrimitiveMethodArgumentResolver;
@@ -39,11 +39,11 @@ public class MethodArgumentResolverHandler {
         this.addDefaultResolvers();
     }
 
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest,
-        HttpServletResponse httpServletResponse) {
+    public Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest,
+        DaoCloudServletResponse daoCloudServletResponse) {
         for (MethodArgumentResolver resolver : resolverList) {
-            if (resolver.support(parameter, httpServletRequest, httpServletResponse)) {
-                return resolver.resolver(parameter, httpServletRequest, httpServletResponse);
+            if (resolver.support(parameter, httpServletRequest, daoCloudServletResponse)) {
+                return resolver.resolver(parameter, httpServletRequest, daoCloudServletResponse);
             }
         }
         throw new DaoException(

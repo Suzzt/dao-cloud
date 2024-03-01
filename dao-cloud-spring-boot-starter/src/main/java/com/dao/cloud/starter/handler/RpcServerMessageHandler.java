@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.dao.cloud.starter.bootstrap.manager.ServiceManager;
 import com.dao.cloud.starter.bootstrap.unit.ServiceInvoker;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.model.RpcRequestModel;
 import com.dao.cloud.core.model.RpcResponseModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
@@ -68,26 +68,26 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             return;
         }
 
-        HttpServletResponse httpServletResponse = rpcRequestModel.getHttpServletResponse();
+        DaoCloudServletResponse daoCloudServletResponse = rpcRequestModel.getDaoCloudServletResponse();
         Object result = responseModel.getReturnValue();
 
         // 框架作者必须传入有效的返回参数
-        if (Objects.isNull(httpServletResponse)) {
+        if (Objects.isNull(daoCloudServletResponse)) {
             throw new DaoException("框架错误！http返回值必须是Response");
         }
 
-        byte[] bodyData = httpServletResponse.getBodyData();
+        byte[] bodyData = daoCloudServletResponse.getBodyData();
         // 如果用户没有主动设置body数据，那么默认为返回json数据，将返回值进行序列化
         if (Objects.isNull(bodyData)) {
             // 默认返回json
             bodyData = Objects.isNull(result) ? null : JSONUtil.toJsonStr(result).getBytes(StandardCharsets.UTF_8);
-            httpServletResponse.setBodyData(bodyData);
+            daoCloudServletResponse.setBodyData(bodyData);
         }
-        httpServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), Objects.isNull(bodyData)
+        daoCloudServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), Objects.isNull(bodyData)
             ? "0"
             : bodyData.length + "");
 
-        responseModel.setReturnValue(httpServletResponse);
+        responseModel.setReturnValue(daoCloudServletResponse);
     }
 
 }

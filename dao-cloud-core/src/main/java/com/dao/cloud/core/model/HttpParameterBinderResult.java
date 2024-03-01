@@ -22,5 +22,5 @@ public class HttpParameterBinderResult {
 
     private Class<?> returnType;
 
-    private HttpServletResponse httpServletResponse;
+    private DaoCloudServletResponse daoCloudServletResponse;
 }

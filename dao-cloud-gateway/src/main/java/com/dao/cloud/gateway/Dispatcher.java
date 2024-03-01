@@ -61,7 +61,7 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
-        HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
+        DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
@@ -82,7 +82,7 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
-        HttpServletRequestModel requestModel = HttpGenericInvokeUtils.buildRequest(request);
+        DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
         GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
@@ -123,8 +123,8 @@ public class Dispatcher {
 
         // 发起转发路由请求
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
-        com.dao.cloud.core.model.HttpServletResponse result;
-        result = (com.dao.cloud.core.model.HttpServletResponse) clientInvoker.invoke(gatewayRequestModel);
+        DaoCloudServletResponse result;
+        result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
         try (OutputStream outputStream = response.getOutputStream()) {
             Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
                     .forEach(response::addHeader);

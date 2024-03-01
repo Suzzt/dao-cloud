@@ -1,7 +1,7 @@
 package com.dao.cloud.core.util;
 
 import com.google.common.collect.Maps;
-import com.dao.cloud.core.model.HttpServletRequestModel;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -21,9 +21,9 @@ import org.springframework.util.ClassUtils;
 public class HttpGenericInvokeUtils {
 
 
-    public static HttpServletRequestModel buildRequest(HttpServletRequest request)
+    public static DaoCloudServletRequest buildRequest(HttpServletRequest request)
         throws Exception {
-        HttpServletRequestModel requestModel = new HttpServletRequestModel();
+        DaoCloudServletRequest requestModel = new DaoCloudServletRequest();
         requestModel.setHttpMethod(request.getMethod());
         requestModel.setURI(request.getRequestURI());
         requestModel.setParams(request.getParameterMap());
