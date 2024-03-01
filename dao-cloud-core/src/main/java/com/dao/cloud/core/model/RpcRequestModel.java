@@ -12,7 +12,7 @@ public class RpcRequestModel extends ServiceRequestModel {
 
     private boolean http;
 
-    private HttpServletResponse httpServletResponse;
+    private DaoCloudServletResponse daoCloudServletResponse;
 
     /**
      * 方法参数类型数组

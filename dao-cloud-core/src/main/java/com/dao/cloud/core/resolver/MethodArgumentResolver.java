@@ -1,7 +1,7 @@
 package com.dao.cloud.core.resolver;
 
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import java.lang.reflect.Parameter;
 
 /**
@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
  */
 public interface MethodArgumentResolver {
 
-    boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse);
+    boolean support(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse);
 
-    Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse);
+    Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse);
 }

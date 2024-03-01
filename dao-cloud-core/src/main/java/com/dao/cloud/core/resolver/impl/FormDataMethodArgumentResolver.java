@@ -1,8 +1,8 @@
 package com.dao.cloud.core.resolver.impl;
 
 import com.dao.cloud.core.binder.WebDataBinder;
-import com.dao.cloud.core.model.HttpServletRequestModel;
-import com.dao.cloud.core.model.HttpServletResponse;
+import com.dao.cloud.core.model.DaoCloudServletRequest;
+import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.resolver.AbstractMethodArgumentResolver;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -29,7 +29,7 @@ public class FormDataMethodArgumentResolver extends AbstractMethodArgumentResolv
     }
 
     @Override
-    public boolean support(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public boolean support(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
         String contentType = Optional.ofNullable(httpServletRequest.getHeads().get("content-type")).orElse("");
         Class<?> type = parameter.getType();
         contentType = Objects.isNull(contentType) ? "" : contentType;
@@ -41,7 +41,7 @@ public class FormDataMethodArgumentResolver extends AbstractMethodArgumentResolv
     }
 
     @Override
-    public Object resolver(Parameter parameter, HttpServletRequestModel httpServletRequest, HttpServletResponse httpServletResponse) {
+    public Object resolver(Parameter parameter, DaoCloudServletRequest httpServletRequest, DaoCloudServletResponse daoCloudServletResponse) {
 
         Constructor<?> ctor = BeanUtils.getResolvableConstructor(parameter.getType());
         Object target = BeanUtils.instantiateClass(ctor);
