@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.junmo</groupId>
+    <groupId>org.dao</groupId>
     <artifactId>dao-cloud</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -33,14 +33,13 @@
     <modules>
         <!--dao-cloud-core-->
         <module>dao-cloud-core</module>
-        <!--register+config center-->
+        <!--register+config center starter-->
         <module>dao-cloud-center</module>
         <!--example project-->
         <module>dao-cloud-example</module>
-        <!--monitor-->
-        <module>dao-cloud-monitor</module>
-        <!--api-SpringBoot-->
+        <!--dao-cloud-spring-boot-starter-->
         <module>dao-cloud-spring-boot-starter</module>
+        <!--dao-cloud-gateway starter-->
         <module>dao-cloud-gateway</module>
     </modules>
 

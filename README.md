@@ -46,7 +46,6 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     dao-cloud-center = 注册+配置-中心
     dao-cloud-gateway = 网关
     dao-cloud-spring-boot-starter = rpc的依赖的jar
-    dao-cloud-monitor = 监控性能
     dao-cloud-example = 使用示例
 
 # dao-cloud提供了什么能力？
@@ -78,7 +77,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
     <dependency>
-        <groupId>org.junmo</groupId>
+        <groupId>org.dao</groupId>
         <artifactId>dao-cloud-spring-boot-starter</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
@@ -92,7 +91,7 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
 注册｜配置中心(引入dao-cloud-center的pom依赖jar包)
 
     <dependency>
-        <groupId>org.junmo</groupId>
+        <groupId>org.dao</groupId>
         <artifactId>dao-cloud-center</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
