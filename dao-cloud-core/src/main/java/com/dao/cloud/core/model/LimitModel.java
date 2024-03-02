@@ -25,4 +25,10 @@ public class LimitModel implements Serializable {
      * 限流数量
      */
     private Integer limitNumber;
+
+    /**
+     * 滑动窗口大小
+     * (unit=ms)
+     */
+    private Long slideWindowSize;
 }
