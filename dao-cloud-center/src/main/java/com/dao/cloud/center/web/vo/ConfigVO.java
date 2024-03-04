@@ -10,7 +10,17 @@ import javax.validation.constraints.NotNull;
  * @description:
  */
 @Data
-public class ConfigVO extends ServiceBaseVO {
+public class ConfigVO {
+
+    @NotNull(message = "proxy不能为空")
+    private String proxy;
+
+    @NotNull(message = "key不能为空")
+    private String key;
+
+    @NotNull(message = "version不能为空")
+    private Integer version;
+
     @NotNull(message = "value不能为空")
     private String content;
 }

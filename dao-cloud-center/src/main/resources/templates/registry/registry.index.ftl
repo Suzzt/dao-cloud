@@ -90,7 +90,7 @@
         </section>
     </div>
 
-    <div class="modal fade" id="openLimitModelWindow" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="openGatewayConfigModelWindow" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -102,7 +102,7 @@
                             <label for="lastname" class="col-sm-3 control-label">限流算法 <font
                                         color="red">*</font></label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="limitAlgorithm">
+                                <select class="form-control" name="limitAlgorithm" id="limitAlgorithm">
                                     <option value="" selected disabled>请选择限流算法</option>
                                     <option value=1>计数</option>
                                     <option value=2>令牌</option>
@@ -111,25 +111,73 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="lastname" class="col-sm-3 control-label">限流数量 <font
-                                        color="red">*</font></label>
-                            <div class="col-sm-9"><input type="number" class="form-control" name="limitNumber"
-                                                         maxlength="10"
-                                                         placeholder="请输入允许每秒能通过的请求数据"></div>
-                        </div>
-                        <div class="form-group">
                             <label for="lastname" class="col-sm-3 control-label">超时时间 <font
                                         color="red">*</font></label>
                             <div class="col-sm-9"><input type="timeout" class="form-control" name="timeout"
                                                          maxlength="10"
                                                          placeholder="请输入调用超时时间(单位是秒)"></div>
                         </div>
+                        <div id="countLimitOptions" style="display: none;">
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">滑动时间窗口 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="slideDateWindowSize"
+                                                             maxlength="10"
+                                                             placeholder="请输入滑动窗口大小(单位是毫秒)"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">滑动窗口请求数 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="slideWindowMaxRequestCount"
+                                                             maxlength="10"
+                                                             placeholder="请输入滑动窗口内允许的最大请求数"></div>
+                            </div>
+                        </div>
+
+                        <div id="tokenLimitOptions" style="display: none;">
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">最大令牌数 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="tokenBucketMaxSize"
+                                                             maxlength="10"
+                                                             placeholder="请输入令牌桶的最大令牌数"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">新增令牌数 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="tokenBucketRefillRate"
+                                                             maxlength="10"
+                                                             placeholder="请输入每秒新增的令牌数"></div>
+                            </div>
+                        </div>
+                        <div id="leakyLimitOptions" style="display: none;">
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">漏桶的容量 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="leakyBucketCapacity"
+                                                             maxlength="10"
+                                                             placeholder="请输入漏桶的容量"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastname" class="col-sm-3 control-label">令牌填充的速度 <font
+                                            color="red">*</font></label>
+                                <div class="col-sm-9"><input type="number" class="form-control"
+                                                             name="leakyBucketRefillRate"
+                                                             maxlength="10"
+                                                             placeholder="请输入每秒令牌填充的速度"></div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" name="proxy" style="display: none;">
                             </div>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" name="key" style="display: none;">
+                                <input type="text" class="form-control" name="provider" style="display: none;">
                             </div>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control" name="version" style="display: none;">
@@ -174,6 +222,42 @@
 <script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 
 <script src="${request.contextPath}/static/js/registry.index.1.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const limitAlgorithmSelect = document.getElementById('limitAlgorithm');
+
+        // 获取计数算法和令牌算法的选项区域
+        const countLimitOptions = document.getElementById('countLimitOptions');
+        const tokenLimitOptions = document.getElementById('tokenLimitOptions');
+        const leakyLimitOptions = document.getElementById('leakyLimitOptions');
+
+        // 监听下拉选择框的值变化
+        limitAlgorithmSelect.addEventListener('change', function () {
+            // 根据选择的算法，显示或隐藏选项
+            switch (this.value) {
+                case '1': // 计数算法
+                    countLimitOptions.style.display = 'block';
+                    tokenLimitOptions.style.display = 'none';
+                    leakyLimitOptions.style.display = 'none';
+                    break;
+                case '2': // 令牌算法
+                    countLimitOptions.style.display = 'none';
+                    tokenLimitOptions.style.display = 'block';
+                    leakyLimitOptions.style.display = 'none';
+                    break;
+                case '3': // 漏桶
+                    countLimitOptions.style.display = 'none';
+                    tokenLimitOptions.style.display = 'none';
+                    leakyLimitOptions.style.display = 'block';
+                    break;
+                default:
+                    countLimitOptions.style.display = 'none';
+                    tokenLimitOptions.style.display = 'none';
+                    leakyLimitOptions.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

@@ -11,32 +11,21 @@ import java.io.Serializable;
  */
 @Data
 public class LimitModel implements Serializable {
-    public LimitModel(Integer limitAlgorithm, Integer limitNumber) {
-        this.limitAlgorithm = limitAlgorithm;
-        this.limitNumber = limitNumber;
-    }
 
-    public LimitModel(Integer limitAlgorithm, Long slideDateWindowSize, Integer slideWindowMaxRequestCount) {
+    public LimitModel(Integer limitAlgorithm, Long slideDateWindowSize, Integer slideWindowMaxRequestCount, Integer tokenBucketMaxSize, Integer tokenBucketRefillRate, Integer leakyBucketCapacity, int leakyBucketRefillRate) {
         this.limitAlgorithm = limitAlgorithm;
         this.slideDateWindowSize = slideDateWindowSize;
         this.slideWindowMaxRequestCount = slideWindowMaxRequestCount;
-    }
-
-    public LimitModel(Integer limitAlgorithm, Integer tokenBucketMaxSize, Integer tokenBucketRefillRate) {
-        this.limitAlgorithm = limitAlgorithm;
         this.tokenBucketMaxSize = tokenBucketMaxSize;
         this.tokenBucketRefillRate = tokenBucketRefillRate;
+        this.leakyBucketCapacity = leakyBucketCapacity;
+        this.leakyBucketRefillRate = leakyBucketRefillRate;
     }
 
     /**
      * 限流算法
      */
     private Integer limitAlgorithm;
-
-    /**
-     * 限流数量
-     */
-    private Integer limitNumber;
 
     /* ============================ 限流参数 ============================ */
 
@@ -69,7 +58,7 @@ public class LimitModel implements Serializable {
     /**
      * 令牌填充的速度(每秒)
      */
-    private int leakyBucketRefillRate;
+    private Integer leakyBucketRefillRate;
 
     /* ============================ 限流参数 ============================ */
 }

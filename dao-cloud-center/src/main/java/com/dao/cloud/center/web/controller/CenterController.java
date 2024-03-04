@@ -1,20 +1,20 @@
 package com.dao.cloud.center.web.controller;
 
+import com.dao.cloud.center.core.CenterClusterManager;
 import com.dao.cloud.center.core.ConfigCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
+import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.center.web.interceptor.Permissions;
-import com.dao.cloud.center.web.vo.*;
+import com.dao.cloud.center.web.vo.ConfigDataVO;
+import com.dao.cloud.center.web.vo.ConfigVO;
+import com.dao.cloud.center.web.vo.GatewayVO;
+import com.dao.cloud.center.web.vo.ServerVO;
+import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
-import com.dao.cloud.center.core.CenterClusterManager;
-import com.dao.cloud.center.core.RegisterCenterManager;
-import com.dao.cloud.core.ApiResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -81,23 +81,22 @@ public class CenterController {
         return ApiResult.buildSuccess(serverNodeModels);
     }
 
-    @RequestMapping(value = "/gateway/limit_save", method = RequestMethod.POST)
+    @RequestMapping(value = "/gateway/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult save(@Valid GatewayVO gatewayVO) {
-        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getKey(), gatewayVO.getVersion());
+    public ApiResult save(@Valid @RequestBody GatewayVO gatewayVO) {
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getProvider(), gatewayVO.getVersion());
         GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
-        LimitModel limitModel = new LimitModel(gatewayVO.getLimitAlgorithm(), gatewayVO.getLimitNumber());
-        gatewayConfigModel.setLimitModel(limitModel);
+        gatewayConfigModel.setLimitModel(gatewayVO.getLimit());
         gatewayConfigModel.setTimeout(gatewayVO.getTimeout());
         gatewayCenterManager.save(proxyProviderModel, gatewayConfigModel);
         CenterClusterManager.syncGatewayConfigToCluster((byte) 3, proxyProviderModel, gatewayConfigModel);
         return ApiResult.buildSuccess();
     }
 
-    @RequestMapping(value = "/gateway/limit_clear", method = RequestMethod.POST)
+    @RequestMapping(value = "/gateway/clear", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult clear(@Valid ServiceBaseVO serviceBaseVO) {
-        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(serviceBaseVO.getProxy(), serviceBaseVO.getKey(), serviceBaseVO.getVersion());
+    public ApiResult clear(@Valid GatewayVO gatewayVO) {
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getProvider(), gatewayVO.getVersion());
         gatewayCenterManager.clear(proxyProviderModel);
         CenterClusterManager.syncGatewayConfigToCluster((byte) -3, proxyProviderModel, null);
         return ApiResult.buildSuccess();

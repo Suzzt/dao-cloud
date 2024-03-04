@@ -1,6 +1,9 @@
 package com.dao.cloud.center.web.vo;
 
+import com.dao.cloud.core.model.LimitModel;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author sucf
@@ -8,20 +11,24 @@ import lombok.Data;
  * @description 网关设置对象
  */
 @Data
-public class GatewayVO extends ServiceBaseVO {
+public class GatewayVO {
+
+    @NotNull(message = "proxy不能为空")
+    private String proxy;
+
+    @NotNull(message = "provider不能为空")
+    private String provider;
+
+    @NotNull(message = "version不能为空")
+    private Integer version;
 
     /**
-     * 限流算法
+     * 限流信息
      */
-    private Integer limitAlgorithm;
+    private LimitModel limit;
 
     /**
-     * 限流数量
-     */
-    private Integer limitNumber;
-
-    /**
-     * 超时时间
+     * 网关超时时间
      */
     private Long timeout;
 }

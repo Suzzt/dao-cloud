@@ -7,6 +7,7 @@ import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -86,8 +87,7 @@ public class FileSystem implements Persistence {
         String provider = gatewayModel.getProxyProviderModel().getProviderModel().getProvider();
         int version = gatewayModel.getProxyProviderModel().getProviderModel().getVersion();
         String path = makePath(gatewayStoragePath, proxy, provider, String.valueOf(version));
-        LimitModel limitModel = gatewayModel.getGatewayConfigModel().getLimitModel();
-        String content = limitModel.getLimitAlgorithm() + "#" + limitModel.getLimitNumber() + "#" + gatewayModel.getGatewayConfigModel().getTimeout();
+        String content = new Gson().toJson(gatewayModel.getGatewayConfigModel());
         write(path, content);
     }
 
@@ -133,6 +133,7 @@ public class FileSystem implements Persistence {
         Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newConcurrentMap();
         String prefixPath = gatewayStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
+        Gson gson = new Gson();
         for (String proxy : proxyList) {
             List<String> providers = loopDirs(prefixPath + File.separator + proxy);
             for (String provider : providers) {
@@ -143,11 +144,7 @@ public class FileSystem implements Persistence {
                         if (value == null) {
                             continue;
                         }
-                        String[] split = value.split("#");
-                        GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
-                        LimitModel limitModel = new LimitModel(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
-                        gatewayConfigModel.setLimitModel(limitModel);
-                        gatewayConfigModel.setTimeout(Long.parseLong(split[2]));
+                        GatewayConfigModel gatewayConfigModel = gson.fromJson(value, GatewayConfigModel.class);
                         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, Integer.parseInt(version));
                         map.put(proxyProviderModel, gatewayConfigModel);
                     } catch (Exception e) {

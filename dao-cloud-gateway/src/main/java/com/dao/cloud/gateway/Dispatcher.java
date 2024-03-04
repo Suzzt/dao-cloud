@@ -1,17 +1,18 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.enums.CodeEnum;
+import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
+import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import com.dao.cloud.gateway.auth.Interceptor;
-import com.dao.cloud.gateway.global.GatewayServiceConfig;
+import com.dao.cloud.gateway.manager.GatewayConfigManager;
 import com.dao.cloud.gateway.limit.Limiter;
-import com.google.common.collect.Lists;
+import com.dao.cloud.gateway.limit.SlideWindowCountLimiter;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
-import com.dao.cloud.core.enums.CodeEnum;
-import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.util.DaoCloudConstant;
-import com.dao.cloud.core.util.HttpGenericInvokeUtils;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,12 +37,9 @@ import java.util.Set;
 @Slf4j
 public class Dispatcher {
 
-    private Limiter limiter;
-
     private DaoLoadBalance daoLoadBalance;
 
-    public Dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
-        this.limiter = limiter;
+    public Dispatcher(DaoLoadBalance daoLoadBalance) {
         this.daoLoadBalance = daoLoadBalance;
     }
 
@@ -61,8 +59,10 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
+        byte v = Byte.valueOf(version);
+        filter(new ProxyProviderModel(proxy, provider, v));
         DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, v, method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
 
@@ -82,14 +82,18 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
+        byte v = Byte.valueOf(version);
+        filter(new ProxyProviderModel(proxy, provider, v));
         DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, v, method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
 
-    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
-        // 先判断限流
-        if (!limiter.allow()) {
+    public void filter(ProxyProviderModel proxyProviderModel) {
+        // TODO 获取网关配置 Limiter、List<Interceptor>
+        // 限流过滤
+        Limiter limiter = new SlideWindowCountLimiter(20, 200);
+        if (!limiter.tryAcquire()) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
         }
 
@@ -100,14 +104,17 @@ public class Dispatcher {
                 return;
             }
         }
+    }
 
+
+    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
         Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
         if (providerNodes == null) {
             throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
         }
 
-        GatewayConfigModel gatewayConfig = GatewayServiceConfig.getGatewayConfig(proxyProviderModel);
+        GatewayConfigModel gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
         // gateway timout config
         Long timeout;
         if (gatewayConfig == null) {
