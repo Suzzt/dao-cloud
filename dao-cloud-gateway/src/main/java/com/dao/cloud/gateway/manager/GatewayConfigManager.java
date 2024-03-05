@@ -24,4 +24,9 @@ public class GatewayConfigManager {
     public static GatewayConfigModel getGatewayConfig(ProxyProviderModel proxyProviderModel) {
         return data.get(proxyProviderModel);
     }
+
+    public static GatewayConfig getGatewayConfig2(ProxyProviderModel proxyProviderModel) {
+        return config.get(proxyProviderModel);
+    }
+
 }

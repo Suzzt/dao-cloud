@@ -257,7 +257,7 @@ public class DbMysql implements Persistence {
             preparedStatement.setString(1, proxy);
             preparedStatement.setString(2, provider);
             preparedStatement.setInt(3, version);
-            preparedStatement.setLong(4, gatewayConfigModel.getTimeout());
+            preparedStatement.setObject(4, gatewayConfigModel.getTimeout());
             preparedStatement.setInt(5, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
             preparedStatement.setObject(6, gatewayConfigModel.getLimitModel().getSlideDateWindowSize());
             preparedStatement.setObject(7, gatewayConfigModel.getLimitModel().getSlideWindowMaxRequestCount());
@@ -297,7 +297,7 @@ public class DbMysql implements Persistence {
         int version = proxyProviderModel.getProviderModel().getVersion();
         GatewayConfigModel gatewayConfigModel = gatewayModel.getGatewayConfigModel();
         try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_gateway_config_sql_template)) {
-            preparedStatement.setLong(1, gatewayConfigModel.getTimeout());
+            preparedStatement.setObject(1, gatewayConfigModel.getTimeout());
             preparedStatement.setInt(2, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
             preparedStatement.setObject(3, gatewayConfigModel.getLimitModel().getSlideDateWindowSize());
             preparedStatement.setObject(4, gatewayConfigModel.getLimitModel().getSlideWindowMaxRequestCount());

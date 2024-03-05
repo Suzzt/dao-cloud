@@ -39,7 +39,7 @@ $(function () {
                 var tokenBucketRefillRate = row.gateway.limitModel.tokenBucketRefillRate;
                 var leakyBucketCapacity = row.gateway.limitModel.leakyBucketCapacity;
                 var leakyBucketRefillRate = row.gateway.limitModel.leakyBucketRefillRate;
-                var timeout = row.gateway.timeout;
+                var timeout = row.gateway.timeout == null ? '' : row.gateway.timeout;
                 if (row.gateway.limitModel.limitAlgorithm == 1) {
                     limitAlgorithm = '计数'
                     c1 = slideDateWindowSize;
