@@ -7,11 +7,11 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.DaoTimer;
+import com.dao.cloud.gateway.limit.LimitFactory;
+import com.dao.cloud.gateway.limit.Limiter;
 import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
-import com.dao.cloud.starter.bootstrap.manager.RegistryManager;
 import com.dao.cloud.starter.handler.GatewayPullServiceNodeMessageHandler;
-import com.google.common.collect.Sets;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultPromise;
@@ -55,27 +55,30 @@ public class GatewayPullServiceTimer implements Runnable {
                         Map<ProxyProviderModel, Set<ServerNodeModel>> services = gatewayServiceNodeModel.getServices();
                         for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
                             ProxyProviderModel proxyProviderModel = entry.getKey();
-                            GatewayConfigModel gatewayConfigModel = config.get(proxyProviderModel);
+                            // service node
                             Set<ServerNodeModel> oldProviderNodes = ClientManager.getProviderNodes(proxyProviderModel);
-                            Set<ServerNodeModel> pullProviderNodes = Sets.newLinkedHashSet();
-                            Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
+                            Set<ServerNodeModel> serverNodeModels = entry.getValue();
                             if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                                for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                    pullProviderNodes.add(serverNodeModel);
-                                }
                                 // new up server node
                                 oldProviderNodes = oldProviderNodes == null ? new HashSet<>() : oldProviderNodes;
-                                Set<ServerNodeModel> newUpProviderNodes = (Set<ServerNodeModel>) CollectionUtil.subtract(pullProviderNodes, oldProviderNodes);
+                                Set<ServerNodeModel> newUpProviderNodes = (Set<ServerNodeModel>) CollectionUtil.subtract(serverNodeModels, oldProviderNodes);
                                 ClientManager.add(proxyProviderModel, newUpProviderNodes);
                             }
+
+                            // gateway config
+                            GatewayConfigModel gatewayConfigModel = config.get(proxyProviderModel);
+                            if (gatewayConfigModel == null) {
+                                GatewayConfigManager.save(proxyProviderModel, null);
+                                continue;
+                            }
+                            GatewayConfig gatewayConfig = new GatewayConfig();
+                            Limiter limiter = LimitFactory.getLimiter(gatewayConfigModel.getLimitModel());
+                            gatewayConfig.setLimiter(limiter);
+                            gatewayConfig.setTimeout(gatewayConfigModel.getTimeout());
+                            // TODO interceptor
+                            GatewayConfigManager.save(proxyProviderModel, gatewayConfig);
+
                         }
-//                        Map<ProxyProviderModel, Set<ServerNodeModel>> map = gatewayServiceNodeModel.getServices();
-//                        GatewayConfigManager.reset(gatewayServiceNodeModel.getConfig());
-//                        if (!CollectionUtils.isEmpty(map)) {
-//                            map.forEach((proxyProviderModel, proxyProviders) -> {
-//                                ClientManager.add(proxyProviderModel, proxyProviders);
-//                            });
-//                        }
                     } else {
                         throw new DaoException(promise.cause());
                     }

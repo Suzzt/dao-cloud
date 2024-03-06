@@ -1,5 +1,6 @@
 package com.dao.cloud.gateway.limit;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +42,29 @@ public class SlideWindowCountLimiter extends Limiter {
         slidingWindow.add(now);
         threshold.incrementAndGet();
         return threshold.get() < maxRequestCount;
+    }
+
+    @Override
+    public boolean doEquals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SlideWindowCountLimiter that = (SlideWindowCountLimiter) o;
+        return windowSizeInMillis == that.windowSizeInMillis &&
+                maxRequestCount == that.maxRequestCount;
+    }
+
+    @Override
+    public int doHashCode() {
+        return Objects.hash(windowSizeInMillis, maxRequestCount);
+    }
+
+    @Override
+    public String doToString() {
+        final StringBuffer sb = new StringBuffer("SlideWindowCountLimiter{");
+        sb.append("windowSizeInMillis=").append(windowSizeInMillis);
+        sb.append(", maxRequestCount=").append(maxRequestCount);
+        sb.append('}');
+        return sb.toString();
     }
 
     public static void main(String[] args) {

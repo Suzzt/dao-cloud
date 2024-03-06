@@ -61,4 +61,18 @@ public class LimitModel implements Serializable {
     private Integer leakyBucketRefillRate;
 
     /* ============================ 限流参数 ============================ */
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("LimitModel{");
+        sb.append("limitAlgorithm=").append(limitAlgorithm);
+        sb.append(", slideDateWindowSize=").append(slideDateWindowSize);
+        sb.append(", slideWindowMaxRequestCount=").append(slideWindowMaxRequestCount);
+        sb.append(", tokenBucketMaxSize=").append(tokenBucketMaxSize);
+        sb.append(", tokenBucketRefillRate=").append(tokenBucketRefillRate);
+        sb.append(", leakyBucketCapacity=").append(leakyBucketCapacity);
+        sb.append(", leakyBucketRefillRate=").append(leakyBucketRefillRate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

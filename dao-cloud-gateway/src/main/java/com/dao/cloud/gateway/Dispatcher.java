@@ -6,9 +6,8 @@ import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import com.dao.cloud.gateway.auth.Interceptor;
+import com.dao.cloud.gateway.manager.GatewayConfig;
 import com.dao.cloud.gateway.manager.GatewayConfigManager;
-import com.dao.cloud.gateway.limit.Limiter;
-import com.dao.cloud.gateway.limit.SlideWindowCountLimiter;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
@@ -90,14 +89,17 @@ public class Dispatcher {
     }
 
     public void filter(ProxyProviderModel proxyProviderModel) {
-        // TODO 获取网关配置 Limiter、List<Interceptor>
         // 限流过滤
-        Limiter limiter = new SlideWindowCountLimiter(20, 200);
-        if (!limiter.tryAcquire()) {
+        GatewayConfig gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
+        if (gatewayConfig == null || gatewayConfig.getLimiter() == null) {
+            // 没有设置限流
+            return;
+        }
+        if (!gatewayConfig.getLimiter().tryAcquire()) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
         }
 
-        // 处理拦截器的责任链请求
+        // TODO 处理拦截器的责任链请求
         List<Interceptor> interceptors = Lists.newArrayList();
         for (Interceptor interceptor : interceptors) {
             if (!interceptor.action()) {
@@ -114,7 +116,7 @@ public class Dispatcher {
             throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
         }
 
-        GatewayConfigModel gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
+        GatewayConfig gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
         // gateway timout config
         Long timeout;
         if (gatewayConfig == null) {
@@ -122,7 +124,7 @@ public class Dispatcher {
             timeout = 30L;
         } else {
             timeout = gatewayConfig.getTimeout();
-            // default timeout 10s
+            // default timeout 30s
             if (timeout == null || timeout <= 0) {
                 timeout = 30L;
             }
