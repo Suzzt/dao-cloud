@@ -134,10 +134,11 @@ public class Dispatcher {
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
+        byte[] bodyData = Optional.ofNullable(result.getBodyData()).orElse(new byte[0]);
         try (OutputStream outputStream = response.getOutputStream()) {
             Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
                     .forEach(response::addHeader);
-            outputStream.write(result.getBodyData());
+            outputStream.write(bodyData);
         } catch (Exception e) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
         }
