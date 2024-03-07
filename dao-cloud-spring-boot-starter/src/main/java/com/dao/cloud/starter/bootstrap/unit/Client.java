@@ -103,7 +103,7 @@ public class Client {
     public void reconnect() {
         channel.close().addListener(future -> {
             channel.eventLoop().schedule(() -> {
-                ClientManager.getRpcBootstrap().connect().addListener(new ChannelFutureListener() {
+                ClientManager.getRpcBootstrap().connect(this.ip, this.port).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
@@ -135,7 +135,7 @@ public class Client {
     private void connect() {
         RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(this);
         ClientPingPongMessageHandler clientPingPongMessageHandler = new ClientPingPongMessageHandler(this);
-        ClientManager.getRpcBootstrap().remoteAddress(this.ip, this.port);
+//        ClientManager.getRpcBootstrap().remoteAddress(this.ip, this.port);
         ClientManager.getRpcBootstrap().handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
@@ -149,7 +149,7 @@ public class Client {
             }
         });
         try {
-            this.channel = ClientManager.getRpcBootstrap().connect().sync().channel();
+            this.channel = ClientManager.getRpcBootstrap().connect(this.ip, this.port).sync().channel();
         } catch (Exception e) {
             log.error("dao-cloud-rpc connect server (ip = {},port = {}) fair<<<<<<<<<<<<", ip, port, e);
             throw new DaoException(e);
