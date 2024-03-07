@@ -12,6 +12,7 @@ import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
 import com.google.common.collect.Lists;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -134,13 +135,14 @@ public class Dispatcher {
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
-        byte[] bodyData = Optional.ofNullable(result.getBodyData()).orElse(new byte[0]);
-        try (OutputStream outputStream = response.getOutputStream()) {
-            Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
-                    .forEach(response::addHeader);
-            outputStream.write(bodyData);
-        } catch (Exception e) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
+        Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
+            .forEach(response::addHeader);
+        if(Objects.nonNull(result.getBodyData())) {
+            try (OutputStream outputStream = response.getOutputStream()) {
+                outputStream.write(result.getBodyData());
+            } catch (Exception e) {
+                throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
+            }
         }
     }
 }
