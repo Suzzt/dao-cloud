@@ -1,9 +1,10 @@
 package com.dao.cloud.core.netty.protocol;
 
-import com.dao.cloud.core.netty.serialize.DaoSerializer;
-import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
 import com.dao.cloud.core.model.HeartbeatModel;
 import com.dao.cloud.core.model.Model;
+import com.dao.cloud.core.netty.serialize.DaoSerializer;
+import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -70,6 +71,8 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             // 根据不同的序列化方式解析
             DaoSerializer daoSerializer = SerializeStrategyFactory.getSerializer(serializableType);
             Model model = daoSerializer.deserialize(bytes, MessageType.getMessageModel(messageType));
+            // 将当前消息存储在通道属性中
+            channelHandlerContext.channel().attr(DaoCloudConstant.REQUEST_MESSAGE_ATTR_KEY).set(model);
             list.add(model);
         }
     }
