@@ -40,23 +40,34 @@ $(function () {
                 var leakyBucketCapacity = row.gateway.limitModel.leakyBucketCapacity;
                 var leakyBucketRefillRate = row.gateway.limitModel.leakyBucketRefillRate;
                 var timeout = row.gateway.timeout == null ? '' : row.gateway.timeout;
+                var a1;
+                var a2;
                 if (row.gateway.limitModel.limitAlgorithm == 1) {
                     limitAlgorithm = '计数'
                     c1 = slideDateWindowSize;
                     c2 = slideWindowMaxRequestCount;
+                    a1 = "滑动时间窗口(单位是毫秒)";
+                    a2 = "滑动窗口内的最大请求数";
                 } else if (row.gateway.limitModel.limitAlgorithm == 2) {
                     limitAlgorithm = '令牌'
                     c1 = tokenBucketMaxSize;
                     c2 = tokenBucketRefillRate;
+                    a1 = "最大令牌数";
+                    a2 = "每秒新增令牌数";
                 } else {
                     limitAlgorithm = '漏桶'
                     c1 = leakyBucketCapacity;
                     c2 = leakyBucketRefillRate;
+                    a1 = "漏桶的容量";
+                    a2 = "每秒令牌填充的速度";
                 }
                 return '<div>' +
-                    limitAlgorithm + '&nbsp;&nbsp;[' + c1 + ']&nbsp;&nbsp;[' + c2 + ']&nbsp;&nbsp;[' + timeout + ']&nbsp;&nbsp;&nbsp;&nbsp;'+
-                    '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '" limitAlgorithm="' + row.gateway.limitModel.limitAlgorithm + '" slideDateWindowSize="' + slideDateWindowSize + '"+ slideWindowMaxRequestCount="' + slideWindowMaxRequestCount + '" tokenBucketMaxSize="' + tokenBucketMaxSize + '" tokenBucketRefillRate="' + tokenBucketRefillRate + '" leakyBucketCapacity="' + leakyBucketCapacity + '" leakyBucketRefillRate="' + leakyBucketRefillRate + '" timeout="' + timeout + '">设置</a>&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="clear" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
+                    limitAlgorithm + ':&nbsp;' +
+                    '<span style="cursor: pointer;" title="'+a1+'">(' + c1 + ')</span>&nbsp;&nbsp;' +
+                    '<span style="cursor: pointer;" title="'+a2+'">(' + c2 + ')</span>&nbsp;&nbsp;' +
+                    '调用超时时间:&nbsp;(' + timeout + ')</span>&nbsp;&nbsp;&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="openGatewayConfigModelWindow" ...>设置</a>&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="clear" ...>清空</a>' +
                     '</div>';
             }
         }], "language": {
@@ -321,3 +332,6 @@ var ComAlertTec = {
         });
     }
 };
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
