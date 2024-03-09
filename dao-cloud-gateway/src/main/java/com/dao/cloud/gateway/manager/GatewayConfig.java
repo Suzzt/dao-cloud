@@ -1,6 +1,6 @@
 package com.dao.cloud.gateway.manager;
 
-import com.dao.cloud.gateway.auth.Interceptor;
+import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.limit.Limiter;
 import lombok.Data;
 

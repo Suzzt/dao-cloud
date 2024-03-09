@@ -1,4 +1,4 @@
-package com.dao.cloud.gateway.auth;
+package com.dao.cloud.gateway.intercept;
 
 /**
  * @author: sucf
@@ -6,5 +6,11 @@ package com.dao.cloud.gateway.auth;
  * @description: Request Auth Interceptor
  */
 public interface Interceptor {
-    boolean action();
+
+    /**
+     * intercept logic
+     *
+     * @return
+     */
+    boolean intercept();
 }

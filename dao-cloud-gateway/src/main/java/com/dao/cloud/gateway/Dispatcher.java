@@ -5,14 +5,13 @@ import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
-import com.dao.cloud.gateway.auth.Interceptor;
+import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.manager.GatewayConfig;
 import com.dao.cloud.gateway.manager.GatewayConfigManager;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
 import com.google.common.collect.Lists;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: sucf
@@ -103,7 +99,7 @@ public class Dispatcher {
         // TODO 处理拦截器的责任链请求
         List<Interceptor> interceptors = Lists.newArrayList();
         for (Interceptor interceptor : interceptors) {
-            if (!interceptor.action()) {
+            if (!interceptor.intercept()) {
                 return;
             }
         }
@@ -136,8 +132,8 @@ public class Dispatcher {
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
         Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
-            .forEach(response::addHeader);
-        if(Objects.nonNull(result.getBodyData())) {
+                .forEach(response::addHeader);
+        if (Objects.nonNull(result.getBodyData())) {
             try (OutputStream outputStream = response.getOutputStream()) {
                 outputStream.write(result.getBodyData());
             } catch (Exception e) {
