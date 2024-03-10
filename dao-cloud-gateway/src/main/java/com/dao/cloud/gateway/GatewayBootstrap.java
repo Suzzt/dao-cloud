@@ -1,14 +1,16 @@
-package com.dao.cloud.gateway.bootstrap;
+package com.dao.cloud.gateway;
 
-import com.dao.cloud.starter.bootstrap.manager.RegistryManager;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
-import com.dao.cloud.gateway.bootstrap.thread.GatewayPullServiceTimer;
+import com.dao.cloud.gateway.manager.GatewayPullServiceTimer;
+import com.dao.cloud.starter.bootstrap.manager.RegistryManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -22,6 +24,9 @@ import java.util.Set;
  */
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {

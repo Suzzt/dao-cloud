@@ -1,17 +1,16 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.enums.CodeEnum;
+import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
-import com.dao.cloud.gateway.auth.Interceptor;
-import com.dao.cloud.gateway.global.GatewayServiceConfig;
-import com.dao.cloud.gateway.limit.Limiter;
-import com.google.common.collect.Lists;
+import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.HttpGenericInvokeUtils;
+import com.dao.cloud.gateway.intercept.Interceptor;
+import com.dao.cloud.gateway.manager.GatewayConfig;
+import com.dao.cloud.gateway.manager.GatewayConfigManager;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
-import com.dao.cloud.core.enums.CodeEnum;
-import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.util.DaoCloudConstant;
-import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: sucf
@@ -36,13 +32,13 @@ import java.util.Set;
 @Slf4j
 public class Dispatcher {
 
-    private Limiter limiter;
-
     private DaoLoadBalance daoLoadBalance;
 
-    public Dispatcher(Limiter limiter, DaoLoadBalance daoLoadBalance) {
-        this.limiter = limiter;
+    private List<Interceptor> interceptors;
+
+    public Dispatcher(DaoLoadBalance daoLoadBalance, List<Interceptor> interceptors) {
         this.daoLoadBalance = daoLoadBalance;
+        this.interceptors = interceptors;
     }
 
     /**
@@ -61,8 +57,10 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
+        byte v = Byte.valueOf(version);
+        filter(new ProxyProviderModel(proxy, provider, v));
         DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, v, method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
 
@@ -82,32 +80,39 @@ public class Dispatcher {
         if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(provider) || !StringUtils.hasLength(version) || !StringUtils.hasLength(method)) {
             throw new DaoException(CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getCode(), CodeEnum.GATEWAY_REQUEST_PARAM_DELETION.getText());
         }
+        byte v = Byte.valueOf(version);
+        filter(new ProxyProviderModel(proxy, provider, v));
         DaoCloudServletRequest requestModel = HttpGenericInvokeUtils.buildRequest(request);
-        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, Byte.valueOf(version), method, requestModel);
+        GatewayRequestModel gatewayRequestModel = new GatewayRequestModel(provider, v, method, requestModel);
         this.doService(proxy, gatewayRequestModel, response);
     }
 
-    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
-        // 先判断限流
-        if (!limiter.allow()) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
-        }
-
-        // 处理拦截器的责任链请求
-        List<Interceptor> interceptors = Lists.newArrayList();
-        for (Interceptor interceptor : interceptors) {
-            if (!interceptor.action()) {
-                return;
+    public void filter(ProxyProviderModel proxyProviderModel) {
+        // 限流过滤
+        GatewayConfig gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
+        if (gatewayConfig != null && gatewayConfig.getLimiter() != null) {
+            if (!gatewayConfig.getLimiter().tryAcquire()) {
+                throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
             }
         }
 
+        // 网关拦截过滤
+        for (Interceptor interceptor : interceptors) {
+            if (!interceptor.intercept().getSuccess()) {
+                throw new DaoException(CodeEnum.GATEWAY_INTERCEPTION_FAIL.getCode(), CodeEnum.GATEWAY_INTERCEPTION_FAIL.getText());
+            }
+        }
+    }
+
+
+    public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
         Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
         if (providerNodes == null) {
             throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
         }
 
-        GatewayConfigModel gatewayConfig = GatewayServiceConfig.getGatewayConfig(proxyProviderModel);
+        GatewayConfig gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
         // gateway timout config
         Long timeout;
         if (gatewayConfig == null) {
@@ -115,7 +120,7 @@ public class Dispatcher {
             timeout = 30L;
         } else {
             timeout = gatewayConfig.getTimeout();
-            // default timeout 10s
+            // default timeout 30s
             if (timeout == null || timeout <= 0) {
                 timeout = 30L;
             }
@@ -125,12 +130,14 @@ public class Dispatcher {
         ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
-        try (OutputStream outputStream = response.getOutputStream()) {
-            Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
-                    .forEach(response::addHeader);
-            outputStream.write(result.getBodyData());
-        } catch (Exception e) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
+        Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())
+                .forEach(response::addHeader);
+        if (Objects.nonNull(result.getBodyData())) {
+            try (OutputStream outputStream = response.getOutputStream()) {
+                outputStream.write(result.getBodyData());
+            } catch (Exception e) {
+                throw new DaoException(CodeEnum.GATEWAY_REQUEST_ERROR);
+            }
         }
     }
 }

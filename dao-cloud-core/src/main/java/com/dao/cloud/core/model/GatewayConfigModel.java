@@ -8,7 +8,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class GatewayConfigModel extends Model{
+public class GatewayConfigModel extends Model {
 
     private LimitModel limitModel;
 

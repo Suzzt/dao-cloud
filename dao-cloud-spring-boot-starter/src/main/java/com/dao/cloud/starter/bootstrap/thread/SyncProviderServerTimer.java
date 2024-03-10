@@ -36,6 +36,7 @@ public class SyncProviderServerTimer implements Runnable {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run(Timeout timeout) {
+                    // todo  这个最好优化下，可以缩减下
                     try {
                         Set<ServerNodeModel> oldProviderNodes = ClientManager.getProviderNodes(proxyProviderModel);
                         Set<ServerNodeModel> pullProviderNodes = Sets.newLinkedHashSet();

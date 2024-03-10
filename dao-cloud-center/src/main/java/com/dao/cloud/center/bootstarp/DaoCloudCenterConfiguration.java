@@ -115,9 +115,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
             if (contextPath == null) {
-                log.info("======================================== open web dao-cloud page address: http://{}:{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
+                log.info("======================================== open dao-cloud center page address: http://{}:{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
             } else {
-                log.info("======================================== open web dao-cloud page address: http://{}:{}{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
+                log.info("======================================== open dao-cloud center page address: http://{}:{}{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
             }
         }
     }

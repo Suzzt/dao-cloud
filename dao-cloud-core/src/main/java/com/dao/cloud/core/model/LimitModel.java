@@ -11,9 +11,15 @@ import java.io.Serializable;
  */
 @Data
 public class LimitModel implements Serializable {
-    public LimitModel(Integer limitAlgorithm, Integer limitNumber) {
+
+    public LimitModel(Integer limitAlgorithm, Long slideDateWindowSize, Integer slideWindowMaxRequestCount, Integer tokenBucketMaxSize, Integer tokenBucketRefillRate, Integer leakyBucketCapacity, Integer leakyBucketRefillRate) {
         this.limitAlgorithm = limitAlgorithm;
-        this.limitNumber = limitNumber;
+        this.slideDateWindowSize = slideDateWindowSize;
+        this.slideWindowMaxRequestCount = slideWindowMaxRequestCount;
+        this.tokenBucketMaxSize = tokenBucketMaxSize;
+        this.tokenBucketRefillRate = tokenBucketRefillRate;
+        this.leakyBucketCapacity = leakyBucketCapacity;
+        this.leakyBucketRefillRate = leakyBucketRefillRate;
     }
 
     /**
@@ -21,8 +27,52 @@ public class LimitModel implements Serializable {
      */
     private Integer limitAlgorithm;
 
+    /* ============================ 限流参数 ============================ */
+
     /**
-     * 限流数量
+     * 滑动时间窗口大小
+     * (unit=ms)
      */
-    private Integer limitNumber;
+    private Long slideDateWindowSize;
+
+    /**
+     * 时间窗口内允许的最大请求数
+     */
+    private Integer slideWindowMaxRequestCount;
+
+    /**
+     * 令牌桶的最大令牌数
+     */
+    private Integer tokenBucketMaxSize;
+
+    /**
+     * 每秒新增的令牌数
+     */
+    private Integer tokenBucketRefillRate;
+
+    /**
+     * 漏桶的容量
+     */
+    private Integer leakyBucketCapacity;
+
+    /**
+     * 令牌填充的速度(每秒)
+     */
+    private Integer leakyBucketRefillRate;
+
+    /* ============================ 限流参数 ============================ */
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("LimitModel{");
+        sb.append("limitAlgorithm=").append(limitAlgorithm);
+        sb.append(", slideDateWindowSize=").append(slideDateWindowSize);
+        sb.append(", slideWindowMaxRequestCount=").append(slideWindowMaxRequestCount);
+        sb.append(", tokenBucketMaxSize=").append(tokenBucketMaxSize);
+        sb.append(", tokenBucketRefillRate=").append(tokenBucketRefillRate);
+        sb.append(", leakyBucketCapacity=").append(leakyBucketCapacity);
+        sb.append(", leakyBucketRefillRate=").append(leakyBucketRefillRate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

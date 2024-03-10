@@ -1,14 +1,14 @@
 package com.dao.cloud.starter.bootstrap.unit;
 
 import cn.hutool.core.util.IdUtil;
-import com.dao.cloud.core.model.*;
-import com.dao.cloud.starter.banlance.DaoLoadBalance;
-import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.DaoException;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.LongPromiseBuffer;
+import com.dao.cloud.starter.banlance.DaoLoadBalance;
+import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +61,11 @@ public class ClientInvoker {
             Set<Client> clients = ClientManager.getSharedClient(providerNodes);
             if (CollectionUtils.isEmpty(clients)) {
                 log.error("proxy = '{}', provider = '{}' no provider server", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel());
-                throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
+                if (messageType == MessageType.SERVICE_RPC_REQUEST_MESSAGE) {
+                    throw new DaoException(CodeEnum.SERVICE_PROVIDER_NOT_EXIST);
+                } else {
+                    throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
+                }
             }
             // load balance
             client = daoLoadBalance.route(clients);

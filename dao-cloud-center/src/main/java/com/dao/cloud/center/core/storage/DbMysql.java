@@ -2,12 +2,12 @@ package com.dao.cloud.center.core.storage;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
-import com.dao.cloud.core.model.*;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.core.model.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +37,33 @@ public class DbMysql implements Persistence {
 
     private final String config_create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" + "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" + "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" + "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" + "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" + "  `key` varchar(255) NOT NULL COMMENT 'key',\n" + "  `version` int(11) NOT NULL COMMENT 'config版本',\n" + "  `value` longtext NOT NULL COMMENT '配置值',\n" + "  PRIMARY KEY (`id`),\n" + "  UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" + ") ENGINE = InnoDB COMMENT '配置中心存储'";
 
-    private final String gateway_limiter_create_table = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" + "(\n" + "    `id`              bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" + "    `gmt_create`      datetime     NOT NULL COMMENT '创建时间',\n" + "    `gmt_modified`    datetime     NOT NULL COMMENT '修改时间',\n" + "    `proxy`           varchar(255) NOT NULL COMMENT 'server proxy mark',\n" + "    `provider`        varchar(255) NOT NULL COMMENT 'service provider',\n" + "    `version`         int(11) NOT NULL COMMENT 'service version',\n" + "    `timeout`         bigint(10)   NOT NULL COMMENT '请求超时时间',\n" + "    `limit_algorithm` int(1)      NOT NULL COMMENT '限流算法: 1=计数, 2=令牌, 3=漏桶',\n" + "    `limit_number`    int(11)      NOT NULL COMMENT '限流数量',\n" + "    PRIMARY KEY (`id`)\n" + ") ENGINE = InnoDB\n" + "  DEFAULT CHARSET = utf8 COMMENT ='网关配置';";
+    private final String gateway_config_create_table = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" +
+            "(\n" +
+            "    `id`                             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
+            "    `gmt_create`                     datetime     NOT NULL COMMENT '创建时间',\n" +
+            "    `gmt_modified`                   datetime     NOT NULL COMMENT '修改时间',\n" +
+            "    `proxy`                          varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
+            "    `provider`                       varchar(255) NOT NULL COMMENT 'service provider',\n" +
+            "    `version`                        int(11)      NOT NULL COMMENT 'service version',\n" +
+            "    `timeout`                        bigint(10) COMMENT '请求超时时间',\n" +
+            "    `limit_algorithm`                int(1) COMMENT '限流算法: 1=计数, 2=令牌, 3=漏桶',\n" +
+            "    `slide_date_window_size`         bigint(20) COMMENT '滑动时间窗口大小(ms)',\n" +
+            "    `slide_window_max_request_count` int(11) COMMENT '时间窗口内允许的最大请求数',\n" +
+            "    `token_bucket_max_size`          int(11) COMMENT '令牌桶的最大令牌数',\n" +
+            "    `token_bucket_refill_rate`       int(11) COMMENT '每秒新增的令牌数',\n" +
+            "    `leaky_bucket_capacity`          int(11) COMMENT '漏桶的容量',\n" +
+            "    `leaky_bucket_refill_rate`       int(11) COMMENT '漏桶令牌填充的速度(每秒)',\n" +
+            "    PRIMARY KEY (`id`)\n" +
+            ") ENGINE = InnoDB\n" +
+            "  DEFAULT CHARSET = utf8 COMMENT ='网关配置';";
 
     private final String insert_config_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
-    private final String insert_gateway_sql_template = "INSERT INTO dao_cloud.gateway_config (gmt_create, gmt_modified, proxy, `provider`, version, timeout, limit_algorithm, limit_number) VALUES (now(), now(), ?, ?, ?, ?, ?, ?)";
+    private final String insert_gateway_sql_template = "INSERT INTO dao_cloud.gateway_config (gmt_create, gmt_modified, proxy, `provider`, version, timeout, limit_algorithm, slide_date_window_size, slide_window_max_request_count, token_bucket_max_size, token_bucket_refill_rate, leaky_bucket_capacity, leaky_bucket_refill_rate) VALUES (now(), now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private final String update_config_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
 
-    private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, limit_number=? WHERE proxy=? AND `provider`=? AND version=?";
+    private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, slide_date_window_size=?, slide_window_max_request_count=?, token_bucket_max_size=?, token_bucket_refill_rate=?, leaky_bucket_capacity=?, leaky_bucket_refill_rate=? WHERE proxy=? AND `provider`=? AND version=?";
 
     private final String delete_config_sql_template = "DELETE FROM config WHERE proxy = ? and `key` = ? and value = ?";
 
@@ -78,7 +96,7 @@ public class DbMysql implements Persistence {
     private void initialize() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(config_create_table);
-            statement.execute(gateway_limiter_create_table);
+            statement.execute(gateway_config_create_table);
         } catch (Exception e) {
             throw new DaoException(e);
         }
@@ -239,9 +257,14 @@ public class DbMysql implements Persistence {
             preparedStatement.setString(1, proxy);
             preparedStatement.setString(2, provider);
             preparedStatement.setInt(3, version);
-            preparedStatement.setLong(4, gatewayConfigModel.getTimeout());
+            preparedStatement.setObject(4, gatewayConfigModel.getTimeout());
             preparedStatement.setInt(5, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
-            preparedStatement.setInt(6, gatewayConfigModel.getLimitModel().getLimitNumber());
+            preparedStatement.setObject(6, gatewayConfigModel.getLimitModel().getSlideDateWindowSize());
+            preparedStatement.setObject(7, gatewayConfigModel.getLimitModel().getSlideWindowMaxRequestCount());
+            preparedStatement.setObject(8, gatewayConfigModel.getLimitModel().getTokenBucketMaxSize());
+            preparedStatement.setObject(9, gatewayConfigModel.getLimitModel().getTokenBucketRefillRate());
+            preparedStatement.setObject(10, gatewayConfigModel.getLimitModel().getLeakyBucketCapacity());
+            preparedStatement.setObject(11, gatewayConfigModel.getLimitModel().getLeakyBucketRefillRate());
             preparedStatement.execute();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql insert gateway_config error >>>>>>>>>>>>", e);
@@ -274,12 +297,17 @@ public class DbMysql implements Persistence {
         int version = proxyProviderModel.getProviderModel().getVersion();
         GatewayConfigModel gatewayConfigModel = gatewayModel.getGatewayConfigModel();
         try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_gateway_config_sql_template)) {
-            preparedStatement.setLong(1, gatewayConfigModel.getTimeout());
+            preparedStatement.setObject(1, gatewayConfigModel.getTimeout());
             preparedStatement.setInt(2, gatewayConfigModel.getLimitModel().getLimitAlgorithm());
-            preparedStatement.setInt(3, gatewayConfigModel.getLimitModel().getLimitNumber());
-            preparedStatement.setString(4, proxy);
-            preparedStatement.setString(5, provider);
-            preparedStatement.setInt(6, version);
+            preparedStatement.setObject(3, gatewayConfigModel.getLimitModel().getSlideDateWindowSize());
+            preparedStatement.setObject(4, gatewayConfigModel.getLimitModel().getSlideWindowMaxRequestCount());
+            preparedStatement.setObject(5, gatewayConfigModel.getLimitModel().getTokenBucketMaxSize());
+            preparedStatement.setObject(6, gatewayConfigModel.getLimitModel().getTokenBucketRefillRate());
+            preparedStatement.setObject(7, gatewayConfigModel.getLimitModel().getLeakyBucketCapacity());
+            preparedStatement.setObject(8, gatewayConfigModel.getLimitModel().getLeakyBucketRefillRate());
+            preparedStatement.setString(9, proxy);
+            preparedStatement.setString(10, provider);
+            preparedStatement.setInt(11, version);
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql update gateway config error >>>>>>>>>>>>", e);
@@ -353,7 +381,14 @@ public class DbMysql implements Persistence {
         gatewayConfigPO.setProxy(result.getString("proxy"));
         gatewayConfigPO.setProvider(result.getString("provider"));
         gatewayConfigPO.setVersion(result.getInt("version"));
-        LimitModel limitModel = new LimitModel(result.getInt("limit_algorithm"), result.getInt("limit_number"));
+        int limitAlgorithm = result.getInt("limit_algorithm");
+        long slideDateWindowSize = result.getLong("slide_date_window_size");
+        int slideWindowMaxRequestCount = result.getInt("slide_window_max_request_count");
+        int tokenBucketMaxSize = result.getInt("token_bucket_max_size");
+        int tokenBucketRefillRate = result.getInt("token_bucket_refill_rate");
+        int leakyBucketCapacity = result.getInt("leaky_bucket_capacity");
+        int leakyBucketRefillRate = result.getInt("leaky_bucket_refill_rate");
+        LimitModel limitModel = new LimitModel(limitAlgorithm, slideDateWindowSize, slideWindowMaxRequestCount, tokenBucketMaxSize, tokenBucketRefillRate, leakyBucketCapacity, leakyBucketRefillRate);
         gatewayConfigPO.setLimit(limitModel);
         gatewayConfigPO.setTimeout(result.getLong("timeout"));
         return gatewayConfigPO;

@@ -1,17 +1,16 @@
-package com.dao.cloud.gateway.bootstrap.thread;
+package com.dao.cloud.gateway.manager;
 
-import com.dao.cloud.gateway.global.GatewayServiceConfig;
-import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
-import com.dao.cloud.starter.bootstrap.manager.ClientManager;
+import cn.hutool.core.collection.CollectionUtil;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.GatewayPullServiceMarkModel;
-import com.dao.cloud.core.model.GatewayServiceNodeModel;
-import com.dao.cloud.core.model.ProxyProviderModel;
-import com.dao.cloud.core.model.ServerNodeModel;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.DaoTimer;
+import com.dao.cloud.gateway.limit.LimitFactory;
+import com.dao.cloud.gateway.limit.Limiter;
+import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
+import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.handler.GatewayPullServiceNodeMessageHandler;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -19,6 +18,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -51,14 +51,34 @@ public class GatewayPullServiceTimer implements Runnable {
                     }
                     if (promise.isSuccess()) {
                         GatewayServiceNodeModel gatewayServiceNodeModel = promise.getNow();
-                        Map<ProxyProviderModel, Set<ServerNodeModel>> map = gatewayServiceNodeModel.getServices();
-                        GatewayServiceConfig.reset(gatewayServiceNodeModel.getConfig());
-                        if (!CollectionUtils.isEmpty(map)) {
-                            map.forEach((proxyProviderModel, proxyProviders) -> {
-                                ClientManager.add(proxyProviderModel, proxyProviders);
-                            });
-                        }
+                        Map<ProxyProviderModel, GatewayConfigModel> config = gatewayServiceNodeModel.getConfig();
+                        Map<ProxyProviderModel, Set<ServerNodeModel>> services = gatewayServiceNodeModel.getServices();
+                        for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
+                            ProxyProviderModel proxyProviderModel = entry.getKey();
+                            // service node
+                            Set<ServerNodeModel> oldProviderNodes = ClientManager.getProviderNodes(proxyProviderModel);
+                            Set<ServerNodeModel> serverNodeModels = entry.getValue();
+                            if (!CollectionUtils.isEmpty(serverNodeModels)) {
+                                // new up server node
+                                oldProviderNodes = oldProviderNodes == null ? new HashSet<>() : oldProviderNodes;
+                                Set<ServerNodeModel> newUpProviderNodes = (Set<ServerNodeModel>) CollectionUtil.subtract(serverNodeModels, oldProviderNodes);
+                                ClientManager.add(proxyProviderModel, newUpProviderNodes);
+                            }
 
+                            // gateway config
+                            GatewayConfigModel gatewayConfigModel = config.get(proxyProviderModel);
+                            if (gatewayConfigModel == null) {
+                                GatewayConfigManager.save(proxyProviderModel, null);
+                                continue;
+                            }
+                            GatewayConfig gatewayConfig = new GatewayConfig();
+                            Limiter limiter = LimitFactory.getLimiter(gatewayConfigModel.getLimitModel());
+                            gatewayConfig.setLimiter(limiter);
+                            gatewayConfig.setTimeout(gatewayConfigModel.getTimeout());
+                            // TODO interceptor
+                            GatewayConfigManager.save(proxyProviderModel, gatewayConfig);
+
+                        }
                     } else {
                         throw new DaoException(promise.cause());
                     }

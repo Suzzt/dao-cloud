@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class NettyGlobalTriggerExceptionHandler extends SimpleChannelInboundHandler<Model> {
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Model model) throws Exception {
         ctx.fireChannelRead(model);
@@ -28,8 +29,8 @@ public class NettyGlobalTriggerExceptionHandler extends SimpleChannelInboundHand
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // TODO 这里最好打印下请求信息
-        log.error("An unknown error occurred in the component, which is a bad sign", cause);
+        Model model = ctx.channel().attr(DaoCloudConstant.REQUEST_MESSAGE_ATTR_KEY).get();
+        log.error("An unknown error occurred in the component, which is a bad sign. the message is: {}", model, cause);
         GlobalExceptionModel exceptionModel = new GlobalExceptionModel();
         exceptionModel.setDaoException(new DaoException(CodeEnum.SERVICE_UNKNOWN_ERROR));
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.GLOBAL_DAO_EXCEPTION_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, exceptionModel);
