@@ -3,7 +3,7 @@ package com.dao.cloud.gateway.intercept;
 /**
  * @author: sucf
  * @date: 2023/12/27 17:58
- * @description: Request Auth Interceptor
+ * @description: Request Interceptor
  */
 public interface Interceptor {
 
@@ -12,5 +12,5 @@ public interface Interceptor {
      *
      * @return
      */
-    boolean intercept();
+    InterceptionResult intercept();
 }

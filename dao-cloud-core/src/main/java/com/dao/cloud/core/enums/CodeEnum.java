@@ -85,6 +85,11 @@ public enum CodeEnum {
      */
     GATEWAY_PARAM_PROCESS_BINDING_FAILED("G0006", "网关参数处理绑定失败"),
 
+    /**
+     * 网关拦截不通过
+     */
+    GATEWAY_INTERCEPTION_FAIL("G0008", "网关拦截不通过"),
+
     // S级别 service
     /**
      * 服务提供者不存在

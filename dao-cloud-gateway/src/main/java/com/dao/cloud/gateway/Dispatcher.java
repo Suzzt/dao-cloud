@@ -11,7 +11,6 @@ import com.dao.cloud.gateway.manager.GatewayConfigManager;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.bootstrap.manager.ClientManager;
 import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +34,11 @@ public class Dispatcher {
 
     private DaoLoadBalance daoLoadBalance;
 
-    public Dispatcher(DaoLoadBalance daoLoadBalance) {
+    private List<Interceptor> interceptors;
+
+    public Dispatcher(DaoLoadBalance daoLoadBalance, List<Interceptor> interceptors) {
         this.daoLoadBalance = daoLoadBalance;
+        this.interceptors = interceptors;
     }
 
     /**
@@ -88,19 +90,16 @@ public class Dispatcher {
     public void filter(ProxyProviderModel proxyProviderModel) {
         // 限流过滤
         GatewayConfig gatewayConfig = GatewayConfigManager.getGatewayConfig(proxyProviderModel);
-        if (gatewayConfig == null || gatewayConfig.getLimiter() == null) {
-            // 没有设置限流
-            return;
-        }
-        if (!gatewayConfig.getLimiter().tryAcquire()) {
-            throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
+        if (gatewayConfig != null && gatewayConfig.getLimiter() != null) {
+            if (!gatewayConfig.getLimiter().tryAcquire()) {
+                throw new DaoException(CodeEnum.GATEWAY_REQUEST_LIMIT.getCode(), CodeEnum.GATEWAY_REQUEST_LIMIT.getText());
+            }
         }
 
-        // TODO 处理拦截器的责任链请求
-        List<Interceptor> interceptors = Lists.newArrayList();
+        // 网关拦截过滤
         for (Interceptor interceptor : interceptors) {
-            if (!interceptor.intercept()) {
-                return;
+            if (!interceptor.intercept().getSuccess()) {
+                throw new DaoException(CodeEnum.GATEWAY_INTERCEPTION_FAIL.getCode(), CodeEnum.GATEWAY_INTERCEPTION_FAIL.getText());
             }
         }
     }
