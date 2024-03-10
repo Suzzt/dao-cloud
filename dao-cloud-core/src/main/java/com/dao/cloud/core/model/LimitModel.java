@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 public class LimitModel implements Serializable {
 
-    public LimitModel(Integer limitAlgorithm, Long slideDateWindowSize, Integer slideWindowMaxRequestCount, Integer tokenBucketMaxSize, Integer tokenBucketRefillRate, Integer leakyBucketCapacity, int leakyBucketRefillRate) {
+    public LimitModel(Integer limitAlgorithm, Long slideDateWindowSize, Integer slideWindowMaxRequestCount, Integer tokenBucketMaxSize, Integer tokenBucketRefillRate, Integer leakyBucketCapacity, Integer leakyBucketRefillRate) {
         this.limitAlgorithm = limitAlgorithm;
         this.slideDateWindowSize = slideDateWindowSize;
         this.slideWindowMaxRequestCount = slideWindowMaxRequestCount;

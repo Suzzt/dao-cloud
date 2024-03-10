@@ -31,8 +31,6 @@ $(function () {
                     return '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">设置</a>'
                 }
 
-                var limitAlgorithm;
-                var c1,c2;
                 var slideDateWindowSize = row.gateway.limitModel.slideDateWindowSize;
                 var slideWindowMaxRequestCount = row.gateway.limitModel.slideWindowMaxRequestCount;
                 var tokenBucketMaxSize = row.gateway.limitModel.tokenBucketMaxSize;
@@ -40,34 +38,46 @@ $(function () {
                 var leakyBucketCapacity = row.gateway.limitModel.leakyBucketCapacity;
                 var leakyBucketRefillRate = row.gateway.limitModel.leakyBucketRefillRate;
                 var timeout = row.gateway.timeout == null ? '' : row.gateway.timeout;
-                var a1;
-                var a2;
-                if (row.gateway.limitModel.limitAlgorithm == 1) {
-                    limitAlgorithm = '计数'
-                    c1 = slideDateWindowSize;
-                    c2 = slideWindowMaxRequestCount;
-                    a1 = "滑动时间窗口(单位是毫秒)";
-                    a2 = "滑动窗口内的最大请求数";
-                } else if (row.gateway.limitModel.limitAlgorithm == 2) {
-                    limitAlgorithm = '令牌'
-                    c1 = tokenBucketMaxSize;
-                    c2 = tokenBucketRefillRate;
-                    a1 = "最大令牌数";
-                    a2 = "每秒新增令牌数";
-                } else {
-                    limitAlgorithm = '漏桶'
-                    c1 = leakyBucketCapacity;
-                    c2 = leakyBucketRefillRate;
-                    a1 = "漏桶的容量";
-                    a2 = "每秒令牌填充的速度";
+                var limit_div = '';
+                var limitAlgorithm_div = '';
+                if (row.gateway.limitModel != null && row.gateway.limitModel.limitAlgorithm != null) {
+                    var limitAlgorithm, c1, c2, a1, a2;
+                    if (row.gateway.limitModel.limitAlgorithm == 1) {
+                        limitAlgorithm = '计数'
+                        c1 = slideDateWindowSize;
+                        c2 = slideWindowMaxRequestCount;
+                        a1 = "滑动时间窗口(单位是毫秒)";
+                        a2 = "滑动窗口内的最大请求数";
+                    } else if (row.gateway.limitModel.limitAlgorithm == 2) {
+                        limitAlgorithm = '令牌'
+                        c1 = tokenBucketMaxSize;
+                        c2 = tokenBucketRefillRate;
+                        a1 = "最大令牌数";
+                        a2 = "每秒新增令牌数";
+                    } else if (row.gateway.limitModel.limitAlgorithm == 3) {
+                        limitAlgorithm = '漏桶'
+                        c1 = leakyBucketCapacity;
+                        c2 = leakyBucketRefillRate;
+                        a1 = "漏桶的容量";
+                        a2 = "每秒令牌填充的速度";
+                    }
+                    limit_div = limitAlgorithm + ':&nbsp;' +
+                        '<span style="cursor: pointer;" title="' + a1 + '">(' + c1 + ')</span>&nbsp;&nbsp;' +
+                        '<span style="cursor: pointer;" title="' + a2 + '">(' + c2 + ')</span>&nbsp;&nbsp;';
+                    limitAlgorithm_div = '" limitAlgorithm="' + row.gateway.limitModel.limitAlgorithm;
                 }
+
+                // timeout
+                var timeout_div = '';
+                if (timeout != null) {
+                    timeout_div = '调用超时时间:&nbsp;(' + timeout + ')</span>&nbsp;&nbsp;&nbsp;&nbsp;';
+                }
+
                 return '<div>' +
-                    limitAlgorithm + ':&nbsp;' +
-                    '<span style="cursor: pointer;" title="'+a1+'">(' + c1 + ')</span>&nbsp;&nbsp;' +
-                    '<span style="cursor: pointer;" title="'+a2+'">(' + c2 + ')</span>&nbsp;&nbsp;' +
-                    '调用超时时间:&nbsp;(' + timeout + ')</span>&nbsp;&nbsp;&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="openGatewayConfigModelWindow" ...>设置</a>&nbsp;&nbsp;' +
-                    '<a href="javascript:;" class="clear" ...>清空</a>' +
+                    limit_div +
+                    timeout_div +
+                    '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + limitAlgorithm_div + '" slideDateWindowSize="' + slideDateWindowSize + '"+ slideWindowMaxRequestCount="' + slideWindowMaxRequestCount + '" tokenBucketMaxSize="' + tokenBucketMaxSize + '" tokenBucketRefillRate="' + tokenBucketRefillRate + '" leakyBucketCapacity="' + leakyBucketCapacity + '" leakyBucketRefillRate="' + leakyBucketRefillRate + '" timeout="' + timeout + '">设置</a>&nbsp;&nbsp;' +
+                    '<a href="javascript:;" class="clear" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
                     '</div>';
             }
         }], "language": {
@@ -110,9 +120,8 @@ $(function () {
         $("#countLimitOptions").hide();
         $("#tokenLimitOptions").hide();
         $("#leakyLimitOptions").hide();
-        if (limitAlgorithm != null && timeout !=null) {
+        if (limitAlgorithm != null) {
             // update
-            $("#openGatewayConfigModelWindow .form select[name='limitAlgorithm']").val(limitAlgorithm);
             switch (limitAlgorithm) {
                 case '1': // 计数算法
                     $("#countLimitOptions").show();
@@ -125,14 +134,16 @@ $(function () {
                     break;
                 default:
             }
+            console.log(limitAlgorithm)
+            $("#openGatewayConfigModelWindow .form select[name='limitAlgorithm']").val(limitAlgorithm);
             $("#openGatewayConfigModelWindow .form input[name='slideDateWindowSize']").val(slideDateWindowSize);
             $("#openGatewayConfigModelWindow .form input[name='slideWindowMaxRequestCount']").val(slideWindowMaxRequestCount);
             $("#openGatewayConfigModelWindow .form input[name='tokenBucketMaxSize']").val(tokenBucketMaxSize);
             $("#openGatewayConfigModelWindow .form input[name='tokenBucketRefillRate']").val(tokenBucketRefillRate);
             $("#openGatewayConfigModelWindow .form input[name='leakyBucketCapacity']").val(leakyBucketCapacity);
             $("#openGatewayConfigModelWindow .form input[name='leakyBucketRefillRate']").val(leakyBucketRefillRate);
-            $("#openGatewayConfigModelWindow .form input[name='timeout']").val(timeout);
         }
+        $("#openGatewayConfigModelWindow .form input[name='timeout']").val(timeout);
         $('#openGatewayConfigModelWindow').modal({backdrop: false, keyboard: false}).modal('show');
     });
 
@@ -332,6 +343,6 @@ var ComAlertTec = {
         });
     }
 };
-$(document).ready(function(){
+$(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
