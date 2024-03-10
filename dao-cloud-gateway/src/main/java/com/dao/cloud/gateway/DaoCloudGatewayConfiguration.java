@@ -1,7 +1,6 @@
 package com.dao.cloud.gateway;
 
 import com.dao.cloud.gateway.global.GlobalGatewayExceptionHandler;
-import com.dao.cloud.gateway.intercept.DefaultInterceptor;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.intercept.annotation.GatewayInterceptorRegister;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
@@ -61,10 +60,5 @@ public class DaoCloudGatewayConfiguration {
     @Bean
     public DaoLoadBalance daoLoadBalance() {
         return new RoundLoadBalance();
-    }
-
-    @Bean
-    public DefaultInterceptor defaultInterceptor() {
-        return new DefaultInterceptor();
     }
 }
