@@ -32,9 +32,9 @@ import java.util.*;
 @Slf4j
 public class Dispatcher {
 
-    private DaoLoadBalance daoLoadBalance;
+    private final DaoLoadBalance daoLoadBalance;
 
-    private List<Interceptor> interceptors;
+    private final List<Interceptor> interceptors;
 
     public Dispatcher(DaoLoadBalance daoLoadBalance, List<Interceptor> interceptors) {
         this.daoLoadBalance = daoLoadBalance;
