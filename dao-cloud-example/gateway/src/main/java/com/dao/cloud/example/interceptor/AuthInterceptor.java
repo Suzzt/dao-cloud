@@ -8,13 +8,16 @@ import org.springframework.stereotype.Component;
 /**
  * @author: sucf
  * @date: 2024/3/10 09:54
- * @description:
+ * @description: Here is an example permission filtering interceptor.
  */
 @GatewayInterceptorRegister
 @Component
-public class DemoInterceptor implements Interceptor {
+public class AuthInterceptor implements Interceptor {
     @Override
     public InterceptionResult intercept() {
-        return new InterceptionResult(false);
+        // Filter specific permission logic...
+        // return new InterceptionResult(false);
+        // ......
+        return new InterceptionResult(true);
     }
 }
