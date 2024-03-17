@@ -51,9 +51,8 @@ public class FileSystem implements Persistence {
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
         String pathPrefix = fileSystemSetting.getPathPrefix();
-        if (!StringUtils.hasLength(pathPrefix)) {
-            fileSystemSetting.setPathPrefix("/data/dao-cloud/data_storage");
-        }
+        // default need to be set
+        pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
     }
@@ -154,6 +153,12 @@ public class FileSystem implements Persistence {
             }
         }
         return map;
+    }
+
+    @Override
+    public void clear() {
+        FileUtil.clean(gatewayStoragePath);
+        FileUtil.clean(configStoragePath);
     }
 
     public String makePath(String prefix, String... modules) {

@@ -55,4 +55,8 @@ public interface Persistence {
      */
     Map<ProxyProviderModel, GatewayConfigModel> loadGateway();
 
+    /**
+     * clear
+     */
+    void clear();
 }

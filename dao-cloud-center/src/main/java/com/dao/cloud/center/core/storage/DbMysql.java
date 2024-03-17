@@ -65,9 +65,13 @@ public class DbMysql implements Persistence {
 
     private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, slide_date_window_size=?, slide_window_max_request_count=?, token_bucket_max_size=?, token_bucket_refill_rate=?, leaky_bucket_capacity=?, leaky_bucket_refill_rate=? WHERE proxy=? AND `provider`=? AND version=?";
 
-    private final String delete_config_sql_template = "DELETE FROM config WHERE proxy = ? and `key` = ? and value = ?";
+    private final String delete_config_sql_template = "DELETE FROM dao_cloud.config WHERE proxy = ? and `key` = ? and value = ?";
 
-    private final String delete_gateway_config_sql_template = "DELETE FROM gateway_config WHERE proxy = ? and `provider` = ? and version = ?";
+    private final String delete_gateway_config_sql_template = "DELETE FROM dao_cloud.gateway_config WHERE proxy = ? and `provider` = ? and version = ?";
+
+    private final String truncate_config_sql_template = "TRUNCATE TABLE dao_cloud.config";
+
+    private final String truncate_gateway_config_sql_template = "TRUNCATE TABLE dao_cloud.gateway_config";
 
     @Autowired
     public DbMysql(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
@@ -183,6 +187,16 @@ public class DbMysql implements Persistence {
             }
         }
         return map;
+    }
+
+    @Override
+    public void clear() {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(truncate_config_sql_template);
+            statement.execute(truncate_gateway_config_sql_template);
+        } catch (Exception e) {
+            throw new DaoException(e);
+        }
     }
 
     private void insertOrUpdate(GatewayModel gatewayModel) {

@@ -3,18 +3,19 @@ package com.dao.cloud.center.core;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
+import com.dao.cloud.center.core.handler.CenterClusterGatewayPullServiceNodeMessageHandler;
 import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
-import com.dao.cloud.core.model.*;
-import com.google.common.collect.Maps;
 import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.ThreadPoolFactory;
+import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -115,11 +116,45 @@ public class CenterClusterManager {
         for (String aliveNode : aliveNodes) {
             joinCluster(aliveNode);
         }
-        // sync init config
+
+        // clear local config, This is a dangerous operation!
+        persistence.clear();
+
+        // sync overwrite data
         for (String aliveNode : aliveNodes) {
+            // system config
             loadConfig(aliveNode);
+            // gateway service config
+            loadGatewayConfig(aliveNode);
         }
-        // sync init gateway config todo
+    }
+
+    private static void loadGatewayConfig(String ip) throws InterruptedException {
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayPullServiceMarkModel());
+        Promise<GatewayServiceNodeModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        CenterClusterGatewayPullServiceNodeMessageHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send full config data error", future.cause());
+            }
+        });
+        if (!promise.await(10, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< Gateway pull service node info timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            GatewayServiceNodeModel gatewayServiceNodeModel = promise.getNow();
+            Map<ProxyProviderModel, GatewayConfigModel> config = gatewayServiceNodeModel.getConfig();
+            Map<ProxyProviderModel, Set<ServerNodeModel>> services = gatewayServiceNodeModel.getServices();
+            for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
+                ProxyProviderModel proxyProviderModel = entry.getKey();
+                GatewayModel gatewayModel = new GatewayModel(proxyProviderModel, config.get(proxyProviderModel));
+                persistence.storage(gatewayModel);
+            }
+        } else {
+            throw new DaoException(promise.cause());
+        }
     }
 
     /**
