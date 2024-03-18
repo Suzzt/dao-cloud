@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * @description: Center cluster gateway pull service node handler(All server info)
  */
 @Slf4j
-public class CenterClusterGatewayPullServiceNodeMessageHandler extends SimpleChannelInboundHandler<GatewayServiceNodeModel> {
+public class CenterClusterGatewayResponseMessageHandler extends SimpleChannelInboundHandler<GatewayServiceNodeModel> {
 
     public static Promise<GatewayServiceNodeModel> promise;
 

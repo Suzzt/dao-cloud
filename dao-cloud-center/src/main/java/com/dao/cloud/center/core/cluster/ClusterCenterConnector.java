@@ -1,9 +1,6 @@
 package com.dao.cloud.center.core.cluster;
 
-import com.dao.cloud.center.core.handler.ClusterResponseHandler;
-import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
-import com.dao.cloud.center.core.handler.SyncClusterInformationResponseHandler;
-import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
+import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.AbstractShareClusterRequestModel;
 import com.dao.cloud.core.netty.protocol.*;
@@ -82,6 +79,7 @@ public class ClusterCenterConnector {
                         .addLast(new InquireClusterCenterResponseHandler())
                         .addLast(new SyncClusterInformationResponseHandler())
                         .addLast(new PullConfigResponseHandler())
+                        .addLast(new CenterClusterGatewayResponseMessageHandler())
                         .addLast(clusterRequestHandler);
             }
         });

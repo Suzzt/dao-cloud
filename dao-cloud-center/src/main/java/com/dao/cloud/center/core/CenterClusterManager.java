@@ -3,7 +3,7 @@ package com.dao.cloud.center.core;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
-import com.dao.cloud.center.core.handler.CenterClusterGatewayPullServiceNodeMessageHandler;
+import com.dao.cloud.center.core.handler.CenterClusterGatewayResponseMessageHandler;
 import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
 import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
 import com.dao.cloud.core.exception.DaoException;
@@ -133,10 +133,10 @@ public class CenterClusterManager {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayPullServiceMarkModel());
         Promise<GatewayServiceNodeModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
-        CenterClusterGatewayPullServiceNodeMessageHandler.promise = promise;
+        CenterClusterGatewayResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("send full config data error", future.cause());
+                log.error("send gateway config data error", future.cause());
             }
         });
         if (!promise.await(10, TimeUnit.SECONDS)) {
