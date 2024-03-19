@@ -76,8 +76,8 @@ public class FileSystem implements Persistence {
         String path = makePath(configStoragePath, proxy, key, String.valueOf(version));
         FileUtil.del(path);
         // file gc
-        FileUtil.del(makePath(configStoragePath, proxy, key));
-        FileUtil.del(makePath(configStoragePath, proxy));
+        fileGC(makePath(configStoragePath, proxy, key));
+        fileGC(makePath(configStoragePath, proxy));
     }
 
     @Override
@@ -99,9 +99,16 @@ public class FileSystem implements Persistence {
         FileUtil.del(path);
         // file gc
         String directory = makePath(gatewayStoragePath, proxy, provider);
-        FileUtil.del(directory);
-        FileUtil.del(makePath(gatewayStoragePath, proxy));
-        FileUtil.del(makePath(gatewayStoragePath));
+        fileGC(directory);
+        fileGC(makePath(gatewayStoragePath, proxy));
+        fileGC(makePath(gatewayStoragePath));
+    }
+
+    private void fileGC(String path) {
+        String[] files = new File(path).list();
+        if (files == null || files.length == 0) {
+            FileUtil.del(path);
+        }
     }
 
     @Override
@@ -119,7 +126,7 @@ public class FileSystem implements Persistence {
                         ProxyConfigModel proxyConfigModel = new ProxyConfigModel(proxy, key, Integer.parseInt(version));
                         map.put(proxyConfigModel, value);
                     } catch (Exception e) {
-                        log.warn("Failed to load config data (proxy={}, key={}, version={}) from file", proxy, key, version);
+                        log.warn("Failed to load config data (proxy={}, key={}, version={}) from file", proxy, key, version, e);
                     }
                 }
             }
@@ -147,7 +154,7 @@ public class FileSystem implements Persistence {
                         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, Integer.parseInt(version));
                         map.put(proxyProviderModel, gatewayConfigModel);
                     } catch (Exception e) {
-                        log.warn("Failed to load gateway limit data (proxy={}, provider={}, version={}) from file", proxy, provider, version);
+                        log.warn("Failed to load gateway limit data (proxy={}, provider={}, version={}) from file", proxy, provider, version, e);
                     }
                 }
             }
