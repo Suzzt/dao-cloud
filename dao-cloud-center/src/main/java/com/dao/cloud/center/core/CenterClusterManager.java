@@ -119,6 +119,7 @@ public class CenterClusterManager {
 
         // clear local config, This is a dangerous operation!
         persistence.clear();
+        log.info("clear local config data");
 
         // sync overwrite data
         for (String aliveNode : aliveNodes) {
