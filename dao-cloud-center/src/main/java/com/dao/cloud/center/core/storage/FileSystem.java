@@ -31,6 +31,14 @@ import java.util.Map;
  * ｜  dir  ｜  dir  ｜    dir    ｜ file-name ｜
  * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
  * </p>
+ *
+ * <p>
+ * Gateway configuration data is written to the file system.
+ * If the directory or file does not exist, it is created.
+ * The following is the file address corresponding to the gateway data.
+ * ｜  dir  ｜     dir    ｜    dir    ｜   file-name   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  data (json)  ｜
+ * </p>
  */
 @Slf4j
 @Component
