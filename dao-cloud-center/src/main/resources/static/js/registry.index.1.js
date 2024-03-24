@@ -37,7 +37,7 @@ $(function () {
                 var tokenBucketRefillRate = row.gateway.limitModel.tokenBucketRefillRate;
                 var leakyBucketCapacity = row.gateway.limitModel.leakyBucketCapacity;
                 var leakyBucketRefillRate = row.gateway.limitModel.leakyBucketRefillRate;
-                var timeout = row.gateway.timeout == null ? '' : row.gateway.timeout;
+                var timeout = row.gateway.timeout;
                 var limit_div = '';
                 var limitAlgorithm_div = '';
                 if (row.gateway.limitModel != null && row.gateway.limitModel.limitAlgorithm != null) {
@@ -73,10 +73,18 @@ $(function () {
                     timeout_div = '调用超时时间:&nbsp;(' + timeout + ')</span>&nbsp;&nbsp;&nbsp;&nbsp;';
                 }
 
+                // Assignment parameters attributes
+                const time_attribute = null;
+                if (timeout == null) {
+                    time_attributes = '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + limitAlgorithm_div + '" slideDateWindowSize="' + slideDateWindowSize + '"+ slideWindowMaxRequestCount="' + slideWindowMaxRequestCount + '" tokenBucketMaxSize="' + tokenBucketMaxSize + '" tokenBucketRefillRate="' + tokenBucketRefillRate + '" leakyBucketCapacity="' + leakyBucketCapacity + '" leakyBucketRefillRate="' + leakyBucketRefillRate + '">设置</a>&nbsp;&nbsp;';
+                } else {
+                    time_attributes = '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + limitAlgorithm_div + '" slideDateWindowSize="' + slideDateWindowSize + '"+ slideWindowMaxRequestCount="' + slideWindowMaxRequestCount + '" tokenBucketMaxSize="' + tokenBucketMaxSize + '" tokenBucketRefillRate="' + tokenBucketRefillRate + '" leakyBucketCapacity="' + leakyBucketCapacity + '" leakyBucketRefillRate="' + leakyBucketRefillRate + '" timeout="' + timeout + '">设置</a>&nbsp;&nbsp;';
+                }
+
                 return '<div>' +
                     limit_div +
                     timeout_div +
-                    '<a href="javascript:;" class="openGatewayConfigModelWindow" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + limitAlgorithm_div + '" slideDateWindowSize="' + slideDateWindowSize + '"+ slideWindowMaxRequestCount="' + slideWindowMaxRequestCount + '" tokenBucketMaxSize="' + tokenBucketMaxSize + '" tokenBucketRefillRate="' + tokenBucketRefillRate + '" leakyBucketCapacity="' + leakyBucketCapacity + '" leakyBucketRefillRate="' + leakyBucketRefillRate + '" timeout="' + timeout + '">设置</a>&nbsp;&nbsp;' +
+                    time_attributes +
                     '<a href="javascript:;" class="clear" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">清空</a>' +
                     '</div>';
             }
