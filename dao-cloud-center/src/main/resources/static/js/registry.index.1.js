@@ -280,6 +280,57 @@ $(function () {
         });
     });
 
+    /**
+     * 服务上下线请求
+     */
+    $("#popup-list").on('click', '.on_off', function () {
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+        // true表示要上线, false表示要下线
+        var status = $(this).attr("status");
+        const text = status? "上线" : "下线";
+        layer.confirm("确认" + text + "此机器?", {
+            icon: 3,
+            title: "系统提示",
+            btn: ["确认", "取消"]
+        }, function (index) {
+            layer.close(index);
+
+            $.ajax({
+                type: 'POST',
+                url: base_url + "/gateway/on_off",
+                data: {
+                    "proxy": proxy,
+                    "provider": provider,
+                    "version": version,
+                    "status": status
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == "00000") {
+                        layer.open({
+                            title: "系统提示",
+                            btn: ["确认"],
+                            content: text+"成功",
+                            icon: '1',
+                            end: function (layero, index) {
+                                dataTable.api().ajax.reload();
+                            }
+                        });
+                    } else {
+                        layer.open({
+                            title: "系统提示",
+                            btn: ["确认"],
+                            content: (data.msg || text+"失败"),
+                            icon: '2'
+                        });
+                    }
+                }
+            });
+        });
+    });
+
     $("#data_list").on('click', '.showData', function () {
         var proxy = $(this).attr("proxy");
         var provider = $(this).attr("provider");
@@ -292,7 +343,7 @@ $(function () {
                 var tableHtml = '';
 
                 response.data.forEach(function (item) {
-                    tableHtml += '<tr><td>' + item.ip + '</td><td>' + item.port + '</td></tr>';
+                    tableHtml += '<tr><td>' + item.ip + '</td><td>' + item.port + '</td><td>' + '<a href="javascript:;" class="on_off"  proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" status=true>' + '上线' + '</a>' + '&nbsp;&nbsp;' + '<a href="javascript:;" class="on_off"  proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" status="false"></td></ >上线</a>' + '</td></tr>';
                 });
                 // 使用 Layer 弹窗展示数组数据
                 layer.open({

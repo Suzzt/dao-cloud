@@ -205,6 +205,7 @@
                 <tr>
                     <th>ip</th>
                     <th>port</th>
+                    <th>管理</th>
                 </tr>
                 </thead>
                 <tbody></tbody>
