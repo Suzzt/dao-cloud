@@ -19,6 +19,7 @@ import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -151,7 +152,9 @@ public class CenterClusterManager {
             for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
                 ProxyProviderModel proxyProviderModel = entry.getKey();
                 GatewayModel gatewayModel = new GatewayModel(proxyProviderModel, config.get(proxyProviderModel));
-                persistence.storage(gatewayModel);
+                if (gatewayModel.getGatewayConfigModel() != null) {
+                    persistence.storage(gatewayModel);
+                }
             }
         } else {
             throw new DaoException(promise.cause());
@@ -289,11 +292,14 @@ public class CenterClusterManager {
      * @return
      */
     public static Set<String> inquire() throws InterruptedException {
+        log.info("Inquiring about the cluster node......");
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_PORT);
         bootstrap.group(group);
+        // 设置连接超时时间
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
