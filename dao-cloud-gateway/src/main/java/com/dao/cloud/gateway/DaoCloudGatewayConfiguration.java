@@ -4,6 +4,8 @@ import com.dao.cloud.gateway.global.GlobalGatewayExceptionHandler;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.intercept.annotation.GatewayInterceptorRegister;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
+import com.dao.cloud.starter.banlance.impl.HashLoadBalance;
+import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RoundLoadBalance;
 import com.dao.cloud.starter.bootstrap.DaoCloudCenterBootstrap;
 import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,6 +62,18 @@ public class DaoCloudGatewayConfiguration {
 
     @Bean
     public DaoLoadBalance daoLoadBalance() {
-        return new RoundLoadBalance();
+        String loadBalance = DaoCloudCenterProperties.loadBalance;
+        if (!StringUtils.hasLength(loadBalance)) {
+            return new RoundLoadBalance();
+        }
+        switch (loadBalance) {
+            case "random":
+                return new RandomLoadBalance();
+            case "hash":
+                return new HashLoadBalance();
+            default:
+                // 默认为轮询
+                return new RoundLoadBalance();
+        }
     }
 }

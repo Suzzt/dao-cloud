@@ -75,9 +75,7 @@ public class GatewayPullServiceTimer implements Runnable {
                             Limiter limiter = LimitFactory.getLimiter(gatewayConfigModel.getLimitModel());
                             gatewayConfig.setLimiter(limiter);
                             gatewayConfig.setTimeout(gatewayConfigModel.getTimeout());
-                            // TODO interceptor
                             GatewayConfigManager.save(proxyProviderModel, gatewayConfig);
-
                         }
                     } else {
                         throw new DaoException(promise.cause());

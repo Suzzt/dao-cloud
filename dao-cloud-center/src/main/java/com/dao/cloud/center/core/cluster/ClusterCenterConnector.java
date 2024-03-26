@@ -1,18 +1,12 @@
 package com.dao.cloud.center.core.cluster;
 
-import com.dao.cloud.center.core.handler.ClusterResponseHandler;
-import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
-import com.dao.cloud.center.core.handler.SyncClusterInformationResponseHandler;
-import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
+import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.AbstractShareClusterRequestModel;
 import com.dao.cloud.core.netty.protocol.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -82,9 +76,12 @@ public class ClusterCenterConnector {
                         .addLast(new InquireClusterCenterResponseHandler())
                         .addLast(new SyncClusterInformationResponseHandler())
                         .addLast(new PullConfigResponseHandler())
+                        .addLast(new CenterClusterGatewayResponseMessageHandler())
                         .addLast(clusterRequestHandler);
             }
         });
+        // 设置连接超时时间
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
         try {
             clusterChannel = bootstrap.connect().sync().channel();
             log.info(">>>>>>>>> connect dao-cloud-center cluster (ip={}) success <<<<<<<<<<", connectIp);
