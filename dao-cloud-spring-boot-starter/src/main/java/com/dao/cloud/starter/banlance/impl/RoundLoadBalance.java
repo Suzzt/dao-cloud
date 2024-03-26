@@ -18,7 +18,6 @@ public class RoundLoadBalance extends DaoLoadBalance {
     @Override
     public Client route(Set<Client> channelClients) {
         Client[] clients = channelClients.toArray(new Client[channelClients.size()]);
-        count.incrementAndGet();
-        return clients[count.get() % channelClients.size()];
+        return clients[count.incrementAndGet() % channelClients.size()];
     }
 }
