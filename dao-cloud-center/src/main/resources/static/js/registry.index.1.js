@@ -142,7 +142,6 @@ $(function () {
                     break;
                 default:
             }
-            console.log(limitAlgorithm)
             $("#openGatewayConfigModelWindow .form select[name='limitAlgorithm']").val(limitAlgorithm);
             $("#openGatewayConfigModelWindow .form input[name='slideDateWindowSize']").val(slideDateWindowSize);
             $("#openGatewayConfigModelWindow .form input[name='slideWindowMaxRequestCount']").val(slideWindowMaxRequestCount);
@@ -287,9 +286,11 @@ $(function () {
         var proxy = $(this).attr("proxy");
         var provider = $(this).attr("provider");
         var version = $(this).attr("version");
+        var ip = $(this).attr("ip");
+        var port = $(this).attr("port");
         // true表示要上线, false表示要下线
         var status = $(this).attr("status");
-        const text = status? "上线" : "下线";
+        const text = status == 'true' || status == true ? "上线" : "下线";
         layer.confirm("确认" + text + "此机器?", {
             icon: 3,
             title: "系统提示",
@@ -299,11 +300,13 @@ $(function () {
 
             $.ajax({
                 type: 'POST',
-                url: base_url + "/gateway/on_off",
+                url: base_url + "/registry/on_off",
                 data: {
                     "proxy": proxy,
                     "provider": provider,
                     "version": version,
+                    "ip": ip,
+                    "port": port,
                     "status": status
                 },
                 dataType: "json",
@@ -312,17 +315,17 @@ $(function () {
                         layer.open({
                             title: "系统提示",
                             btn: ["确认"],
-                            content: text+"成功",
+                            content: text + "成功",
                             icon: '1',
                             end: function (layero, index) {
-                                dataTable.api().ajax.reload();
+                                reload(proxy, provider, version);
                             }
                         });
                     } else {
                         layer.open({
                             title: "系统提示",
                             btn: ["确认"],
-                            content: (data.msg || text+"失败"),
+                            content: (data.msg || text + "失败"),
                             icon: '2'
                         });
                     }
@@ -330,6 +333,37 @@ $(function () {
             });
         });
     });
+
+    function reload(proxy, provider, version) {
+        $.ajax({
+            url: base_url + "/registry/server?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var tableHtml = load_page_html(response.data, proxy, provider, version);
+                $('#popup-list tbody').html(tableHtml);
+            }
+        });
+    }
+
+    function load_page_html(service_data_list, proxy, provider, version) {
+        var tableHtml = "";
+        service_data_list.forEach(function (item) {
+            var statusText = item.status ? "下线" : "上线";
+            var statusAction = item.status ? false : true;
+            var statusImage = item.status ? "../right.png" : "../wrong.png";
+            tableHtml += '<tr>' +
+                '<td style="display: flex; align-items: center;">' +
+                '<img src="' + statusImage + '" style="height:16px; width:16px; margin-right: 5px;" />' + item.ip +
+                '</td>' +
+                '<td>' + item.port + '</td>' +
+                '<td>' +
+                '<a href="javascript:;" class="on_off" proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" ip="' + item.ip + '" port="' + item.port + '" status="' + statusAction + '">' + statusText + '</a>' +
+                '</td>' +
+                '</tr>';
+        });
+        return tableHtml;
+    }
 
     $("#data_list").on('click', '.showData', function () {
         var proxy = $(this).attr("proxy");
@@ -340,12 +374,7 @@ $(function () {
             method: "GET",
             dataType: "json",
             success: function (response) {
-                var tableHtml = '';
-
-                response.data.forEach(function (item) {
-                    tableHtml += '<tr><td>' + item.ip + '</td><td>' + item.port + '</td><td>' + '<a href="javascript:;" class="on_off"  proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" status=true>' + '上线' + '</a>' + '&nbsp;&nbsp;' + '<a href="javascript:;" class="on_off"  proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" status="false"></td></ >上线</a>' + '</td></tr>';
-                });
-                // 使用 Layer 弹窗展示数组数据
+                var tableHtml = load_page_html(response.data, proxy, provider, version);
                 layer.open({
                     type: 1,
                     title: '注册服务节点列表',

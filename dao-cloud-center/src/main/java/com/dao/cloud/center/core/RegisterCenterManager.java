@@ -1,13 +1,13 @@
 package com.dao.cloud.center.core;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -30,7 +30,7 @@ public class RegisterCenterManager {
      * key: proxy
      * value: provider server
      * key: provider + version
-     * value: server nodes --->ip + port
+     * value: server nodes --->ip + port + status
      */
     private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
 
@@ -201,5 +201,24 @@ public class RegisterCenterManager {
         }
         Set<ServerNodeModel> serverNodeModels = registerProviders.get(providerModel);
         return serverNodeModels;
+    }
+
+    /**
+     * 服务管理(上下线)
+     *
+     * @param proxy
+     * @param provider
+     * @param version
+     * @param serverNodeModel
+     */
+    public static synchronized void onOff(String proxy, String provider, Integer version, ServerNodeModel serverNodeModel) {
+        ProviderModel providerModel = new ProviderModel(provider, version);
+        Set<ServerNodeModel> serverNodeModels = SERVER.get(proxy).get(providerModel);
+        for (ServerNodeModel node : serverNodeModels) {
+            if (node.equals(serverNodeModel)) {
+                node.setStatus(serverNodeModel.isStatus());
+                break;
+            }
+        }
     }
 }

@@ -81,6 +81,17 @@ public class CenterController {
         return ApiResult.buildSuccess(serverNodeModels);
     }
 
+    @RequestMapping(value = "/registry/on_off")
+    @ResponseBody
+    public ApiResult onOff(@RequestParam String proxy, @RequestParam String provider,
+                           @RequestParam(defaultValue = "0") Integer version,
+                           @RequestParam String ip, @RequestParam Integer port,
+                           @RequestParam Boolean status) {
+        ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
+        RegisterCenterManager.onOff(proxy, provider, version, serverNodeModel);
+        return ApiResult.buildSuccess();
+    }
+
     @RequestMapping(value = "/gateway/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult save(@Valid @RequestBody GatewayVO gatewayVO) {

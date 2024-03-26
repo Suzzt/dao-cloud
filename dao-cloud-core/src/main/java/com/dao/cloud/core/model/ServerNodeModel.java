@@ -30,6 +30,13 @@ public class ServerNodeModel implements Serializable {
     public ServerNodeModel(String ip, int port) {
         this.ip = ip;
         this.port = port;
+        this.status = true;
+    }
+
+    public ServerNodeModel(String ip, int port, boolean status) {
+        this.ip = ip;
+        this.port = port;
+        this.status = status;
     }
 
     @Override
