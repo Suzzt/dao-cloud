@@ -168,6 +168,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+
+    }
+
+    @Override
     public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
         Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newHashMap();
         Long count = count();

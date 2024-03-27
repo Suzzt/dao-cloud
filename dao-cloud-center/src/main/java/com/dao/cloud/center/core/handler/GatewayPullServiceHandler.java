@@ -23,7 +23,10 @@ public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<Gatew
 
     private GatewayCenterManager gatewayCenterManager;
 
-    public GatewayPullServiceHandler(GatewayCenterManager gatewayCenterManager) {
+    private RegisterCenterManager registerCenterManager;
+
+    public GatewayPullServiceHandler(RegisterCenterManager registerCenterManager, GatewayCenterManager gatewayCenterManager) {
+        this.registerCenterManager = registerCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
     }
 
@@ -32,7 +35,7 @@ public class GatewayPullServiceHandler extends SimpleChannelInboundHandler<Gatew
         DaoMessage daoMessage;
         GatewayServiceNodeModel gatewayServiceNodeModel = new GatewayServiceNodeModel();
         try {
-            gatewayServiceNodeModel.setServices(RegisterCenterManager.gatewayServers());
+            gatewayServiceNodeModel.setServices(registerCenterManager.gatewayServers());
             gatewayServiceNodeModel.setConfig(gatewayCenterManager.getGatewayConfig());
         } catch (Exception e) {
             gatewayServiceNodeModel.setDaoException(new DaoException(CodeEnum.PULL_SERVICE_NODE_ERROR));

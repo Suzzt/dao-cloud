@@ -24,6 +24,12 @@ import java.util.Set;
 @Slf4j
 public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {
 
+    private RegisterCenterManager registerCenterManager;
+
+    public PullServerHandler(RegisterCenterManager registerCenterManager) {
+        this.registerCenterManager = registerCenterManager;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProxyProviderModel proxyProviderModel) {
         String proxy = proxyProviderModel.getProxy();
@@ -31,7 +37,7 @@ public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProvider
         Set<ServerNodeModel> serverNodeModels;
         DaoMessage daoMessage;
         try {
-            serverNodeModels = RegisterCenterManager.getServers(proxy, providerModel);
+            serverNodeModels = registerCenterManager.getServers(proxy, providerModel);
             daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
         } catch (Exception e) {
             log.error("<<<<<<<<<<< Failed to pull service list >>>>>>>>>>>>", e);

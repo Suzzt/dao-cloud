@@ -41,10 +41,13 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
 
     private GatewayCenterManager gatewayCenterManager;
 
+    private RegisterCenterManager registerCenterManager;
+
     private ExpireHashMap<Long> expireHashMap;
 
-    public SyncClusterInformationRequestHandler(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    public SyncClusterInformationRequestHandler(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
         expireHashMap = new ExpireHashMap(1000, 1, TimeUnit.HOURS);
+        this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
     }
@@ -67,11 +70,11 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
             } else if (shareClusterRequestModel.getType() == DOWN_SERVER) {
                 ServiceShareClusterRequestModel serviceShareClusterRequestModel = (ServiceShareClusterRequestModel) shareClusterRequestModel;
                 RegisterProviderModel registerProviderModel = serviceShareClusterRequestModel.getRegisterProviderModel();
-                RegisterCenterManager.down(registerProviderModel);
+                registerCenterManager.unregistered(registerProviderModel);
             } else if (shareClusterRequestModel.getType() == UP_SERVER) {
                 ServiceShareClusterRequestModel serviceShareClusterRequestModel = (ServiceShareClusterRequestModel) shareClusterRequestModel;
                 RegisterProviderModel registerProviderModel = serviceShareClusterRequestModel.getRegisterProviderModel();
-                RegisterCenterManager.register(registerProviderModel);
+                registerCenterManager.registry(registerProviderModel);
             } else if (shareClusterRequestModel.getType() == SAVE_CONFIG) {
                 if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
                     ConfigShareClusterRequestModel configShareClusterRequestModel = (ConfigShareClusterRequestModel) shareClusterRequestModel;

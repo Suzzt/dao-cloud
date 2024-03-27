@@ -34,7 +34,10 @@ public class CenterController {
 
     private GatewayCenterManager gatewayCenterManager;
 
-    public CenterController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    private RegisterCenterManager registerCenterManager;
+
+    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
     }
@@ -44,7 +47,7 @@ public class CenterController {
     @Permissions(limit = false)
     public ApiResult<List<ServerVO>> getRegisterProxy(String proxy, String provider) {
         List<ServerVO> result = Lists.newArrayList();
-        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterCenterManager.getServer();
+        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = registerCenterManager.getServer();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : server.entrySet()) {
             if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
@@ -75,7 +78,7 @@ public class CenterController {
     @RequestMapping(value = "/registry/server")
     @ResponseBody
     public ApiResult<Set<ServerNodeModel>> getServer(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
-        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = RegisterCenterManager.getServer();
+        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = registerCenterManager.getServer();
         Map<ProviderModel, Set<ServerNodeModel>> providerModels = server.get(proxy);
         Set<ServerNodeModel> serverNodeModels = providerModels.get(new ProviderModel(provider, version));
         return ApiResult.buildSuccess(serverNodeModels);
@@ -83,12 +86,13 @@ public class CenterController {
 
     @RequestMapping(value = "/registry/on_off")
     @ResponseBody
-    public ApiResult onOff(@RequestParam String proxy, @RequestParam String provider,
+    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider,
                            @RequestParam(defaultValue = "0") Integer version,
                            @RequestParam String ip, @RequestParam Integer port,
                            @RequestParam Boolean status) {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
-        RegisterCenterManager.onOff(proxy, provider, version, serverNodeModel);
+        registerCenterManager.manage(proxy, provider, version, serverNodeModel);
+        // todo 同步到集群
         return ApiResult.buildSuccess();
     }
 

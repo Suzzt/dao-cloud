@@ -27,6 +27,15 @@ public interface Persistence {
     void storage(GatewayModel gatewayModel);
 
     /**
+     * storage server
+     * (This is an idempotent operation)
+     *
+     * @param proxyProviderModel
+     * @param serverNodeModel
+     */
+    void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel);
+
+    /**
      * delete config
      *
      * @param proxyConfigModel
@@ -39,7 +48,6 @@ public interface Persistence {
      * @param proxyProviderModel
      */
     void delete(ProxyProviderModel proxyProviderModel);
-
 
     /**
      * load init all config data

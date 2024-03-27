@@ -55,6 +55,11 @@ public class FileSystem implements Persistence {
      */
     private final String gatewayStoragePath;
 
+    /**
+     * Server Storage Path
+     */
+    private final String serverStoragePath;
+
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
@@ -63,6 +68,7 @@ public class FileSystem implements Persistence {
         pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
+        this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
     }
 
     @Override
@@ -110,6 +116,15 @@ public class FileSystem implements Persistence {
         fileGC(directory);
         fileGC(makePath(gatewayStoragePath, proxy));
         fileGC(makePath(gatewayStoragePath));
+    }
+
+    @Override
+    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(serverStoragePath, proxy, provider, String.valueOf(version), serverNodeModel.getIp() + ":" + serverNodeModel.getPort());
+        write(path, String.valueOf(serverNodeModel.isStatus()));
     }
 
     private void fileGC(String path) {

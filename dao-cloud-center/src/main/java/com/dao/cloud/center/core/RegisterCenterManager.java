@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core;
 
 import com.dao.cloud.core.exception.DaoException;
+import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
@@ -32,14 +33,21 @@ public class RegisterCenterManager {
      * key: provider + version
      * value: server nodes --->ip + port + status
      */
-    private final static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
+    private final Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
+
+
+    private final Persistence persistence;
+
+    public RegisterCenterManager(Persistence persistence) {
+        this.persistence = persistence;
+    }
 
     /**
      * 获取整个注册中心服务信息
      *
      * @return
      */
-    public static Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
+    public Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
         return SERVER;
     }
 
@@ -49,7 +57,7 @@ public class RegisterCenterManager {
      *
      * @return
      */
-    public static Map<ProxyProviderModel, Set<ServerNodeModel>> gatewayServers() {
+    public Map<ProxyProviderModel, Set<ServerNodeModel>> gatewayServers() {
         Map<ProxyProviderModel, Set<ServerNodeModel>> conversionObject = new HashMap<>();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : SERVER.entrySet()) {
             String proxy = entry.getKey();
@@ -72,7 +80,7 @@ public class RegisterCenterManager {
      *
      * @return
      */
-    public static int methods() {
+    public int methods() {
         int i = 0;
         Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
@@ -92,7 +100,7 @@ public class RegisterCenterManager {
      *
      * @return count distinct (ip + port)
      */
-    public static int nodes() {
+    public int nodes() {
         Set<ServerNodeModel> temp = new HashSet<>();
         Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
@@ -110,7 +118,7 @@ public class RegisterCenterManager {
      *
      * @return 网关在整个系统的节点数
      */
-    public static int gatewayCountNodes() {
+    public int gatewayCountNodes() {
         int i = 0;
         Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
@@ -132,7 +140,7 @@ public class RegisterCenterManager {
      *
      * @param registerProviderModel
      */
-    public static synchronized void register(RegisterProviderModel registerProviderModel) {
+    public synchronized void registry(RegisterProviderModel registerProviderModel) {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> registerProviders = registerProviderModel.getProviderModels();
         ServerNodeModel serverNodeModel = registerProviderModel.getServerNodeModel();
@@ -148,7 +156,7 @@ public class RegisterCenterManager {
      * @param providerModel
      * @param serverNodeModel
      */
-    public static synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
+    public synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
         if (SERVER.containsKey(proxy)) {
             Map<ProviderModel, Set<ServerNodeModel>> providerMap = SERVER.get(proxy);
             Set<ServerNodeModel> serverNodeModels = providerMap.get(providerModel);
@@ -172,7 +180,7 @@ public class RegisterCenterManager {
      *
      * @param registerProviderModel
      */
-    public static synchronized void down(RegisterProviderModel registerProviderModel) {
+    public synchronized void unregistered(RegisterProviderModel registerProviderModel) {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> providerModels = registerProviderModel.getProviderModels();
         ServerNodeModel serverNodeModel = registerProviderModel.getServerNodeModel();
@@ -191,7 +199,7 @@ public class RegisterCenterManager {
      * @param providerModel
      * @return
      */
-    public static Set<ServerNodeModel> getServers(String proxy, ProviderModel providerModel) {
+    public Set<ServerNodeModel> getServers(String proxy, ProviderModel providerModel) {
         if (!StringUtils.hasLength(proxy)) {
             throw new DaoException("proxy = " + proxy + " is null");
         }
@@ -211,12 +219,14 @@ public class RegisterCenterManager {
      * @param version
      * @param serverNodeModel
      */
-    public static synchronized void onOff(String proxy, String provider, Integer version, ServerNodeModel serverNodeModel) {
+    public synchronized void manage(String proxy, String provider, Integer version, ServerNodeModel serverNodeModel) {
         ProviderModel providerModel = new ProviderModel(provider, version);
         Set<ServerNodeModel> serverNodeModels = SERVER.get(proxy).get(providerModel);
         for (ServerNodeModel node : serverNodeModels) {
             if (node.equals(serverNodeModel)) {
                 node.setStatus(serverNodeModel.isStatus());
+                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                persistence.storage(proxyProviderModel, serverNodeModel);
                 break;
             }
         }
