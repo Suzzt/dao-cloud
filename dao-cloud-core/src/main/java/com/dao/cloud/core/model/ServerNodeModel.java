@@ -17,7 +17,7 @@ public class ServerNodeModel implements Serializable {
 
     /**
      * on: true
-     * false: off
+     * off: false
      */
     private boolean status;
 

@@ -9,14 +9,12 @@ import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: sucf
@@ -33,8 +31,14 @@ public class RegisterCenterManager {
      * key: provider + version
      * value: server nodes --->ip + port + status
      */
-    private final Map<String, Map<ProviderModel, Set<ServerNodeModel>>> SERVER = new HashMap<>();
+    private final Map<String, Map<ProviderModel, Set<ServerNodeModel>>> REGISTRY_SERVER = new HashMap<>();
 
+    /**
+     * server config
+     * key: proxy + provider + version + ip + port
+     * value: status
+     */
+    private final Map<ServerConfigModel, Boolean> SERVER_CONFIG = new HashMap<>();
 
     private final Persistence persistence;
 
@@ -48,7 +52,7 @@ public class RegisterCenterManager {
      * @return
      */
     public Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
-        return SERVER;
+        return REGISTRY_SERVER;
     }
 
     /**
@@ -59,7 +63,7 @@ public class RegisterCenterManager {
      */
     public Map<ProxyProviderModel, Set<ServerNodeModel>> gatewayServers() {
         Map<ProxyProviderModel, Set<ServerNodeModel>> conversionObject = new HashMap<>();
-        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : SERVER.entrySet()) {
+        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : REGISTRY_SERVER.entrySet()) {
             String proxy = entry.getKey();
             if (DaoCloudConstant.GATEWAY_PROXY.equals(proxy)) {
                 continue;
@@ -82,7 +86,7 @@ public class RegisterCenterManager {
      */
     public int methods() {
         int i = 0;
-        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
+        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
             Map<ProviderModel, Set<ServerNodeModel>> map = entry.getValue();
             for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : map.entrySet()) {
@@ -102,7 +106,7 @@ public class RegisterCenterManager {
      */
     public int nodes() {
         Set<ServerNodeModel> temp = new HashSet<>();
-        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
+        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
             Map<ProviderModel, Set<ServerNodeModel>> map = entry.getValue();
             for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : map.entrySet()) {
@@ -120,7 +124,7 @@ public class RegisterCenterManager {
      */
     public int gatewayCountNodes() {
         int i = 0;
-        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = SERVER.entrySet();
+        Set<Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : entries) {
             if (DaoCloudConstant.GATEWAY_PROXY.equals(entry.getKey())) {
                 Map<ProviderModel, Set<ServerNodeModel>> map = entry.getValue();
@@ -157,8 +161,8 @@ public class RegisterCenterManager {
      * @param serverNodeModel
      */
     public synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
-        if (SERVER.containsKey(proxy)) {
-            Map<ProviderModel, Set<ServerNodeModel>> providerMap = SERVER.get(proxy);
+        if (REGISTRY_SERVER.containsKey(proxy)) {
+            Map<ProviderModel, Set<ServerNodeModel>> providerMap = REGISTRY_SERVER.get(proxy);
             Set<ServerNodeModel> serverNodeModels = providerMap.get(providerModel);
             if (CollectionUtils.isEmpty(serverNodeModels)) {
                 serverNodeModels = Sets.newHashSet();
@@ -170,7 +174,7 @@ public class RegisterCenterManager {
             Set<ServerNodeModel> serverNodeModels = Sets.newHashSet();
             serverNodeModels.add(serverNodeModel);
             providerMap.put(providerModel, serverNodeModels);
-            SERVER.put(proxy, providerMap);
+            REGISTRY_SERVER.put(proxy, providerMap);
         }
         log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, serverNodeModel);
     }
@@ -184,7 +188,7 @@ public class RegisterCenterManager {
         String proxy = registerProviderModel.getProxy();
         Set<ProviderModel> providerModels = registerProviderModel.getProviderModels();
         ServerNodeModel serverNodeModel = registerProviderModel.getServerNodeModel();
-        Map<ProviderModel, Set<ServerNodeModel>> registerProviders = SERVER.get(proxy);
+        Map<ProviderModel, Set<ServerNodeModel>> registerProviders = REGISTRY_SERVER.get(proxy);
         for (ProviderModel providerModel : providerModels) {
             Set<ServerNodeModel> serverNodeModels = registerProviders.get(providerModel);
             serverNodeModels.remove(serverNodeModel);
@@ -203,7 +207,7 @@ public class RegisterCenterManager {
         if (!StringUtils.hasLength(proxy)) {
             throw new DaoException("proxy = " + proxy + " is null");
         }
-        Map<ProviderModel, Set<ServerNodeModel>> registerProviders = SERVER.get(proxy);
+        Map<ProviderModel, Set<ServerNodeModel>> registerProviders = REGISTRY_SERVER.get(proxy);
         if (CollectionUtils.isEmpty(registerProviders)) {
             return null;
         }
@@ -221,7 +225,7 @@ public class RegisterCenterManager {
      */
     public synchronized void manage(String proxy, String provider, Integer version, ServerNodeModel serverNodeModel) {
         ProviderModel providerModel = new ProviderModel(provider, version);
-        Set<ServerNodeModel> serverNodeModels = SERVER.get(proxy).get(providerModel);
+        Set<ServerNodeModel> serverNodeModels = REGISTRY_SERVER.get(proxy).get(providerModel);
         for (ServerNodeModel node : serverNodeModels) {
             if (node.equals(serverNodeModel)) {
                 node.setStatus(serverNodeModel.isStatus());
@@ -229,6 +233,25 @@ public class RegisterCenterManager {
                 persistence.storage(proxyProviderModel, serverNodeModel);
                 break;
             }
+        }
+    }
+
+    @Data
+    class ServerConfigModel {
+        private ProxyProviderModel proxyProviderModel;
+        private ServerNodeModel serverNodeModel;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ServerConfigModel that = (ServerConfigModel) o;
+            return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(serverNodeModel, that.serverNodeModel);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(proxyProviderModel, serverNodeModel);
         }
     }
 }
