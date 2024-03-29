@@ -161,6 +161,7 @@ public class RegisterCenterManager {
      * @param serverNodeModel
      */
     public synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
+        assignment(new ProxyProviderModel(proxy, providerModel), serverNodeModel);
         if (REGISTRY_SERVER.containsKey(proxy)) {
             Map<ProviderModel, Set<ServerNodeModel>> providerMap = REGISTRY_SERVER.get(proxy);
             Set<ServerNodeModel> serverNodeModels = providerMap.get(providerModel);
@@ -234,6 +235,21 @@ public class RegisterCenterManager {
                 break;
             }
         }
+    }
+
+    /**
+     * assignment status
+     *
+     * @param proxyProviderModel
+     * @param serverNodeModel
+     */
+    private void assignment(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        Boolean status = SERVER_CONFIG.get(proxyProviderModel);
+        if (status == null) {
+            // 从来就没设置过状态, 它应该是null
+            status = true;
+        }
+        serverNodeModel.setStatus(status);
     }
 
     @Data
