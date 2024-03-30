@@ -7,7 +7,7 @@ import com.dao.cloud.center.core.handler.CenterClusterGatewayResponseMessageHand
 import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
 import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;

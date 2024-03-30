@@ -2,7 +2,7 @@ package com.dao.cloud.center.core;
 
 import com.google.common.collect.Lists;
 import com.dao.cloud.center.web.vo.ConfigVO;
-import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.model.ConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;

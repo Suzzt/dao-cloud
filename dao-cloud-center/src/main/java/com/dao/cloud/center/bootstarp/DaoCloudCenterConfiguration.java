@@ -11,7 +11,7 @@ import com.dao.cloud.center.web.controller.IndexController;
 import com.dao.cloud.center.web.interceptor.CookieInterceptor;
 import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.WebCenterConfig;
-import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
@@ -108,6 +108,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     configCenterManager.init();
                     // load gateway to cache
                     gatewayCenterManager.init();
+                    // load registry server to cache
+                    registerCenterManager.init();
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);

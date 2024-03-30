@@ -2,8 +2,8 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
-import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
@@ -186,9 +186,46 @@ public class FileSystem implements Persistence {
     }
 
     @Override
+    public Map<ServerProxyProviderNode, Boolean> loadServer() {
+        Map<ServerProxyProviderNode, Boolean> map = Maps.newConcurrentMap();
+        String prefixPath = serverStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> providers = loopDirs(prefixPath + File.separator + proxy);
+            for (String provider : providers) {
+                List<String> versions = loopDirs(prefixPath + File.separator + proxy + File.separator + provider);
+                for (String version : versions) {
+                    List<String> servers = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
+                    for (String server : servers) {
+                        try {
+                            String content = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + server);
+                            if (!StringUtils.hasLength(content)) {
+                                continue;
+                            }
+                            ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
+                            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                            String[] split = server.split(":");
+                            String ip = split[0];
+                            Integer port = Integer.valueOf(split[1]);
+                            ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port);
+                            ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, serverNodeModel);
+                            Boolean status = Boolean.valueOf(content);
+                            map.put(serverProxyProviderNode, status);
+                        } catch (Exception e) {
+                            log.warn("Failed to load server limit data (proxy={}, provider={}, version={}, server={}) from file", proxy, provider, version, server, e);
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public void clear() {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
+        FileUtil.clean(serverStoragePath);
     }
 
     public String makePath(String prefix, String... modules) {

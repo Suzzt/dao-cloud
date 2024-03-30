@@ -1,7 +1,8 @@
 package com.dao.cloud.center.core;
 
+import com.dao.cloud.center.core.model.ServerProxyProviderNode;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
@@ -9,12 +10,14 @@ import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -38,9 +41,13 @@ public class RegisterCenterManager {
      * key: proxy + provider + version + ip + port
      * value: status
      */
-    private final Map<ServerConfigModel, Boolean> SERVER_CONFIG = new HashMap<>();
+    private final Map<ServerProxyProviderNode, Boolean> SERVER_CONFIG = new HashMap<>();
 
     private final Persistence persistence;
+
+    public void init() {
+        persistence.loadServer();
+    }
 
     public RegisterCenterManager(Persistence persistence) {
         this.persistence = persistence;
@@ -250,24 +257,5 @@ public class RegisterCenterManager {
             status = true;
         }
         serverNodeModel.setStatus(status);
-    }
-
-    @Data
-    class ServerConfigModel {
-        private ProxyProviderModel proxyProviderModel;
-        private ServerNodeModel serverNodeModel;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ServerConfigModel that = (ServerConfigModel) o;
-            return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(serverNodeModel, that.serverNodeModel);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(proxyProviderModel, serverNodeModel);
-        }
     }
 }

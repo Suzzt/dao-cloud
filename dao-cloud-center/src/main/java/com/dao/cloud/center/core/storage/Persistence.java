@@ -1,7 +1,7 @@
-package com.dao.cloud.core.expand;
+package com.dao.cloud.center.core.storage;
 
+import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.core.model.*;
-
 import java.util.Map;
 
 /**
@@ -62,6 +62,13 @@ public interface Persistence {
      * @return
      */
     Map<ProxyProviderModel, GatewayConfigModel> loadGateway();
+
+    /** 
+     * load init all server status
+     *
+     * @return
+     */
+    Map<ServerProxyProviderNode, Boolean> loadServer();
 
     /**
      * clear
