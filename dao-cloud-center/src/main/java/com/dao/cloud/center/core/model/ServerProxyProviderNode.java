@@ -16,11 +16,14 @@ public class ServerProxyProviderNode {
 
     private ProxyProviderModel proxyProviderModel;
 
-    private ServerNodeModel serverNodeModel;
+    private String ip;
 
-    public ServerProxyProviderNode(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+    private Integer port;
+
+    public ServerProxyProviderNode(ProxyProviderModel proxyProviderModel, String ip, Integer port) {
         this.proxyProviderModel = proxyProviderModel;
-        this.serverNodeModel = serverNodeModel;
+        this.ip = ip;
+        this.port = port;
     }
 
     @Override
@@ -28,11 +31,11 @@ public class ServerProxyProviderNode {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ServerProxyProviderNode that = (ServerProxyProviderNode) o;
-        return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(serverNodeModel, that.serverNodeModel);
+        return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(ip, that.ip) && Objects.equals(port, that.port);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(proxyProviderModel, serverNodeModel);
+        return Objects.hash(proxyProviderModel, ip, port);
     }
 }

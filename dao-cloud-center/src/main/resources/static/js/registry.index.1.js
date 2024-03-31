@@ -380,7 +380,8 @@ $(function () {
                     title: '注册服务节点列表',
                     content: $('#popup'),
                     area: ['500px', '300px'],
-                    btn: ['确认'],
+                    btn: ['关闭'],
+                    btnAlign: 'c',
                     success: function (layero, index) {
                         $('#popup-list tbody').html(tableHtml);
                     }

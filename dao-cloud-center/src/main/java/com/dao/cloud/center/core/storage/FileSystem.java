@@ -39,6 +39,14 @@ import java.util.Map;
  * ｜  dir  ｜     dir    ｜    dir    ｜   file-name   ｜
  * ｜ proxy ｜  provider  ｜  version  ｜  data (json)  ｜
  * </p>
+ *
+ * <p>
+ * Service management configuration data is written to the file system.
+ * If the directory or file does not exist, it is created.
+ * The following is the file address corresponding to the service management data.
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-name   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜  data(status) ｜
+ * </p>
  */
 @Slf4j
 @Component
@@ -207,8 +215,7 @@ public class FileSystem implements Persistence {
                             String[] split = server.split(":");
                             String ip = split[0];
                             Integer port = Integer.valueOf(split[1]);
-                            ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port);
-                            ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, serverNodeModel);
+                            ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, ip, port);
                             Boolean status = Boolean.valueOf(content);
                             map.put(serverProxyProviderNode, status);
                         } catch (Exception e) {

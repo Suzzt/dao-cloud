@@ -41,16 +41,13 @@ public class RegisterCenterManager {
      * key: proxy + provider + version + ip + port
      * value: status
      */
-    private final Map<ServerProxyProviderNode, Boolean> SERVER_CONFIG = new HashMap<>();
+    private final Map<ServerProxyProviderNode, Boolean> SERVER_CONFIG;
 
     private final Persistence persistence;
 
-    public void init() {
-        persistence.loadServer();
-    }
-
     public RegisterCenterManager(Persistence persistence) {
         this.persistence = persistence;
+        SERVER_CONFIG = persistence.loadServer();
     }
 
     /**
@@ -168,23 +165,23 @@ public class RegisterCenterManager {
      * @param serverNodeModel
      */
     public synchronized void add(String proxy, ProviderModel providerModel, ServerNodeModel serverNodeModel) {
-        assignment(new ProxyProviderModel(proxy, providerModel), serverNodeModel);
+        ServerNodeModel assignment = assignment(new ProxyProviderModel(proxy, providerModel), serverNodeModel);
         if (REGISTRY_SERVER.containsKey(proxy)) {
             Map<ProviderModel, Set<ServerNodeModel>> providerMap = REGISTRY_SERVER.get(proxy);
             Set<ServerNodeModel> serverNodeModels = providerMap.get(providerModel);
             if (CollectionUtils.isEmpty(serverNodeModels)) {
                 serverNodeModels = Sets.newHashSet();
             }
-            serverNodeModels.add(serverNodeModel);
+            serverNodeModels.add(assignment);
             providerMap.put(providerModel, serverNodeModels);
         } else {
             Map<ProviderModel, Set<ServerNodeModel>> providerMap = Maps.newHashMap();
             Set<ServerNodeModel> serverNodeModels = Sets.newHashSet();
-            serverNodeModels.add(serverNodeModel);
+            serverNodeModels.add(assignment);
             providerMap.put(providerModel, serverNodeModels);
             REGISTRY_SERVER.put(proxy, providerMap);
         }
-        log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, serverNodeModel);
+        log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, assignment);
     }
 
     /**
@@ -238,6 +235,7 @@ public class RegisterCenterManager {
             if (node.equals(serverNodeModel)) {
                 node.setStatus(serverNodeModel.isStatus());
                 ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                SERVER_CONFIG.put(new ServerProxyProviderNode(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()), serverNodeModel.isStatus());
                 persistence.storage(proxyProviderModel, serverNodeModel);
                 break;
             }
@@ -245,17 +243,20 @@ public class RegisterCenterManager {
     }
 
     /**
-     * assignment status
+     * Assignment status
      *
      * @param proxyProviderModel
      * @param serverNodeModel
+     * @return New ServerNodeModel Object
      */
-    private void assignment(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
-        Boolean status = SERVER_CONFIG.get(proxyProviderModel);
+    private ServerNodeModel assignment(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        ServerNodeModel node = new ServerNodeModel(serverNodeModel.getIp(), serverNodeModel.getPort());
+        Boolean status = SERVER_CONFIG.get(new ServerProxyProviderNode(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
         if (status == null) {
-            // 从来就没设置过状态, 它应该是null
+            // 从来就没设置过状态, 它应该是null, 那么就是true
             status = true;
         }
-        serverNodeModel.setStatus(status);
+        node.setStatus(status);
+        return node;
     }
 }
