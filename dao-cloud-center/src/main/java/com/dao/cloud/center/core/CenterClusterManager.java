@@ -6,8 +6,8 @@ import com.dao.cloud.center.core.cluster.DataSyncTask;
 import com.dao.cloud.center.core.handler.CenterClusterGatewayResponseMessageHandler;
 import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
 import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
-import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
@@ -243,6 +243,26 @@ public class CenterClusterManager {
             gatewayShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
             gatewayShareClusterRequestModel.setGatewayConfigModel(gatewayConfigModel);
             DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, gatewayShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
+     * synchronized server config info to cluster
+     *
+     * @param type
+     * @param proxyProviderModel
+     * @param serverNodeModel
+     */
+    public static void syncServerConfigToCluster(byte type, ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            ServerShareClusterRequestModel serverShareClusterRequestModel = new ServerShareClusterRequestModel();
+            serverShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            serverShareClusterRequestModel.setType(type);
+            serverShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
+            serverShareClusterRequestModel.setServerNodeModel(serverNodeModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, serverShareClusterRequestModel);
             SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }

@@ -223,18 +223,16 @@ public class RegisterCenterManager {
     /**
      * 服务管理(上下线)
      *
-     * @param proxy
-     * @param provider
-     * @param version
+     * @param proxyProviderModel
      * @param serverNodeModel
      */
-    public synchronized void manage(String proxy, String provider, Integer version, ServerNodeModel serverNodeModel) {
-        ProviderModel providerModel = new ProviderModel(provider, version);
+    public synchronized void manage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        ProviderModel providerModel = proxyProviderModel.getProviderModel();
+        String proxy = proxyProviderModel.getProxy();
         Set<ServerNodeModel> serverNodeModels = REGISTRY_SERVER.get(proxy).get(providerModel);
         for (ServerNodeModel node : serverNodeModels) {
             if (node.equals(serverNodeModel)) {
                 node.setStatus(serverNodeModel.isStatus());
-                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
                 SERVER_CONFIG.put(new ServerProxyProviderNode(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()), serverNodeModel.isStatus());
                 persistence.storage(proxyProviderModel, serverNodeModel);
                 break;

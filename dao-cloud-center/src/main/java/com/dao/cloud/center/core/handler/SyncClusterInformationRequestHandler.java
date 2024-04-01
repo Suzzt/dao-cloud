@@ -1,16 +1,16 @@
 package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.core.ConfigCenterManager;
-import com.dao.cloud.core.model.*;
-import com.google.gson.Gson;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.DaoException;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.ExpireHashMap;
+import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +36,8 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private final int SAVE_CONFIG = 2;
 
     private final int SAVE_GATEWAY = 3;
+
+    private final int SAVE_SERVER = 4;
 
     private ConfigCenterManager configCenterManager;
 
@@ -85,6 +87,12 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
                     GatewayShareClusterRequestModel gatewayShareClusterRequestModel = (GatewayShareClusterRequestModel) shareClusterRequestModel;
                     gatewayCenterManager.save(gatewayShareClusterRequestModel.getProxyProviderModel(), gatewayShareClusterRequestModel.getGatewayConfigModel());
+                }
+                answer(ctx, shareClusterRequestModel);
+            } else if (shareClusterRequestModel.getType() == SAVE_SERVER) {
+                if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
+                    ServerShareClusterRequestModel serverShareClusterRequestModel = (ServerShareClusterRequestModel) shareClusterRequestModel;
+                    registerCenterManager.manage(serverShareClusterRequestModel.getProxyProviderModel(), serverShareClusterRequestModel.getServerNodeModel());
                 }
                 answer(ctx, shareClusterRequestModel);
             } else {

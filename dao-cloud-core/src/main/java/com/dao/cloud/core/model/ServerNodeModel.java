@@ -12,7 +12,15 @@ import java.util.Objects;
  */
 @Data
 public class ServerNodeModel implements Serializable {
+
+    /**
+     * ip
+     */
     private String ip;
+
+    /**
+     * port
+     */
     private int port;
 
     /**

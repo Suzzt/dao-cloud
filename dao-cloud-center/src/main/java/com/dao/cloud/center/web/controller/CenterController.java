@@ -87,12 +87,13 @@ public class CenterController {
     @RequestMapping(value = "/registry/on_off")
     @ResponseBody
     public ApiResult manage(@RequestParam String proxy, @RequestParam String provider,
-                           @RequestParam(defaultValue = "0") Integer version,
-                           @RequestParam String ip, @RequestParam Integer port,
-                           @RequestParam Boolean status) {
+                            @RequestParam(defaultValue = "0") Integer version,
+                            @RequestParam String ip, @RequestParam Integer port,
+                            @RequestParam Boolean status) {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
-        registerCenterManager.manage(proxy, provider, version, serverNodeModel);
-        // todo 同步到集群
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+        registerCenterManager.manage(proxyProviderModel, serverNodeModel);
+        CenterClusterManager.syncServerConfigToCluster((byte) 4, proxyProviderModel, serverNodeModel);
         return ApiResult.buildSuccess();
     }
 
