@@ -131,7 +131,7 @@ public class FileSystem implements Persistence {
         String proxy = proxyProviderModel.getProxy();
         String provider = proxyProviderModel.getProviderModel().getProvider();
         int version = proxyProviderModel.getProviderModel().getVersion();
-        String path = makePath(serverStoragePath, proxy, provider, String.valueOf(version), serverNodeModel.getIp() + ":" + serverNodeModel.getPort());
+        String path = makePath(serverStoragePath, proxy, provider, String.valueOf(version), serverNodeModel.getIp() + "&" + serverNodeModel.getPort());
         write(path, String.valueOf(serverNodeModel.isStatus()));
     }
 
@@ -212,7 +212,7 @@ public class FileSystem implements Persistence {
                             }
                             ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
                             ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
-                            String[] split = server.split(":");
+                            String[] split = server.split("&");
                             String ip = split[0];
                             Integer port = Integer.valueOf(split[1]);
                             ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, ip, port);
