@@ -1,7 +1,6 @@
 package com.dao.cloud.center.core.model;
 
 import com.dao.cloud.core.model.ProxyProviderModel;
-import com.dao.cloud.core.model.ServerNodeModel;
 import lombok.Data;
 
 import java.util.Objects;

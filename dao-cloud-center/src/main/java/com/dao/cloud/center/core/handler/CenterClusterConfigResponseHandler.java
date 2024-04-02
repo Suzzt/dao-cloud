@@ -8,9 +8,9 @@ import io.netty.util.concurrent.Promise;
 /**
  * @author: sucf
  * @date: 2023/7/4 16:01
- * @description:
+ * @description: Center cluster config pull service node handler
  */
-public class PullConfigResponseHandler extends SimpleChannelInboundHandler<FullConfigModel> {
+public class CenterClusterConfigResponseHandler extends SimpleChannelInboundHandler<FullConfigModel> {
 
     public static Promise<FullConfigModel> promise;
 

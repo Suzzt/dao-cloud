@@ -55,7 +55,7 @@ public class RegisterCenterManager {
      *
      * @return
      */
-    public Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
+    public synchronized Map<String, Map<ProviderModel, Set<ServerNodeModel>>> getServer() {
         return REGISTRY_SERVER;
     }
 
@@ -65,7 +65,7 @@ public class RegisterCenterManager {
      *
      * @return
      */
-    public Map<ProxyProviderModel, Set<ServerNodeModel>> gatewayServers() {
+    public synchronized Map<ProxyProviderModel, Set<ServerNodeModel>> gatewayServers() {
         Map<ProxyProviderModel, Set<ServerNodeModel>> conversionObject = new HashMap<>();
         for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : REGISTRY_SERVER.entrySet()) {
             String proxy = entry.getKey();
@@ -208,7 +208,7 @@ public class RegisterCenterManager {
      * @param providerModel
      * @return
      */
-    public Set<ServerNodeModel> getServers(String proxy, ProviderModel providerModel) {
+    public synchronized Set<ServerNodeModel> getServers(String proxy, ProviderModel providerModel) {
         if (!StringUtils.hasLength(proxy)) {
             throw new DaoException("proxy = " + proxy + " is null");
         }
@@ -218,6 +218,24 @@ public class RegisterCenterManager {
         }
         Set<ServerNodeModel> serverNodeModels = registerProviders.get(providerModel);
         return serverNodeModels;
+    }
+
+
+    /**
+     * 获取所有服务配置
+     *
+     * @return
+     */
+    public synchronized Map<ProxyProviderModel, ServerNodeModel> getConfig() {
+        Map<ProxyProviderModel, ServerNodeModel> map = new HashMap<>(16);
+        for (Map.Entry<ServerProxyProviderNode, Boolean> entry : SERVER_CONFIG.entrySet()) {
+            ServerProxyProviderNode node = entry.getKey();
+            ProxyProviderModel proxyProviderModel = node.getProxyProviderModel();
+            ServerNodeModel serverNodeModel = new ServerNodeModel(node.getIp(), node.getPort());
+            serverNodeModel.setStatus(entry.getValue());
+            map.put(proxyProviderModel, serverNodeModel);
+        }
+        return map;
     }
 
     /**
