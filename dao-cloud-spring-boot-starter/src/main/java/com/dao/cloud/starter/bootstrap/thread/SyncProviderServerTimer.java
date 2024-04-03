@@ -36,20 +36,9 @@ public class SyncProviderServerTimer implements Runnable {
             TimerTask task = new TimerTask() {
                 @Override
                 public void run(Timeout timeout) {
-                    // todo  这个最好优化下，可以缩减下
                     try {
-                        Set<ServerNodeModel> oldProviderNodes = ClientManager.getProviderNodes(proxyProviderModel);
-                        Set<ServerNodeModel> pullProviderNodes = Sets.newLinkedHashSet();
                         Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
-                        if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                            for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                pullProviderNodes.add(serverNodeModel);
-                            }
-                            // new up server node
-                            oldProviderNodes = oldProviderNodes == null ? new HashSet<>() : oldProviderNodes;
-                            Set<ServerNodeModel> newUpProviderNodes = (Set<ServerNodeModel>) CollectionUtil.subtract(pullProviderNodes, oldProviderNodes);
-                            ClientManager.add(proxyProviderModel, newUpProviderNodes);
-                        }
+                        ClientManager.add(proxyProviderModel, serverNodeModels);
                     } catch (Exception e) {
                         log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel(), e);
                     } finally {

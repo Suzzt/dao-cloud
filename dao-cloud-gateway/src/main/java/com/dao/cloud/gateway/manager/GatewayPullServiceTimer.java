@@ -55,16 +55,9 @@ public class GatewayPullServiceTimer implements Runnable {
                         Map<ProxyProviderModel, Set<ServerNodeModel>> services = gatewayServiceNodeModel.getServices();
                         for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
                             ProxyProviderModel proxyProviderModel = entry.getKey();
-                            // service node
-                            Set<ServerNodeModel> oldProviderNodes = ClientManager.getProviderNodes(proxyProviderModel);
                             Set<ServerNodeModel> serverNodeModels = entry.getValue();
-                            if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                                // new up server node
-                                oldProviderNodes = oldProviderNodes == null ? new HashSet<>() : oldProviderNodes;
-                                Set<ServerNodeModel> newUpProviderNodes = (Set<ServerNodeModel>) CollectionUtil.subtract(serverNodeModels, oldProviderNodes);
-                                ClientManager.add(proxyProviderModel, newUpProviderNodes);
-                            }
-
+                            ClientManager.add(proxyProviderModel, serverNodeModels);
+                    
                             // gateway config
                             GatewayConfigModel gatewayConfigModel = config.get(proxyProviderModel);
                             if (gatewayConfigModel == null) {

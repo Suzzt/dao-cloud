@@ -57,8 +57,16 @@ public class ClientInvoker {
         Client client;
         while (true) {
             // 把出错的几率降到最低,选出合适的channel
-            Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
-            Set<Client> clients = ClientManager.getSharedClient(providerNodes);
+            Set<ServerNodeModel> serverNodeModels = ClientManager.getAvailableProviderNodes(proxyProviderModel);
+            if (CollectionUtils.isEmpty(serverNodeModels)) {
+                log.error("proxy = '{}', provider = '{}' no provider server", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel());
+                if (messageType == MessageType.SERVICE_RPC_REQUEST_MESSAGE) {
+                    throw new DaoException(CodeEnum.SERVICE_PROVIDER_NOT_EXIST);
+                } else {
+                    throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
+                }
+            }
+            Set<Client> clients = ClientManager.getSharedClient(serverNodeModels);
             if (CollectionUtils.isEmpty(clients)) {
                 log.error("proxy = '{}', provider = '{}' no provider server", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel());
                 if (messageType == MessageType.SERVICE_RPC_REQUEST_MESSAGE) {

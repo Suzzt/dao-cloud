@@ -1,8 +1,8 @@
 package com.dao.cloud.starter.bootstrap.manager;
 
-import com.dao.cloud.starter.bootstrap.unit.Client;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
+import com.dao.cloud.starter.bootstrap.unit.Client;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -59,18 +59,33 @@ public class ClientManager {
     }
 
     /**
+     * get available provider nodes
+     *
+     * @param proxyProviderModel
+     * @return
+     */
+    public static Set<ServerNodeModel> getAvailableProviderNodes(ProxyProviderModel proxyProviderModel) {
+        Set<ServerNodeModel> availableNodes = new HashSet<>();
+        Set<ServerNodeModel> providerNodes = getProviderNodes(proxyProviderModel);
+        if (CollectionUtils.isEmpty(providerNodes)) {
+            return null;
+        }
+        for (ServerNodeModel serverNodeModel : providerNodes) {
+            if (serverNodeModel.isStatus()) {
+                availableNodes.add(serverNodeModel);
+            }
+        }
+        return availableNodes;
+    }
+
+    /**
      * add provider service node
      *
      * @param proxyProviderModel
      * @param providerNodes
      */
     public static void add(ProxyProviderModel proxyProviderModel, Set<ServerNodeModel> providerNodes) {
-        if (CollectionUtils.isEmpty(SERVICE_NODES) || CollectionUtils.isEmpty(SERVICE_NODES.get(proxyProviderModel))) {
-            SERVICE_NODES.put(proxyProviderModel, providerNodes);
-        } else {
-            Set<ServerNodeModel> set = SERVICE_NODES.get(proxyProviderModel);
-            set.addAll(providerNodes);
-        }
+        SERVICE_NODES.put(proxyProviderModel, providerNodes);
         for (ServerNodeModel providerNode : providerNodes) {
             SHARED_CONNECT_CLIENTS.putIfAbsent(providerNode, new Client(proxyProviderModel, providerNode.getIp(), providerNode.getPort()));
         }
