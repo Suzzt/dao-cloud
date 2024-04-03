@@ -19,8 +19,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 
 # 系统架构
 ![dao-cloud(v2)](https://github.com/Suzzt/dao-cloud/assets/27397567/90102c50-e0a5-41b2-8188-f457bb47b755)
-
-![组件架构](https://github.com/Suzzt/dao-cloud/assets/27397567/bb54e056-4ece-44a6-8393-3ed1f62d4f0a)
+![组件架构](https://github.com/Suzzt/dao-cloud/assets/27397567/681a527f-25b9-4e3a-a79b-0e8f0bce8131)
 
     整个系统不严格重度依赖任何中间价组件即可启动，只需要一个操作系统依赖！
     1.注册中心与配置中心都是center来提供能力，两者是一体化集成的
@@ -36,7 +35,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     1.center集群之间: center节点交互通过重心跳维持集群，加入或宕机在center中相互同步节点数据，节点失效时会将未收到心跳回应的对应节点设置为暂时失效节点，心跳逻辑维持，一直到有响应返回变正常节点
     2.center与服务连接: 服务节点端通过拉取存活集群节点来轮询注册一个节点，一旦重试失败，换下一个存活节点，继续一直向center发送重心跳(即一直注册)
     3.center与服务负载: center cluster节点加入或宕机时，center会自主发送协调server负载情况
-    4.center与服务数据: 通过心跳channel发送数据(config、server-info)同步，这里采用异步发送，并要求响应返回结果，在失败下会一定重试，并做了幂等
+    4.center与服务数据: 通过心跳channel发送数据(config、server-info)同步，这里采用异步发送，并要求响应返回结果，在失败情况下会一定的重试，并做了幂等
 
 # 网关设计架构
 ![网关设计](https://github.com/Suzzt/dao-cloud/assets/27397567/d4195cb7-7ffd-4a8f-b3bd-ac4e34acfe78)
@@ -58,7 +57,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 服务中的配置允许您在动态变更的方式下异步通知订阅服务。还支持动态变更配置后回调订阅服务中的监听事件
 ## 4. 服务监控与链路追踪(todo)
 监控服务负载流量压力,追踪各服务间调用的完整链路,归置日志统一收集输出打印,让你知道每个节点性能消耗情况
-## 5. 高性能高可用center集群(注册中心、配置中心)
+## 5. 高性能高可用center集群(服务注册中心、配置中心、网关服务中心)
 为微服务提供了自身的高可用、高性能、合并愈合以及更简单的集群恢复能力
 ## 6. 统一网关
 提供请求的鉴权、限流等能力,整合服务入口的统一
@@ -66,13 +65,14 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 # dao-协议
     +---------+---------+--------------+----------------+----------------+----------------+
     |  magic  | version | message type | serialize type |   data length  |  data content  |
-    | 3(byte) | 1(byte) |    1(byte)   |     1(byte)    |     4(byte)    |       ~~       |
+    | 3(byte) | 1(byte) |    1(byte)   |     1(byte)    |     4(byte)    |      ~ ~       |
     +---------+---------+--------------+----------------+----------------+----------------+
     version: 暂时没用到
     serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 
 # 快速开始
-<img width="1809" alt="dao-cloud-web" src="https://github.com/Suzzt/dao-cloud/assets/27397567/a3db691a-4797-4ae2-94ee-694b1065e3d6">
+<img width="1826" alt="dao-cloud-index" src="https://github.com/Suzzt/dao-cloud/assets/27397567/98be714e-29fb-4dc1-86fc-9690d5e68458">
+
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
     <dependency>
@@ -102,7 +102,7 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
         注意: 此外你在配置中心更改配置后,配置中心会自动刷新到服务上
         
 服务注册管理
-<img width="1808" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/acf757f4-b60f-4f6a-9d2c-893999e2744c">
+<img width="1826" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/80a6f503-2389-4de0-951a-a25a75bf58ed">
 
 配置中心管理
 <img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/379fbb3b-5ade-45f9-ab1c-3415d6f0e39a">
