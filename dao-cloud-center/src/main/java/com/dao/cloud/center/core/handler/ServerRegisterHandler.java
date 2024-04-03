@@ -61,9 +61,4 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
             super.userEventTriggered(ctx, evt);
         }
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("<<<<<<<<<< register error {} >>>>>>>>>>", ctx.channel(), cause);
-    }
 }

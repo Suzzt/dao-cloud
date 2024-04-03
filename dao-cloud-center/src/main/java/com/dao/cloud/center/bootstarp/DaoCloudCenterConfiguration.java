@@ -12,6 +12,7 @@ import com.dao.cloud.center.web.controller.IndexController;
 import com.dao.cloud.center.web.interceptor.CookieInterceptor;
 import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.WebCenterConfig;
+import com.dao.cloud.core.netty.handler.PrintExceptionHandler;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
@@ -97,6 +98,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
                             ch.pipeline().addLast(new SyncClusterInformationRequestHandler(registerCenterManager, configCenterManager, gatewayCenterManager));
                             ch.pipeline().addLast(new ServerRegisterHandler(registerCenterManager));
+                            ch.pipeline().addLast(new PrintExceptionHandler());
                         }
                     });
                     serverBootstrap.bind(DaoCloudConstant.CENTER_PORT).sync();

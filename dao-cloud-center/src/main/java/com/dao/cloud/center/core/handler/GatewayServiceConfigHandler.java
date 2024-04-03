@@ -47,9 +47,4 @@ public class GatewayServiceConfigHandler extends SimpleChannelInboundHandler<Gat
             }
         });
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("<<<<<<<<<< gateway pull all service node error {} >>>>>>>>>", ctx.channel(), cause);
-    }
 }

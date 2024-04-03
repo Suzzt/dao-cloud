@@ -42,9 +42,4 @@ public class CenterClusterServerConfigRequestHandler extends SimpleChannelInboun
             }
         });
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("<<<<<<<<<< pull all server config error {} >>>>>>>>>", ctx.channel(), cause);
-    }
 }
