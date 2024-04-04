@@ -1,6 +1,6 @@
 package com.dao.cloud.starter.handler;
 
-import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
+import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.google.gson.Gson;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProviderModel;

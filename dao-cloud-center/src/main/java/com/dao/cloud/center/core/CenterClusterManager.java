@@ -3,11 +3,12 @@ package com.dao.cloud.center.core;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
-import com.dao.cloud.center.core.handler.CenterClusterGatewayResponseMessageHandler;
+import com.dao.cloud.center.core.handler.CenterClusterConfigResponseHandler;
+import com.dao.cloud.center.core.handler.CenterClusterGatewayConfigResponseMessageHandler;
+import com.dao.cloud.center.core.handler.CenterClusterServerConfigResponseMessageHandler;
 import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
-import com.dao.cloud.center.core.handler.PullConfigResponseHandler;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
@@ -41,6 +42,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class CenterClusterManager {
+
+    private final static int SYNC_DATA_REQUEST_TIMEOUT = 30;
 
     private static Persistence persistence;
 
@@ -122,26 +125,53 @@ public class CenterClusterManager {
         persistence.clear();
         log.info("clear local config data");
 
-        // sync overwrite data
+        // sync overwrite config information
         for (String aliveNode : aliveNodes) {
             // system config
             loadConfig(aliveNode);
             // gateway service config
             loadGatewayConfig(aliveNode);
+            // server config
+            loadServerConfig(aliveNode);
+        }
+    }
+
+    private static void loadServerConfig(String ip) throws InterruptedException {
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SERVER_ALL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
+        Promise<ServerConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        CenterClusterServerConfigResponseMessageHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send server config data error", future.cause());
+            }
+        });
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< Pull service configuration request timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            ServerConfigModel serverConfigModel = promise.getNow();
+            Map<ProxyProviderModel, ServerNodeModel> map = serverConfigModel.getServerConfig();
+            for (Map.Entry<ProxyProviderModel, ServerNodeModel> entry : map.entrySet()) {
+                persistence.storage(entry.getKey(), entry.getValue());
+            }
+        } else {
+            throw new DaoException(promise.cause());
         }
     }
 
     private static void loadGatewayConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayPullServiceMarkModel());
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
         Promise<GatewayServiceNodeModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
-        CenterClusterGatewayResponseMessageHandler.promise = promise;
+        CenterClusterGatewayConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send gateway config data error", future.cause());
             }
         });
-        if (!promise.await(10, TimeUnit.SECONDS)) {
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
             log.error("<<<<<<<<<<<<<< Gateway pull service node info timeout >>>>>>>>>>>>>>");
             throw new DaoException("promise await timeout");
         }
@@ -171,13 +201,13 @@ public class CenterClusterManager {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
-        PullConfigResponseHandler.promise = promise;
+        CenterClusterConfigResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send full config data error", future.cause());
             }
         });
-        if (!promise.await(10, TimeUnit.SECONDS)) {
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
             log.error("<<<<<<<<<<<<<< get full config data timeout >>>>>>>>>>>>>>");
             throw new DaoException("promise await timeout");
         }
@@ -243,6 +273,26 @@ public class CenterClusterManager {
             gatewayShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
             gatewayShareClusterRequestModel.setGatewayConfigModel(gatewayConfigModel);
             DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, gatewayShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
+     * synchronized server config info to cluster
+     *
+     * @param type
+     * @param proxyProviderModel
+     * @param serverNodeModel
+     */
+    public static void syncServerConfigToCluster(byte type, ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            ServerShareClusterRequestModel serverShareClusterRequestModel = new ServerShareClusterRequestModel();
+            serverShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            serverShareClusterRequestModel.setType(type);
+            serverShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
+            serverShareClusterRequestModel.setServerNodeModel(serverNodeModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, serverShareClusterRequestModel);
             SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }

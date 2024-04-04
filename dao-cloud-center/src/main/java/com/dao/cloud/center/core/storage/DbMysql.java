@@ -2,9 +2,9 @@ package com.dao.cloud.center.core.storage;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -168,6 +168,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+
+    }
+
+    @Override
     public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
         Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newHashMap();
         Long count = count();
@@ -187,6 +192,11 @@ public class DbMysql implements Persistence {
             }
         }
         return map;
+    }
+
+    @Override
+    public Map<ServerProxyProviderNode, Boolean> loadServer() {
+        return null;
     }
 
     @Override

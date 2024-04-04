@@ -2,8 +2,8 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
-import com.dao.cloud.core.expand.Persistence;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
@@ -39,6 +39,14 @@ import java.util.Map;
  * ｜  dir  ｜     dir    ｜    dir    ｜   file-name   ｜
  * ｜ proxy ｜  provider  ｜  version  ｜  data (json)  ｜
  * </p>
+ *
+ * <p>
+ * Service management configuration data is written to the file system.
+ * If the directory or file does not exist, it is created.
+ * The following is the file address corresponding to the service management data.
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-name   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜  data(status) ｜
+ * </p>
  */
 @Slf4j
 @Component
@@ -55,6 +63,11 @@ public class FileSystem implements Persistence {
      */
     private final String gatewayStoragePath;
 
+    /**
+     * Server Storage Path
+     */
+    private final String serverStoragePath;
+
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
@@ -63,6 +76,7 @@ public class FileSystem implements Persistence {
         pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
+        this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
     }
 
     @Override
@@ -110,6 +124,15 @@ public class FileSystem implements Persistence {
         fileGC(directory);
         fileGC(makePath(gatewayStoragePath, proxy));
         fileGC(makePath(gatewayStoragePath));
+    }
+
+    @Override
+    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(serverStoragePath, proxy, provider, String.valueOf(version), serverNodeModel.getIp() + "&" + serverNodeModel.getPort());
+        write(path, String.valueOf(serverNodeModel.isStatus()));
     }
 
     private void fileGC(String path) {
@@ -171,9 +194,45 @@ public class FileSystem implements Persistence {
     }
 
     @Override
+    public Map<ServerProxyProviderNode, Boolean> loadServer() {
+        Map<ServerProxyProviderNode, Boolean> map = Maps.newConcurrentMap();
+        String prefixPath = serverStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> providers = loopDirs(prefixPath + File.separator + proxy);
+            for (String provider : providers) {
+                List<String> versions = loopDirs(prefixPath + File.separator + proxy + File.separator + provider);
+                for (String version : versions) {
+                    List<String> servers = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
+                    for (String server : servers) {
+                        try {
+                            String content = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + server);
+                            if (!StringUtils.hasLength(content)) {
+                                continue;
+                            }
+                            ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
+                            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                            String[] split = server.split("&");
+                            String ip = split[0];
+                            Integer port = Integer.valueOf(split[1]);
+                            ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, ip, port);
+                            Boolean status = Boolean.valueOf(content);
+                            map.put(serverProxyProviderNode, status);
+                        } catch (Exception e) {
+                            log.warn("Failed to load server limit data (proxy={}, provider={}, version={}, server={}) from file", proxy, provider, version, server, e);
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public void clear() {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
+        FileUtil.clean(serverStoragePath);
     }
 
     public String makePath(String prefix, String... modules) {

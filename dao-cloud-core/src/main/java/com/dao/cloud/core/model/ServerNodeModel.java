@@ -12,8 +12,22 @@ import java.util.Objects;
  */
 @Data
 public class ServerNodeModel implements Serializable {
+
+    /**
+     * ip
+     */
     private String ip;
+
+    /**
+     * port
+     */
     private int port;
+
+    /**
+     * on: true
+     * off: false
+     */
+    private boolean status;
 
     public ServerNodeModel(String link) {
         String[] split = link.split(":");
@@ -24,6 +38,13 @@ public class ServerNodeModel implements Serializable {
     public ServerNodeModel(String ip, int port) {
         this.ip = ip;
         this.port = port;
+        this.status = true;
+    }
+
+    public ServerNodeModel(String ip, int port, boolean status) {
+        this.ip = ip;
+        this.port = port;
+        this.status = status;
     }
 
     @Override

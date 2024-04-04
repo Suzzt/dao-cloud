@@ -1,6 +1,6 @@
 package com.dao.cloud.starter.handler;
 
-import com.dao.cloud.starter.bootstrap.manager.DaoConfig;
+import com.dao.cloud.starter.utils.DaoCloudConfig;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
@@ -24,7 +24,7 @@ public class CenterConfigMessageHandler extends SimpleChannelInboundHandler<Conf
         Promise<String> configPromise = ProxyConfigPromiseBuffer.getInstance().remove(proxyConfigModel);
         if (configPromise == null) {
             // subscribe push
-            DaoConfig.refresh(configModel.getProxyConfigModel(), configModel.getConfigValue());
+            DaoCloudConfig.refresh(configModel.getProxyConfigModel(), configModel.getConfigValue());
         } else {
             // self pull
             DaoException daoException = configModel.getDaoException();

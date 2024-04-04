@@ -42,12 +42,22 @@ public enum CodeEnum {
     /**
      * 集群间同步数据发生了错误
      */
-    SYNC_SHARE_CLUSTER_DATA_ERROR("D0002", "同步数据发生了错误"),
+    SYNC_SHARE_CLUSTER_DATA_ERROR("D0003", "同步数据发生了错误"),
 
     /**
      * 拉取节点失败
      */
-    PULL_SERVICE_NODE_ERROR("D0002", "拉取服务节点失败"),
+    PULL_SERVICE_NODE_ERROR("D0004", "拉取服务节点失败"),
+
+    /**
+     * 拉取服务配置失败
+     */
+    PULL_SERVER_CONFIG_ERROR("D0005", "拉取服务配置失败"),
+
+    /**
+     * 拉取网关配置失败
+     */
+    PULL_GATEWAY_CONFIG_ERROR("D0006", "拉取网关配置失败"),
 
     // G级别 网关侧
     /**
