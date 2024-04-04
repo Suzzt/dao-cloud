@@ -1,4 +1,4 @@
-package com.dao.cloud.gateway;
+package com.dao.cloud.gateway.bootstrap;
 
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
@@ -6,8 +6,8 @@ import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
-import com.dao.cloud.gateway.manager.GatewayPullServiceTimer;
-import com.dao.cloud.starter.bootstrap.manager.RegistryManager;
+import com.dao.cloud.gateway.timer.GatewayPullServiceTimer;
+import com.dao.cloud.starter.manager.RegistryManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

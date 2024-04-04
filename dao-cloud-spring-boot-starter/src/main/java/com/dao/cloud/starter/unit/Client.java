@@ -1,6 +1,6 @@
-package com.dao.cloud.starter.bootstrap.unit;
+package com.dao.cloud.starter.unit;
 
-import com.dao.cloud.starter.bootstrap.manager.ClientManager;
+import com.dao.cloud.starter.manager.ClientManager;
 import com.dao.cloud.starter.handler.ClientPingPongMessageHandler;
 import com.dao.cloud.starter.handler.RpcClientMessageHandler;
 import com.dao.cloud.core.exception.DaoException;

@@ -1,6 +1,6 @@
-package com.dao.cloud.starter.bootstrap.manager;
+package com.dao.cloud.starter.manager;
 
-import com.dao.cloud.starter.bootstrap.unit.ServiceInvoker;
+import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.dao.cloud.core.model.ProviderModel;
 
 import java.util.HashMap;

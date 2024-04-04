@@ -1,8 +1,8 @@
-package com.dao.cloud.starter.bootstrap.manager;
+package com.dao.cloud.starter.manager;
 
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
-import com.dao.cloud.starter.bootstrap.unit.Client;
+import com.dao.cloud.starter.unit.Client;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -35,7 +35,7 @@ public class ClientManager {
      * key: proxy + provider + version
      * value: service node clients
      */
-    private static Map<ProxyProviderModel, Set<ServerNodeModel>> SERVICE_NODES = new ConcurrentHashMap<>();
+    private final static Map<ProxyProviderModel, Set<ServerNodeModel>> SERVICE_NODES = new ConcurrentHashMap<>();
 
     public static Bootstrap getRpcBootstrap() {
         if (RPC_BOOTSTRAP == null) {

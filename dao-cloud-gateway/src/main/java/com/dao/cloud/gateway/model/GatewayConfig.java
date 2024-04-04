@@ -1,4 +1,4 @@
-package com.dao.cloud.gateway.manager;
+package com.dao.cloud.gateway.model;
 
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.limit.Limiter;

@@ -1,4 +1,4 @@
-package com.dao.cloud.starter.bootstrap.unit;
+package com.dao.cloud.starter.unit;
 
 import com.dao.cloud.core.model.ProxyConfigModel;
 
@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
  * @description: call back method
  */
 public abstract class ConfigCallBack<T> {
+
     private final Class<T> clazz;
 
     protected ConfigCallBack() {

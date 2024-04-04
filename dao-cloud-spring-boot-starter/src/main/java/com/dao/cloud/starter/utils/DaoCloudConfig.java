@@ -1,6 +1,7 @@
-package com.dao.cloud.starter.bootstrap.manager;
+package com.dao.cloud.starter.utils;
 
-import com.dao.cloud.starter.bootstrap.unit.ConfigCallBack;
+import com.dao.cloud.starter.manager.CenterChannelManager;
+import com.dao.cloud.starter.unit.ConfigCallBack;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @description: dao config
  */
 @Slf4j
-public class DaoConfig {
+public class DaoCloudConfig {
 
     /**
      * local cache config

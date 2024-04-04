@@ -22,11 +22,11 @@ import java.util.Set;
  * @description: pull server handler
  */
 @Slf4j
-public class PullServerHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {
+public class PullServerRequestHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {
 
     private RegisterCenterManager registerCenterManager;
 
-    public PullServerHandler(RegisterCenterManager registerCenterManager) {
+    public PullServerRequestHandler(RegisterCenterManager registerCenterManager) {
         this.registerCenterManager = registerCenterManager;
     }
 

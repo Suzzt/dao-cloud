@@ -1,7 +1,7 @@
-package com.dao.cloud.starter.bootstrap.manager;
+package com.dao.cloud.starter.manager;
 
 import com.dao.cloud.starter.handler.GatewayPullServiceNodeMessageHandler;
-import com.dao.cloud.starter.bootstrap.thread.InquireClusterTimer;
+import com.dao.cloud.starter.timer.InquireClusterTimer;
 import com.dao.cloud.starter.handler.CenterConfigMessageHandler;
 import com.dao.cloud.starter.handler.CenterServerMessageHandler;
 import com.dao.cloud.starter.handler.InquireClusterCenterResponseHandler;

@@ -1,6 +1,5 @@
-package com.dao.cloud.starter.bootstrap.manager;
+package com.dao.cloud.starter.manager;
 
-import com.dao.cloud.starter.handler.CenterServerMessageHandler;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
@@ -9,6 +8,7 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.DaoTimer;
+import com.dao.cloud.starter.handler.CenterServerMessageHandler;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;

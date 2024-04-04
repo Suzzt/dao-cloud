@@ -1,6 +1,6 @@
 package com.dao.cloud.starter.bootstrap;
 
-import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
+import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
 import com.dao.cloud.core.exception.DaoException;
 import org.springframework.stereotype.Component;

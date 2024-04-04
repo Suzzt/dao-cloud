@@ -1,5 +1,6 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.gateway.bootstrap.GatewayBootstrap;
 import com.dao.cloud.gateway.global.GlobalGatewayExceptionHandler;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.intercept.annotation.GatewayInterceptorRegister;

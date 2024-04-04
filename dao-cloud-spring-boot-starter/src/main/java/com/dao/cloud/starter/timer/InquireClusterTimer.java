@@ -1,6 +1,6 @@
-package com.dao.cloud.starter.bootstrap.thread;
+package com.dao.cloud.starter.timer;
 
-import com.dao.cloud.starter.bootstrap.manager.CenterChannelManager;
+import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.dao.cloud.core.util.DaoTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
