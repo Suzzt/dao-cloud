@@ -6,11 +6,10 @@ import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
+import com.dao.cloud.gateway.properties.DaoCloudGatewayProperties;
 import com.dao.cloud.gateway.timer.GatewayPullServiceTimer;
 import com.dao.cloud.starter.manager.RegistryManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -24,9 +23,6 @@ import java.util.Set;
  */
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -51,8 +47,8 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
         RegisterProviderModel gatewayNodeModel = new RegisterProviderModel();
         gatewayNodeModel.setProxy(DaoCloudConstant.GATEWAY_PROXY);
         Set<ProviderModel> providerModels = new HashSet<>();
-        // version todo 这个后面做成可配置化的,这个是有用的,区分环境
-        ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, 0);
+        int version = DaoCloudGatewayProperties.version == null ? 0 : DaoCloudGatewayProperties.version;
+        ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, version);
         providerModels.add(providerModel);
         gatewayNodeModel.setProviderModels(providerModels);
         gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudConstant.GATEWAY_PORT));
