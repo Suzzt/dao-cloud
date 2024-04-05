@@ -57,13 +57,32 @@ public class DbMysql implements Persistence {
             ") ENGINE = InnoDB\n" +
             "  DEFAULT CHARSET = utf8 COMMENT ='网关配置';";
 
+    private final String server_config_create_table = "CREATE TABLE IF NOT EXISTS `server_config`\n" +
+            "(\n" +
+            "    `id`                             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
+            "    `gmt_create`                     datetime     NOT NULL COMMENT '创建时间',\n" +
+            "    `gmt_modified`                   datetime     NOT NULL COMMENT '修改时间',\n" +
+            "    `proxy`                          varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
+            "    `provider`                       varchar(255) NOT NULL COMMENT 'service provider',\n" +
+            "    `version`                        int(11)      NOT NULL COMMENT 'service version',\n" +
+            "    `ip`                             varchar(20)  NOT NULL COMMENT 'ip',\n" +
+            "    `port`                           int(10) COMMENT 'port',\n" +
+            "    `status`                         tinyint COMMENT 'server status',\n" +
+            "    PRIMARY KEY (`id`)\n" +
+            ") ENGINE = InnoDB\n" +
+            "  DEFAULT CHARSET = utf8 COMMENT ='服务配置';";
+
     private final String insert_config_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
     private final String insert_gateway_sql_template = "INSERT INTO dao_cloud.gateway_config (gmt_create, gmt_modified, proxy, `provider`, version, timeout, limit_algorithm, slide_date_window_size, slide_window_max_request_count, token_bucket_max_size, token_bucket_refill_rate, leaky_bucket_capacity, leaky_bucket_refill_rate) VALUES (now(), now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    private final String insert_server_sql_template = "INSERT INTO dao_cloud.server_config (gmt_create, gmt_modified, proxy, `provider`, version, ip, port, `status`) VALUES (now(), now(), ?, ?, ?, ?, ?, ?)";
+
     private final String update_config_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
 
     private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, slide_date_window_size=?, slide_window_max_request_count=?, token_bucket_max_size=?, token_bucket_refill_rate=?, leaky_bucket_capacity=?, leaky_bucket_refill_rate=? WHERE proxy=? AND `provider`=? AND version=?";
+
+    private final String update_server_config_sql_template = "UPDATE dao_cloud.server_config SET `status`=? WHERE proxy=? AND `provider`=? AND version=? AND ip=? AND port=?";
 
     private final String delete_config_sql_template = "DELETE FROM dao_cloud.config WHERE proxy = ? and `key` = ? and value = ?";
 
@@ -72,6 +91,8 @@ public class DbMysql implements Persistence {
     private final String truncate_config_sql_template = "TRUNCATE TABLE dao_cloud.config";
 
     private final String truncate_gateway_config_sql_template = "TRUNCATE TABLE dao_cloud.gateway_config";
+
+    private final String truncate_server_config_sql_template = "TRUNCATE TABLE dao_cloud.server_config";
 
     @Autowired
     public DbMysql(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
@@ -90,7 +111,7 @@ public class DbMysql implements Persistence {
         druidDataSource.setUsername(username);
         druidDataSource.setPassword(password);
         druidDataSource.setMaxActive(20);
-        // 判断下数据库表是否存在,不存在就创建表(config、gateway_config)
+        // 判断下数据库表是否存在,不存在就创建表(config、gateway_config、server_config)
         initialize();
     }
 
@@ -101,6 +122,7 @@ public class DbMysql implements Persistence {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(config_create_table);
             statement.execute(gateway_config_create_table);
+            statement.execute(server_config_create_table);
         } catch (Exception e) {
             throw new DaoException(e);
         }
@@ -122,6 +144,29 @@ public class DbMysql implements Persistence {
             log.error("<<<<<<<<<<<< mysql delete config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
+    }
+
+    @Override
+    public void storage(GatewayModel gatewayModel) {
+        insertOrUpdate(gatewayModel);
+    }
+
+    @Override
+    public void delete(ProxyProviderModel proxyProviderModel) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_gateway_config_sql_template)) {
+            preparedStatement.setString(1, proxyProviderModel.getProxy());
+            preparedStatement.setString(2, proxyProviderModel.getProviderModel().getProvider());
+            preparedStatement.setInt(3, proxyProviderModel.getProviderModel().getVersion());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql delete gateway config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        insertOrUpdate(proxyProviderModel, serverNodeModel);
     }
 
     @Override
@@ -150,29 +195,6 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public void storage(GatewayModel gatewayModel) {
-        insertOrUpdate(gatewayModel);
-    }
-
-    @Override
-    public void delete(ProxyProviderModel proxyProviderModel) {
-        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_gateway_config_sql_template)) {
-            preparedStatement.setString(1, proxyProviderModel.getProxy());
-            preparedStatement.setString(2, proxyProviderModel.getProviderModel().getProvider());
-            preparedStatement.setInt(3, proxyProviderModel.getProviderModel().getVersion());
-            preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql delete gateway config error >>>>>>>>>>>>", e);
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
-    public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
-
-    }
-
-    @Override
     public Map<ProxyProviderModel, GatewayConfigModel> loadGateway() {
         Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newHashMap();
         Long count = count();
@@ -196,7 +218,24 @@ public class DbMysql implements Persistence {
 
     @Override
     public Map<ServerProxyProviderNode, Boolean> loadServer() {
-        return null;
+        Map<ServerProxyProviderNode, Boolean> map = Maps.newHashMap();
+        Long count = count();
+        int limit = 500;
+        long page = count / limit;
+        for (int i = 0; i <= page; i++) {
+            List<ServerConfigPO> serverConfigPOList = queryServerConfigList(i, limit);
+            for (ServerConfigPO serverConfigPO : serverConfigPOList) {
+                String proxy = serverConfigPO.getProxy();
+                String provider = serverConfigPO.getProvider();
+                int version = serverConfigPO.getVersion();
+                String ip = serverConfigPO.getIp();
+                int port = serverConfigPO.getPort();
+                boolean status = serverConfigPO.isStatus();
+                ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxy, provider, version, ip, port);
+                map.put(serverProxyProviderNode, status);
+            }
+        }
+        return map;
     }
 
     @Override
@@ -226,7 +265,7 @@ public class DbMysql implements Persistence {
                 update(gatewayModel);
             }
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< insertOrUpdate delete config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< insertOrUpdate gateway config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -248,7 +287,30 @@ public class DbMysql implements Persistence {
                 update(configModel);
             }
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< insertOrUpdate delete config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< insertOrUpdate config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
+    private void insertOrUpdate(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select count(1) from server_config where proxy=? and `provider`=? and version=? and ip=? and port=?")) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            preparedStatement.setString(4, serverNodeModel.getIp());
+            preparedStatement.setInt(5, serverNodeModel.getPort());
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            if (result.getLong(1) == 0) {
+                insert(proxyProviderModel, serverNodeModel);
+            } else {
+                update(proxyProviderModel, serverNodeModel);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< insertOrUpdate server config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -296,6 +358,24 @@ public class DbMysql implements Persistence {
         }
     }
 
+    public void insert(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_server_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            preparedStatement.setString(4, serverNodeModel.getIp());
+            preparedStatement.setInt(5, serverNodeModel.getPort());
+            preparedStatement.setBoolean(6, serverNodeModel.isStatus());
+            preparedStatement.execute();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql insert server_config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
     public void update(ConfigModel configModel) {
         ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
         String proxy = proxyConfigModel.getProxy();
@@ -335,6 +415,24 @@ public class DbMysql implements Persistence {
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql update gateway config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
+    public void update(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_server_config_sql_template)) {
+            preparedStatement.setBoolean(1, serverNodeModel.isStatus());
+            preparedStatement.setString(2, proxy);
+            preparedStatement.setString(3, provider);
+            preparedStatement.setInt(4, version);
+            preparedStatement.setString(5, serverNodeModel.getIp());
+            preparedStatement.setInt(6, serverNodeModel.getPort());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -379,7 +477,24 @@ public class DbMysql implements Persistence {
                 list.add(gatewayConfigPO);
             }
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql query config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql query gateway config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+        return list;
+    }
+
+    private List<ServerConfigPO> queryServerConfigList(int index, int size) {
+        List<ServerConfigPO> list = Lists.newArrayList();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select * from server_config limit ?, ?")) {
+            preparedStatement.setInt(1, index);
+            preparedStatement.setInt(2, size);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                ServerConfigPO serverConfigPO = serverConfigConversion(resultSet);
+                list.add(serverConfigPO);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql query server config error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
         return list;
@@ -395,6 +510,20 @@ public class DbMysql implements Persistence {
         configPO.setVersion(result.getInt("version"));
         configPO.setValue(result.getString("value"));
         return configPO;
+    }
+
+    private ServerConfigPO serverConfigConversion(ResultSet result) throws SQLException {
+        ServerConfigPO serverConfigPO = new ServerConfigPO();
+        serverConfigPO.setId(result.getLong("id"));
+        serverConfigPO.setCreateTime(result.getDate("gmt_create"));
+        serverConfigPO.setUpdateTime(result.getDate("gmt_modified"));
+        serverConfigPO.setProxy(result.getString("proxy"));
+        serverConfigPO.setProvider(result.getString("provider"));
+        serverConfigPO.setVersion(result.getInt("version"));
+        serverConfigPO.setIp(result.getString("ip"));
+        serverConfigPO.setPort(result.getInt("port"));
+        serverConfigPO.setStatus(result.getBoolean("status"));
+        return serverConfigPO;
     }
 
     private GatewayConfigPO gatewayConfigConversion(ResultSet result) throws SQLException {
@@ -439,5 +568,18 @@ public class DbMysql implements Persistence {
         private int version;
         private Long timeout;
         private LimitModel limit;
+    }
+
+    @Data
+    private class ServerConfigPO {
+        private Long id;
+        private Date createTime;
+        private Date updateTime;
+        private String proxy;
+        private String provider;
+        private int version;
+        private String ip;
+        private int port;
+        private boolean status;
     }
 }
