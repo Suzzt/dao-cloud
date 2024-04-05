@@ -244,6 +244,7 @@ public class DbMysql implements Persistence {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(truncate_config_sql_template);
             statement.execute(truncate_gateway_config_sql_template);
+            statement.execute(truncate_server_config_sql_template);
         } catch (Exception e) {
             throw new DaoException(e);
         }
