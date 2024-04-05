@@ -1,16 +1,18 @@
 package com.dao.cloud.center.bootstarp;
 
+import com.dao.cloud.center.core.CenterClusterManager;
 import com.dao.cloud.center.core.ConfigCenterManager;
+import com.dao.cloud.center.core.GatewayCenterManager;
+import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.center.core.handler.*;
+import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.center.properties.DaoCloudClusterCenterProperties;
+import com.dao.cloud.center.web.controller.CenterController;
 import com.dao.cloud.center.web.controller.IndexController;
 import com.dao.cloud.center.web.interceptor.CookieInterceptor;
 import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.WebCenterConfig;
-import com.dao.cloud.center.core.CenterClusterManager;
-import com.dao.cloud.center.core.GatewayCenterManager;
-import com.dao.cloud.center.core.handler.*;
-import com.dao.cloud.center.properties.DaoCloudClusterCenterProperties;
-import com.dao.cloud.center.web.controller.CenterController;
-import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.core.netty.handler.PrintExceptionHandler;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
@@ -46,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ComponentScan(value = "com.dao.cloud.center.core.storage")
-@Import({ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class})
+@Import({RegisterCenterManager.class, ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class})
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     @Resource
@@ -54,6 +56,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Resource
     private GatewayCenterManager gatewayCenterManager;
+
+    @Resource
+    private RegisterCenterManager registerCenterManager;
 
     @Resource
     private Persistence persistence;
@@ -87,11 +92,13 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new InquireClusterCenterRequestHandler());
                             ch.pipeline().addLast(new ClusterRequestHandler());
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
-                            ch.pipeline().addLast(new GatewayPullServiceHandler(gatewayCenterManager));
-                            ch.pipeline().addLast(new PullServerHandler());
+                            ch.pipeline().addLast(new GatewayServiceConfigHandler(registerCenterManager, gatewayCenterManager));
+                            ch.pipeline().addLast(new CenterClusterServerConfigRequestHandler(registerCenterManager));
+                            ch.pipeline().addLast(new PullServerRequestHandler(registerCenterManager));
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
-                            ch.pipeline().addLast(new SyncClusterInformationRequestHandler(configCenterManager, gatewayCenterManager));
-                            ch.pipeline().addLast(new ServerRegisterHandler());
+                            ch.pipeline().addLast(new SyncClusterInformationRequestHandler(registerCenterManager, configCenterManager, gatewayCenterManager));
+                            ch.pipeline().addLast(new ServerRegisterHandler(registerCenterManager));
+                            ch.pipeline().addLast(new PrintExceptionHandler());
                         }
                     });
                     serverBootstrap.bind(DaoCloudConstant.CENTER_PORT).sync();
@@ -139,15 +146,15 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web,dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController centerController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
-        return new CenterController(configCenterManager, gatewayCenterManager);
+    public CenterController centerController(RegisterCenterManager registryCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        return new CenterController(registryCenterManager, configCenterManager, gatewayCenterManager);
     }
 
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
-    public IndexController indexController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
-        return new IndexController(configCenterManager, gatewayCenterManager);
+    public IndexController indexController(RegisterCenterManager registryCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        return new IndexController(registryCenterManager, configCenterManager, gatewayCenterManager);
     }
 
 }

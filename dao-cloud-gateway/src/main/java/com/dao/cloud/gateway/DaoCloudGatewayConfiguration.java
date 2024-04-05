@@ -1,8 +1,10 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.gateway.bootstrap.GatewayBootstrap;
 import com.dao.cloud.gateway.global.GlobalGatewayExceptionHandler;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.intercept.annotation.GatewayInterceptorRegister;
+import com.dao.cloud.gateway.properties.DaoCloudGatewayProperties;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.banlance.impl.HashLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
@@ -62,7 +64,7 @@ public class DaoCloudGatewayConfiguration {
 
     @Bean
     public DaoLoadBalance daoLoadBalance() {
-        String loadBalance = DaoCloudCenterProperties.loadBalance;
+        String loadBalance = DaoCloudGatewayProperties.loadBalance;
         if (!StringUtils.hasLength(loadBalance)) {
             return new RoundLoadBalance();
         }

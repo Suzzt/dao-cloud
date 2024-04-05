@@ -1,7 +1,7 @@
 package com.dao.cloud.starter.banlance.impl;
 
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
-import com.dao.cloud.starter.bootstrap.unit.Client;
+import com.dao.cloud.starter.unit.Client;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -75,8 +75,9 @@ public class ClusterCenterConnector {
                         .addLast(new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS))
                         .addLast(new InquireClusterCenterResponseHandler())
                         .addLast(new SyncClusterInformationResponseHandler())
-                        .addLast(new PullConfigResponseHandler())
-                        .addLast(new CenterClusterGatewayResponseMessageHandler())
+                        .addLast(new CenterClusterConfigResponseHandler())
+                        .addLast(new CenterClusterGatewayConfigResponseMessageHandler())
+                        .addLast(new CenterClusterServerConfigResponseMessageHandler())
                         .addLast(clusterRequestHandler);
             }
         });

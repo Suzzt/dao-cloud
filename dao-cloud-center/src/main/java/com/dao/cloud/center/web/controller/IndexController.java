@@ -30,9 +30,12 @@ public class IndexController {
 
     private ConfigCenterManager configCenterManager;
 
-    public GatewayCenterManager gatewayCenterManager;
+    private GatewayCenterManager gatewayCenterManager;
 
-    public IndexController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    private RegisterCenterManager registerCenterManager;
+
+    public IndexController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+        this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
     }
@@ -42,11 +45,11 @@ public class IndexController {
         // 当前节点存活集群数
         model.addAttribute("aliveClusterNodeNum", CenterClusterManager.aliveNodeSize());
         // 当前节点存活集群数
-        model.addAttribute("gatewayNodeNum", RegisterCenterManager.gatewayCountNodes());
+        model.addAttribute("gatewayNodeNum", registerCenterManager.gatewayCountNodes());
         // 注册服务数
-        model.addAttribute("providerNum", RegisterCenterManager.nodes());
+        model.addAttribute("providerNum", registerCenterManager.nodes());
         // 注册方法可调用数
-        model.addAttribute("methodNum", RegisterCenterManager.methods());
+        model.addAttribute("methodNum", registerCenterManager.methods());
         // 配置条数
         model.addAttribute("configNum", configCenterManager.size());
         // 每个配置服务订阅数的总和(不去重)

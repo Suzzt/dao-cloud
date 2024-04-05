@@ -1,14 +1,14 @@
 package com.dao.cloud.example.rpc;
 
-import com.google.gson.Gson;
-import com.dao.cloud.starter.annotation.DaoReference;
-import com.dao.cloud.starter.bootstrap.manager.DaoConfig;
-import com.dao.cloud.starter.bootstrap.unit.ConfigCallBack;
 import com.dao.cloud.common.Demo2Service;
 import com.dao.cloud.common.DemoService;
 import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.ProxyConfigModel;
+import com.dao.cloud.starter.annotation.DaoReference;
+import com.dao.cloud.starter.unit.ConfigCallBack;
+import com.dao.cloud.starter.utils.DaoCloudConfig;
+import com.google.gson.Gson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -93,7 +93,7 @@ public class DemoController {
      */
     @RequestMapping("test-config")
     public ApiResult config() {
-        String conf = DaoConfig.getConf("dao-cloud", "dao-cloud", String.class);
+        String conf = DaoCloudConfig.getConf("dao-cloud", "dao-cloud", String.class);
         return ApiResult.buildSuccess(conf);
     }
 
@@ -104,7 +104,7 @@ public class DemoController {
      */
     @RequestMapping("test-config-complex")
     public ApiResult configComplex() {
-        ConfigObject configObject = DaoConfig.getConf("demo", "config-key", ConfigObject.class);
+        ConfigObject configObject = DaoCloudConfig.getConf("demo", "config-key", ConfigObject.class);
         return ApiResult.buildSuccess(configObject);
     }
 
@@ -115,7 +115,7 @@ public class DemoController {
      */
     @RequestMapping("test-subscribe-config")
     public ApiResult subscribe() {
-        DaoConfig.subscribe("demo", "config-key", new DemoConfigCallback());
+        DaoCloudConfig.subscribe("demo", "config-key", new DemoConfigCallback());
         return ApiResult.buildSuccess("config subscribe success");
     }
 

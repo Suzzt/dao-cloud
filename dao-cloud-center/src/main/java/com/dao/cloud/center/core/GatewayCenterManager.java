@@ -1,6 +1,6 @@
 package com.dao.cloud.center.core;
 
-import com.dao.cloud.core.expand.Persistence;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.model.GatewayConfigModel;
 import com.dao.cloud.core.model.GatewayModel;
 import com.dao.cloud.core.model.ProxyProviderModel;

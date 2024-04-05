@@ -6,12 +6,13 @@ import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import com.dao.cloud.gateway.intercept.Interceptor;
-import com.dao.cloud.gateway.manager.GatewayConfig;
+import com.dao.cloud.gateway.model.GatewayConfig;
 import com.dao.cloud.gateway.manager.GatewayConfigManager;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
-import com.dao.cloud.starter.bootstrap.manager.ClientManager;
-import com.dao.cloud.starter.bootstrap.unit.ClientInvoker;
+import com.dao.cloud.starter.manager.ClientManager;
+import com.dao.cloud.starter.unit.ClientInvoker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,8 +110,8 @@ public class Dispatcher {
 
     public void doService(String proxy, GatewayRequestModel gatewayRequestModel, HttpServletResponse response) throws InterruptedException {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, gatewayRequestModel.getProvider(), gatewayRequestModel.getVersion());
-        Set<ServerNodeModel> providerNodes = ClientManager.getProviderNodes(proxyProviderModel);
-        if (providerNodes == null) {
+        Set<ServerNodeModel> providerNodes = ClientManager.getAvailableProviderNodes(proxyProviderModel);
+        if (CollectionUtils.isEmpty(providerNodes)) {
             throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getCode(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST.getText());
         }
 
