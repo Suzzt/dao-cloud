@@ -231,7 +231,8 @@ public class DbMysql implements Persistence {
                 String ip = serverConfigPO.getIp();
                 int port = serverConfigPO.getPort();
                 boolean status = serverConfigPO.isStatus();
-                ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxy, provider, version, ip, port);
+                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+                ServerProxyProviderNode serverProxyProviderNode = new ServerProxyProviderNode(proxyProviderModel, ip, port);
                 map.put(serverProxyProviderNode, status);
             }
         }
