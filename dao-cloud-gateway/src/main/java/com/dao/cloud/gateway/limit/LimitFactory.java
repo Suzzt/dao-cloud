@@ -19,8 +19,7 @@ public class LimitFactory {
             case DaoCloudConstant.TOKEN_BUCKET_ALGORITHM:
                 return new TokenBucketLimiter(limitModel.getTokenBucketMaxSize(), limitModel.getTokenBucketRefillRate());
             case DaoCloudConstant.LEAKY_BUCKET_ALGORITHM:
-                // todo
-                return null;
+                return new LeakyBucketLimiter(limitModel.getLeakyBucketCapacity(), limitModel.getLeakyBucketRefillRate());
             default:
                 log.error("Unable to handle unknown current limiting algorithm. limiter={}", limitModel);
                 throw new DaoException("Unable to handle unknown current limiting algorithm.");

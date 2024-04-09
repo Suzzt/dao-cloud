@@ -20,11 +20,11 @@ public class TokenBucketLimiter extends Limiter {
     /**
      * 当前令牌数量
      */
-    private AtomicLong availableTokens;
+    private final AtomicLong availableTokens;
     /**
      * 上次令牌更新时间
      */
-    private AtomicLong lastRefillTimestamp;
+    private final AtomicLong lastRefillTimestamp;
 
     public TokenBucketLimiter(int maxTokens, int refillRate) {
         this.maxTokens = maxTokens;
