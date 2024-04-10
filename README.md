@@ -35,16 +35,16 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     1.center集群之间: center节点交互通过重心跳维持集群，加入或宕机在center中相互同步节点数据，节点失效时会将未收到心跳回应的对应节点设置为暂时失效节点，心跳逻辑维持，一直到有响应返回变正常节点
     2.center与服务连接: 服务节点端通过拉取存活集群节点来轮询注册一个节点，一旦重试失败，换下一个存活节点，继续一直向center发送重心跳(即一直注册)
     3.center与服务负载: center cluster节点加入或宕机时，center会自主发送协调server负载情况
-    4.center与服务数据: 通过心跳channel发送数据(config、server-info)同步，这里采用异步发送，并要求响应返回结果，在失败情况下会一定的重试，并做了幂等
+    4.center与服务数据: 通过心跳channel发送数据(config、server-info、gateway)同步，这里采用异步发送，并要求响应返回结果，在失败情况下会一定的重试，并做了幂等
 
 # 网关设计架构
 ![网关设计](https://github.com/Suzzt/dao-cloud/assets/27397567/d4195cb7-7ffd-4a8f-b3bd-ac4e34acfe78)
 
 # 项目结构
     dao-cloud-core = 核心
-    dao-cloud-center = 注册+配置-中心
-    dao-cloud-gateway = 网关
-    dao-cloud-spring-boot-starter = rpc的依赖的jar
+    dao-cloud-center = 注册+配置-中心(jar)
+    dao-cloud-gateway = 网关(jar)
+    dao-cloud-spring-boot-starter = 自动装配(jar)
     dao-cloud-example = 使用示例
 
 # dao-cloud提供了什么能力？
