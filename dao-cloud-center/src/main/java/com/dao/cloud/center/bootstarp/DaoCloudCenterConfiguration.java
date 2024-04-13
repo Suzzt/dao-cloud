@@ -121,11 +121,29 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
             WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-            if (contextPath == null) {
-                log.info("======================================== open dao-cloud center page address: http://{}:{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort());
-            } else {
-                log.info("======================================== open dao-cloud center page address: http://{}:{}{}/dao-cloud/index ========================================", NetUtil.getLocalIp(), event.getWebServer().getPort(), contextPath);
+            String border = "================================================================================================";
+
+            String protocol = "http://";
+            String ipAddress = NetUtil.getLocalIp();
+            int port = event.getWebServer().getPort();
+            String portString = Integer.toString(port);
+            String resourcePath = (contextPath == null ? "/dao-cloud/index" : contextPath + "/dao-cloud/index");
+            String address = protocol + ipAddress + ":" + portString + resourcePath;
+
+            // 开始计算内容行的等号填充
+            String preLogLine = "   open dao-cloud center page address: " + address + "   ";
+            int totalPadding = border.length() - preLogLine.length();
+            int sidePadding = totalPadding / 2;
+
+            String sideEqual = new String(new char[sidePadding]).replace("\0", "=");
+            String logLine = sideEqual + preLogLine + sideEqual;
+
+            // 如果字符串长度是奇数，调整填充以保持长度和边框一致
+            if (logLine.length() < border.length()) {
+                logLine += "=";
             }
+
+            log.info("\n\n" + border + "\n" + logLine + "\n" + border + "\n");
         }
     }
 
