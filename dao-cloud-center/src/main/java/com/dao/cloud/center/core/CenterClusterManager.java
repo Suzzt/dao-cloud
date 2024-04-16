@@ -243,6 +243,7 @@ public class CenterClusterManager {
      * @param type
      * @param proxyConfigModel
      * @param configJson
+     * @see com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler
      */
     public static void syncConfigToCluster(byte type, ProxyConfigModel proxyConfigModel, String configJson) {
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {

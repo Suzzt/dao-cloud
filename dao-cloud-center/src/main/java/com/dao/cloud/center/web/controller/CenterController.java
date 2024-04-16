@@ -4,6 +4,7 @@ import com.dao.cloud.center.core.CenterClusterManager;
 import com.dao.cloud.center.core.ConfigCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.ConfigDataVO;
 import com.dao.cloud.center.web.vo.ConfigVO;
@@ -93,7 +94,7 @@ public class CenterController {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
-        CenterClusterManager.syncServerConfigToCluster((byte) 4, proxyProviderModel, serverNodeModel);
+        CenterClusterManager.syncServerConfigToCluster(SyncClusterInformationRequestHandler.SAVE_SERVER, proxyProviderModel, serverNodeModel);
         return ApiResult.buildSuccess();
     }
 
@@ -105,7 +106,7 @@ public class CenterController {
         gatewayConfigModel.setLimitModel(gatewayVO.getLimit());
         gatewayConfigModel.setTimeout(gatewayVO.getTimeout());
         gatewayCenterManager.save(proxyProviderModel, gatewayConfigModel);
-        CenterClusterManager.syncGatewayConfigToCluster((byte) 3, proxyProviderModel, gatewayConfigModel);
+        CenterClusterManager.syncGatewayConfigToCluster(SyncClusterInformationRequestHandler.SAVE_GATEWAY, proxyProviderModel, gatewayConfigModel);
         return ApiResult.buildSuccess();
     }
 
@@ -114,7 +115,7 @@ public class CenterController {
     public ApiResult clear(@Valid GatewayVO gatewayVO) {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getProvider(), gatewayVO.getVersion());
         gatewayCenterManager.clear(proxyProviderModel);
-        CenterClusterManager.syncGatewayConfigToCluster((byte) -3, proxyProviderModel, null);
+        CenterClusterManager.syncGatewayConfigToCluster(SyncClusterInformationRequestHandler.DELETE_GATEWAY, proxyProviderModel, null);
         return ApiResult.buildSuccess();
     }
 
@@ -126,7 +127,7 @@ public class CenterController {
         proxyConfigModel.setKey(configVO.getKey());
         proxyConfigModel.setVersion(configVO.getVersion());
         configCenterManager.save(proxyConfigModel, configVO.getContent());
-        CenterClusterManager.syncConfigToCluster((byte) 2, proxyConfigModel, configVO.getContent());
+        CenterClusterManager.syncConfigToCluster(SyncClusterInformationRequestHandler.SAVE_CONFIG, proxyConfigModel, configVO.getContent());
         return ApiResult.buildSuccess();
     }
 
@@ -134,7 +135,7 @@ public class CenterController {
     @ResponseBody
     public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
         configCenterManager.delete(proxyConfigModel);
-        CenterClusterManager.syncConfigToCluster((byte) -2, proxyConfigModel, null);
+        CenterClusterManager.syncConfigToCluster(SyncClusterInformationRequestHandler.DELETE_CONFIG, proxyConfigModel, null);
         return ApiResult.buildSuccess();
     }
 
