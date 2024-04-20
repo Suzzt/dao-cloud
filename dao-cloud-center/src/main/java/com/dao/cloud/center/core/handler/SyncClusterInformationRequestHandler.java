@@ -25,19 +25,19 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<AbstractShareClusterRequestModel> {
 
-    private final int DELETE_GATEWAY = -3;
+    public static final byte DELETE_GATEWAY = -3;
 
-    private final int DELETE_CONFIG = -2;
+    public static final byte DELETE_CONFIG = -2;
 
-    private final int DOWN_SERVER = -1;
+    public static final byte DOWN_SERVER = -1;
 
-    private final int UP_SERVER = 1;
+    public static final byte UP_SERVER = 1;
 
-    private final int SAVE_CONFIG = 2;
+    public static final byte SAVE_CONFIG = 2;
 
-    private final int SAVE_GATEWAY = 3;
+    public static final byte SAVE_GATEWAY = 3;
 
-    private final int SAVE_SERVER = 4;
+    public static final byte SAVE_SERVER = 4;
 
     private ConfigCenterManager configCenterManager;
 

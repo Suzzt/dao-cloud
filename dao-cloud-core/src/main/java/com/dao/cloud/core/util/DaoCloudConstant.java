@@ -27,4 +27,10 @@ public class DaoCloudConstant {
     public static final String GATEWAY_PROXY = "dao-cloud-gateway";
 
     public static final AttributeKey<Model> REQUEST_MESSAGE_ATTR_KEY = AttributeKey.valueOf("REQUEST_MESSAGE");
+
+    public static final int SLIDE_WINDOW_COUNT_ALGORITHM = 1;
+
+    public static final int TOKEN_BUCKET_ALGORITHM = 2;
+
+    public static final int LEAKY_BUCKET_ALGORITHM = 3;
 }

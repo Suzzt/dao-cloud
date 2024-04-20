@@ -31,7 +31,7 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
         registerCenterManager.registry(registerProviderModel);
         this.registerProviderModel = registerProviderModel;
         // notice cluster all node
-        CenterClusterManager.syncRegisterToCluster((byte) 1, registerProviderModel);
+        CenterClusterManager.syncRegisterToCluster(SyncClusterInformationRequestHandler.UP_SERVER, registerProviderModel);
         ctx.writeAndFlush(new HeartbeatPacket()).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< back server heartbeat fail {} >>>>>>>>>>", ctx.channel(), f.cause());
@@ -44,7 +44,7 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
         if (registerProviderModel != null) {
             registerCenterManager.unregistered(registerProviderModel);
             // sync server to other center
-            CenterClusterManager.syncRegisterToCluster((byte) -1, registerProviderModel);
+            CenterClusterManager.syncRegisterToCluster(SyncClusterInformationRequestHandler.DOWN_SERVER, registerProviderModel);
         }
         super.channelUnregistered(ctx);
     }
@@ -55,7 +55,7 @@ public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterP
             if (registerProviderModel != null) {
                 registerCenterManager.unregistered(registerProviderModel);
                 // sync server to other center
-                CenterClusterManager.syncRegisterToCluster((byte) -1, registerProviderModel);
+                CenterClusterManager.syncRegisterToCluster(SyncClusterInformationRequestHandler.DOWN_SERVER, registerProviderModel);
             }
         } else {
             super.userEventTriggered(ctx, evt);
