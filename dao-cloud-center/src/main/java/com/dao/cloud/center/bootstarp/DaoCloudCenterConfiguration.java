@@ -113,6 +113,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     gatewayCenterManager.init();
                     // load service to cache
                     registerCenterManager.init();
+
+                    // Before the above procedures are executed, the node cannot provide service capabilities.
+
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
