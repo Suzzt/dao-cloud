@@ -107,13 +107,15 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
                         CenterClusterManager.start();
                     }
+
+                    log.info("Load initial configuration data into memory (Waiting......)");
                     // load config to cache
                     configCenterManager.init();
                     // load gateway to cache
                     gatewayCenterManager.init();
                     // load service to cache
                     registerCenterManager.init();
-
+                    log.info("Load initial configuration data into memory (Finish)");
                     // Before the above procedures are executed, the node cannot provide service capabilities.
                     CenterClusterManager.ready();
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);

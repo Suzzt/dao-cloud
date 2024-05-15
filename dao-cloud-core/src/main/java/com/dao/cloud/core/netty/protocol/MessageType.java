@@ -12,7 +12,6 @@ import java.util.Map;
  */
 public class MessageType {
     public static final byte GLOBAL_DAO_EXCEPTION_MESSAGE = -9;
-    public static final byte ERROR_RESPONSE_MESSAGE = -4;
     public static final byte PING_PONG_HEART_BEAT_MESSAGE = -1;
     public static final byte REGISTRY_REQUEST_MESSAGE = 0;
     public static final byte PULL_REGISTRY_SERVER_REQUEST_MESSAGE = 2;
