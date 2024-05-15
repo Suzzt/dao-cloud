@@ -127,6 +127,7 @@ public class CenterClusterManager {
         // sync overwrite config information
         if (!CollectionUtils.isEmpty(aliveNodes)) {
             log.info("Synchronize data from other cluster nodes (Waiting......)");
+            Thread.sleep(10000);
             Iterator<String> iterator = aliveNodes.iterator();
             String node = iterator.next();
             // system config

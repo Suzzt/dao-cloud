@@ -71,6 +71,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Value(value = "${server.servlet.context-path:#{null}}")
     private String contextPath;
 
+    private boolean flag = false;
+
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
@@ -125,32 +127,42 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     worker.shutdownGracefully();
                     System.exit(1);
                 }
+                flag = true;
             });
         } else if (applicationEvent instanceof WebServerInitializedEvent) {
-            WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
-            String border = "================================================================================================";
+            ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
+                while (!flag) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                WebServerInitializedEvent event = (WebServerInitializedEvent) applicationEvent;
+                String border = "================================================================================================";
 
-            String protocol = "http://";
-            String ipAddress = NetUtil.getLocalIp();
-            int port = event.getWebServer().getPort();
-            String portString = Integer.toString(port);
-            String resourcePath = (contextPath == null ? "/dao-cloud/index" : contextPath + "/dao-cloud/index");
-            String address = protocol + ipAddress + ":" + portString + resourcePath;
+                String protocol = "http://";
+                String ipAddress = NetUtil.getLocalIp();
+                int port = event.getWebServer().getPort();
+                String portString = Integer.toString(port);
+                String resourcePath = (contextPath == null ? "/dao-cloud/index" : contextPath + "/dao-cloud/index");
+                String address = protocol + ipAddress + ":" + portString + resourcePath;
 
-            // 开始计算内容行的等号填充
-            String preLogLine = "   open dao-cloud center page address: " + address + "   ";
-            int totalPadding = border.length() - preLogLine.length();
-            int sidePadding = totalPadding / 2;
+                // 开始计算内容行的等号填充
+                String preLogLine = "   open dao-cloud center page address: " + address + "   ";
+                int totalPadding = border.length() - preLogLine.length();
+                int sidePadding = totalPadding / 2;
 
-            String sideEqual = new String(new char[sidePadding]).replace("\0", "=");
-            String logLine = sideEqual + preLogLine + sideEqual;
+                String sideEqual = new String(new char[sidePadding]).replace("\0", "=");
+                String logLine = sideEqual + preLogLine + sideEqual;
 
-            // 如果字符串长度是奇数，调整填充以保持长度和边框一致
-            if (logLine.length() < border.length()) {
-                logLine += "=";
-            }
+                // 如果字符串长度是奇数，调整填充以保持长度和边框一致
+                if (logLine.length() < border.length()) {
+                    logLine += "=";
+                }
 
-            log.info("\n\n" + border + "\n" + logLine + "\n" + border + "\n");
+                log.info("\n\n" + border + "\n" + logLine + "\n" + border + "\n");
+            });
         }
     }
 
@@ -170,7 +182,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Bean
     @ConditionalOnWebApplication
-    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web,dashboard", name = "enabled", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
     public CenterController centerController(RegisterCenterManager registryCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
         return new CenterController(registryCenterManager, configCenterManager, gatewayCenterManager);
     }
