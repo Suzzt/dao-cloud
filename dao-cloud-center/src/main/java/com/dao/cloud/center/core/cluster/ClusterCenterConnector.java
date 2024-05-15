@@ -32,10 +32,18 @@ public class ClusterCenterConnector {
     private volatile boolean state;
 
     /**
+     * 一个标记位: 用于触发集群心跳(因为当节点初始化同步过程中,这时候该节点不能作为服务节点提供能力,因为这时候它没有数据)
+     * true: 同步中
+     * false: 同步完成,可以作为服务节点提供能力
+     */
+    private boolean flag;
+
+    /**
      * @param connectIp
      */
-    public ClusterCenterConnector(String connectIp) {
+    public ClusterCenterConnector(String connectIp, boolean flag) {
         this.connectIp = connectIp;
+        this.flag = flag;
         connect();
     }
 
@@ -57,6 +65,14 @@ public class ClusterCenterConnector {
 
     public boolean isActive() {
         return state;
+    }
+
+    public boolean isSyncing() {
+        return flag;
+    }
+
+    public void ready() {
+        this.flag = false;
     }
 
     public void connect() {

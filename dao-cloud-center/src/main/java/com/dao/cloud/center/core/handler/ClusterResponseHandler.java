@@ -37,8 +37,10 @@ public class ClusterResponseHandler extends SimpleChannelInboundHandler<Heartbea
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
-            // send heartbeat packet
-            connector.sendHeartbeat();
+            if (!connector.isSyncing()) {
+                // send heartbeat packet
+                connector.sendHeartbeat();
+            }
         } else {
             super.userEventTriggered(ctx, evt);
         }

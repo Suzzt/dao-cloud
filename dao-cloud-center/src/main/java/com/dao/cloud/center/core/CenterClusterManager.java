@@ -27,11 +27,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -116,9 +114,10 @@ public class CenterClusterManager {
     public static void start() throws InterruptedException {
         // get cluster alive node
         Set<String> aliveNodes = inquire();
-        // init cluster channel
+
+        // join cluster heartbeat
         for (String aliveNode : aliveNodes) {
-            joinCluster(aliveNode);
+            joinCluster(aliveNode, true);
         }
 
         // clear local config, This is a dangerous operation!
@@ -126,13 +125,15 @@ public class CenterClusterManager {
         log.info("clear local config data");
 
         // sync overwrite config information
-        for (String aliveNode : aliveNodes) {
+        if (!CollectionUtils.isEmpty(aliveNodes)) {
+            Iterator<String> iterator = aliveNodes.iterator();
+            String node = iterator.next();
             // system config
-            loadConfig(aliveNode);
+            loadConfig(node);
             // gateway service config
-            loadGatewayConfig(aliveNode);
+            loadGatewayConfig(node);
             // server config
-            loadServerConfig(aliveNode);
+            loadServerConfig(node);
         }
     }
 
@@ -303,11 +304,12 @@ public class CenterClusterManager {
      * This is an idempotent behavior
      *
      * @param ip
+     * @param flag 这个标识是否就绪服务。如果就绪，则会发送心跳，否则不发送心跳.
      */
-    public static void joinCluster(String ip) {
+    public static void joinCluster(String ip, boolean flag) {
         log.info("add a new or heartbeat (ip = {}) node cluster", ip);
         if (ALL_HISTORY_CLUSTER_MAP.get(ip) == null) {
-            ALL_HISTORY_CLUSTER_MAP.put(ip, new ClusterCenterConnector(ip));
+            ALL_HISTORY_CLUSTER_MAP.put(ip, new ClusterCenterConnector(ip, flag));
         }
     }
 
@@ -380,5 +382,14 @@ public class CenterClusterManager {
         } else {
             throw new DaoException(promise.cause());
         }
+    }
+
+    /**
+     * Open all cluster heartbeats
+     */
+    public static void ready() {
+        ALL_HISTORY_CLUSTER_MAP.forEach((ip, clusterCenterConnector) -> {
+            clusterCenterConnector.ready();
+        });
     }
 }
