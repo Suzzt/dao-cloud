@@ -10,6 +10,6 @@ import lombok.Data;
  *
  */
 @Data
-public class ErrorResponseModel<T> extends Model {
+public class ErrorResponseModel extends Model {
     private DaoException daoException;
 }

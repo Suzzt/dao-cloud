@@ -41,13 +41,16 @@ public class RegisterCenterManager {
      * key: proxy + provider + version + ip + port
      * value: status
      */
-    private final Map<ServerProxyProviderNode, Boolean> SERVER_CONFIG;
+    private Map<ServerProxyProviderNode, Boolean> SERVER_CONFIG;
 
     private final Persistence persistence;
 
+    public void init() {
+        SERVER_CONFIG = persistence.loadServer();
+    }
+
     public RegisterCenterManager(Persistence persistence) {
         this.persistence = persistence;
-        SERVER_CONFIG = persistence.loadServer();
     }
 
     /**
