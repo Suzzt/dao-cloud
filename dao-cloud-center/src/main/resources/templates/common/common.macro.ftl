@@ -72,7 +72,7 @@
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
-            <span class="logo-lg"><img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo" style="height: 30px;"/> <b>dao-cloud</b></span>
+            <span class="logo-lg"><img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo" style="height: 30px; margin-right: 15px;"/> <b>dao-cloud</b></span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
 
@@ -103,7 +103,7 @@
         <section class="sidebar">
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu">
-                <li class="header">导航</li>
+                <li class="header">导航菜单</li>
                 <li class="nav-click <#if pageName == "index">active</#if>"><a href="${request.contextPath}/dao-cloud"><i
                                 class="fa fa-circle-o text-red"></i><span>运行报表</span></a></li>
                 <li class="nav-click <#if pageName == "registry">active</#if>"><a
