@@ -10,6 +10,9 @@
     <!-- daterangepicker -->
     <link rel="stylesheet"
           href="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
 <style>
     /* 在小屏幕上设置 10px 的下间距 */
@@ -44,23 +47,19 @@
 
             <div class="row">
                 <div class="col-xs-3">
-                    <input type="text" class="form-control" id="proxy" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入proxy(精确匹配)">
+                    <input type="text" class="form-control" id="proxy" autocomplete="on" value="${topic!''}" placeholder="请输入proxy(精确匹配)">
                 </div>
                 <div class="col-xs-3">
-                    <input type="text" class="form-control" id="key" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入key(精确匹配)">
+                    <input type="text" class="form-control" id="key" autocomplete="on" value="${topic!''}" placeholder="请输入key(精确匹配)">
                 </div>
                 <div class="col-xs-3">
-                    <input type="text" class="form-control" id="version" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入version(精确匹配)">
+                    <input type="text" class="form-control" id="version" autocomplete="on" value="${topic!''}" placeholder="请输入version(精确匹配)">
                 </div>
-                <div class="col-xs-1">
-                    <button class="btn btn-block btn-info" id="searchBtn">搜索</button>
-                </div>
-                <div class="col-xs-2">
+                <!-- 新增flex container来包裹按钮 -->
+                <div class="col-xs-3" style="display: flex; justify-content: flex-end;">
+                    <button class="btn btn-info" id="searchBtn" style="margin-right: 5px;">搜索</button>
                     <div class="btn-group">
-                        <button class="btn btn-block btn-info bg-green" id="config_add">添加</button>
+                        <button class="btn btn-info bg-green" id="config_add">添加</button>
                     </div>
                 </div>
             </div>
@@ -198,6 +197,14 @@
 <script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 
 <script src="${request.contextPath}/static/js/config.index.1.js"></script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        tippy('#searchBtn', {
+            content: '查询结果为交集',
+            placement: 'top',
+            animation: 'scale',
+        });
+    });
+</script>
 </body>
 </html>

@@ -10,6 +10,9 @@
     <!-- daterangepicker -->
     <link rel="stylesheet"
           href="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
 <style>
     #popup {
@@ -60,7 +63,7 @@
                     <input type="text" class="form-control" id="version" autocomplete="on" value="${topic!''}"
                            placeholder="请输入version(精确匹配)">
                 </div>
-                <div class="col-xs-1">
+                <div class="col-xs-1 pull-right">
                     <button class="btn btn-block btn-info" id="searchBtn">搜索</button>
                 </div>
             </div>
@@ -256,6 +259,15 @@
                     tokenLimitOptions.style.display = 'none';
                     leakyLimitOptions.style.display = 'none';
             }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        tippy('#searchBtn', {
+            content: '查询结果为交集',
+            placement: 'top',
+            animation: 'scale',
         });
     });
 </script>
