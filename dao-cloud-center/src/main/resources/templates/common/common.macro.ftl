@@ -72,7 +72,7 @@
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
-            <span class="logo-lg"><b>dao-cloud</b></span>
+            <span class="logo-lg"><img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo" style="height: 30px;"/> <b>dao-cloud</b></span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
 
