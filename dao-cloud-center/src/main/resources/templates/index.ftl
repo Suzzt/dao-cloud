@@ -131,5 +131,10 @@
 <#-- echarts -->
 <script src="${request.contextPath}/static/plugins/echarts/echarts.common.min.js"></script>
 <script src="${request.contextPath}/static/js/index.js"></script>
+<script>
+    setTimeout(function () {
+        window.location.reload(1);
+    }, 10 * 1000);
+</script>
 </body>
 </html>
