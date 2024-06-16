@@ -29,6 +29,11 @@ public class ServerNodeModel implements Serializable {
      */
     private boolean status;
 
+    /**
+     * service load performance
+     */
+    private PerformanceModel performanceModel;
+
     public ServerNodeModel(String link) {
         String[] split = link.split(":");
         this.ip = split[0];
