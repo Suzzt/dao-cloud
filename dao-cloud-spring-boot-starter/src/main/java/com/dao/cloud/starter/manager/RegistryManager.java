@@ -1,6 +1,7 @@
 package com.dao.cloud.starter.manager;
 
 import com.dao.cloud.core.exception.DaoException;
+import com.dao.cloud.core.model.PerformanceModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
@@ -8,6 +9,7 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.DaoTimer;
+import com.dao.cloud.core.util.SystemUtil;
 import com.dao.cloud.starter.handler.CenterServerMessageHandler;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
@@ -84,6 +86,14 @@ public class RegistryManager {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("connect config center error");
+        }
+        try {
+            // 节点负载情况
+            PerformanceModel performanceModel = SystemUtil.getSystemLoadStatus();
+            registerProviderModel.getServerNodeModel().setPerformance(performanceModel);
+        } catch (Throwable t) {
+            log.error("<<<<<<<<< get system load status error >>>>>>>>", t);
+            registerProviderModel.getServerNodeModel().setPerformance(null);
         }
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, registerProviderModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {

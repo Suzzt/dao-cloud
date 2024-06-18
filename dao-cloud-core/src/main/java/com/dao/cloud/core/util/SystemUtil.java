@@ -91,12 +91,15 @@ public class SystemUtil {
         long usedMemory = totalMemory - freeMemory;
         double memoryUsage = ((double) usedMemory / totalMemory) * 100;
 
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
         // 获取当前JVM的CPU使用率。注意这个值的读取可能需要消耗一些时间，为了更准确的测量，可能需要多次读取然后取平均值。
         double processCpuLoad = osBean.getProcessCpuLoad() * 100;
 
         PerformanceModel performanceModel = new PerformanceModel();
-        performanceModel.setMemory(String.valueOf(memoryUsage));
-        performanceModel.setCpu(String.valueOf(processCpuLoad));
+        // 保留两位小数并加上百分号
+        performanceModel.setMemory(String.format("%.2f%%", memoryUsage));
+        performanceModel.setCpu(String.format("%.2f%%", processCpuLoad));
+
         return performanceModel;
     }
 }

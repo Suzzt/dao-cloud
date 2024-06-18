@@ -208,6 +208,7 @@
                 <tr>
                     <th>ip</th>
                     <th>port</th>
+                    <th>负载压力</th>
                     <th>操作</th>
                 </tr>
                 </thead>

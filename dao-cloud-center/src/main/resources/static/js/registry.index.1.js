@@ -352,11 +352,17 @@ $(function () {
             var statusText = item.status ? "下线" : "上线";
             var statusAction = item.status ? false : true;
             var statusImage = item.status ? "../right.png" : "../wrong.png";
+            var performanceText = null;
+            console.log(item)
+            if (item.performance != null) {
+                performanceText = 'cpu=' + item.performance.cpu + '  memory=' + item.performance.memory + '  io=' + item.performance.io;
+            }
             tableHtml += '<tr>' +
                 '<td style="display: flex; align-items: center;">' +
                 '<img src="' + statusImage + '" style="height:16px; width:16px; margin-right: 5px;" />' + item.ip +
                 '</td>' +
                 '<td>' + item.port + '</td>' +
+                '<td>' + performanceText + '</td>' +
                 '<td>' +
                 '<a href="javascript:;" class="on_off" proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" ip="' + item.ip + '" port="' + item.port + '" status="' + statusAction + '">' + statusText + '</a>' +
                 '</td>' +

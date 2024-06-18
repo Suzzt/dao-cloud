@@ -184,7 +184,7 @@ public class RegisterCenterManager {
             providerMap.put(providerModel, serverNodeModels);
             REGISTRY_SERVER.put(proxy, providerMap);
         }
-        log.info(">>>>>>>>>>>> proxy({}, {}, {}) register success <<<<<<<<<<<<", proxy, providerModel, assignment);
+        log.info(">>>>>>>>>>>> Register service node information({}, {}, {}) success <<<<<<<<<<<<", proxy, providerModel, assignment);
     }
 
     /**
@@ -201,7 +201,7 @@ public class RegisterCenterManager {
             Set<ServerNodeModel> serverNodeModels = registerProviders.get(providerModel);
             serverNodeModels.remove(serverNodeModel);
         }
-        log.error(">>>>>>>>>>> down server proxy ({}, {}, {}) <<<<<<<<<<<", proxy, providerModels, serverNodeModel);
+        log.error(">>>>>>>>>>> Down service node information ({}, {}, {}) <<<<<<<<<<<", proxy, providerModels, serverNodeModel);
     }
 
     /**
@@ -269,7 +269,7 @@ public class RegisterCenterManager {
      * @return New ServerNodeModel Object
      */
     private ServerNodeModel assignment(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
-        ServerNodeModel node = new ServerNodeModel(serverNodeModel.getIp(), serverNodeModel.getPort());
+        ServerNodeModel node = new ServerNodeModel(serverNodeModel.getIp(), serverNodeModel.getPort(), serverNodeModel.getPerformance());
         Boolean status = SERVER_CONFIG.get(new ServerProxyProviderNode(proxyProviderModel, serverNodeModel.getIp(), serverNodeModel.getPort()));
         if (status == null) {
             // 从来就没设置过状态, 它应该是null, 那么就是true
