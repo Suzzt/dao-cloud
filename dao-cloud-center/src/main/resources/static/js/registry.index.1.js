@@ -352,17 +352,22 @@ $(function () {
             var statusText = item.status ? "下线" : "上线";
             var statusAction = item.status ? false : true;
             var statusImage = item.status ? "../right.png" : "../wrong.png";
-            var performanceText = null;
-            console.log(item)
+            var performanceHtml = "";
             if (item.performance != null) {
-                performanceText = 'cpu=' + item.performance.cpu + '  memory=' + item.performance.memory + '  io=' + item.performance.io;
+                // 为CPU、内存、IO各创建一个<div>，并将它们垂直堆叠
+                performanceHtml = '<div style="display: flex; flex-direction: column;">' +
+                    '<div>cpu=' + item.performance.cpu + '</div>' +
+                    '<div>memory=' + item.performance.memory + '</div>' +
+                    '<div>io=' + item.performance.io + '</div>' +
+                    '</div>';
             }
+
             tableHtml += '<tr>' +
                 '<td style="display: flex; align-items: center;">' +
                 '<img src="' + statusImage + '" style="height:16px; width:16px; margin-right: 5px;" />' + item.ip +
                 '</td>' +
                 '<td>' + item.port + '</td>' +
-                '<td>' + performanceText + '</td>' +
+                '<td>' + performanceHtml + '</td>' +
                 '<td>' +
                 '<a href="javascript:;" class="on_off" proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" ip="' + item.ip + '" port="' + item.port + '" status="' + statusAction + '">' + statusText + '</a>' +
                 '</td>' +

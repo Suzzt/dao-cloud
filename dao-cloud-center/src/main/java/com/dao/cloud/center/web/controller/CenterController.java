@@ -5,6 +5,7 @@ import com.dao.cloud.center.core.ConfigCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
+import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.ConfigDataVO;
 import com.dao.cloud.center.web.vo.ConfigVO;
@@ -13,6 +14,7 @@ import com.dao.cloud.center.web.vo.ServerVO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -48,19 +50,19 @@ public class CenterController {
     @Permissions(limit = false)
     public ApiResult<List<ServerVO>> getRegisterProxy(String proxy, String provider) {
         List<ServerVO> result = Lists.newArrayList();
-        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = registerCenterManager.getServer();
-        for (Map.Entry<String, Map<ProviderModel, Set<ServerNodeModel>>> entry : server.entrySet()) {
+        Map<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> server = registerCenterManager.getServer();
+        for (Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> entry : server.entrySet()) {
             if (StringUtils.hasLength(proxy) && !entry.getKey().equals(proxy)) {
                 continue;
             }
             String proxyKey = entry.getKey();
-            Map<ProviderModel, Set<ServerNodeModel>> providerModels = entry.getValue();
-            for (Map.Entry<ProviderModel, Set<ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
+            Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModels = entry.getValue();
+            for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : providerModels.entrySet()) {
                 ProviderModel providerModel = providerModelSetEntry.getKey();
                 if (StringUtils.hasLength(provider) && !providerModel.getProvider().equals(provider)) {
                     continue;
                 }
-                Set<ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
+                Map<ServiceNode, ServerNodeModel> serverNodeModels = providerModelSetEntry.getValue();
                 ServerVO serverVO = new ServerVO();
                 serverVO.setProxy(proxyKey);
                 serverVO.setProvider(providerModel.getProvider());
@@ -79,10 +81,14 @@ public class CenterController {
     @RequestMapping(value = "/registry/server")
     @ResponseBody
     public ApiResult<Set<ServerNodeModel>> getServer(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
-        Map<String, Map<ProviderModel, Set<ServerNodeModel>>> server = registerCenterManager.getServer();
-        Map<ProviderModel, Set<ServerNodeModel>> providerModels = server.get(proxy);
-        Set<ServerNodeModel> serverNodeModels = providerModels.get(new ProviderModel(provider, version));
-        return ApiResult.buildSuccess(serverNodeModels);
+        Set<ServerNodeModel> set = Sets.newHashSet();
+        Map<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> server = registerCenterManager.getServer();
+        Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModels = server.get(proxy);
+        Map<ServiceNode, ServerNodeModel> serverNodeModels = providerModels.get(new ProviderModel(provider, version));
+        for (Map.Entry<ServiceNode, ServerNodeModel> serverNodeModelEntry : serverNodeModels.entrySet()) {
+            set.add(serverNodeModelEntry.getValue());
+        }
+        return ApiResult.buildSuccess(set);
     }
 
     @RequestMapping(value = "/registry/on_off")
