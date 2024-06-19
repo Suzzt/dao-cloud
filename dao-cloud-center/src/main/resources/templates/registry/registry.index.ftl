@@ -203,7 +203,7 @@
 
     <div id="popup" class="container" style="display: none;">
         <div class="table-responsive">
-            <table id="popup-list" class="table table-striped">
+            <table id="popup-list" class="table table-striped" >
                 <thead>
                 <tr>
                     <th>ip</th>

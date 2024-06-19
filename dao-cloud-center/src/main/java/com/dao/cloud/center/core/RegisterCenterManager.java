@@ -140,8 +140,11 @@ public class RegisterCenterManager {
      * @return 网关在整个系统的节点数
      */
     public int gatewayCountNodes() {
-        int i = 0;
         Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelMapMap = REGISTRY_SERVER.get(DaoCloudConstant.GATEWAY_PROXY);
+        if (providerModelMapMap == null) {
+            return 0;
+        }
+        int i = 0;
         for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : providerModelMapMap.entrySet()) {
             ProviderModel providerModel = providerModelSetEntry.getKey();
             if (DaoCloudConstant.GATEWAY.equals(providerModel.getProvider())) {
