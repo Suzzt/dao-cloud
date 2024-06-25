@@ -29,6 +29,11 @@ public class ServerNodeModel implements Serializable {
      */
     private boolean status;
 
+    /**
+     * service load performance
+     */
+    private PerformanceModel performance;
+
     public ServerNodeModel(String link) {
         String[] split = link.split(":");
         this.ip = split[0];
@@ -45,6 +50,13 @@ public class ServerNodeModel implements Serializable {
         this.ip = ip;
         this.port = port;
         this.status = status;
+    }
+
+    public ServerNodeModel(String ip, int port, PerformanceModel performance) {
+        this.ip = ip;
+        this.port = port;
+        this.status = true;
+        this.performance = performance;
     }
 
     @Override

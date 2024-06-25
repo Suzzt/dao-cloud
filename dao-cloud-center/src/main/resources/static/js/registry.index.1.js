@@ -348,19 +348,30 @@ $(function () {
 
     function load_page_html(service_data_list, proxy, provider, version) {
         var tableHtml = "";
-        service_data_list.forEach(function (item) {
+        service_data_list.forEach(function (item, index) {
             var statusText = item.status ? "下线" : "上线";
             var statusAction = item.status ? false : true;
             var statusImage = item.status ? "../right.png" : "../wrong.png";
+
+            var operationHtml = '<a href="javascript:;" class="on_off" proxy="' + proxy +
+                '" provider="' + provider + '" version="' + version + '" ip="' + item.ip +
+                '" port="' + item.port + '" status="' + statusAction + '">' + statusText + '</a>';
+
+            var cpuHtml = item.performance ? 'cpu=' + item.performance.cpu : '-';
+            var memoryHtml = item.performance ? 'memory=' + item.performance.memory : '-';
+            var ioHtml = item.performance ? 'io=' + item.performance.io : '-';
+
             tableHtml += '<tr>' +
-                '<td style="display: flex; align-items: center;">' +
+                '<td rowspan="3" style="vertical-align: middle;">' +
                 '<img src="' + statusImage + '" style="height:16px; width:16px; margin-right: 5px;" />' + item.ip +
                 '</td>' +
-                '<td>' + item.port + '</td>' +
-                '<td>' +
-                '<a href="javascript:;" class="on_off" proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" ip="' + item.ip + '" port="' + item.port + '" status="' + statusAction + '">' + statusText + '</a>' +
-                '</td>' +
+                '<td rowspan="3" style="vertical-align: middle;">' + item.port + '</td>' +
+                '<td>' + cpuHtml + '</td>' +
+                '<td rowspan="3" style="vertical-align: middle;">' + operationHtml + '</td>' +
                 '</tr>';
+
+            tableHtml += '<tr><td>' + memoryHtml + '</td></tr>';
+            tableHtml += '<tr><td>' + ioHtml + '</td></tr>';
         });
         return tableHtml;
     }
@@ -379,7 +390,7 @@ $(function () {
                     type: 1,
                     title: '注册服务节点列表',
                     content: $('#popup'),
-                    area: ['500px', '300px'],
+                    area: ['1000px', '1000px'],
                     btn: ['关闭'],
                     btnAlign: 'c',
                     success: function (layero, index) {

@@ -1,8 +1,11 @@
 package com.dao.cloud.core.util;
 
+import com.dao.cloud.core.model.PerformanceModel;
+import com.sun.management.OperatingSystemMXBean;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
 
 /**
@@ -12,6 +15,9 @@ import java.net.ServerSocket;
  */
 @Slf4j
 public class SystemUtil {
+
+    private static final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+
     /**
      * get available port
      *
@@ -72,5 +78,29 @@ public class SystemUtil {
             }
         }
         return used;
+    }
+
+    public static PerformanceModel getSystemLoadStatus() {
+        Runtime runtime = Runtime.getRuntime();
+
+        // JVM已经从操作系统那里申请的总内存
+        long totalMemory = runtime.totalMemory();
+        // JVM中的空闲内存
+        long freeMemory = runtime.freeMemory();
+        // JVM已使用的内存
+        long usedMemory = totalMemory - freeMemory;
+        double memoryUsage = ((double) usedMemory / totalMemory) * 100;
+
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        // 获取当前JVM的CPU使用率。注意这个值的读取可能需要消耗一些时间，为了更准确的测量，可能需要多次读取然后取平均值。
+        double processCpuLoad = osBean.getProcessCpuLoad() * 100;
+
+        PerformanceModel performanceModel = new PerformanceModel();
+        // 保留两位小数并加上百分号
+        performanceModel.setMemory(String.format("%.2f%%", memoryUsage));
+        performanceModel.setCpu(String.format("%.2f%%", processCpuLoad));
+        // todo io
+
+        return performanceModel;
     }
 }

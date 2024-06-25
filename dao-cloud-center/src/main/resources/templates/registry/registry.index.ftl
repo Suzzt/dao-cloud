@@ -203,11 +203,12 @@
 
     <div id="popup" class="container" style="display: none;">
         <div class="table-responsive">
-            <table id="popup-list" class="table table-striped">
+            <table id="popup-list" class="table table-striped" >
                 <thead>
                 <tr>
                     <th>ip</th>
                     <th>port</th>
+                    <th>负载压力</th>
                     <th>操作</th>
                 </tr>
                 </thead>
