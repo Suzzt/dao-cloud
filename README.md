@@ -101,6 +101,16 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
         DaoConfig.getConf  ==== 获取配置
         DaoConfig.subscribe  ==== 订阅配置,在监听到订阅的配置发生变化时,做某些事(回调)
         注意: 此外你在配置中心更改配置后,配置中心会自动刷新到服务上
+
+网关接入(引入dao-cloud-gateway的pom依赖jar包)
+
+    <dependency>
+        <groupId>org.dao</groupId>
+        <artifactId>dao-cloud-gateway</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    
+    详情使用可以参考[dao-cloud-example](dao-cloud-example)工程中使用例子
         
 服务注册管理
 <img width="1826" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/80a6f503-2389-4de0-951a-a25a75bf58ed">
