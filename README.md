@@ -1,6 +1,6 @@
 <div style="margin-top: 40px; margin-bottom: -20px;">
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
-        <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/6ff5442c-332b-4f90-ad87-2659387d2904" style="max-width: 60px; height: auto;">
+        <img src="https://github.com/Suzzt/dao-cloud/assets/27397567/6ff5442c-332b-4f90-ad87-2659387d2904" style="max-width: 20px; height: auto;">
     </p>
     <h1 align="center">Welcome to dao-cloud 👋</h1> 
     <p align="center" style="display: flex; justify-content: center; gap: 10px;">
