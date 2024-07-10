@@ -380,6 +380,23 @@ $(function () {
         var proxy = $(this).attr("proxy");
         var provider = $(this).attr("provider");
         var version = $(this).attr("version");
+
+        function fetchDataAndUpdateTable() {
+            $.ajax({
+                url: base_url + "/registry/server?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var tableHtml = load_page_html(response.data, proxy, provider, version);
+                    $('#popup-list tbody').html(tableHtml);
+                },
+                error: function () {
+                    // 处理请求失败的情况
+                }
+            });
+        }
+
+        // 打开弹出窗口并首次加载数据
         $.ajax({
             url: base_url + "/registry/server?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
             method: "GET",
@@ -395,6 +412,29 @@ $(function () {
                     btnAlign: 'c',
                     success: function (layero, index) {
                         $('#popup-list tbody').html(tableHtml);
+
+                        // 设置定时器每3秒刷新一次数据
+                        var refreshInterval = setInterval(fetchDataAndUpdateTable, 3000);
+
+                        // 在弹出窗口关闭时清除定时器
+                        layero.find('.layui-layer-btn0').on('click', function() {
+                            clearInterval(refreshInterval);
+                            layer.close(index);
+                        });
+
+                        // 监听右上角关闭按钮
+                        layero.find('.layui-layer-close').on('click', function() {
+                            clearInterval(refreshInterval);
+                            layer.close(index);
+                        });
+
+                        // 确保所有关闭操作清除定时器
+                        $(document).on('click', '.layui-layer-close1', function() {
+                            clearInterval(refreshInterval);
+                        });
+                    },
+                    cancel: function() {
+                        clearInterval(refreshInterval);
                     }
                 });
             },
