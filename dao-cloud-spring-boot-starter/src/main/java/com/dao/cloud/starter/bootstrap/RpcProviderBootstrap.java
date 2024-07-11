@@ -12,15 +12,16 @@ import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.SystemUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import com.dao.cloud.starter.annotation.ConditionalOnUseAnnotation;
+import com.dao.cloud.starter.annotation.DaoCallTrend;
 import com.dao.cloud.starter.annotation.DaoService;
-import com.dao.cloud.starter.manager.RegistryManager;
-import com.dao.cloud.starter.manager.ServiceManager;
-import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
 import com.dao.cloud.starter.handler.NettyGlobalTriggerExceptionHandler;
 import com.dao.cloud.starter.handler.RpcServerMessageHandler;
 import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
+import com.dao.cloud.starter.manager.RegistryManager;
+import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
+import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -71,6 +72,10 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
             ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);
+            DaoCallTrend daoCallTrend = serviceBean.getClass().getAnnotation(DaoCallTrend.class);
+            if (daoCallTrend != null) {
+                // todo 构建aop代理统计调用次数
+            }
         }
         start();
     }
@@ -152,4 +157,36 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
         }
     }
+
+//    private static class RpcProxy {
+//
+//        /**
+//         * build proxy bean
+//         *
+//         * @param serviceClass
+//         * @param proxyProviderModel
+//         * @param <T>
+//         * @return
+//         */
+//        public static <T> T build(Class<T> serviceClass, ProxyProviderModel proxyProviderModel) {
+//            return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(proxyProviderModel));
+//        }
+//
+//        /**
+//         * proxy rpc handler
+//         */
+//        private static class ProxyHandler implements InvocationHandler {
+//
+//            private ProxyProviderModel proxyProviderModel;
+//
+//            public ProxyHandler(ProxyProviderModel proxyProviderModel) {
+//                this.proxyProviderModel = proxyProviderModel;
+//            }
+//
+//            @Override
+//            public Object invoke(Object obj, Method method, Object[] args) {
+//
+//            }
+//        }
+//    }
 }

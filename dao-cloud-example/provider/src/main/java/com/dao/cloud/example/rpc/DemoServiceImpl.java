@@ -1,5 +1,6 @@
 package com.dao.cloud.example.rpc;
 
+import com.dao.cloud.starter.annotation.DaoCallTrend;
 import com.dao.cloud.starter.annotation.DaoService;
 import com.dao.cloud.common.DemoService;
 import com.dao.cloud.common.dto.ParamDTO;
@@ -12,6 +13,7 @@ import com.dao.cloud.common.dto.ParamDTO;
 @DaoService
 public class DemoServiceImpl implements DemoService {
     @Override
+    @DaoCallTrend
     public String test(String string1, int int1, double double1, long long1, boolean flag) {
         return string1 + int1 + double1 + long1 + flag;
     }
