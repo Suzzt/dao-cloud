@@ -74,7 +74,9 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);
             DaoCallTrend daoCallTrend = serviceBean.getClass().getAnnotation(DaoCallTrend.class);
             if (daoCallTrend != null) {
-                // todo 构建aop代理统计调用次数
+                // 计算调用频率
+                int interval = daoCallTrend.interval();
+                TimeUnit unit = daoCallTrend.unit();
             }
         }
         start();

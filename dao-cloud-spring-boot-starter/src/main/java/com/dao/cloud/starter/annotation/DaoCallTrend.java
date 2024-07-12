@@ -1,6 +1,7 @@
 package com.dao.cloud.starter.annotation;
 
 import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
@@ -24,5 +25,5 @@ public @interface DaoCallTrend {
      *
      * @return
      */
-    DaoCallDateUnit unit() default DaoCallDateUnit.HOUR;
+    TimeUnit unit() default TimeUnit.HOURS;
 }
