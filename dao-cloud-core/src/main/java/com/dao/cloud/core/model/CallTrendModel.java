@@ -9,7 +9,7 @@ import lombok.Data;
  * @description: Synchronous interface call data
  */
 @Data
-public class InterfaceCallTrendModel extends Model {
+public class CallTrendModel extends Model {
 
     /**
      * Service information
@@ -17,13 +17,18 @@ public class InterfaceCallTrendModel extends Model {
     private ProxyProviderModel proxyProviderModel;
 
     /**
-     * Interface name
+     * Method name
      */
-    private String interfaceName;
+    private String methodName;
 
     /**
      * Call count
      */
     private Long count;
 
+    public CallTrendModel(ProxyProviderModel proxyProviderModel, String methodName, Long count) {
+        this.proxyProviderModel = proxyProviderModel;
+        this.methodName = methodName;
+        this.count = count;
+    }
 }

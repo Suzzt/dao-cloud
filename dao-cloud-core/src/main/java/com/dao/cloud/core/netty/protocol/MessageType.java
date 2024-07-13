@@ -33,6 +33,7 @@ public class MessageType {
     public static final byte INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_RESPONSE_MESSAGE = 18;
     public static final byte SERVER_ALL_CONFIG_REQUEST_MESSAGE = 19;
     public static final byte SERVER_ALL_CONFIG_RESPONSE_MESSAGE = 20;
+    public static final byte CALL_TREND_RESPONSE_MESSAGE = 21;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -59,6 +60,7 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(GATEWAY_RPC_REQUEST_MESSAGE, GatewayRequestModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_REQUEST_MESSAGE, ConfigMarkModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_RESPONSE_MESSAGE, FullConfigModel.class);
+        MESSAGE_TYPE_MAP.put(CALL_TREND_RESPONSE_MESSAGE, CallTrendModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

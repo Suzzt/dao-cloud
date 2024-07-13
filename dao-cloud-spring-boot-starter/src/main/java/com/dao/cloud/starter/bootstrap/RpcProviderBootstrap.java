@@ -2,12 +2,14 @@ package com.dao.cloud.starter.bootstrap;
 
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProviderModel;
+import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
+import com.dao.cloud.core.util.DaoTimer;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.SystemUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
@@ -18,6 +20,7 @@ import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
 import com.dao.cloud.starter.handler.NettyGlobalTriggerExceptionHandler;
 import com.dao.cloud.starter.handler.RpcServerMessageHandler;
 import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
+import com.dao.cloud.starter.manager.CallTrendManager;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
@@ -29,6 +32,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +82,20 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 // 计算调用频率
                 int interval = daoCallTrend.interval();
                 TimeUnit unit = daoCallTrend.unit();
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run(Timeout timeout) {
+                        try {
+                            // todo get method name
+                            CallTrendManager.syncCall(new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version()), null);
+                        } catch (Exception e) {
+                            log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
+                        } finally {
+                            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, unit);
+                        }
+                    }
+                };
+                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, interval, unit);
             }
         }
         start();

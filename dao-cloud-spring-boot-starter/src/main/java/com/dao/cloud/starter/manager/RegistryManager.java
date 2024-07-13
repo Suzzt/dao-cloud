@@ -85,7 +85,7 @@ public class RegistryManager {
     private static void send(RegisterProviderModel registerProviderModel) throws DaoException {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
-            throw new DaoException("connect config center error");
+            throw new DaoException("Unable to connect to center");
         }
         try {
             // 节点负载情况
