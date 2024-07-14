@@ -20,10 +20,10 @@ import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
 import com.dao.cloud.starter.handler.NettyGlobalTriggerExceptionHandler;
 import com.dao.cloud.starter.handler.RpcServerMessageHandler;
 import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
-import com.dao.cloud.starter.manager.CallTrendManager;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
+import com.dao.cloud.starter.unit.CallTrendTimerTask;
 import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
@@ -32,8 +32,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +41,17 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author sucf
@@ -68,7 +72,8 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         if (CollectionUtils.isEmpty(serviceBeanMap)) {
             return;
         }
-        for (Object serviceBean : serviceBeanMap.values()) {
+        for (Map.Entry<String, Object> entry : serviceBeanMap.entrySet()) {
+            Object serviceBean = entry.getValue();
             if (serviceBean.getClass().getInterfaces().length == 0) {
                 throw new DaoException("dao-cloud-rpc service(DaoService) must inherit interface.");
             }
@@ -77,25 +82,18 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
             ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);
-            DaoCallTrend daoCallTrend = serviceBean.getClass().getAnnotation(DaoCallTrend.class);
-            if (daoCallTrend != null) {
-                // 计算调用频率
-                int interval = daoCallTrend.interval();
-                TimeUnit unit = daoCallTrend.unit();
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run(Timeout timeout) {
-                        try {
-                            // todo get method name
-                            CallTrendManager.syncCall(new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version()), null);
-                        } catch (Exception e) {
-                            log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
-                        } finally {
-                            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, unit);
-                        }
-                    }
-                };
-                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, interval, unit);
+            Map<String, CallTrendTimerTask> interfacesCallTrendMap = new HashMap<>();
+            for (Method method : serviceBean.getClass().getDeclaredMethods()) {
+                DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
+                if (daoCallTrend != null) {
+                    ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
+                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, method.getName(), daoCallTrend.interval(), daoCallTrend.unit());
+                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.unit());
+                    interfacesCallTrendMap.put(method.getName(), callTrendTimerTask);
+                }
+                // build proxy
+                Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
+                serviceBeanMap.put(entry.getKey(), proxy);
             }
         }
         start();
@@ -137,9 +135,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
 
         public NettyServer(ThreadPoolExecutor threadPoolProvider, MethodArgumentResolverHandler methodArgumentResolverHandler) {
             this(threadPoolProvider);
-            this.methodArgumentResolverHandler = Objects.isNull(methodArgumentResolverHandler)
-                    ? MethodArgumentResolverHandler.DEFAULT_RESOLVER
-                    : methodArgumentResolverHandler;
+            this.methodArgumentResolverHandler = Objects.isNull(methodArgumentResolverHandler) ? MethodArgumentResolverHandler.DEFAULT_RESOLVER : methodArgumentResolverHandler;
         }
 
         public void start() {
@@ -179,35 +175,40 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         }
     }
 
-//    private static class RpcProxy {
-//
-//        /**
-//         * build proxy bean
-//         *
-//         * @param serviceClass
-//         * @param proxyProviderModel
-//         * @param <T>
-//         * @return
-//         */
-//        public static <T> T build(Class<T> serviceClass, ProxyProviderModel proxyProviderModel) {
-//            return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(proxyProviderModel));
-//        }
-//
-//        /**
-//         * proxy rpc handler
-//         */
-//        private static class ProxyHandler implements InvocationHandler {
-//
-//            private ProxyProviderModel proxyProviderModel;
-//
-//            public ProxyHandler(ProxyProviderModel proxyProviderModel) {
-//                this.proxyProviderModel = proxyProviderModel;
-//            }
-//
-//            @Override
-//            public Object invoke(Object obj, Method method, Object[] args) {
-//
-//            }
-//        }
-//    }
+    private static class RpcProxy {
+
+        /**
+         * build proxy bean
+         *
+         * @param serviceClass
+         * @param <T>
+         * @return
+         */
+        public static <T> T build(Class<T> serviceClass, Map<String, CallTrendTimerTask> map, Object target) {
+            return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(target, map));
+        }
+
+        /**
+         * proxy rpc handler
+         */
+        private static class ProxyHandler implements InvocationHandler {
+
+            private Object target;
+
+            private Map<String, CallTrendTimerTask> map;
+
+            public ProxyHandler(Object target, Map<String, CallTrendTimerTask> map) {
+                this.target = target;
+                this.map = map;
+            }
+
+            @Override
+            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+                if (method.isAnnotationPresent(DaoCallTrend.class)) {
+                    map.get(method.getName()).increment();
+                }
+                return method.invoke(target, args);
+            }
+        }
+    }
 }
