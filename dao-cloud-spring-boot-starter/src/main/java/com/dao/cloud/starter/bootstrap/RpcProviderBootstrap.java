@@ -83,17 +83,20 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);
             Map<String, CallTrendTimerTask> interfacesCallTrendMap = new HashMap<>();
+            boolean flag = false;
             for (Method method : serviceBean.getClass().getDeclaredMethods()) {
                 DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
                 if (daoCallTrend != null) {
+                    flag = true;
                     ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
                     CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, method.getName(), daoCallTrend.interval(), daoCallTrend.unit());
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.unit());
                     interfacesCallTrendMap.put(method.getName(), callTrendTimerTask);
                 }
-                // build proxy
+            }
+            if (flag) {
                 Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
-                serviceBeanMap.put(entry.getKey(), proxy);
+                // todo replace serviceBean
             }
         }
         start();
