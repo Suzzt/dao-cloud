@@ -123,9 +123,9 @@ public class SystemUtil {
         }
 
         if(usedSpace != 0) {
-            BigDecimal io = BigDecimal.valueOf(totalSpace).divide(BigDecimal.valueOf(usedSpace), 4, BigDecimal.ROUND_HALF_UP)
+            BigDecimal io = BigDecimal.valueOf(usedSpace).divide(BigDecimal.valueOf(totalSpace), 4, BigDecimal.ROUND_HALF_UP)
                 .multiply(BigDecimal.valueOf(100L));
-            return io.toPlainString() + "%";
+            return io.stripTrailingZeros().toPlainString() + "%";
         }
         return "0%";
     }
