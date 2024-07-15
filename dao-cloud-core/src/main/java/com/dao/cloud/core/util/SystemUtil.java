@@ -107,7 +107,12 @@ public class SystemUtil {
         // 保留两位小数并加上百分号
         performanceModel.setMemory(String.format("%.2f%%", memoryUsage));
         performanceModel.setCpu(String.format("%.2f%%", processCpuLoad));
-        // todo io
+        performanceModel.setIo(SystemUtil.getDiskIoPercentage());
+        return performanceModel;
+    }
+
+    private static String getDiskIoPercentage() {
+
         List<OSFileStore> diskStores =
             Optional.ofNullable(OshiUtil.getOs().getFileSystem().getFileStores()).orElse(Collections.emptyList());
         long totalSpace = 0L;
@@ -120,8 +125,8 @@ public class SystemUtil {
         if(usedSpace != 0) {
             BigDecimal io = BigDecimal.valueOf(totalSpace).divide(BigDecimal.valueOf(usedSpace), 4, BigDecimal.ROUND_HALF_UP)
                 .multiply(BigDecimal.valueOf(100L));
-            performanceModel.setIo(io.toPlainString());
+            return io.toPlainString() + "%";
         }
-        return performanceModel;
+        return "0%";
     }
 }
