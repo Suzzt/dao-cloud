@@ -35,6 +35,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -80,8 +82,6 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             DaoService daoService = serviceBean.getClass().getAnnotation(DaoService.class);
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
-            ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
-            ServiceManager.addService(provider, daoService.version(), serviceInvoker);
             Map<String, CallTrendTimerTask> interfacesCallTrendMap = new HashMap<>();
             boolean flag = false;
             for (Method method : serviceBean.getClass().getDeclaredMethods()) {
@@ -96,7 +96,8 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
             if (flag) {
                 Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
-                // todo replace serviceBean
+                ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), proxy);
+                ServiceManager.addService(provider, daoService.version(), serviceInvoker);
             }
         }
         start();
