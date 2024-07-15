@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.core.model.*;
+
 import java.util.Map;
 
 /**
@@ -63,7 +64,7 @@ public interface Persistence {
      */
     Map<ProxyProviderModel, GatewayConfigModel> loadGateway();
 
-    /** 
+    /**
      * load init all server status
      *
      * @return
@@ -74,4 +75,30 @@ public interface Persistence {
      * clear
      */
     void clear();
+
+    /**
+     * method call increment
+     *
+     * @param proxyProviderModel
+     * @param methodName
+     * @param count
+     */
+    void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count);
+
+    /**
+     * get call trend count
+     *
+     * @param proxyProviderModel
+     * @param methodName
+     * @return
+     */
+    long getCallCount(ProxyProviderModel proxyProviderModel, String methodName);
+
+    /**
+     * clear call record
+     *
+     * @param proxyProviderModel
+     * @param methodName
+     */
+    void callClear(ProxyProviderModel proxyProviderModel, String methodName);
 }

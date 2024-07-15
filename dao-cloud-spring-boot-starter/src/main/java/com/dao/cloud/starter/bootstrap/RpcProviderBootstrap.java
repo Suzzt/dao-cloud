@@ -35,7 +35,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -74,6 +73,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         if (CollectionUtils.isEmpty(serviceBeanMap)) {
             return;
         }
+        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         for (Map.Entry<String, Object> entry : serviceBeanMap.entrySet()) {
             Object serviceBean = entry.getValue();
             if (serviceBean.getClass().getInterfaces().length == 0) {
@@ -89,16 +89,22 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 if (daoCallTrend != null) {
                     flag = true;
                     ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
-                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, method.getName(), daoCallTrend.interval(), daoCallTrend.unit());
-                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.unit());
+                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, method.getName(), daoCallTrend.interval(), daoCallTrend.time_unit());
+                    DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.time_unit());
                     interfacesCallTrendMap.put(method.getName(), callTrendTimerTask);
                 }
             }
+            ServiceInvoker serviceInvoker;
             if (flag) {
                 Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
-                ServiceInvoker serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), proxy);
-                ServiceManager.addService(provider, daoService.version(), serviceInvoker);
+                // replace the original serviceBean with the proxy
+                beanFactory.destroySingleton(entry.getKey());
+                beanFactory.registerSingleton(entry.getKey(), proxy);
+                serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), proxy);
+            }else{
+                serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }
+            ServiceManager.addService(provider, daoService.version(), serviceInvoker);
         }
         start();
     }
@@ -207,8 +213,9 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
 
             @Override
-            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-                if (method.isAnnotationPresent(DaoCallTrend.class)) {
+            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+                Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+                if (targetMethod.isAnnotationPresent(DaoCallTrend.class)) {
                     map.get(method.getName()).increment();
                 }
                 return method.invoke(target, args);

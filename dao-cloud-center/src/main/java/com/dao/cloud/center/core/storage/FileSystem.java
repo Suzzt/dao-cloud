@@ -16,9 +16,14 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author sucf
@@ -68,6 +73,19 @@ public class FileSystem implements Persistence {
      */
     private final String serverStoragePath;
 
+    /**
+     * Method call Storage Path
+     */
+    private final String trendStoragePath;
+
+    /**
+     * Call Trend Key to Index Map
+     */
+    private final ConcurrentHashMap<FileSystem.CallTrendKey, Integer> keyToIndexMap = new ConcurrentHashMap<>();
+    private final MappedByteBuffer mappedByteBuffer;
+    private final int entrySize = 8;
+    private final int numEntries = 1024 * 1024;
+
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
@@ -77,6 +95,14 @@ public class FileSystem implements Persistence {
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
         this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
+        this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
+        File file = new File(trendStoragePath);
+        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
+            FileChannel channel = raf.getChannel();
+            this.mappedByteBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, numEntries * entrySize);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -233,6 +259,62 @@ public class FileSystem implements Persistence {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
         FileUtil.clean(serverStoragePath);
+    }
+
+    public class CallTrendKey {
+        private final ProxyProviderModel proxyProviderModel;
+        private final String methodName;
+
+        public CallTrendKey(ProxyProviderModel proxyProviderModel, String methodName) {
+            this.proxyProviderModel = proxyProviderModel;
+            this.methodName = methodName;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FileSystem.CallTrendKey that = (FileSystem.CallTrendKey) o;
+            return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(methodName, that.methodName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(proxyProviderModel, methodName);
+        }
+    }
+
+    @Override
+    public void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
+        int index = keyToIndexMap.computeIfAbsent(key, k -> keyToIndexMap.size() * entrySize);
+        synchronized (mappedByteBuffer) {
+            long currentCount = mappedByteBuffer.getLong(index);
+            mappedByteBuffer.putLong(index, currentCount + count);
+        }
+    }
+
+    @Override
+    public long getCallCount(ProxyProviderModel proxyProviderModel, String methodName) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
+        Integer index = keyToIndexMap.get(key);
+        if (index == null) {
+            return 0;
+        }
+        synchronized (mappedByteBuffer) {
+            return mappedByteBuffer.getLong(index);
+        }
+    }
+
+    @Override
+    public void callClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
+        Integer index = keyToIndexMap.remove(key);
+        if (index != null) {
+            synchronized (mappedByteBuffer) {
+                mappedByteBuffer.putLong(index, 0);
+            }
+        }
     }
 
     public String makePath(String prefix, String... modules) {

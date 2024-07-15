@@ -25,5 +25,5 @@ public @interface DaoCallTrend {
      *
      * @return
      */
-    TimeUnit unit() default TimeUnit.HOURS;
+    TimeUnit time_unit() default TimeUnit.HOURS;
 }

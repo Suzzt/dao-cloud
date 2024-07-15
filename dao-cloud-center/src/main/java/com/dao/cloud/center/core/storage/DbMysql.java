@@ -250,6 +250,21 @@ public class DbMysql implements Persistence {
         }
     }
 
+    @Override
+    public void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count) {
+
+    }
+
+    @Override
+    public long getCallCount(ProxyProviderModel proxyProviderModel, String methodName) {
+        return 0;
+    }
+
+    @Override
+    public void callClear(ProxyProviderModel proxyProviderModel, String methodName) {
+
+    }
+
     private void insertOrUpdate(GatewayModel gatewayModel) {
         ProxyProviderModel proxyProviderModel = gatewayModel.getProxyProviderModel();
         String proxy = proxyProviderModel.getProxy();
