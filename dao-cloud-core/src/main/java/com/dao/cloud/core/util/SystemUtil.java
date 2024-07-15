@@ -1,12 +1,20 @@
 package com.dao.cloud.core.util;
 
+import cn.hutool.system.oshi.OshiUtil;
 import com.dao.cloud.core.model.PerformanceModel;
 import com.sun.management.OperatingSystemMXBean;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
+import oshi.SystemInfo;
+import oshi.hardware.HWDiskStore;
+import oshi.software.os.OSFileStore;
 
 /**
  * @author: sucf
@@ -100,7 +108,20 @@ public class SystemUtil {
         performanceModel.setMemory(String.format("%.2f%%", memoryUsage));
         performanceModel.setCpu(String.format("%.2f%%", processCpuLoad));
         // todo io
+        List<OSFileStore> diskStores =
+            Optional.ofNullable(OshiUtil.getOs().getFileSystem().getFileStores()).orElse(Collections.emptyList());
+        long totalSpace = 0L;
+        long usedSpace = 0L;
+        for (OSFileStore disk : diskStores) {
+            totalSpace += disk.getTotalSpace(); // 磁盘总大小，单位：字节
+            usedSpace += disk.getUsableSpace(); // 磁盘可用空间，单位：字节
+        }
 
+        if(usedSpace != 0) {
+            BigDecimal io = BigDecimal.valueOf(totalSpace).divide(BigDecimal.valueOf(usedSpace), 4, BigDecimal.ROUND_HALF_UP)
+                .multiply(BigDecimal.valueOf(100L));
+            performanceModel.setIo(io.toPlainString());
+        }
         return performanceModel;
     }
 }
