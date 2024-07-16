@@ -33,6 +33,35 @@
             margin-top: 20px;
         }
     }
+
+    #call-popup-list th, #call-popup-list td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #call-popup-list th#method-column, #call-popup-list td:nth-child(1) {
+        width: 60%;
+    }
+
+    #call-popup-list th#count-column, #call-popup-list td:nth-child(2) {
+        width: 40%;
+    }
+
+    #call-popup {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    #call-popup-list {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 </style>
 
 <body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">

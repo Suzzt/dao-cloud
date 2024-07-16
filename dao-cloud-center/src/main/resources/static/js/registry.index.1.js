@@ -466,9 +466,9 @@ $(function () {
                 });
                 layer.open({
                     type: 1,
-                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '方法函数列表',
+                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '-方法函数列表',
                     content: $('#call-popup'),
-                    area: ['400px', '600px'],
+                    area: ['500px', '700px'], // 调整宽度
                     btn: ['关闭'],
                     btnAlign: 'c',
                     success: function (layero, index) {

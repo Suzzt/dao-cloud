@@ -88,10 +88,11 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
                 if (daoCallTrend != null) {
                     flag = true;
+                    String methodName = methodToString(method);
                     ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
-                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, method.getName(), daoCallTrend.interval(), daoCallTrend.time_unit());
+                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, methodName, daoCallTrend.interval(), daoCallTrend.time_unit());
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.time_unit());
-                    interfacesCallTrendMap.put(method.getName(), callTrendTimerTask);
+                    interfacesCallTrendMap.put(methodName, callTrendTimerTask);
                 }
             }
             ServiceInvoker serviceInvoker;
@@ -101,7 +102,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 beanFactory.destroySingleton(entry.getKey());
                 beanFactory.registerSingleton(entry.getKey(), proxy);
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), proxy);
-            }else{
+            } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }
             ServiceManager.addService(provider, daoService.version(), serviceInvoker);
@@ -216,10 +217,25 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
                 Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
                 if (targetMethod.isAnnotationPresent(DaoCallTrend.class)) {
-                    map.get(method.getName()).increment();
+                    map.get(RpcProviderBootstrap.methodToString(method)).increment();
                 }
                 return method.invoke(target, args);
             }
         }
+    }
+
+    public static final String methodToString(Method method) {
+        String name = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            return name;
+        }
+        String params = "";
+        for (Class<?> parameterType : parameterTypes) {
+            String parameterTypeName = parameterType.getName();
+            params += parameterTypeName.substring(parameterTypeName.lastIndexOf('.') + 1) + ",";
+        }
+        params = params.substring(0, params.length() - 1);
+        return String.format("%s(%s)", name, params);
     }
 }
