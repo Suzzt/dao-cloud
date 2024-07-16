@@ -21,6 +21,10 @@ $(function () {
                 }
             }
         }, {
+            data: 'call', ordering: true, render: function (data, type, row) {
+                return '<a href="javascript:;" class="showCallTrend" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">' + '方法函数计数' + '</a>';
+            }
+        }, {
             data: 'gateway', ordering: true, render: function (data, type, row) {
                 // 网关就直接跳过
                 if (row.proxy == "dao-cloud-gateway" && row.provider == "gateway") {
@@ -417,25 +421,59 @@ $(function () {
                         var refreshInterval = setInterval(fetchDataAndUpdateTable, 3000);
 
                         // 在弹出窗口关闭时清除定时器
-                        layero.find('.layui-layer-btn0').on('click', function() {
+                        layero.find('.layui-layer-btn0').on('click', function () {
                             clearInterval(refreshInterval);
                             layer.close(index);
                         });
 
                         // 监听右上角关闭按钮
-                        layero.find('.layui-layer-close').on('click', function() {
+                        layero.find('.layui-layer-close').on('click', function () {
                             clearInterval(refreshInterval);
                             layer.close(index);
                         });
 
                         // 确保所有关闭操作清除定时器
-                        $(document).on('click', '.layui-layer-close1', function() {
+                        $(document).on('click', '.layui-layer-close1', function () {
                             clearInterval(refreshInterval);
                         });
                     },
-                    cancel: function() {
+                    cancel: function () {
                         clearInterval(refreshInterval);
                     }
+                });
+            },
+            error: function () {
+                // 处理请求失败的情况
+            }
+        });
+    });
+
+    $("#data_list").on('click', '.showCallTrend', function () {
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+        $.ajax({
+            url: base_url + "/call_trend/statistics?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var tableHtml = "";
+                response.forEach(function (item, index) {
+                    tableHtml += '<tr>' +
+                        '<td>' + item.methodName + '</td>' +
+                        '<td>' + item.count + '</td>' +
+                        '</tr>';
+                });
+                layer.open({
+                    type: 1,
+                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '方法函数列表',
+                    content: $('#call-popup'),
+                    area: ['400px', '600px'],
+                    btn: ['关闭'],
+                    btnAlign: 'c',
+                    success: function (layero, index) {
+                        $('#call-popup-list tbody').html(tableHtml);
+                    },
                 });
             },
             error: function () {

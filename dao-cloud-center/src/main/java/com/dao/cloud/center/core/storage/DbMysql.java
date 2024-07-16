@@ -4,6 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
@@ -256,8 +257,8 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public long getCallCount(ProxyProviderModel proxyProviderModel, String methodName) {
-        return 0;
+    public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
+        return null;
     }
 
     @Override

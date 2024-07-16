@@ -1,8 +1,10 @@
 package com.dao.cloud.center.core.storage;
 
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -89,10 +91,9 @@ public interface Persistence {
      * get call trend count
      *
      * @param proxyProviderModel
-     * @param methodName
      * @return
      */
-    long getCallCount(ProxyProviderModel proxyProviderModel, String methodName);
+    List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel);
 
     /**
      * clear call record

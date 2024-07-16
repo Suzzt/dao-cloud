@@ -4,6 +4,7 @@ package com.dao.cloud.center.core.storage;
 import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
@@ -295,15 +296,18 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public long getCallCount(ProxyProviderModel proxyProviderModel, String methodName) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
-        Integer index = keyToIndexMap.get(key);
-        if (index == null) {
-            return 0;
-        }
-        synchronized (mappedByteBuffer) {
-            return mappedByteBuffer.getLong(index);
-        }
+    public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
+        List<CallTrendVO> callTrends = new ArrayList<>();
+        keyToIndexMap.forEach((key, index) -> {
+            if (key.proxyProviderModel.equals(proxyProviderModel)) {
+                long count = mappedByteBuffer.getLong(index);
+                CallTrendVO callTrendVO = new CallTrendVO();
+                callTrendVO.setMethodName(key.methodName);
+                callTrendVO.setCount(count);
+                callTrends.add(callTrendVO);
+            }
+        });
+        return callTrends;
     }
 
     @Override

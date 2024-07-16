@@ -7,10 +7,7 @@ import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
-import com.dao.cloud.center.web.vo.ConfigDataVO;
-import com.dao.cloud.center.web.vo.ConfigVO;
-import com.dao.cloud.center.web.vo.GatewayVO;
-import com.dao.cloud.center.web.vo.ServerVO;
+import com.dao.cloud.center.web.vo.*;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
@@ -158,5 +155,11 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
+    }
+
+    @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)
+    @ResponseBody
+    public List<CallTrendVO> trends(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
+        return registerCenterManager.getCallTrend(new ProxyProviderModel(proxy, provider, version));
     }
 }

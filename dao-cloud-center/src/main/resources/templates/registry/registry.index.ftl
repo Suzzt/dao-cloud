@@ -34,6 +34,7 @@
         }
     }
 </style>
+
 <body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
@@ -79,6 +80,7 @@
                                     <th name="provider">provider</th>
                                     <th name="env">version</th>
                                     <th name="number">注册节点数</th>
+                                    <th name="call">调用统计</th>
                                     <th name="gateway">网关设置</th>
                                 </tr>
                                 </thead>
@@ -210,6 +212,19 @@
                     <th>port</th>
                     <th>负载压力</th>
                     <th>操作</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="call-popup" class="container" style="display: none;">
+        <div class="table-responsive">
+            <table id="call-popup-list" class="table table-striped" >
+                <thead>
+                <tr>
+                    <th id="method-column">方法函数名</th>
+                    <th id="count-column">调用次数</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

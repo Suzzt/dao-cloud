@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
-import oshi.SystemInfo;
-import oshi.hardware.HWDiskStore;
 import oshi.software.os.OSFileStore;
 
 /**

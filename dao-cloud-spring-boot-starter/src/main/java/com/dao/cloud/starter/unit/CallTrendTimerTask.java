@@ -7,7 +7,6 @@ import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.DaoTimer;
 import com.dao.cloud.starter.manager.CenterChannelManager;
-import com.dao.cloud.starter.properties.DaoCloudServerProperties;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -52,7 +51,7 @@ public class CallTrendTimerTask implements TimerTask {
     @Override
     public void run(Timeout timeout) throws Exception {
         try {
-            CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel,methodName, count.get());
+            CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, count.get());
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
             Channel channel = CenterChannelManager.getChannel();
             channel.writeAndFlush(daoMessage).addListener(future -> {
