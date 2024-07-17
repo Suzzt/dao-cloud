@@ -24,7 +24,7 @@ import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
 import com.dao.cloud.starter.unit.CallTrendTimerTask;
-import com.dao.cloud.starter.unit.MethodInvokerCountInvoker;
+import com.dao.cloud.starter.unit.CallTrendServiceInvoker;
 import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
@@ -101,7 +101,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 // replace the original serviceBean with the proxy
                 beanFactory.destroySingleton(entry.getKey());
                 beanFactory.registerSingleton(entry.getKey(), proxy);*/
-                serviceInvoker = new MethodInvokerCountInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
+                serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
                         serviceBean, interfacesCallTrendMap);
             } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);

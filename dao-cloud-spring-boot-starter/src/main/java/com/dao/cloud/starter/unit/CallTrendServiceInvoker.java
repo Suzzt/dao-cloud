@@ -9,11 +9,11 @@ import java.util.Map;
  * @author wuzhenhong
  * @date 2024/7/17 16:52
  */
-public class MethodInvokerCountInvoker extends ServiceInvoker {
+public class CallTrendServiceInvoker extends ServiceInvoker {
 
     private Map<String, CallTrendTimerTask> interfacesCallTrendMap;
 
-    public MethodInvokerCountInvoker(byte serialized, Object serviceBean, Map<String, CallTrendTimerTask> interfacesCallTrendMap) {
+    public CallTrendServiceInvoker(byte serialized, Object serviceBean, Map<String, CallTrendTimerTask> interfacesCallTrendMap) {
         super(serialized, serviceBean);
         this.interfacesCallTrendMap = interfacesCallTrendMap;
     }
