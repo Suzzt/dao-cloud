@@ -24,6 +24,7 @@ import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
 import com.dao.cloud.starter.unit.CallTrendTimerTask;
+import com.dao.cloud.starter.unit.MethodInvokerCountInvoker;
 import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
@@ -33,15 +34,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,6 +45,14 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author sucf
@@ -97,11 +97,13 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
             ServiceInvoker serviceInvoker;
             if (flag) {
-                Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
+                /*Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
                 // replace the original serviceBean with the proxy
                 beanFactory.destroySingleton(entry.getKey());
-                beanFactory.registerSingleton(entry.getKey(), proxy);
-                serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), proxy);
+                beanFactory.registerSingleton(entry.getKey(), proxy);*/
+                serviceInvoker = new MethodInvokerCountInvoker(
+                    new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
+                        serviceBean), interfacesCallTrendMap);
             } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }
@@ -227,14 +229,18 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
     public static String methodToString(Method method) {
         String name = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
+        return methodToString(name, parameterTypes);
+    }
+
+    public static String methodToString(String methodName, Class<?>[] parameterTypes) {
         if (parameterTypes == null || parameterTypes.length == 0) {
-            return name;
+            return methodName;
         }
         String params = "";
         for (Class<?> parameterType : parameterTypes) {
             params += parameterType.getName() + ",";
         }
         params = params.substring(0, params.length() - 1);
-        return String.format("%s(%s)", name, params);
+        return String.format("%s(%s)", methodName, params);
     }
 }
