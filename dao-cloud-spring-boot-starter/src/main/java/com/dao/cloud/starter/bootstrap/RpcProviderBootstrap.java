@@ -23,8 +23,8 @@ import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
-import com.dao.cloud.starter.unit.CallTrendTimerTask;
 import com.dao.cloud.starter.unit.CallTrendServiceInvoker;
+import com.dao.cloud.starter.unit.CallTrendTimerTask;
 import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
@@ -34,10 +34,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -73,7 +69,6 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         if (CollectionUtils.isEmpty(serviceBeanMap)) {
             return;
         }
-        DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         for (Map.Entry<String, Object> entry : serviceBeanMap.entrySet()) {
             Object serviceBean = entry.getValue();
             if (serviceBean.getClass().getInterfaces().length == 0) {
@@ -97,10 +92,6 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
             ServiceInvoker serviceInvoker;
             if (flag) {
-                /*Object proxy = RpcProxy.build(serviceBean.getClass().getInterfaces()[0], interfacesCallTrendMap, serviceBean);
-                // replace the original serviceBean with the proxy
-                beanFactory.destroySingleton(entry.getKey());
-                beanFactory.registerSingleton(entry.getKey(), proxy);*/
                 serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
                         serviceBean, interfacesCallTrendMap);
             } else {
@@ -183,44 +174,6 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 boss.shutdownGracefully();
                 worker.shutdownGracefully();
                 System.exit(1);
-            }
-        }
-    }
-
-    private static class RpcProxy {
-
-        /**
-         * build proxy bean
-         *
-         * @param serviceClass
-         * @param <T>
-         * @return
-         */
-        public static <T> T build(Class<T> serviceClass, Map<String, CallTrendTimerTask> map, Object target) {
-            return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new ProxyHandler(target, map));
-        }
-
-        /**
-         * proxy rpc handler
-         */
-        private static class ProxyHandler implements InvocationHandler {
-
-            private final Object target;
-
-            private final Map<String, CallTrendTimerTask> map;
-
-            public ProxyHandler(Object target, Map<String, CallTrendTimerTask> map) {
-                this.target = target;
-                this.map = map;
-            }
-
-            @Override
-            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-                CallTrendTimerTask callTrendTimerTask = map.get(RpcProviderBootstrap.methodToString(method));
-                if (callTrendTimerTask != null) {
-                    callTrendTimerTask.increment();
-                }
-                return method.invoke(target, args);
             }
         }
     }
