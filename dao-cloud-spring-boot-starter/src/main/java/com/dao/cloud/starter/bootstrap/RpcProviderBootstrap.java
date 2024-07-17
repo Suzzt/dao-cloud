@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author sucf
  * @date 2022/12/29 16:30
- * @description: rpc provider startup
+ * @description rpc provider startup
  */
 @Slf4j
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
@@ -83,13 +83,13 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
             Map<String, CallTrendTimerTask> interfacesCallTrendMap = new HashMap<>();
+            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
             boolean flag = false;
             for (Method method : serviceBean.getClass().getDeclaredMethods()) {
                 DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
                 if (daoCallTrend != null) {
                     flag = true;
                     String methodName = methodToString(method);
-                    ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
                     CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, methodName, daoCallTrend.interval(), daoCallTrend.time_unit());
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.time_unit());
                     interfacesCallTrendMap.put(methodName, callTrendTimerTask);
@@ -204,9 +204,9 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
          */
         private static class ProxyHandler implements InvocationHandler {
 
-            private Object target;
+            private final Object target;
 
-            private Map<String, CallTrendTimerTask> map;
+            private final Map<String, CallTrendTimerTask> map;
 
             public ProxyHandler(Object target, Map<String, CallTrendTimerTask> map) {
                 this.target = target;
@@ -214,17 +214,17 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
 
             @Override
-            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-                Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
-                if (targetMethod.isAnnotationPresent(DaoCallTrend.class)) {
-                    map.get(RpcProviderBootstrap.methodToString(method)).increment();
+            public Object invoke(Object obj, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+                CallTrendTimerTask callTrendTimerTask = map.get(RpcProviderBootstrap.methodToString(method));
+                if (callTrendTimerTask != null) {
+                    callTrendTimerTask.increment();
                 }
                 return method.invoke(target, args);
             }
         }
     }
 
-    public static final String methodToString(Method method) {
+    public static String methodToString(Method method) {
         String name = method.getName();
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes == null || parameterTypes.length == 0) {
@@ -232,8 +232,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         }
         String params = "";
         for (Class<?> parameterType : parameterTypes) {
-            String parameterTypeName = parameterType.getName();
-            params += parameterTypeName.substring(parameterTypeName.lastIndexOf('.') + 1) + ",";
+            params += parameterType.getName() + ",";
         }
         params = params.substring(0, params.length() - 1);
         return String.format("%s(%s)", name, params);

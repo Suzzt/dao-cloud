@@ -21,6 +21,13 @@ public class DemoServiceImpl implements DemoService {
     }
 
     @Override
+    @DaoCallTrend(interval = 5, time_unit = TimeUnit.SECONDS)
+    public String test(ParamDTO paramDTO) {
+        paramDTO.setIntValue(999);
+        return paramDTO.toString();
+    }
+
+    @Override
     public ParamDTO complex(ParamDTO paramDTO) {
         paramDTO.setCharValue('s');
         paramDTO.setString("string1");

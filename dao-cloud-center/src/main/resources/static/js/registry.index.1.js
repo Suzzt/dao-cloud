@@ -459,11 +459,31 @@ $(function () {
             success: function (response) {
                 var tableHtml = "";
                 response.forEach(function (item, index) {
+                    var methodName = item.methodName;
+                    var regex = /(.*?)(\((.*)\))/;
+                    var match = methodName.match(regex);
+                    if (match) {
+                        var methodNameWithoutParams = match[1];
+                        var params = match[3];
+                        var paramParts = params.split(',');
+                        var formattedParams = paramParts.map(function (param) {
+                            var parts = param.split('.');
+                            return parts.map(function (part, i) {
+                                if (i === parts.length - 1) {
+                                    return part;
+                                } else {
+                                    return part.charAt(0);
+                                }
+                            }).join('.');
+                        }).join(',');
+                        methodName = methodNameWithoutParams + '(' + formattedParams + ')';
+                    }
                     tableHtml += '<tr>' +
-                        '<td>' + item.methodName + '</td>' +
+                        '<td>' + methodName + '</td>' +
                         '<td>' + item.count + '</td>' +
                         '</tr>';
                 });
+
                 layer.open({
                     type: 1,
                     title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '-方法函数列表',
