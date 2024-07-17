@@ -3,7 +3,6 @@ package com.dao.cloud.starter.unit;
 import com.dao.cloud.core.model.RpcRequestModel;
 import com.dao.cloud.core.model.RpcResponseModel;
 import com.dao.cloud.starter.bootstrap.RpcProviderBootstrap;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -12,12 +11,10 @@ import java.util.Map;
  */
 public class MethodInvokerCountInvoker extends ServiceInvoker {
 
-    private ServiceInvoker nextInvoker;
     private Map<String, CallTrendTimerTask> interfacesCallTrendMap;
 
-    public MethodInvokerCountInvoker(ServiceInvoker nextInvoker, Map<String, CallTrendTimerTask> interfacesCallTrendMap) {
-        super(nextInvoker.getSerialized(), nextInvoker.getServiceBean());
-        this.nextInvoker = nextInvoker;
+    public MethodInvokerCountInvoker(byte serialized, Object serviceBean, Map<String, CallTrendTimerTask> interfacesCallTrendMap) {
+        super(serialized, serviceBean);
         this.interfacesCallTrendMap = interfacesCallTrendMap;
     }
 
@@ -31,7 +28,7 @@ public class MethodInvokerCountInvoker extends ServiceInvoker {
         if (callTrendTimerTask != null) {
             callTrendTimerTask.increment();
         }
-        return this.nextInvoker.doInvoke(requestModel);
+        return super.doInvoke(requestModel);
     }
 
 }
