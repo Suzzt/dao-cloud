@@ -101,9 +101,8 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 // replace the original serviceBean with the proxy
                 beanFactory.destroySingleton(entry.getKey());
                 beanFactory.registerSingleton(entry.getKey(), proxy);*/
-                serviceInvoker = new MethodInvokerCountInvoker(
-                    new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
-                        serviceBean), interfacesCallTrendMap);
+                serviceInvoker = new MethodInvokerCountInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
+                        serviceBean, interfacesCallTrendMap);
             } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }
