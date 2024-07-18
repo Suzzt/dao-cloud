@@ -407,6 +407,7 @@ $(function () {
             dataType: "json",
             success: function (response) {
                 var tableHtml = load_page_html(response.data, proxy, provider, version);
+                var refreshInterval;
                 layer.open({
                     type: 1,
                     title: '注册服务节点列表',
@@ -418,7 +419,7 @@ $(function () {
                         $('#popup-list tbody').html(tableHtml);
 
                         // 设置定时器每3秒刷新一次数据
-                        var refreshInterval = setInterval(fetchDataAndUpdateTable, 3000);
+                        refreshInterval = setInterval(fetchDataAndUpdateTable, 3000);
 
                         // 在弹出窗口关闭时清除定时器
                         layero.find('.layui-layer-btn0').on('click', function () {
