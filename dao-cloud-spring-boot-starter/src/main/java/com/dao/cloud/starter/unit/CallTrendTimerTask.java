@@ -23,15 +23,15 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class CallTrendTimerTask implements TimerTask {
 
-    private AtomicLong count;
+    private final AtomicLong count;
 
-    private ProxyProviderModel proxyProviderModel;
+    private final ProxyProviderModel proxyProviderModel;
 
-    private String methodName;
+    private final String methodName;
 
-    private int interval;
+    private final int interval;
 
-    private TimeUnit timeUnit;
+    private final TimeUnit timeUnit;
 
     public CallTrendTimerTask(AtomicLong count, ProxyProviderModel proxyProviderModel, String methodName, int interval, TimeUnit timeUnit) {
         this.count = count;
@@ -49,7 +49,7 @@ public class CallTrendTimerTask implements TimerTask {
     }
 
     @Override
-    public void run(Timeout timeout) throws Exception {
+    public void run(Timeout timeout) {
         try {
             CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, count.get());
             DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
