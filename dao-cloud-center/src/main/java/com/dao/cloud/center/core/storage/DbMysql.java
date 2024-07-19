@@ -36,9 +36,25 @@ public class DbMysql implements Persistence {
 
     private DruidDataSource druidDataSource;
 
-    private final String config_create_table = "CREATE TABLE IF NOT EXISTS `config` (\n" + "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',\n" + "  `gmt_create` datetime NOT NULL COMMENT '创建时间',\n" + "  `gmt_modified` datetime NOT NULL COMMENT '修改时间',\n" + "  `proxy` varchar(255) NOT NULL COMMENT 'server proxy mark',\n" + "  `key` varchar(255) NOT NULL COMMENT 'key',\n" + "  `version` int(11) NOT NULL COMMENT 'config版本',\n" + "  `value` longtext NOT NULL COMMENT '配置值',\n" + "  PRIMARY KEY (`id`),\n" + "  UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" + ") ENGINE = InnoDB COMMENT '配置中心存储'";
+    private final String config_create_table_sql = "CREATE TABLE IF NOT EXISTS `config`\n" +
+            "(\n" +
+            "    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
+            "    `gmt_create`   datetime     NOT NULL COMMENT '创建时间',\n" +
+            "    `gmt_modified` datetime     NOT NULL COMMENT '修改时间',\n" +
+            "    `proxy`        varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
+            "    `key`          varchar(255) NOT NULL COMMENT 'key',\n" +
+            "    `version`      int(11)      NOT NULL COMMENT 'config版本',\n" +
+            "    `value`        longtext     NOT NULL COMMENT '配置值',\n" +
+            "    PRIMARY KEY (`id`),\n" +
+            "    UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" +
+            ") ENGINE = InnoDB\n" +
+            "  AUTO_INCREMENT = 1\n" +
+            "  DEFAULT CHARSET = utf8 COMMENT ='配置中心存储内容表';\n" +
+            "# example init data\n" +
+            "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value)\n" +
+            "VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0, 'Welcome to dao-cloud!');";
 
-    private final String gateway_config_create_table = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" +
+    private final String gateway_config_create_table_sql = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" +
             "(\n" +
             "    `id`                             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
             "    `gmt_create`                     datetime     NOT NULL COMMENT '创建时间',\n" +
@@ -58,7 +74,7 @@ public class DbMysql implements Persistence {
             ") ENGINE = InnoDB\n" +
             "  DEFAULT CHARSET = utf8 COMMENT ='网关配置';";
 
-    private final String server_config_create_table = "CREATE TABLE IF NOT EXISTS `server_config`\n" +
+    private final String server_config_create_table_sql = "CREATE TABLE IF NOT EXISTS `server_config`\n" +
             "(\n" +
             "    `id`                             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT 'id主键',\n" +
             "    `gmt_create`                     datetime     NOT NULL COMMENT '创建时间',\n" +
@@ -72,6 +88,22 @@ public class DbMysql implements Persistence {
             "    PRIMARY KEY (`id`)\n" +
             ") ENGINE = InnoDB\n" +
             "  DEFAULT CHARSET = utf8 COMMENT ='服务配置';";
+
+    private final String call_trend_create_table_sql = "CREATE TABLE IF NOT EXISTS `call_trend`\n" +
+            "(\n" +
+            "    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
+            "    `gmt_create`   datetime     NOT NULL COMMENT '创建时间',\n" +
+            "    `gmt_modified` datetime     NOT NULL COMMENT '修改时间',\n" +
+            "    `proxy`        varchar(255) NOT NULL COMMENT 'server proxy mark',\n" +
+            "    `provider`     varchar(255) NOT NULL COMMENT 'provider',\n" +
+            "    `version`      int(11)      NOT NULL COMMENT '版本',\n" +
+            "    `method_name`  varchar(512) NOT NULL COMMENT '函数方法名',\n" +
+            "    `count`        bigint(20)   NOT NULL COMMENT '计数值',\n" +
+            "    PRIMARY KEY (`id`),\n" +
+            "    UNIQUE KEY `config_uk_p_p_v_m` (`proxy`, `provider`, `version`, `method_name`)\n" +
+            ") ENGINE = InnoDB\n" +
+            "  AUTO_INCREMENT = 1\n" +
+            "  DEFAULT CHARSET = utf8 COMMENT ='接口调用趋势表';";
 
     private final String insert_config_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
@@ -121,9 +153,10 @@ public class DbMysql implements Persistence {
      */
     private void initialize() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute(config_create_table);
-            statement.execute(gateway_config_create_table);
-            statement.execute(server_config_create_table);
+            statement.execute(config_create_table_sql);
+            statement.execute(gateway_config_create_table_sql);
+            statement.execute(server_config_create_table_sql);
+            statement.execute(call_trend_create_table_sql);
         } catch (Exception e) {
             throw new DaoException(e);
         }
