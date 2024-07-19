@@ -610,27 +610,32 @@ public class DbMysql implements Persistence {
     }
 
     @Data
-    private class GatewayConfigPO {
-        private Long id;
-        private Date createTime;
-        private Date updateTime;
-        private String proxy;
-        private String provider;
+    private class GatewayConfigPO extends BasePO {
         private int version;
         private Long timeout;
         private LimitModel limit;
     }
 
     @Data
-    private class ServerConfigPO {
+    private class ServerConfigPO extends BasePO {
+        private String ip;
+        private int port;
+        private boolean status;
+    }
+
+    @Data
+    private class CallTrendPO extends BasePO {
+        private String methodName;
+        private Long count;
+    }
+
+    @Data
+    private class BasePO {
         private Long id;
         private Date createTime;
         private Date updateTime;
         private String proxy;
         private String provider;
         private int version;
-        private String ip;
-        private int port;
-        private boolean status;
     }
 }
