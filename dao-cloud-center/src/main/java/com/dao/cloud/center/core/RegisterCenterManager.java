@@ -5,10 +5,7 @@ import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.ProviderModel;
-import com.dao.cloud.core.model.ProxyProviderModel;
-import com.dao.cloud.core.model.RegisterProviderModel;
-import com.dao.cloud.core.model.ServerNodeModel;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -285,6 +282,30 @@ public class RegisterCenterManager {
         return node;
     }
 
+    /**
+     * 调用趋势增加
+     *
+     * @param callTrendModel
+     */
+    public synchronized void callTrendIncrement(CallTrendModel callTrendModel) {
+        persistence.callTrendIncrement(callTrendModel);
+    }
+
+    /**
+     * 调用趋势清零
+     *
+     * @param callTrendModel
+     */
+    public synchronized void callTrendClear(CallTrendModel callTrendModel) {
+        persistence.callTrendClear(callTrendModel);
+    }
+
+    /**
+     * 获取调用趋势数据
+     *
+     * @param proxyProviderModel
+     * @return
+     */
     public List<CallTrendVO> getCallTrend(ProxyProviderModel proxyProviderModel) {
         return persistence.getCallCount(proxyProviderModel);
     }

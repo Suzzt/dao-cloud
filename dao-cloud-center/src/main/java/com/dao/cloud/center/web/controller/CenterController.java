@@ -97,7 +97,7 @@ public class CenterController {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
-        CenterClusterManager.syncServerConfigToCluster(SyncClusterInformationRequestHandler.SAVE_SERVER, proxyProviderModel, serverNodeModel);
+        CenterClusterManager.syncServerConfigToCluster(SyncClusterInformationRequestHandler.SERVER_STATUS, proxyProviderModel, serverNodeModel);
         return ApiResult.buildSuccess();
     }
 

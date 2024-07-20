@@ -286,12 +286,12 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
+    public void callTrendIncrement(CallTrendModel callTrendModel) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
         int index = keyToIndexMap.computeIfAbsent(key, k -> keyToIndexMap.size() * entrySize);
         synchronized (mappedByteBuffer) {
             long currentCount = mappedByteBuffer.getLong(index);
-            mappedByteBuffer.putLong(index, currentCount + count);
+            mappedByteBuffer.putLong(index, currentCount + callTrendModel.getCount());
         }
     }
 
@@ -311,8 +311,8 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public void callClear(ProxyProviderModel proxyProviderModel, String methodName) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
+    public void callTrendClear(CallTrendModel callTrendModel) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
         Integer index = keyToIndexMap.remove(key);
         if (index != null) {
             synchronized (mappedByteBuffer) {

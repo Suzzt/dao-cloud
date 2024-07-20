@@ -285,7 +285,7 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count) {
+    public void callTrendIncrement(CallTrendModel callTrendModel) {
 
     }
 
@@ -295,8 +295,13 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public void callClear(ProxyProviderModel proxyProviderModel, String methodName) {
-
+    public void callTrendClear(CallTrendModel callTrendModel) {
+        String methodName = callTrendModel.getMethodName();
+        if (StringUtils.hasLength(methodName)) {
+            // 只删除对应的方法数据
+        } else {
+            // 删除全量方法数据
+        }
     }
 
     private void insertOrUpdate(GatewayModel gatewayModel) {

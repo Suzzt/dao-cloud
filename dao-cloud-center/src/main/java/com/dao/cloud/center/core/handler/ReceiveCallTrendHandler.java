@@ -1,6 +1,6 @@
 package com.dao.cloud.center.core.handler;
 
-import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.core.model.CallTrendModel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -14,14 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReceiveCallTrendHandler extends SimpleChannelInboundHandler<CallTrendModel> {
 
-    private final Persistence persistence;
+    private final RegisterCenterManager registerCenterManager;
 
-    public ReceiveCallTrendHandler(Persistence persistence) {
-        this.persistence = persistence;
+    public ReceiveCallTrendHandler(RegisterCenterManager registerCenterManager) {
+        this.registerCenterManager = registerCenterManager;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, CallTrendModel model) throws Exception {
-        persistence.callIncrement(model.getProxyProviderModel(), model.getMethodName(), model.getCount());
+        registerCenterManager.callTrendIncrement(model);
     }
 }

@@ -81,11 +81,9 @@ public interface Persistence {
     /**
      * method call increment
      *
-     * @param proxyProviderModel
-     * @param methodName
-     * @param count
+     * @param callTrendModel
      */
-    void callIncrement(ProxyProviderModel proxyProviderModel, String methodName, long count);
+    void callTrendIncrement(CallTrendModel callTrendModel);
 
     /**
      * get call trend count
@@ -98,8 +96,7 @@ public interface Persistence {
     /**
      * clear call record
      *
-     * @param proxyProviderModel
-     * @param methodName
+     * @param callTrendModel
      */
-    void callClear(ProxyProviderModel proxyProviderModel, String methodName);
+    void callTrendClear(CallTrendModel callTrendModel);
 }
