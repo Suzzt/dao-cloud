@@ -41,11 +41,11 @@
     }
 
     #call-popup-list th#method-column, #call-popup-list td:nth-child(1) {
-        width: 60%;
+        width: 80%;
     }
 
     #call-popup-list th#count-column, #call-popup-list td:nth-child(2) {
-        width: 40%;
+        width: 20%;
     }
 
     #call-popup {
