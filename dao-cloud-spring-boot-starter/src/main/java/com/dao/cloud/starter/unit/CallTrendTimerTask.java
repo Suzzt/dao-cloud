@@ -51,16 +51,18 @@ public class CallTrendTimerTask implements TimerTask {
     @Override
     public void run(Timeout timeout) {
         try {
-            CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, count.get());
-            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
-            Channel channel = CenterChannelManager.getChannel();
-            channel.writeAndFlush(daoMessage).addListener(future -> {
-                if (future.isSuccess()) {
-                    count.set(0);
-                } else {
-                    log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
-                }
-            });
+            if (count.get() != 0) {
+                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, count.get());
+                DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
+                Channel channel = CenterChannelManager.getChannel();
+                channel.writeAndFlush(daoMessage).addListener(future -> {
+                    if (future.isSuccess()) {
+                        count.set(0);
+                    } else {
+                        log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
+                    }
+                });
+            }
         } catch (Exception e) {
             log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
         } finally {
