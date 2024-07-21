@@ -29,11 +29,11 @@ public class MessageType {
     public static final byte GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE = 14;
     public static final byte GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE = 15;
     public static final byte GATEWAY_RPC_REQUEST_MESSAGE = 16;
-    public static final byte INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_REQUEST_MESSAGE = 17;
-    public static final byte INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_RESPONSE_MESSAGE = 18;
-    public static final byte SERVER_ALL_CONFIG_REQUEST_MESSAGE = 19;
-    public static final byte SERVER_ALL_CONFIG_RESPONSE_MESSAGE = 20;
+    public static final byte INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE = 19;
+    public static final byte INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE = 20;
     public static final byte CALL_TREND_RESPONSE_MESSAGE = 21;
+    public static final byte INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE = 22;
+    public static final byte INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE = 23;
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -55,11 +55,9 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, ClusterSyncDataResponseModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, GatewayConfigPullMarkModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, GatewayServiceNodeModel.class);
-        MESSAGE_TYPE_MAP.put(SERVER_ALL_CONFIG_REQUEST_MESSAGE, ServerConfigPullMarkModel.class);
-        MESSAGE_TYPE_MAP.put(SERVER_ALL_CONFIG_RESPONSE_MESSAGE, ServerConfigModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, ServerConfigPullMarkModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE, ServerConfigModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_RPC_REQUEST_MESSAGE, GatewayRequestModel.class);
-        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_REQUEST_MESSAGE, ConfigMarkModel.class);
-        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_GATEWAY_CONFIG_RESPONSE_MESSAGE, FullConfigModel.class);
         MESSAGE_TYPE_MAP.put(CALL_TREND_RESPONSE_MESSAGE, CallTrendModel.class);
     }
 
