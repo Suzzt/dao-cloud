@@ -3,10 +3,7 @@ package com.dao.cloud.center.core;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
-import com.dao.cloud.center.core.handler.CenterClusterConfigResponseHandler;
-import com.dao.cloud.center.core.handler.CenterClusterGatewayConfigResponseMessageHandler;
-import com.dao.cloud.center.core.handler.CenterClusterServerConfigResponseMessageHandler;
-import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
+import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
@@ -228,7 +225,27 @@ public class CenterClusterManager {
     }
 
     public static void loadCallTrend(String ip) throws InterruptedException {
-        // todo
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
+        Promise<CallTrendFullModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        CenterClusterCallTrendResponseHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send full call trend data error", future.cause());
+            }
+        });
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< get full call trend data timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            List<CallTrendModel> callTrendModels = promise.getNow().getCallTrendModels();
+            for (CallTrendModel callTrendModel : callTrendModels) {
+                persistence.callTrendIncrement(callTrendModel);
+            }
+        } else {
+            throw new DaoException(promise.cause());
+        }
     }
 
     /**

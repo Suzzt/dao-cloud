@@ -99,4 +99,11 @@ public interface Persistence {
      * @param callTrendModel
      */
     void callTrendClear(CallTrendModel callTrendModel);
+
+    /**
+     * get all call trend data
+     *
+     * @return
+     */
+    List<CallTrendModel> getCallTrends();
 }

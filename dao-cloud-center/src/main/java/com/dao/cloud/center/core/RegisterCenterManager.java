@@ -309,4 +309,13 @@ public class RegisterCenterManager {
     public List<CallTrendVO> getCallTrend(ProxyProviderModel proxyProviderModel) {
         return persistence.getCallCount(proxyProviderModel);
     }
+
+    /**
+     * 获取调用趋势所有数据
+     *
+     * @return
+     */
+    public List<CallTrendModel> getCallTrends() {
+        return persistence.getCallTrends();
+    }
 }

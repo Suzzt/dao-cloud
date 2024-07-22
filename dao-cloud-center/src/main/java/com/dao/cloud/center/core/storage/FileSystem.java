@@ -321,6 +321,17 @@ public class FileSystem implements Persistence {
         }
     }
 
+    @Override
+    public List<CallTrendModel> getCallTrends() {
+        List<CallTrendModel> callTrendList = new ArrayList<>();
+        keyToIndexMap.forEach((key, index) -> {
+            long count = mappedByteBuffer.getLong(index);
+            CallTrendModel callTrendModel = new CallTrendModel(key.proxyProviderModel, key.methodName, count);
+            callTrendList.add(callTrendModel);
+        });
+        return callTrendList;
+    }
+
     public String makePath(String prefix, String... modules) {
         for (String directory : modules) {
             prefix = prefix + File.separator + directory;

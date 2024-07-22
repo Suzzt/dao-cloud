@@ -59,6 +59,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE, ServerConfigModel.class);
         MESSAGE_TYPE_MAP.put(GATEWAY_RPC_REQUEST_MESSAGE, GatewayRequestModel.class);
         MESSAGE_TYPE_MAP.put(CALL_TREND_RESPONSE_MESSAGE, CallTrendModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, CallTrendPullMarkModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE, CallTrendFullModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {
