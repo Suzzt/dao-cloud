@@ -106,6 +106,13 @@ public class FileSystem implements Persistence {
         }
     }
 
+    /**
+     * todo 初始化call trend data.
+     */
+    public void init() {
+
+    }
+
     @Override
     public void storage(ConfigModel configModel) {
         ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
