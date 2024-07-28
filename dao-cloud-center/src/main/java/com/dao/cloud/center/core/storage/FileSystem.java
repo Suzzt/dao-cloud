@@ -53,6 +53,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-name   ｜
  * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜  data(status) ｜
  * </p>
+ *
+ * <p>
+ * The method call trend is implemented using mmap
+ * </p>
  */
 @Slf4j
 @Component
@@ -101,16 +105,10 @@ public class FileSystem implements Persistence {
         try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
             FileChannel channel = raf.getChannel();
             this.mappedByteBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, numEntries * entrySize);
+            // todo 初始化call trend data.
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * todo 初始化call trend data.
-     */
-    public void init() {
-
     }
 
     @Override
