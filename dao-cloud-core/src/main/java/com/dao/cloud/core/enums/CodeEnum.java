@@ -62,7 +62,7 @@ public enum CodeEnum {
     /**
      * 拉取接口调用数据失败
      */
-    PULL_CALL_TREND_ERROR("D0005", "拉取接口调用数据失败"),
+    PULL_CALL_TREND_ERROR("D0007", "拉取接口调用趋势失败"),
 
     // G级别 网关侧
     /**
