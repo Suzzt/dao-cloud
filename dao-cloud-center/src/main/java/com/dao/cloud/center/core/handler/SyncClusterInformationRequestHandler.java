@@ -110,7 +110,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
                     CallTrendShareClusterRequestModel callTrendShareClusterRequestModel = (CallTrendShareClusterRequestModel) shareClusterRequestModel;
                     CallTrendModel callTrendModel = callTrendShareClusterRequestModel.getCallTrendModel();
-                    registerCenterManager.callTrendClear(callTrendModel);
+                    registerCenterManager.callTrendClear(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
                 }
                 answer(ctx, shareClusterRequestModel);
             } else {

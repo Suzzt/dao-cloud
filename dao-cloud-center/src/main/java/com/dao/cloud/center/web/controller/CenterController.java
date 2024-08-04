@@ -162,4 +162,11 @@ public class CenterController {
     public List<CallTrendVO> trends(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
         return registerCenterManager.getCallTrend(new ProxyProviderModel(proxy, provider, version));
     }
+
+    @RequestMapping(value = "/call_trend/clear", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult clear(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, String methodName) {
+        registerCenterManager.callTrendClear(new ProxyProviderModel(proxy, provider, version), methodName);
+        return ApiResult.buildSuccess();
+    }
 }

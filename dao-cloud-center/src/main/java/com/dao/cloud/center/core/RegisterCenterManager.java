@@ -294,10 +294,11 @@ public class RegisterCenterManager {
     /**
      * 调用趋势清零
      *
-     * @param callTrendModel
+     * @param proxyProviderModel
+     * @param methodName
      */
-    public synchronized void callTrendClear(CallTrendModel callTrendModel) {
-        persistence.callTrendClear(callTrendModel);
+    public synchronized void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        persistence.callTrendClear(proxyProviderModel, methodName);
     }
 
     /**

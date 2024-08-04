@@ -316,8 +316,8 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public void callTrendClear(CallTrendModel callTrendModel) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
+    public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
         Integer index = keyToIndexMap.remove(key);
         if (index != null) {
             synchronized (mappedByteBuffer) {

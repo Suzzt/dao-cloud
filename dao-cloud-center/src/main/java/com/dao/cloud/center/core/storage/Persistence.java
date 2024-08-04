@@ -96,9 +96,10 @@ public interface Persistence {
     /**
      * clear call record
      *
-     * @param callTrendModel
+     * @param proxyProviderModel
+     * @param methodName
      */
-    void callTrendClear(CallTrendModel callTrendModel);
+    void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName);
 
     /**
      * get all call trend data

@@ -144,7 +144,7 @@ public class DbMysql implements Persistence {
         druidDataSource.setUsername(username);
         druidDataSource.setPassword(password);
         druidDataSource.setMaxActive(20);
-        // 判断下数据库表是否存在,不存在就创建表(config、gateway_config、server_config)
+        // 判断下数据库表是否存在,不存在就创建表(config、gateway_config、server_config、call_trend)
         initialize();
     }
 
@@ -295,8 +295,7 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public void callTrendClear(CallTrendModel callTrendModel) {
-        String methodName = callTrendModel.getMethodName();
+    public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
         if (StringUtils.hasLength(methodName)) {
             // 只删除对应的方法数据
         } else {
