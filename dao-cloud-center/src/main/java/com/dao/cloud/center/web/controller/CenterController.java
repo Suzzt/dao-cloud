@@ -166,7 +166,10 @@ public class CenterController {
     @RequestMapping(value = "/call_trend/clear", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult clear(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, String methodName) {
-        registerCenterManager.callTrendClear(new ProxyProviderModel(proxy, provider, version), methodName);
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+        registerCenterManager.callTrendClear(proxyProviderModel, methodName);
+        CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, null);
+        CenterClusterManager.syncCallTrendToCluster(SyncClusterInformationRequestHandler.CALL_TREND_CLEAR, callTrendModel);
         return ApiResult.buildSuccess();
     }
 }

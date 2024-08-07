@@ -326,6 +326,24 @@ public class CenterClusterManager {
     }
 
     /**
+     * synchronized call trend info to cluster
+     *
+     * @param type
+     * @param callTrendModel
+     */
+    public static void syncCallTrendToCluster(byte type, CallTrendModel callTrendModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            CallTrendShareClusterRequestModel callTrendShareClusterRequestModel = new CallTrendShareClusterRequestModel();
+            callTrendShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            callTrendShareClusterRequestModel.setType(type);
+            callTrendShareClusterRequestModel.setCallTrendModel(callTrendModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, callTrendShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
      * join cluster
      * This is an idempotent behavior
      *
