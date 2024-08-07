@@ -11,4 +11,8 @@ import lombok.Data;
 public class CallTrendVO {
     private String methodName;
     private Long count;
+    public CallTrendVO(String methodName, Long count) {
+        this.methodName = methodName;
+        this.count = count;
+    }
 }

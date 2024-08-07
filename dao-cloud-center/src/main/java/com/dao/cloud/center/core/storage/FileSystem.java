@@ -7,6 +7,7 @@ import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +18,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author sucf
@@ -34,28 +30,32 @@ import java.util.concurrent.ConcurrentHashMap;
  * config data is written to the file system.
  * if there is no directory or file, just create it.
  * the following is the file address corresponding to the config data.
- * ｜  dir  ｜  dir  ｜    dir    ｜ file-name ｜
- * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
+ * ｜  dir  ｜  dir  ｜    dir    ｜ file-content ｜
+ * ｜ proxy ｜  key  ｜  version  ｜    value     ｜
  * </p>
  *
  * <p>
  * Gateway configuration data is written to the file system.
  * If the directory or file does not exist, it is created.
  * The following is the file address corresponding to the gateway data.
- * ｜  dir  ｜     dir    ｜    dir    ｜   file-name   ｜
- * ｜ proxy ｜  provider  ｜  version  ｜  data (json)  ｜
+ * ｜  dir  ｜     dir    ｜    dir    ｜   file-content   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜    data (json)   ｜
  * </p>
  *
  * <p>
  * Service management configuration data is written to the file system.
  * If the directory or file does not exist, it is created.
  * The following is the file address corresponding to the service management data.
- * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-name   ｜
- * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜  data(status) ｜
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-content   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜   data(status)   ｜
  * </p>
  *
  * <p>
- * The method call trend is implemented using mmap
+ * The call trend data is written to the file system.
+ * If the directory or file does not exist, it is created.
+ * The following is the address of the file corresponding to the call trend data.
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir       ｜ file-content ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  method-name ｜     count    ｜
  * </p>
  */
 @Slf4j
@@ -83,14 +83,6 @@ public class FileSystem implements Persistence {
      */
     private final String trendStoragePath;
 
-    /**
-     * Call Trend Key to Index Map
-     */
-    private final ConcurrentHashMap<FileSystem.CallTrendKey, Integer> keyToIndexMap = new ConcurrentHashMap<>();
-    private final MappedByteBuffer mappedByteBuffer;
-    private final int entrySize = 8;
-    private final int numEntries = 1024 * 1024;
-
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
@@ -101,14 +93,6 @@ public class FileSystem implements Persistence {
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
         this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
         this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
-        File file = new File(trendStoragePath);
-        try (RandomAccessFile raf = new RandomAccessFile(file, "rw")) {
-            FileChannel channel = raf.getChannel();
-            this.mappedByteBuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, numEntries * entrySize);
-            // todo 初始化call trend data.
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -265,76 +249,82 @@ public class FileSystem implements Persistence {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
         FileUtil.clean(serverStoragePath);
-    }
-
-    public class CallTrendKey {
-        private final ProxyProviderModel proxyProviderModel;
-        private final String methodName;
-
-        public CallTrendKey(ProxyProviderModel proxyProviderModel, String methodName) {
-            this.proxyProviderModel = proxyProviderModel;
-            this.methodName = methodName;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            FileSystem.CallTrendKey that = (FileSystem.CallTrendKey) o;
-            return Objects.equals(proxyProviderModel, that.proxyProviderModel) && Objects.equals(methodName, that.methodName);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(proxyProviderModel, methodName);
-        }
+        FileUtil.clean(trendStoragePath);
     }
 
     @Override
     public void callTrendIncrement(CallTrendModel callTrendModel) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
-        int index = keyToIndexMap.computeIfAbsent(key, k -> keyToIndexMap.size() * entrySize);
-        synchronized (mappedByteBuffer) {
-            long currentCount = mappedByteBuffer.getLong(index);
-            mappedByteBuffer.putLong(index, currentCount + callTrendModel.getCount());
+        ProxyProviderModel proxyProviderModel = callTrendModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(trendStoragePath, proxy, provider, String.valueOf(version), callTrendModel.getMethodName());
+        Long count;
+        if (FileUtil.exist(path)) {
+            count = Long.valueOf(FileUtil.readUtf8String(path)) + callTrendModel.getCount();
+        } else {
+            count = callTrendModel.getCount();
         }
+        write(path, String.valueOf(count));
     }
 
     @Override
     public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
-        List<CallTrendVO> callTrends = new ArrayList<>();
-        keyToIndexMap.forEach((key, index) -> {
-            if (key.proxyProviderModel.equals(proxyProviderModel)) {
-                long count = mappedByteBuffer.getLong(index);
-                CallTrendVO callTrendVO = new CallTrendVO();
-                callTrendVO.setMethodName(key.methodName);
-                callTrendVO.setCount(count);
-                callTrends.add(callTrendVO);
+        List<CallTrendVO> result = new ArrayList<>();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version));
+        if (FileUtil.exist(path)) {
+            List<String> files = FileUtil.listFileNames(path);
+            for (String file : files) {
+                try {
+                    if(!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)){
+                        String count = FileUtil.readUtf8String(path + File.separator + file);
+                        CallTrendVO callTrendVO = new CallTrendVO(file, Long.valueOf(count));
+                        result.add(callTrendVO);
+                    }
+                } catch (Exception e) {
+                    log.error("File = {} that cannot be parsed", file, e);
+                }
             }
-        });
-        return callTrends;
+        }
+        return result;
     }
 
     @Override
     public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
-        FileSystem.CallTrendKey key = new FileSystem.CallTrendKey(proxyProviderModel, methodName);
-        Integer index = keyToIndexMap.remove(key);
-        if (index != null) {
-            synchronized (mappedByteBuffer) {
-                mappedByteBuffer.putLong(index, 0);
-            }
-        }
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version), methodName);
+        FileUtil.del(path);
     }
 
     @Override
     public List<CallTrendModel> getCallTrends() {
-        List<CallTrendModel> callTrendList = new ArrayList<>();
-        keyToIndexMap.forEach((key, index) -> {
-            long count = mappedByteBuffer.getLong(index);
-            CallTrendModel callTrendModel = new CallTrendModel(key.proxyProviderModel, key.methodName, count);
-            callTrendList.add(callTrendModel);
-        });
-        return callTrendList;
+        List<CallTrendModel> callTrendModels = Lists.newArrayList();
+        String prefixPath = trendStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> providers = loopDirs(prefixPath + File.separator + proxy);
+            for (String provider : providers) {
+                List<String> versions = loopDirs(prefixPath + File.separator + proxy + File.separator + provider);
+                for (String version : versions) {
+                    List<String> methods = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
+                    for (String method : methods) {
+                        try {
+                            String count = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + method);
+                            ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
+                            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                            CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
+                            callTrendModels.add(callTrendModel);
+                        } catch (Exception e) {
+                            log.warn("Failed to load call trend data (proxy={}, provider={}, version={}, method={}) from file", proxy, provider, version, method, e);
+                        }
+                    }
+                }
+            }
+        }
+        return callTrendModels;
     }
 
     public String makePath(String prefix, String... modules) {

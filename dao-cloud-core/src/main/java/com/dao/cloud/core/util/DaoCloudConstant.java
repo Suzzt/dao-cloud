@@ -35,4 +35,6 @@ public class DaoCloudConstant {
     public static final int TOKEN_BUCKET_ALGORITHM = 2;
 
     public static final int LEAKY_BUCKET_ALGORITHM = 3;
+
+    public static final String MACOS_HIDE_FILE_NAME = ".DS_Store";
 }
