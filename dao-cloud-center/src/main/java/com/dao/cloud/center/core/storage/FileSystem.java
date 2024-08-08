@@ -278,7 +278,7 @@ public class FileSystem implements Persistence {
             List<String> files = FileUtil.listFileNames(path);
             for (String file : files) {
                 try {
-                    if(!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)){
+                    if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
                         String count = FileUtil.readUtf8String(path + File.separator + file);
                         CallTrendVO callTrendVO = new CallTrendVO(file, Long.valueOf(count));
                         result.add(callTrendVO);
@@ -312,11 +312,13 @@ public class FileSystem implements Persistence {
                     List<String> methods = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
                     for (String method : methods) {
                         try {
-                            String count = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + method);
-                            ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
-                            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
-                            CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
-                            callTrendModels.add(callTrendModel);
+                            if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(method)) {
+                                String count = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + method);
+                                ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
+                                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
+                                callTrendModels.add(callTrendModel);
+                            }
                         } catch (Exception e) {
                             log.warn("Failed to load call trend data (proxy={}, provider={}, version={}, method={}) from file", proxy, provider, version, method, e);
                         }

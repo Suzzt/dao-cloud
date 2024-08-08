@@ -1,5 +1,6 @@
 package com.dao.cloud.center.core.handler;
 
+import com.dao.cloud.center.core.CenterClusterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.core.model.CallTrendModel;
 import io.netty.channel.ChannelHandlerContext;
@@ -23,5 +24,7 @@ public class ReceiveCallTrendHandler extends SimpleChannelInboundHandler<CallTre
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, CallTrendModel model) throws Exception {
         registerCenterManager.callTrendIncrement(model);
+        // notice cluster all node
+        CenterClusterManager.syncCallTrendToCluster(SyncClusterInformationRequestHandler.CALL_TREND_INCREMENT, model);
     }
 }
