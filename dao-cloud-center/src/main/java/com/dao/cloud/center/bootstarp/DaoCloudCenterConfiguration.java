@@ -1,9 +1,6 @@
 package com.dao.cloud.center.bootstarp;
 
-import com.dao.cloud.center.core.CenterClusterManager;
-import com.dao.cloud.center.core.ConfigCenterManager;
-import com.dao.cloud.center.core.GatewayCenterManager;
-import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.properties.DaoCloudClusterCenterProperties;
@@ -96,10 +93,12 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new SubscribeConfigHandler(configCenterManager));
                             ch.pipeline().addLast(new GatewayServiceConfigHandler(registerCenterManager, gatewayCenterManager));
                             ch.pipeline().addLast(new CenterClusterServerConfigRequestHandler(registerCenterManager));
+                            ch.pipeline().addLast(new CenterClusterCallTrendRequestHandler(registerCenterManager));
                             ch.pipeline().addLast(new PullServerRequestHandler(registerCenterManager));
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
                             ch.pipeline().addLast(new SyncClusterInformationRequestHandler(registerCenterManager, configCenterManager, gatewayCenterManager));
                             ch.pipeline().addLast(new ServerRegisterHandler(registerCenterManager));
+                            ch.pipeline().addLast(new ReceiveCallTrendHandler(registerCenterManager));
                             ch.pipeline().addLast(new PrintExceptionHandler());
                         }
                     });

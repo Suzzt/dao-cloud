@@ -10,6 +10,8 @@ import com.dao.cloud.common.dto.ParamDTO;
 public interface DemoService {
     String test(String string1, int int1, double double1, long long1, boolean flag);
 
+    String test(ParamDTO paramDTO);
+
     ParamDTO complex(ParamDTO paramDTO);
 
     String timeout();

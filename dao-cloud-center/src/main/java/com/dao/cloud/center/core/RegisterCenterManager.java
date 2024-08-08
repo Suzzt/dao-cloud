@@ -3,21 +3,16 @@ package com.dao.cloud.center.core;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.exception.DaoException;
-import com.dao.cloud.core.model.ProviderModel;
-import com.dao.cloud.core.model.ProxyProviderModel;
-import com.dao.cloud.core.model.RegisterProviderModel;
-import com.dao.cloud.core.model.ServerNodeModel;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: sucf
@@ -285,5 +280,43 @@ public class RegisterCenterManager {
         }
         node.setStatus(status);
         return node;
+    }
+
+    /**
+     * 调用趋势增加
+     *
+     * @param callTrendModel
+     */
+    public synchronized void callTrendIncrement(CallTrendModel callTrendModel) {
+        persistence.callTrendIncrement(callTrendModel);
+    }
+
+    /**
+     * 调用趋势清零
+     *
+     * @param proxyProviderModel
+     * @param methodName
+     */
+    public synchronized void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        persistence.callTrendClear(proxyProviderModel, methodName);
+    }
+
+    /**
+     * 获取调用趋势数据
+     *
+     * @param proxyProviderModel
+     * @return
+     */
+    public List<CallTrendVO> getCallTrend(ProxyProviderModel proxyProviderModel) {
+        return persistence.getCallCount(proxyProviderModel);
+    }
+
+    /**
+     * 获取调用趋势所有数据
+     *
+     * @return
+     */
+    public List<CallTrendModel> getCallTrends() {
+        return persistence.getCallTrends();
     }
 }

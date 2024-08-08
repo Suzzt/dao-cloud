@@ -43,6 +43,19 @@ public class DemoController {
     }
 
     /**
+     * rpc调用测试(重载)
+     *
+     * @return
+     */
+    @RequestMapping("demo_overload")
+    public String demoOverLoad() {
+        long start = System.currentTimeMillis();
+        String string1 = demoService.test(new ParamDTO());
+        long end = System.currentTimeMillis();
+        return string1 + "====" + (end - start);
+    }
+
+    /**
      * rpc调用测试
      *
      * @return

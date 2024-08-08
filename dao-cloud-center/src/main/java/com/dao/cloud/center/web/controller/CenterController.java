@@ -7,10 +7,7 @@ import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
-import com.dao.cloud.center.web.vo.ConfigDataVO;
-import com.dao.cloud.center.web.vo.ConfigVO;
-import com.dao.cloud.center.web.vo.GatewayVO;
-import com.dao.cloud.center.web.vo.ServerVO;
+import com.dao.cloud.center.web.vo.*;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
@@ -100,7 +97,7 @@ public class CenterController {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
-        CenterClusterManager.syncServerConfigToCluster(SyncClusterInformationRequestHandler.SAVE_SERVER, proxyProviderModel, serverNodeModel);
+        CenterClusterManager.syncServerConfigToCluster(SyncClusterInformationRequestHandler.SERVER_STATUS, proxyProviderModel, serverNodeModel);
         return ApiResult.buildSuccess();
     }
 
@@ -158,5 +155,21 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
+    }
+
+    @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)
+    @ResponseBody
+    public List<CallTrendVO> trends(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
+        return registerCenterManager.getCallTrend(new ProxyProviderModel(proxy, provider, version));
+    }
+
+    @RequestMapping(value = "/call_trend/clear", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult clear(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, String methodName) {
+        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
+        registerCenterManager.callTrendClear(proxyProviderModel, methodName);
+        CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, null);
+        CenterClusterManager.syncCallTrendToCluster(SyncClusterInformationRequestHandler.CALL_TREND_CLEAR, callTrendModel);
+        return ApiResult.buildSuccess();
     }
 }

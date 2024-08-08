@@ -35,7 +35,7 @@ public class CenterClusterServerConfigRequestHandler extends SimpleChannelInboun
         } catch (Exception e) {
             serverConfigModel.setDaoException(new DaoException(CodeEnum.PULL_SERVER_CONFIG_ERROR));
         }
-        daoMessage = new DaoMessage((byte) 1, MessageType.SERVER_ALL_CONFIG_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, serverConfigModel);
+        daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, serverConfigModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send service configuration data >>>>>>>>>>>>", future.cause());

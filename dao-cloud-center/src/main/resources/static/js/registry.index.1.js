@@ -21,6 +21,10 @@ $(function () {
                 }
             }
         }, {
+            data: 'call', ordering: true, render: function (data, type, row) {
+                return '<a href="javascript:;" class="showCallTrend" proxy="' + row.proxy + '" provider="' + row.provider + '" version="' + row.version + '">' + '方法函数计数' + '</a>';
+            }
+        }, {
             data: 'gateway', ordering: true, render: function (data, type, row) {
                 // 网关就直接跳过
                 if (row.proxy == "dao-cloud-gateway" && row.provider == "gateway") {
@@ -346,6 +350,36 @@ $(function () {
         });
     }
 
+    function call_trend_load_page_html(methods){
+        var tableHtml = "";
+        methods.forEach(function (item, index) {
+            var methodName = item.methodName;
+            var regex = /(.*?)(\((.*)\))/;
+            var match = methodName.match(regex);
+            if (match) {
+                var methodNameWithoutParams = match[1];
+                var params = match[3];
+                var paramParts = params.split(',');
+                var formattedParams = paramParts.map(function (param) {
+                    var parts = param.split('.');
+                    return parts.map(function (part, i) {
+                        if (i === parts.length - 1) {
+                            return part;
+                        } else {
+                            return part.charAt(0);
+                        }
+                    }).join('.');
+                }).join(',');
+                methodName = methodNameWithoutParams + '(' + formattedParams + ')';
+            }
+            tableHtml += '<tr>' +
+                '<td>' + methodName + '</td>' +
+                '<td style="text-align: center;">' + item.count + '</td>' +
+                '</tr>';
+        });
+        return tableHtml;
+    }
+
     function load_page_html(service_data_list, proxy, provider, version) {
         var tableHtml = "";
         service_data_list.forEach(function (item, index) {
@@ -381,7 +415,7 @@ $(function () {
         var provider = $(this).attr("provider");
         var version = $(this).attr("version");
 
-        function fetchDataAndUpdateTable() {
+        function refreshServerList() {
             $.ajax({
                 url: base_url + "/registry/server?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
                 method: "GET",
@@ -403,39 +437,106 @@ $(function () {
             dataType: "json",
             success: function (response) {
                 var tableHtml = load_page_html(response.data, proxy, provider, version);
+                var refreshInterval;
                 layer.open({
                     type: 1,
                     title: '注册服务节点列表',
                     content: $('#popup'),
-                    area: ['1000px', '1000px'],
+                    area: ['700px', '700px'],
                     btn: ['关闭'],
                     btnAlign: 'c',
                     success: function (layero, index) {
                         $('#popup-list tbody').html(tableHtml);
 
                         // 设置定时器每3秒刷新一次数据
-                        var refreshInterval = setInterval(fetchDataAndUpdateTable, 3000);
+                        refreshInterval = setInterval(refreshServerList, 3000);
 
                         // 在弹出窗口关闭时清除定时器
-                        layero.find('.layui-layer-btn0').on('click', function() {
+                        layero.find('.layui-layer-btn0').on('click', function () {
                             clearInterval(refreshInterval);
                             layer.close(index);
                         });
 
                         // 监听右上角关闭按钮
-                        layero.find('.layui-layer-close').on('click', function() {
+                        layero.find('.layui-layer-close').on('click', function () {
                             clearInterval(refreshInterval);
                             layer.close(index);
                         });
 
                         // 确保所有关闭操作清除定时器
-                        $(document).on('click', '.layui-layer-close1', function() {
+                        $(document).on('click', '.layui-layer-close1', function () {
                             clearInterval(refreshInterval);
                         });
                     },
-                    cancel: function() {
+                    cancel: function () {
                         clearInterval(refreshInterval);
                     }
+                });
+            },
+            error: function () {
+                // 处理请求失败的情况
+            }
+        });
+    });
+
+    $("#data_list").on('click', '.showCallTrend', function () {
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+
+        function refreshCallTrendList() {
+            $.ajax({
+                url: base_url + "/call_trend/statistics?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var tableHtml = call_trend_load_page_html(response);
+                    $('#call-popup-list tbody').html(tableHtml);
+                },
+                error: function () {
+                    // 处理请求失败的情况
+                }
+            });
+        }
+        $.ajax({
+            url: base_url + "/call_trend/statistics?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var tableHtml = call_trend_load_page_html(response);
+                var refreshInterval;
+                layer.open({
+                    type: 1,
+                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '-方法函数列表',
+                    content: $('#call-popup'),
+                    area: ['550px', '700px'], // 调整宽度
+                    btn: ['关闭'],
+                    btnAlign: 'c',
+                    success: function (layero, index) {
+                        $('#call-popup-list tbody').html(tableHtml);
+                        // 设置定时器每3秒刷新一次数据
+                        refreshInterval = setInterval(refreshCallTrendList, 3000);
+
+                        // 在弹出窗口关闭时清除定时器
+                        layero.find('.layui-layer-btn0').on('click', function () {
+                            clearInterval(refreshInterval);
+                            layer.close(index);
+                        });
+
+                        // 监听右上角关闭按钮
+                        layero.find('.layui-layer-close').on('click', function () {
+                            clearInterval(refreshInterval);
+                            layer.close(index);
+                        });
+
+                        // 确保所有关闭操作清除定时器
+                        $(document).on('click', '.layui-layer-close1', function () {
+                            clearInterval(refreshInterval);
+                        });
+                    },
+                    cancel: function () {
+                        clearInterval(refreshInterval);
+                    },
                 });
             },
             error: function () {

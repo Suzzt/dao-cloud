@@ -33,7 +33,37 @@
             margin-top: 20px;
         }
     }
+
+    #call-popup-list th, #call-popup-list td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #call-popup-list th#method-column, #call-popup-list td:nth-child(1) {
+        width: 80%;
+    }
+
+    #call-popup-list th#count-column, #call-popup-list td:nth-child(2) {
+        width: 20%;
+    }
+
+    #call-popup {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    #call-popup-list {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 </style>
+
 <body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
@@ -79,6 +109,7 @@
                                     <th name="provider">provider</th>
                                     <th name="env">version</th>
                                     <th name="number">注册节点数</th>
+                                    <th name="call">调用统计</th>
                                     <th name="gateway">网关设置</th>
                                 </tr>
                                 </thead>
@@ -210,6 +241,19 @@
                     <th>port</th>
                     <th>负载压力</th>
                     <th>操作</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <div id="call-popup" class="container" style="display: none;">
+        <div class="table-responsive">
+            <table id="call-popup-list" class="table table-striped" >
+                <thead>
+                <tr>
+                    <th id="method-column">方法函数名</th>
+                    <th id="count-column">调用次数</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

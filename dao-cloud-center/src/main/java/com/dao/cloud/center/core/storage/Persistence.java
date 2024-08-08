@@ -1,7 +1,10 @@
 package com.dao.cloud.center.core.storage;
 
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
+
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,7 +66,7 @@ public interface Persistence {
      */
     Map<ProxyProviderModel, GatewayConfigModel> loadGateway();
 
-    /** 
+    /**
      * load init all server status
      *
      * @return
@@ -74,4 +77,34 @@ public interface Persistence {
      * clear
      */
     void clear();
+
+    /**
+     * method call increment
+     *
+     * @param callTrendModel
+     */
+    void callTrendIncrement(CallTrendModel callTrendModel);
+
+    /**
+     * get call trend count
+     *
+     * @param proxyProviderModel
+     * @return
+     */
+    List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel);
+
+    /**
+     * clear call record
+     *
+     * @param proxyProviderModel
+     * @param methodName
+     */
+    void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName);
+
+    /**
+     * get all call trend data
+     *
+     * @return
+     */
+    List<CallTrendModel> getCallTrends();
 }

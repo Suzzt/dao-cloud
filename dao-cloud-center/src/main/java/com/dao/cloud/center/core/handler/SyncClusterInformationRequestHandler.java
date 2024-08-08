@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<AbstractShareClusterRequestModel> {
 
+    public static final byte CALL_TREND_CLEAR = -5;
+
     public static final byte DELETE_GATEWAY = -3;
 
     public static final byte DELETE_CONFIG = -2;
@@ -37,7 +39,9 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
 
     public static final byte SAVE_GATEWAY = 3;
 
-    public static final byte SAVE_SERVER = 4;
+    public static final byte SERVER_STATUS = 4;
+
+    public static final byte CALL_TREND_INCREMENT = 5;
 
     private ConfigCenterManager configCenterManager;
 
@@ -89,10 +93,24 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                     gatewayCenterManager.save(gatewayShareClusterRequestModel.getProxyProviderModel(), gatewayShareClusterRequestModel.getGatewayConfigModel());
                 }
                 answer(ctx, shareClusterRequestModel);
-            } else if (shareClusterRequestModel.getType() == SAVE_SERVER) {
+            } else if (shareClusterRequestModel.getType() == SERVER_STATUS) {
                 if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
                     ServerShareClusterRequestModel serverShareClusterRequestModel = (ServerShareClusterRequestModel) shareClusterRequestModel;
                     registerCenterManager.manage(serverShareClusterRequestModel.getProxyProviderModel(), serverShareClusterRequestModel.getServerNodeModel());
+                }
+                answer(ctx, shareClusterRequestModel);
+            } else if (shareClusterRequestModel.getType() == CALL_TREND_INCREMENT) {
+                if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
+                    CallTrendShareClusterRequestModel callTrendShareClusterRequestModel = (CallTrendShareClusterRequestModel) shareClusterRequestModel;
+                    CallTrendModel callTrendModel = callTrendShareClusterRequestModel.getCallTrendModel();
+                    registerCenterManager.callTrendIncrement(callTrendModel);
+                }
+                answer(ctx, shareClusterRequestModel);
+            } else if (shareClusterRequestModel.getType() == CALL_TREND_CLEAR) {
+                if (!expireHashMap.exists(shareClusterRequestModel.getSequenceId())) {
+                    CallTrendShareClusterRequestModel callTrendShareClusterRequestModel = (CallTrendShareClusterRequestModel) shareClusterRequestModel;
+                    CallTrendModel callTrendModel = callTrendShareClusterRequestModel.getCallTrendModel();
+                    registerCenterManager.callTrendClear(callTrendModel.getProxyProviderModel(), callTrendModel.getMethodName());
                 }
                 answer(ctx, shareClusterRequestModel);
             } else {

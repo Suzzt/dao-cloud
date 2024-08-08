@@ -59,6 +59,11 @@ public enum CodeEnum {
      */
     PULL_GATEWAY_CONFIG_ERROR("D0006", "拉取网关配置失败"),
 
+    /**
+     * 拉取接口调用数据失败
+     */
+    PULL_CALL_TREND_ERROR("D0007", "拉取接口调用趋势失败"),
+
     // G级别 网关侧
     /**
      * 网关请求失败

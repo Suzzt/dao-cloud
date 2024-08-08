@@ -4,8 +4,10 @@ package com.dao.cloud.center.core.storage;
 import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
+import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -28,24 +30,32 @@ import java.util.Map;
  * config data is written to the file system.
  * if there is no directory or file, just create it.
  * the following is the file address corresponding to the config data.
- * ｜  dir  ｜  dir  ｜    dir    ｜ file-name ｜
- * ｜ proxy ｜  key  ｜  version  ｜   value   ｜
+ * ｜  dir  ｜  dir  ｜    dir    ｜ file-content ｜
+ * ｜ proxy ｜  key  ｜  version  ｜    value     ｜
  * </p>
  *
  * <p>
  * Gateway configuration data is written to the file system.
  * If the directory or file does not exist, it is created.
  * The following is the file address corresponding to the gateway data.
- * ｜  dir  ｜     dir    ｜    dir    ｜   file-name   ｜
- * ｜ proxy ｜  provider  ｜  version  ｜  data (json)  ｜
+ * ｜  dir  ｜     dir    ｜    dir    ｜   file-content   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜    data (json)   ｜
  * </p>
  *
  * <p>
  * Service management configuration data is written to the file system.
  * If the directory or file does not exist, it is created.
  * The following is the file address corresponding to the service management data.
- * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-name   ｜
- * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜  data(status) ｜
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir    ｜   file-content   ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  ip:port  ｜   data(status)   ｜
+ * </p>
+ *
+ * <p>
+ * The call trend data is written to the file system.
+ * If the directory or file does not exist, it is created.
+ * The following is the address of the file corresponding to the call trend data.
+ * ｜  dir  ｜     dir    ｜    dir    ｜    dir       ｜ file-content ｜
+ * ｜ proxy ｜  provider  ｜  version  ｜  method-name ｜     count    ｜
  * </p>
  */
 @Slf4j
@@ -68,6 +78,11 @@ public class FileSystem implements Persistence {
      */
     private final String serverStoragePath;
 
+    /**
+     * Method call Storage Path
+     */
+    private final String trendStoragePath;
+
     @Autowired
     public FileSystem(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
         DaoCloudConfigCenterProperties.FileSystemSetting fileSystemSetting = daoCloudConfigCenterProperties.getFileSystemSetting();
@@ -77,6 +92,7 @@ public class FileSystem implements Persistence {
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
         this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
+        this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
     }
 
     @Override
@@ -233,6 +249,89 @@ public class FileSystem implements Persistence {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
         FileUtil.clean(serverStoragePath);
+        FileUtil.clean(trendStoragePath);
+    }
+
+    @Override
+    public void callTrendIncrement(CallTrendModel callTrendModel) {
+        ProxyProviderModel proxyProviderModel = callTrendModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(trendStoragePath, proxy, provider, String.valueOf(version), callTrendModel.getMethodName());
+        Long count;
+        if (FileUtil.exist(path)) {
+            count = Long.valueOf(FileUtil.readUtf8String(path)) + callTrendModel.getCount();
+        } else {
+            count = callTrendModel.getCount();
+        }
+        write(path, String.valueOf(count));
+    }
+
+    @Override
+    public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
+        List<CallTrendVO> result = new ArrayList<>();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version));
+        if (FileUtil.exist(path)) {
+            List<String> files = FileUtil.listFileNames(path);
+            for (String file : files) {
+                try {
+                    if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
+                        String count = FileUtil.readUtf8String(path + File.separator + file);
+                        CallTrendVO callTrendVO = new CallTrendVO(file, Long.valueOf(count));
+                        result.add(callTrendVO);
+                    }
+                } catch (Exception e) {
+                    log.error("File = {} that cannot be parsed", file, e);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String path;
+        if (StringUtils.hasLength(methodName)) {
+            path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version), methodName);
+        } else {
+            path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version));
+        }
+        FileUtil.del(path);
+    }
+
+    @Override
+    public List<CallTrendModel> getCallTrends() {
+        List<CallTrendModel> callTrendModels = Lists.newArrayList();
+        String prefixPath = trendStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> providers = loopDirs(prefixPath + File.separator + proxy);
+            for (String provider : providers) {
+                List<String> versions = loopDirs(prefixPath + File.separator + proxy + File.separator + provider);
+                for (String version : versions) {
+                    List<String> methods = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
+                    for (String method : methods) {
+                        try {
+                            if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(method)) {
+                                String count = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + method);
+                                ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
+                                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
+                                callTrendModels.add(callTrendModel);
+                            }
+                        } catch (Exception e) {
+                            log.warn("Failed to load call trend data (proxy={}, provider={}, version={}, method={}) from file", proxy, provider, version, method, e);
+                        }
+                    }
+                }
+            }
+        }
+        return callTrendModels;
     }
 
     public String makePath(String prefix, String... modules) {

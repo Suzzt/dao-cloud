@@ -3,10 +3,7 @@ package com.dao.cloud.center.core;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
-import com.dao.cloud.center.core.handler.CenterClusterConfigResponseHandler;
-import com.dao.cloud.center.core.handler.CenterClusterGatewayConfigResponseMessageHandler;
-import com.dao.cloud.center.core.handler.CenterClusterServerConfigResponseMessageHandler;
-import com.dao.cloud.center.core.handler.InquireClusterCenterResponseHandler;
+import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
@@ -125,9 +122,9 @@ public class CenterClusterManager {
         log.info("clear local config data");
 
         // sync overwrite config information
+        // todo 这里初始化数据时，整个集群需要进入保护状态，不然数据一定会有不一致的风险! 要建立一个拦截器，当节点处于不稳定或初始化阶段时，把集群中传过来的信息保存到文件中，然后慢慢消费这些请求，注意这个请求有先后顺序！
         if (!CollectionUtils.isEmpty(aliveNodes)) {
             log.info("Synchronize data from other cluster nodes (Waiting......)");
-            Thread.sleep(10000);
             Iterator<String> iterator = aliveNodes.iterator();
             String node = iterator.next();
             // system config
@@ -136,13 +133,15 @@ public class CenterClusterManager {
             loadGatewayConfig(node);
             // server config
             loadServerConfig(node);
+            // call trend data
+            loadCallTrend(node);
             log.info("Synchronize data from other cluster nodes (Finish)");
         }
     }
 
     private static void loadServerConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SERVER_ALL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
         Promise<ServerConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterServerConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -225,6 +224,30 @@ public class CenterClusterManager {
         }
     }
 
+    public static void loadCallTrend(String ip) throws InterruptedException {
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
+        Promise<CallTrendFullModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        CenterClusterCallTrendResponseHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send full call trend data error", future.cause());
+            }
+        });
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< get full call trend data timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            List<CallTrendModel> callTrendModels = promise.getNow().getCallTrendModels();
+            for (CallTrendModel callTrendModel : callTrendModels) {
+                persistence.callTrendIncrement(callTrendModel);
+            }
+        } else {
+            throw new DaoException(promise.cause());
+        }
+    }
+
     /**
      * synchronized server info to cluster
      *
@@ -298,6 +321,24 @@ public class CenterClusterManager {
             serverShareClusterRequestModel.setProxyProviderModel(proxyProviderModel);
             serverShareClusterRequestModel.setServerNodeModel(serverNodeModel);
             DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, serverShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
+     * synchronized call trend info to cluster
+     *
+     * @param type
+     * @param callTrendModel
+     */
+    public static void syncCallTrendToCluster(byte type, CallTrendModel callTrendModel) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            CallTrendShareClusterRequestModel callTrendShareClusterRequestModel = new CallTrendShareClusterRequestModel();
+            callTrendShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            callTrendShareClusterRequestModel.setType(type);
+            callTrendShareClusterRequestModel.setCallTrendModel(callTrendModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, callTrendShareClusterRequestModel);
             SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }

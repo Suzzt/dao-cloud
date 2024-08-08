@@ -1,12 +1,18 @@
 package com.dao.cloud.core.util;
 
+import cn.hutool.system.oshi.OshiUtil;
 import com.dao.cloud.core.model.PerformanceModel;
 import com.sun.management.OperatingSystemMXBean;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.ServerSocket;
+import oshi.software.os.OSFileStore;
 
 /**
  * @author: sucf
@@ -99,8 +105,26 @@ public class SystemUtil {
         // 保留两位小数并加上百分号
         performanceModel.setMemory(String.format("%.2f%%", memoryUsage));
         performanceModel.setCpu(String.format("%.2f%%", processCpuLoad));
-        // todo io
-
+        performanceModel.setIo(SystemUtil.getDiskIoPercentage());
         return performanceModel;
+    }
+
+    private static String getDiskIoPercentage() {
+
+        List<OSFileStore> diskStores =
+            Optional.ofNullable(OshiUtil.getOs().getFileSystem().getFileStores()).orElse(Collections.emptyList());
+        long totalSpace = 0L;
+        long usedSpace = 0L;
+        for (OSFileStore disk : diskStores) {
+            totalSpace += disk.getTotalSpace(); // 磁盘总大小，单位：字节
+            usedSpace += disk.getUsableSpace(); // 磁盘可用空间，单位：字节
+        }
+
+        if(usedSpace != 0) {
+            BigDecimal io = BigDecimal.valueOf(usedSpace).divide(BigDecimal.valueOf(totalSpace), 4, BigDecimal.ROUND_HALF_UP)
+                .multiply(BigDecimal.valueOf(100L));
+            return io.stripTrailingZeros().toPlainString() + "%";
+        }
+        return "0%";
     }
 }
