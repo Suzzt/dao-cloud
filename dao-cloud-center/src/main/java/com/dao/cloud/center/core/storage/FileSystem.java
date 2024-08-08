@@ -295,7 +295,12 @@ public class FileSystem implements Persistence {
     public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
         String provider = proxyProviderModel.getProviderModel().getProvider();
         int version = proxyProviderModel.getProviderModel().getVersion();
-        String path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version), methodName);
+        String path;
+        if (StringUtils.hasLength(methodName)) {
+            path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version), methodName);
+        } else {
+            path = makePath(trendStoragePath, proxyProviderModel.getProxy(), provider, String.valueOf(version));
+        }
         FileUtil.del(path);
     }
 
