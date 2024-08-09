@@ -375,6 +375,7 @@ $(function () {
             tableHtml += '<tr>' +
                 '<td>' + methodName + '</td>' +
                 '<td style="text-align: center;">' + item.count + '</td>' +
+                '<td>'+'<a href="javascript:;" class="clear_click" proxy="' + item.proxy + '" provider="' + item.provider + '" version="' + item.version + '" methodName="' + item.methodName + '">clear</a>'+'</td>' +
                 '</tr>';
         });
         return tableHtml;
@@ -507,7 +508,7 @@ $(function () {
                 var refreshInterval;
                 layer.open({
                     type: 1,
-                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '-方法函数列表',
+                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + ' - 方法函数列表',
                     content: $('#call-popup'),
                     area: ['550px', '700px'], // 调整宽度
                     btn: ['关闭'],
