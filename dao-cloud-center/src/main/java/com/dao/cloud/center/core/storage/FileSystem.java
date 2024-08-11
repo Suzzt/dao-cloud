@@ -261,7 +261,7 @@ public class FileSystem implements Persistence {
         String path = makePath(trendStoragePath, proxy, provider, String.valueOf(version), callTrendModel.getMethodName());
         Long count;
         if (FileUtil.exist(path)) {
-            count = Long.valueOf(FileUtil.readUtf8String(path)) + callTrendModel.getCount();
+            count = Long.parseLong(FileUtil.readUtf8String(path)) + callTrendModel.getCount();
         } else {
             count = callTrendModel.getCount();
         }
