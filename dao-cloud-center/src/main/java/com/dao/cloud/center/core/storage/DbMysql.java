@@ -1,5 +1,6 @@
 package com.dao.cloud.center.core.storage;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
@@ -9,6 +10,8 @@ import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.Objects;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +129,14 @@ public class DbMysql implements Persistence {
     private final String truncate_gateway_config_sql_template = "TRUNCATE TABLE dao_cloud.gateway_config";
 
     private final String truncate_server_config_sql_template = "TRUNCATE TABLE dao_cloud.server_config";
+
+    private final String update_call_trend_sql_template = "UPDATE dao_cloud.call_trend SET `count` = `count` + ? WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
+
+    private final String select_call_trend_sql_template = "SELECT method_name, `count` as c from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
+    private final String select_all_call_trend_sql_template = "SELECT * from dao_cloud.call_trend limit 10000";
+
+    private final String delete_call_trend_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
+    private final String delete_call_trend_by_method_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
 
     @Autowired
     public DbMysql(DaoCloudConfigCenterProperties daoCloudConfigCenterProperties) {
@@ -286,26 +297,103 @@ public class DbMysql implements Persistence {
 
     @Override
     public void callTrendIncrement(CallTrendModel callTrendModel) {
-
-    }
-
-    @Override
-    public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
-        return null;
-    }
-
-    @Override
-    public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
-        if (StringUtils.hasLength(methodName)) {
-            // 只删除对应的方法数据
-        } else {
-            // 删除全量方法数据
+        Long count = callTrendModel.getCount();
+        if(Objects.isNull(count) || count == 0L) {
+            return;
+        }
+        ProxyProviderModel proxyProviderModel = callTrendModel.getProxyProviderModel();
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        String methodName = callTrendModel.getMethodName();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_call_trend_sql_template)) {
+            preparedStatement.setLong(1, count);
+            preparedStatement.setString(2, proxy);
+            preparedStatement.setString(3, provider);
+            preparedStatement.setInt(4, version);
+            preparedStatement.setString(5, methodName);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
         }
     }
 
     @Override
+    public List<CallTrendVO> getCallCount(ProxyProviderModel proxyProviderModel) {
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(select_call_trend_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<CallTrendVO> callTrendVOS = new ArrayList<>();
+            while (resultSet.next()) {
+                String methodName = resultSet.getString("method_name");
+                Long count = resultSet.getLong("c");
+                CallTrendVO callTrendVO = new CallTrendVO(methodName, count);
+                callTrendVOS.add(callTrendVO);
+            }
+            return callTrendVOS;
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public void callTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+        this.doCallTrendClear(proxyProviderModel, methodName);
+    }
+
+    @Override
     public List<CallTrendModel> getCallTrends() {
-        return null;
+
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(select_all_call_trend_sql_template)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<CallTrendModel> callTrendModels = new ArrayList<>();
+            while (resultSet.next()) {
+                String provider = resultSet.getString("provider");
+                String proxy = resultSet.getString("proxy");
+                String method = resultSet.getString("method_name");
+                Integer version = resultSet.getInt("version");
+                Long count = resultSet.getLong("count");
+                ProviderModel providerModel = new ProviderModel(provider, version);
+                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
+                callTrendModels.add(callTrendModel);
+            }
+            return callTrendModels;
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+
+    }
+
+    private void doCallTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
+
+        String proxy = proxyProviderModel.getProxy();
+        String provider = proxyProviderModel.getProviderModel().getProvider();
+        int version = proxyProviderModel.getProviderModel().getVersion();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(
+            StringUtils.hasLength(methodName)
+                ? delete_call_trend_by_method_sql_template
+                : delete_call_trend_sql_template
+            )) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, provider);
+            preparedStatement.setInt(3, version);
+            if(StringUtils.hasLength(methodName)) {
+                preparedStatement.setString(4, methodName);
+            }
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
     }
 
     private void insertOrUpdate(GatewayModel gatewayModel) {
