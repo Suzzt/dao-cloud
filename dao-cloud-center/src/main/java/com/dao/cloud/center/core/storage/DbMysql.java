@@ -133,7 +133,7 @@ public class DbMysql implements Persistence {
     private final String update_call_trend_sql_template = "UPDATE dao_cloud.call_trend SET `count` = `count` + ? WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
 
     private final String select_call_trend_sql_template = "SELECT method_name, `count` as c from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
-    private final String select_all_call_trend_sql_template = "SELECT * from dao_cloud.call_trend limit 10000";
+    private final String select_all_call_trend_sql_template = "SELECT * from dao_cloud.call_trend limit ?,?";
 
     private final String delete_call_trend_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
     private final String delete_call_trend_by_method_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
@@ -314,7 +314,7 @@ public class DbMysql implements Persistence {
             preparedStatement.setString(5, methodName);
             preparedStatement.executeUpdate();
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql update call trend error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -338,7 +338,7 @@ public class DbMysql implements Persistence {
             }
             return callTrendVOS;
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql query call trend error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -350,24 +350,36 @@ public class DbMysql implements Persistence {
 
     @Override
     public List<CallTrendModel> getCallTrends() {
-
+        int pageNum = 1;
+        int pageSize = 1000;
+        List<CallTrendModel> callTrendModels = new ArrayList<>();
         try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(select_all_call_trend_sql_template)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            List<CallTrendModel> callTrendModels = new ArrayList<>();
-            while (resultSet.next()) {
-                String provider = resultSet.getString("provider");
-                String proxy = resultSet.getString("proxy");
-                String method = resultSet.getString("method_name");
-                Integer version = resultSet.getInt("version");
-                Long count = resultSet.getLong("count");
-                ProviderModel providerModel = new ProviderModel(provider, version);
-                ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
-                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
-                callTrendModels.add(callTrendModel);
+            while (true) {
+                boolean isBreak = true;
+                preparedStatement.setInt(1, (pageNum - 1) * pageSize);
+                preparedStatement.setInt(2, pageSize);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        isBreak = false;
+                        String provider = resultSet.getString("provider");
+                        String proxy = resultSet.getString("proxy");
+                        String method = resultSet.getString("method_name");
+                        Integer version = resultSet.getInt("version");
+                        Long count = resultSet.getLong("count");
+                        ProviderModel providerModel = new ProviderModel(provider, version);
+                        ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);
+                        CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, method, Long.valueOf(count));
+                        callTrendModels.add(callTrendModel);
+                    }
+                }
+                if(isBreak) {
+                    break;
+                }
+                pageNum += 1;
             }
             return callTrendModels;
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql update call trend error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
 
@@ -391,7 +403,7 @@ public class DbMysql implements Persistence {
             }
             preparedStatement.executeUpdate();
         } catch (Exception e) {
-            log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            log.error("<<<<<<<<<<<< mysql update call trend error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
