@@ -52,10 +52,7 @@ public class DbMysql implements Persistence {
             "    UNIQUE KEY `config_uk_p_k_v` (`proxy`, `key`, `version`)\n" +
             ") ENGINE = InnoDB\n" +
             "  AUTO_INCREMENT = 1\n" +
-            "  DEFAULT CHARSET = utf8 COMMENT ='配置中心存储内容表';\n" +
-            "# example init data\n" +
-            "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value)\n" +
-            "VALUES (now(), now(), 'dao-cloud', 'dao-cloud', 0, 'Welcome to dao-cloud!');";
+            "  DEFAULT CHARSET = utf8 COMMENT ='配置中心存储内容表'";
 
     private final String gateway_config_create_table_sql = "CREATE TABLE IF NOT EXISTS `gateway_config`\n" +
             "(\n" +
@@ -129,6 +126,8 @@ public class DbMysql implements Persistence {
     private final String truncate_gateway_config_sql_template = "TRUNCATE TABLE dao_cloud.gateway_config";
 
     private final String truncate_server_config_sql_template = "TRUNCATE TABLE dao_cloud.server_config";
+
+    private final String truncate_call_trend_sql_template = "TRUNCATE TABLE dao_cloud.call_trend";
 
     private final String update_call_trend_sql_template = "UPDATE dao_cloud.call_trend SET `count` = `count` + ? WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
 
@@ -290,6 +289,7 @@ public class DbMysql implements Persistence {
             statement.execute(truncate_config_sql_template);
             statement.execute(truncate_gateway_config_sql_template);
             statement.execute(truncate_server_config_sql_template);
+            statement.execute(truncate_call_trend_sql_template);
         } catch (Exception e) {
             throw new DaoException(e);
         }
