@@ -254,6 +254,7 @@
                 <tr>
                     <th id="method-column">方法函数名</th>
                     <th id="count-column">调用次数</th>
+                    <th id="count-column">操作</th>
                 </tr>
                 </thead>
                 <tbody></tbody>

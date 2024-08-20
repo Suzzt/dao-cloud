@@ -338,6 +338,58 @@ $(function () {
         });
     });
 
+    $("#call-popup-list").on('click', '.clear_click', function () {
+        var proxy = $(this).attr("proxy");
+        var provider = $(this).attr("provider");
+        var version = $(this).attr("version");
+        var methodName = $(this).attr("methodName");
+        var formData = {
+            proxy: proxy,
+            provider: provider,
+            version: version,
+            methodName: methodName
+        }
+        $.ajax({
+            type: 'POST',
+            url: base_url + "/call_trend/clear",
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == "00000") {
+                    layer.open({
+                        title: "系统提示",
+                        btn: ["确认"],
+                        content: "清空成功",
+                        icon: '1',
+                        end: function (layero, index) {
+                            reloadCallTrend(proxy, provider, version);
+                        }
+                    });
+                } else {
+                    layer.open({
+                        title: "系统提示",
+                        btn: ["确认"],
+                        content: (data.msg || "清空失败"),
+                        icon: '2'
+                    });
+                }
+            }
+        });
+    });
+
+    function reloadCallTrend(proxy, provider, version) {
+        $.ajax({
+            url: base_url + "/call_trend/statistics?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
+            method: "GET",
+            dataType: "json",
+            success: function (response) {
+                var tableHtml = call_trend_load_page_html(proxy, provider, version, response.data);
+                $('#call-popup-list tbody').html(tableHtml);
+            }
+        });
+    }
+
     function reload(proxy, provider, version) {
         $.ajax({
             url: base_url + "/registry/server?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
@@ -350,7 +402,7 @@ $(function () {
         });
     }
 
-    function call_trend_load_page_html(methods){
+    function call_trend_load_page_html(proxy, provider, version, methods) {
         var tableHtml = "";
         methods.forEach(function (item, index) {
             var methodName = item.methodName;
@@ -375,6 +427,7 @@ $(function () {
             tableHtml += '<tr>' +
                 '<td>' + methodName + '</td>' +
                 '<td style="text-align: center;">' + item.count + '</td>' +
+                '<td style="text-align: center;"><a href="javascript:;" class="clear_click" proxy="' + proxy + '" provider="' + provider + '" version="' + version + '" methodName="' + item.methodName + '">clear</a></td>' +
                 '</tr>';
         });
         return tableHtml;
@@ -490,7 +543,7 @@ $(function () {
                 method: "GET",
                 dataType: "json",
                 success: function (response) {
-                    var tableHtml = call_trend_load_page_html(response);
+                    var tableHtml = call_trend_load_page_html(proxy, provider, version, response);
                     $('#call-popup-list tbody').html(tableHtml);
                 },
                 error: function () {
@@ -498,30 +551,68 @@ $(function () {
                 }
             });
         }
+
         $.ajax({
             url: base_url + "/call_trend/statistics?proxy=" + proxy + "&provider=" + provider + "&version=" + version,
             method: "GET",
             dataType: "json",
             success: function (response) {
-                var tableHtml = call_trend_load_page_html(response);
+                var tableHtml = call_trend_load_page_html(proxy, provider, version, response);
                 var refreshInterval;
                 layer.open({
                     type: 1,
-                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + '-方法函数列表',
+                    title: '[' + proxy + ']' + '[' + provider + ']' + '[' + version + ']' + ' - 方法函数列表',
                     content: $('#call-popup'),
-                    area: ['550px', '700px'], // 调整宽度
-                    btn: ['关闭'],
+                    area: ['550px', '700px'],
+                    btn: ['清空所有', '关闭'],
                     btnAlign: 'c',
+                    yes: function (index, layero) {
+                        layer.confirm("确认清空所有调用统计数据?", {
+                            icon: 3,
+                            title: "系统提示",
+                            btn: ["确认", "取消"]
+                        }, function (index) {
+                            layer.close(index);
+                            var data = {
+                                proxy: proxy,
+                                provider: provider,
+                                version: version
+                            }
+                            $.ajax({
+                                type: 'POST',
+                                url: base_url + "/call_trend/clear",
+                                contentType: 'application/json',
+                                data: JSON.stringify(data),
+                                dataType: 'json',
+                                success: function (response) {
+                                    layer.open({
+                                        title: "系统提示",
+                                        btn: ["确认"],
+                                        content: "清空成功",
+                                        icon: '1',
+                                        end: function (layero, index) {
+                                            reloadCallTrend(proxy, provider, version);
+                                        }
+                                    });
+                                },
+                                error: function () {
+                                    layer.open({
+                                        title: "系统提示",
+                                        btn: ["确认"],
+                                        content: (data.msg || "清空失败"),
+                                        icon: '2'
+                                    });
+                                }
+                            });
+                        });
+                    },
+                    btn2: function (index, layero) {
+                        clearInterval(refreshInterval);
+                        layer.close(index);
+                    },
                     success: function (layero, index) {
                         $('#call-popup-list tbody').html(tableHtml);
-                        // 设置定时器每3秒刷新一次数据
                         refreshInterval = setInterval(refreshCallTrendList, 3000);
-
-                        // 在弹出窗口关闭时清除定时器
-                        layero.find('.layui-layer-btn0').on('click', function () {
-                            clearInterval(refreshInterval);
-                            layer.close(index);
-                        });
 
                         // 监听右上角关闭按钮
                         layero.find('.layui-layer-close').on('click', function () {
@@ -540,10 +631,11 @@ $(function () {
                 });
             },
             error: function () {
-                // 处理请求失败的情况
+                alert("请求失败，请稍后重试。");
             }
         });
     });
+
 
     // search btn
     $('#searchBtn').on('click', function () {
