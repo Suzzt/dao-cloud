@@ -120,4 +120,9 @@ public class IndexController {
     public String config() {
         return "config/config.index";
     }
+
+    @RequestMapping("log")
+    public String gateway() {
+        return "log/log.index";
+    }
 }
