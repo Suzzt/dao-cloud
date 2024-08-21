@@ -172,4 +172,10 @@ public class CenterController {
         CenterClusterManager.syncCallTrendToCluster(SyncClusterInformationRequestHandler.CALL_TREND_CLEAR, callTrendModel);
         return ApiResult.buildSuccess();
     }
+
+    @RequestMapping(value = "/log/search", method = RequestMethod.POST)
+    @ResponseBody
+    public ApiResult<List<LogVO>> search(@RequestParam String traceId) {
+        return ApiResult.buildSuccess(Lists.newArrayList());
+    }
 }
