@@ -34,6 +34,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,13 +50,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * @author sucf
@@ -92,8 +93,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
             ServiceInvoker serviceInvoker;
             if (flag) {
-                serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
-                        serviceBean, interfacesCallTrendMap);
+                serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean, interfacesCallTrendMap);
             } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }

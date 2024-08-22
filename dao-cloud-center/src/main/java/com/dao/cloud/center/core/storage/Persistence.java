@@ -123,5 +123,5 @@ public interface Persistence {
      * @param tracerId
      * @return
      */
-    List<LogVO> loadLog(String tracerId);
+    List<LogVO> getLog(String tracerId);
 }

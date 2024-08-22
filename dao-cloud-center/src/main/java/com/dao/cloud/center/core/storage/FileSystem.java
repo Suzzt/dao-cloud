@@ -342,7 +342,7 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public List<LogVO> loadLog(String tracerId) {
+    public List<LogVO> getLog(String tracerId) {
         return Collections.emptyList();
     }
 
