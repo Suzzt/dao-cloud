@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.model.*;
 
 import java.util.List;
@@ -107,4 +108,20 @@ public interface Persistence {
      * @return
      */
     List<CallTrendModel> getCallTrends();
+
+    /**
+     * storage log data
+     *
+     * @param logModel
+     */
+    void storage(LogModel logModel);
+
+
+    /**
+     * get log data
+     *
+     * @param tracerId
+     * @return
+     */
+    List<LogVO> loadLog(String tracerId);
 }

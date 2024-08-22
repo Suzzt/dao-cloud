@@ -12,6 +12,6 @@ public class LogVO {
     private String proxy;
     private String provider;
     private Integer version;
-    private String ip;
+    private String node;
     private String log;
 }

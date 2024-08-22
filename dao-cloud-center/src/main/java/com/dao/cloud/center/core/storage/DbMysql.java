@@ -5,6 +5,7 @@ import com.alibaba.druid.pool.DruidPooledConnection;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
@@ -17,10 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.Date;
+import java.util.*;
 
 /**
  * @author: sucf
@@ -369,6 +368,16 @@ public class DbMysql implements Persistence {
             throw new DaoException(e);
         }
 
+    }
+
+    @Override
+    public void storage(LogModel logModel) {
+
+    }
+
+    @Override
+    public List<LogVO> loadLog(String tracerId) {
+        return Collections.emptyList();
     }
 
     private void doCallTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
