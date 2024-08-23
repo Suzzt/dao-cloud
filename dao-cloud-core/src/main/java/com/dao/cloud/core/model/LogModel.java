@@ -21,5 +21,4 @@ public class LogModel extends Model {
      * ip+port
      */
     private String node;
-    private String log;
 }

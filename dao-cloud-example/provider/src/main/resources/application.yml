@@ -8,12 +8,14 @@ server:
 
 dao-cloud:
   enable: true
+  # 这个是用于日志追踪排查问题的，默认就是/data/logs
+  log: /data/logs
   server:
     proxy: demo
     corePoolSize: 3
     maxPoolSize: 40
   center:
-#     如果没有此项配置的话,默认为单机的127.0.0.1去连接.
-    #ip: 192.168.180.203
+  #     如果没有此项配置的话,默认为单机的127.0.0.1去连接.
+  #ip: 192.168.180.203
 
 log.home: /data/dao-cloud-logs/${spring.application.name}
