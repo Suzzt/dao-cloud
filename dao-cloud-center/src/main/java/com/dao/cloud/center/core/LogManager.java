@@ -42,7 +42,7 @@ public class LogManager {
             List<LogModel> logModels = cache.get(logModel.getTraceId(), Lists::newArrayList);
             logModels.add(logModel);
         } catch (ExecutionException e) {
-            log.info("log save error", e);
+            log.info("dao cloud log save error", e);
         }
     }
 }

@@ -132,6 +132,12 @@ public class DemoController {
         return ApiResult.buildSuccess("config subscribe success");
     }
 
+    @RequestMapping("test-trace-log")
+    public ApiResult traceLog() {
+        demoService.trace();
+        return ApiResult.buildSuccess();
+    }
+
     @Data
     public static class ConfigObject {
         private String str;
