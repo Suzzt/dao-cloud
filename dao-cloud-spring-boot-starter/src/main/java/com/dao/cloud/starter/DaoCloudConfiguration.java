@@ -54,7 +54,7 @@ public class DaoCloudConfiguration {
             return null;
         }
         String configFilePath = environment.getProperty("dao-cloud.log");
-        DaoCloudLogAppender daoCloudLogAppender = new DaoCloudLogAppender(configFilePath);
+        DaoCloudLogAppender daoCloudLogAppender = new DaoCloudLogAppender(configFilePath, null);
         daoCloudLogAppender.setContext(loggerContext);
         daoCloudLogAppender.start();
 

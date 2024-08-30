@@ -3,6 +3,11 @@ package com.dao.cloud.starter.context;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.core.model.LogModel;
+import com.dao.cloud.core.netty.protocol.DaoMessage;
+import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.starter.manager.CenterChannelManager;
 import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
 
@@ -17,8 +22,11 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
 
     private final String logStoragePath;
 
-    public DaoCloudLogAppender(String logStoragePath) {
+    private final String node;
+
+    public DaoCloudLogAppender(String logStoragePath, String node) {
         this.logStoragePath = logStoragePath;
+        this.node = node;
     }
 
     @Override
@@ -33,6 +41,13 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
         for (String str : stage.split(separator)) {
             filePath += File.separator + str;
         }
-        FileUtil.writeUtf8String(eventObject.getFormattedMessage(), filePath);
+        FileUtil.writeUtf8String("[" + traceId + "]=" + eventObject.getFormattedMessage(), filePath);
+        // send trace data to center
+        LogModel logModel = new LogModel();
+        logModel.setTraceId(traceId);
+        logModel.setStage(stage);
+        logModel.setNode(node);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
+        CenterChannelManager.getChannel().writeAndFlush(daoMessage);
     }
 }

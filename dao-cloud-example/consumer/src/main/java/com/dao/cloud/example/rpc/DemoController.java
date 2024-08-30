@@ -6,6 +6,7 @@ import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.starter.annotation.DaoReference;
+import com.dao.cloud.starter.log.DaoCloudLogger;
 import com.dao.cloud.starter.unit.ConfigCallBack;
 import com.dao.cloud.starter.utils.DaoCloudConfig;
 import com.google.gson.Gson;
@@ -135,7 +136,8 @@ public class DemoController {
     @RequestMapping("test-trace-log")
     public ApiResult traceLog() {
         demoService.trace();
-        return ApiResult.buildSuccess();
+        String traceId = DaoCloudLogger.getTraceId();
+        return ApiResult.buildSuccess(traceId);
     }
 
     @Data

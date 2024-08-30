@@ -16,5 +16,5 @@ public interface DemoService {
 
     String timeout();
 
-    String trace();
+    void trace();
 }

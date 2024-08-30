@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @DaoService
 public class DemoServiceImpl implements DemoService {
+
     @Override
     @DaoCallTrend(interval = 5, time_unit = TimeUnit.SECONDS)
     public String test(String string1, int int1, double double1, long long1, boolean flag) {
@@ -47,8 +48,7 @@ public class DemoServiceImpl implements DemoService {
     }
 
     @Override
-    public String trace() {
+    public void trace() {
         log.info("print log data......");
-        return "trace";
     }
 }
