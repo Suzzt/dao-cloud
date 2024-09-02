@@ -37,7 +37,7 @@ public class LogManager {
      *
      * @param logModel
      */
-    public static synchronized void put(LogModel logModel) {
+    public static synchronized void collect(LogModel logModel) {
         try {
             List<LogModel> logModels = cache.get(logModel.getTraceId(), Lists::newArrayList);
             logModels.add(logModel);
