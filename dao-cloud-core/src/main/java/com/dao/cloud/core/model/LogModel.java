@@ -8,7 +8,7 @@ import lombok.Data;
  * @description: log data model
  */
 @Data
-public class LogModel extends Model implements Comparable{
+public class LogModel extends Model implements Comparable {
 
     private String traceId;
     /**
