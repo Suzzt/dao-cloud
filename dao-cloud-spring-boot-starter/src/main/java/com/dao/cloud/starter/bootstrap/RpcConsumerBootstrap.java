@@ -154,14 +154,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
             public Object invoke(Object obj, Method method, Object[] args) throws InterruptedException {
                 ProviderModel providerModel = proxyProviderModel.getProviderModel();
 
-                RpcRequestModel requestModel = new RpcRequestModel(
-                        providerModel.getProvider(),
-                        providerModel.getVersion(),
-                        method.getName(),
-                        method.getParameterTypes(),
-                        args,
-                        method.getReturnType()
-                );
+                RpcRequestModel requestModel = new RpcRequestModel(providerModel.getProvider(), providerModel.getVersion(), method.getName(), method.getParameterTypes(), args, method.getReturnType());
 
                 ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serialized, timeout);
                 return clientInvoker.invoke(requestModel);

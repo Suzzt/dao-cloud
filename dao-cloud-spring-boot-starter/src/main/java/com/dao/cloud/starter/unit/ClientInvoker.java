@@ -12,7 +12,9 @@ import com.dao.cloud.starter.manager.ClientManager;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Set;
 
@@ -53,6 +55,10 @@ public class ClientInvoker {
     public Object doInvoke(ServiceRequestModel model, byte messageType) throws InterruptedException {
         long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
         model.setSequenceId(sequenceId);
+        if (!StringUtils.hasLength(MDC.get("traceId"))) {
+            MDC.put("traceId", IdUtil.getSnowflake(2, 2).nextIdStr());
+        }
+        model.setTraceId(MDC.get("traceId"));
         // get client channel
         Client client;
         while (true) {

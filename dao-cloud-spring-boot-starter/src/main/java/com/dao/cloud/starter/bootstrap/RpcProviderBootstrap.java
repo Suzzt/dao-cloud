@@ -20,6 +20,7 @@ import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
 import com.dao.cloud.starter.handler.NettyGlobalTriggerExceptionHandler;
 import com.dao.cloud.starter.handler.RpcServerMessageHandler;
 import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
+import com.dao.cloud.starter.log.LogHandlerInterceptor;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
@@ -144,6 +145,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         public void start() {
             NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("rpc-server-boss", true));
             NioEventLoopGroup worker = new NioEventLoopGroup(4, new DefaultThreadFactory("rpc-server-worker", true));
+            LogHandlerInterceptor logHandlerInterceptor = new LogHandlerInterceptor();
             try {
                 ServerBootstrap serverBootstrap = new ServerBootstrap();
                 serverBootstrap.channel(NioServerSocketChannel.class);
@@ -156,7 +158,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                         ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                         ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
                         ch.pipeline().addLast(new GatewayServiceMessageHandler(methodArgumentResolverHandler));
-                        ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
+                        ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider, logHandlerInterceptor));
                         ch.pipeline().addLast(new NettyGlobalTriggerExceptionHandler());
                     }
                 });

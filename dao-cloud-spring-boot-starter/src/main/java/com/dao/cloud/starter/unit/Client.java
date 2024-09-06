@@ -135,7 +135,6 @@ public class Client {
     private void connect() {
         RpcClientMessageHandler rpcClientMessageHandler = new RpcClientMessageHandler(this);
         ClientPingPongMessageHandler clientPingPongMessageHandler = new ClientPingPongMessageHandler(this);
-//        ClientManager.getRpcBootstrap().remoteAddress(this.ip, this.port);
         ClientManager.getRpcBootstrap().handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
