@@ -14,6 +14,7 @@ public class LogHandler extends SimpleChannelInboundHandler<LogModel> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LogModel msg) throws Exception {
+        // collect log
         LogManager.collect(msg);
     }
 }

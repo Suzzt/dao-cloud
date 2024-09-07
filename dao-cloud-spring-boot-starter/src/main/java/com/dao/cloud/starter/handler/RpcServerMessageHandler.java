@@ -42,9 +42,9 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequestModel rpcRequestModel) {
-        logHandlerInterceptor.enter(rpcRequestModel.getTraceId(), rpcRequestModel.getStage());
         // do invoke service
         serverHandlerThreadPool.execute(() -> {
+            logHandlerInterceptor.enter(rpcRequestModel.getTraceId(), rpcRequestModel.getStage());
             // invoke + response
             ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
             RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
@@ -55,8 +55,8 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
                     log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());
                 }
             });
+            logHandlerInterceptor.leave();
         });
-        logHandlerInterceptor.leave();
     }
 
     @Override
