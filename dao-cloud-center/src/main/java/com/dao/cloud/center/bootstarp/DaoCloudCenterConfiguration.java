@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ComponentScan(value = "com.dao.cloud.center.core.storage")
-@Import({RegisterCenterManager.class, ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class})
+@Import({RegisterCenterManager.class, ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class, LogManager.class})
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     @Resource
@@ -56,6 +56,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Resource
     private RegisterCenterManager registerCenterManager;
+
+    @Resource
+    private LogManager logManager;
 
     @Resource
     private Persistence persistence;
@@ -99,7 +102,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new SyncClusterInformationRequestHandler(registerCenterManager, configCenterManager, gatewayCenterManager));
                             ch.pipeline().addLast(new ServerRegisterHandler(registerCenterManager));
                             ch.pipeline().addLast(new ReceiveCallTrendHandler(registerCenterManager));
-                            ch.pipeline().addLast(new LogHandler());
+                            ch.pipeline().addLast(new LogHandler(logManager));
                             ch.pipeline().addLast(new PrintExceptionHandler());
                         }
                     });

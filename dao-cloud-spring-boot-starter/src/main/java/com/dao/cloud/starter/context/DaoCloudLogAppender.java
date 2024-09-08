@@ -19,12 +19,9 @@ import java.io.File;
  */
 public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
 
-    private final String logStoragePath;
-
     private final String node;
 
-    public DaoCloudLogAppender(String logStoragePath, String node) {
-        this.logStoragePath = logStoragePath;
+    public DaoCloudLogAppender(String node) {
         this.node = node;
     }
 
@@ -35,11 +32,6 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
         String stage = "2-2";
         if (!StringUtils.hasLength(traceId)) {
             return;
-        }
-        String filePath = logStoragePath + File.separator + traceId;
-        String separator = "-";
-        for (String str : stage.split(separator)) {
-            filePath += File.separator + str;
         }
         String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
                 .format(new java.util.Date(eventObject.getTimeStamp()));
@@ -57,16 +49,12 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
                 message
         );
 
-        // 将格式化后的日志写入指定文件
-        FileUtil.writeUtf8String(logMessage, filePath);
-
-        // 将格式化的日志写入文件
-        FileUtil.writeUtf8String(logMessage.toString(), filePath);
         // send trace data to center
         LogModel logModel = new LogModel();
         logModel.setTraceId(traceId);
         logModel.setStage(stage);
         logModel.setNode(node);
+        logModel.setLogMessage(logMessage);
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage);
     }

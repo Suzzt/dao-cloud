@@ -6,6 +6,7 @@ import ch.qos.logback.core.Appender;
 import com.dao.cloud.core.converter.StringToCharConverter;
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
+import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.starter.bootstrap.ConfigCenterBootstrap;
 import com.dao.cloud.starter.bootstrap.DaoCloudCenterBootstrap;
 import com.dao.cloud.starter.bootstrap.RpcConsumerBootstrap;
@@ -43,14 +44,13 @@ import java.util.List;
 public class DaoCloudConfiguration {
 
     @Bean
-    public Appender<ILoggingEvent> daoCloudLogAppender(Environment environment) {
+    public Appender<ILoggingEvent> daoCloudLogAppender() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         if (loggerContext.getLogger("ROOT").getAppender("Console") != null) {
             return null;
         }
-        String configFilePath = environment.getProperty("dao-cloud.log");
-        DaoCloudLogAppender daoCloudLogAppender = new DaoCloudLogAppender(configFilePath, null);
+        DaoCloudLogAppender daoCloudLogAppender = new DaoCloudLogAppender(NetUtil.getLocalIp());
         daoCloudLogAppender.setContext(loggerContext);
         daoCloudLogAppender.start();
 

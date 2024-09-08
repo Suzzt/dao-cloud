@@ -12,9 +12,15 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class LogHandler extends SimpleChannelInboundHandler<LogModel> {
 
+    private LogManager logManager;
+
+    public LogHandler(LogManager logManager) {
+        this.logManager = logManager;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, LogModel msg) throws Exception {
         // collect log
-        LogManager.collect(msg);
+        logManager.collect(msg);
     }
 }
