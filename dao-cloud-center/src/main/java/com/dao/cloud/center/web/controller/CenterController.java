@@ -1,9 +1,6 @@
 package com.dao.cloud.center.web.controller;
 
-import com.dao.cloud.center.core.CenterClusterManager;
-import com.dao.cloud.center.core.ConfigCenterManager;
-import com.dao.cloud.center.core.GatewayCenterManager;
-import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
@@ -20,6 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author: sucf
@@ -36,10 +34,13 @@ public class CenterController {
 
     private RegisterCenterManager registerCenterManager;
 
-    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    private LogManager logManager;
+
+    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
         this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.logManager = logManager;
     }
 
     @RequestMapping(value = "/registry/pageList")
@@ -176,6 +177,17 @@ public class CenterController {
     @RequestMapping(value = "/log/search", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult<List<LogVO>> search(@RequestParam String traceId) {
-        return ApiResult.buildSuccess(Lists.newArrayList());
+        try {
+            List<LogModel> logModels = logManager.get(traceId);
+            List<LogVO> result = Lists.newArrayList();
+            for (LogModel logModel : logModels) {
+                LogVO logVO = new LogVO();
+                logVO.setLog(logModel.getLogMessage());
+                result.add(logVO);
+            }
+            return ApiResult.buildSuccess(result);
+        } catch (ExecutionException e) {
+            return ApiResult.buildSuccess();
+        }
     }
 }
