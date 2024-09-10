@@ -174,7 +174,7 @@ public class CenterController {
         return ApiResult.buildSuccess();
     }
 
-    @RequestMapping(value = "/log/search", method = RequestMethod.POST)
+    @RequestMapping(value = "/log/search", method = RequestMethod.GET)
     @ResponseBody
     public ApiResult<List<LogVO>> search(@RequestParam String traceId) {
         try {
@@ -183,10 +183,11 @@ public class CenterController {
             for (LogModel logModel : logModels) {
                 LogVO logVO = new LogVO();
                 logVO.setLog(logModel.getLogMessage());
+                logVO.setNode(logModel.getNode());
                 result.add(logVO);
             }
             return ApiResult.buildSuccess(result);
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             return ApiResult.buildSuccess();
         }
     }

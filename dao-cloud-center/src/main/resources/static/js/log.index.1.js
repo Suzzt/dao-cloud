@@ -1,20 +1,11 @@
 $(function () {
-    var dataTable = $("#data_list").dataTable({
+    // Initialize DataTable without ajax initially
+    var dataTable = $("#data_list").DataTable({
         "paging": true,
         "deferRender": true,
         "processing": true,
         "serverSide": false,
-        "ajax": {
-            url: base_url + "/log/search",
-            type: "post",
-            data: function (d) {
-                var obj = {};
-                obj.start = d.start;
-                obj.length = d.length;
-                obj.traceId = $('#traceId').val();
-                return obj;
-            }
-        },
+        "ajax": null,  // Do not fetch data on initialization
         "searching": false,
         "ordering": false,
         "columns": [
@@ -31,30 +22,70 @@ $(function () {
             "sInfo": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 ) 总记录数 _MAX_ ",
             "sInfoEmpty": "无记录",
             "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
-            "sInfoPostFix": "",
-            "sSearch": "搜索:",
-            "sUrl": "",
-            "sEmptyTable": "表中数据为空",
             "sLoadingRecords": "载入中...",
-            "sInfoThousands": ",",
             "oPaginate": {
                 "sFirst": "首页",
                 "sPrevious": "上页",
                 "sNext": "下页",
                 "sLast": "末页"
-            },
-            "oAria": {
-                "sSortAscending": ": 以升序排列此列",
-                "sSortDescending": ": 以降序排列此列"
             }
         }
     });
 
+    // Search button click handler
     $('#searchBtn').on('click', function () {
         var traceId = $('#traceId').val();
-        dataTable.fnSettings().ajax.data = function (d) {
-            d.traceId = traceId;
+        if (traceId == null || traceId === "") {
+            layer.open({
+                title: "系统提示",
+                btn: ["知道"],
+                content: "请输入traceId值",
+                icon: 2
+            });
+            return;
         }
-        dataTable.api().ajax.reload();
+
+        $.ajax({
+            url: base_url+'/log/search',
+            method: 'GET',
+            data: { traceId: traceId },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success && response.data.length > 0) {
+                    // Clear existing table data
+                    dataTable.clear();
+
+                    // Populate the table with the new data
+                    response.data.forEach(function (logItem) {
+                        dataTable.row.add({
+                            proxy: logItem.proxy || "N/A",
+                            provider: logItem.provider || "N/A",
+                            version: logItem.version || "N/A",
+                            ip: logItem.node || "N/A",
+                            log: logItem.log
+                        });
+                    });
+
+                    // Redraw the DataTable with the new data
+                    dataTable.draw();
+                } else {
+                    layer.open({
+                        title: "系统提示",
+                        btn: ["知道"],
+                        content: "没有找到相关的日志信息",
+                        icon: 2
+                    });
+                    dataTable.clear().draw();
+                }
+            },
+            error: function () {
+                layer.open({
+                    title: "系统提示",
+                    btn: ["知道"],
+                    content: "查询日志失败，请重试",
+                    icon: 2
+                });
+            }
+        });
     });
 });
