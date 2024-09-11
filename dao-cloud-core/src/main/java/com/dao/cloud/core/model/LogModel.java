@@ -12,10 +12,11 @@ public class LogModel extends Model {
 
     private String traceId;
     /**
-     * log stage
+     * log stage todo
      * 1-1-2
      */
     private String stage;
+    private Long happenTime;
     private ProxyProviderModel proxyProviderModel;
     /**
      * Processing node info

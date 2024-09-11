@@ -49,6 +49,11 @@ public class DemoServiceImpl implements DemoService {
 
     @Override
     public void trace() {
-        log.info("print log data......");
+        log.info("print log data(info)......");
+        try {
+            int i = 1 / 0;
+        } catch (Exception e) {
+            log.error("print log data(error)......", e);
+        }
     }
 }

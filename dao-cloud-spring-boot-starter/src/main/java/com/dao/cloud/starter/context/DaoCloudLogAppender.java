@@ -2,7 +2,6 @@ package com.dao.cloud.starter.context;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.core.model.LogModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
@@ -10,7 +9,8 @@ import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * @author: sucf
@@ -28,11 +28,10 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(ILoggingEvent eventObject) {
         String traceId = eventObject.getMDCPropertyMap().get("traceId");
-        // todo 后面再维护
-        String stage = "2-2";
         if (!StringUtils.hasLength(traceId)) {
             return;
         }
+
         String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
                 .format(new java.util.Date(eventObject.getTimeStamp()));
         String logLevel = eventObject.getLevel().toString();
@@ -49,13 +48,30 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
                 message
         );
 
+        // 处理异常堆栈信息
+        if (eventObject.getThrowableProxy() != null) {
+            Throwable throwable = extractThrowable(eventObject);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            throwable.printStackTrace(pw);
+            logMessage += "\n" + sw;
+        }
+
         // send trace data to center
         LogModel logModel = new LogModel();
         logModel.setTraceId(traceId);
-        logModel.setStage(stage);
         logModel.setNode(node);
+        logModel.setHappenTime(eventObject.getTimeStamp());
         logModel.setLogMessage(logMessage);
+
         DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage);
+    }
+
+    private Throwable extractThrowable(ILoggingEvent eventObject) {
+        if (eventObject.getThrowableProxy() != null) {
+            return ((ch.qos.logback.classic.spi.ThrowableProxy) eventObject.getThrowableProxy()).getThrowable();
+        }
+        return null;
     }
 }

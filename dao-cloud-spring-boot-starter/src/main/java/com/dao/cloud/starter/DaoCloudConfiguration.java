@@ -7,10 +7,7 @@ import com.dao.cloud.core.converter.StringToCharConverter;
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
 import com.dao.cloud.core.util.NetUtil;
-import com.dao.cloud.starter.bootstrap.ConfigCenterBootstrap;
-import com.dao.cloud.starter.bootstrap.DaoCloudCenterBootstrap;
-import com.dao.cloud.starter.bootstrap.RpcConsumerBootstrap;
-import com.dao.cloud.starter.bootstrap.RpcProviderBootstrap;
+import com.dao.cloud.starter.bootstrap.DaoCloudCustomInterceptor;
 import com.dao.cloud.starter.context.DaoCloudLogAppender;
 import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
@@ -21,11 +18,13 @@ import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
@@ -38,10 +37,20 @@ import java.util.List;
 @Configuration
 @EnableConfigurationProperties({DaoCloudServerProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
-@Import({DaoCloudServerProperties.class, DaoCloudCenterProperties.class,
-        DaoCloudCenterBootstrap.class, RpcProviderBootstrap.class,
-        RpcConsumerBootstrap.class, ConfigCenterBootstrap.class})
-public class DaoCloudConfiguration {
+@ComponentScan("com.dao.cloud.starter.bootstrap")
+@Import({DaoCloudServerProperties.class, DaoCloudCenterProperties.class})
+public class DaoCloudConfiguration implements WebMvcConfigurer {
+
+    private DaoCloudCustomInterceptor daoCloudCustomInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(daoCloudCustomInterceptor).addPathPatterns("/**");
+    }
+
+    public DaoCloudConfiguration(DaoCloudCustomInterceptor daoCloudCustomInterceptor) {
+        this.daoCloudCustomInterceptor = daoCloudCustomInterceptor;
+    }
 
     @Bean
     public Appender<ILoggingEvent> daoCloudLogAppender() {

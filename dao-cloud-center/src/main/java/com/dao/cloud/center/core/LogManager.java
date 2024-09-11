@@ -36,7 +36,7 @@ public class LogManager {
      * value: sort List
      * stage(1-1-2)+日志发生节点信息(ip、port....)
      */
-    private final Cache<String, List<LogMeta>> logMeta = CacheBuilder.newBuilder().initialCapacity(50).expireAfterWrite(2, TimeUnit.HOURS).build();
+    private final Cache<String, List<LogMeta>> logsMeta = CacheBuilder.newBuilder().initialCapacity(50).expireAfterWrite(2, TimeUnit.HOURS).build();
 
     /**
      * 保存日志
@@ -45,24 +45,24 @@ public class LogManager {
      */
     public synchronized void collect(LogModel logModel) {
         try {
-            List<LogMeta> logMetas = logMeta.get(logModel.getTraceId(), Lists::newArrayList);
+            List<LogMeta> logMetas = logsMeta.get(logModel.getTraceId(), Lists::newArrayList);
             LogMeta logMeta = new LogMeta();
             logMeta.setNode(logModel.getNode());
-            logMeta.setStage(logModel.getStage());
+            logMeta.setHappenTime(logModel.getHappenTime());
             logMetas.add(logMeta);
 
             // path
-            String storagePath = logPath + "/" + logModel.getTraceId() + File.separator + "message.log";
+            String storagePath = logPath + "/" + logModel.getTraceId() + File.separator + logMeta.getHappenTime() + File.separator + "message.log";
 
             FileUtil.appendUtf8String(logModel.getLogMessage() + "\n", storagePath);
-            this.logMeta.put(logModel.getTraceId(), logMetas);
+            logsMeta.put(logModel.getTraceId(), logMetas);
         } catch (ExecutionException e) {
             log.info("dao cloud log collect error", e);
         }
     }
 
     public List<LogModel> get(String traceId) throws ExecutionException {
-        List<LogMeta> logMetas = logMeta.get(traceId, new Callable<List<LogMeta>>() {
+        List<LogMeta> logMetas = logsMeta.get(traceId, new Callable<List<LogMeta>>() {
             @Override
             public List<LogMeta> call() throws Exception {
                 return null;
@@ -73,13 +73,12 @@ public class LogManager {
         }
         List<LogModel> logModels = Lists.newArrayList();
         for (LogMeta logMeta : logMetas) {
-            String storagePath = logPath + "/" + traceId + File.separator + "message.log";
+            String storagePath = logPath + "/" + traceId + File.separator + logMeta.getHappenTime() + File.separator + "message.log";
             String logMessage = FileUtil.readUtf8String(storagePath);
             LogModel logModel = new LogModel();
             logModel.setTraceId(traceId);
             logModel.setLogMessage(logMessage);
             logModel.setNode(logMeta.getNode());
-            logModel.setStage(logMeta.getStage());
             logModels.add(logModel);
         }
         return logModels;

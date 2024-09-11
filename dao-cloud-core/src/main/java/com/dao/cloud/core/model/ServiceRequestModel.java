@@ -17,8 +17,6 @@ public class ServiceRequestModel extends Model {
 
     protected String traceId;
 
-    protected String stage;
-
     /**
      * 调用接口名，在服务端找到它对应的实现
      */

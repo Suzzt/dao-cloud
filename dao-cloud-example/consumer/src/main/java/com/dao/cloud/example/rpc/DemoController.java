@@ -135,6 +135,7 @@ public class DemoController {
 
     @RequestMapping("test-trace-log")
     public ApiResult traceLog() {
+        log.info("1 print log data......");
         demoService.trace();
         String traceId = DaoCloudLogger.getTraceId();
         return ApiResult.buildSuccess(traceId);

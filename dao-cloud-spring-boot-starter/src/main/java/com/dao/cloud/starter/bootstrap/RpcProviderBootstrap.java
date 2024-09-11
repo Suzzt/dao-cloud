@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -58,6 +59,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @description rpc provider startup
  */
 @Slf4j
+@Component
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 

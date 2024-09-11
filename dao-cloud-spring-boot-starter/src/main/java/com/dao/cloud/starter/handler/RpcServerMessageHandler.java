@@ -44,7 +44,7 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequestModel rpcRequestModel) {
         // do invoke service
         serverHandlerThreadPool.execute(() -> {
-            logHandlerInterceptor.enter(rpcRequestModel.getTraceId(), rpcRequestModel.getStage());
+            logHandlerInterceptor.enter(rpcRequestModel.getTraceId());
             // invoke + response
             ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
             RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
