@@ -57,7 +57,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 帮助rpc服务发现和服务运行状况检查,使服务注册自己与发现其他服务变得简单。还提供服务的实时健康检查，以防止向不健康的主机或服务实例发送请求
 ## 3. 动态配置管理
 服务中的配置允许您在动态变更的方式下异步通知订阅服务。还支持动态变更配置后回调订阅服务中的监听事件
-## 4. 服务监控与链路追踪(todo)
+## 4. 服务监控与链路追踪
 监控服务负载流量压力,追踪各服务间调用的完整链路,归置日志统一收集输出打印,让你知道每个节点性能消耗情况
 ## 5. 高性能高可用center集群(服务注册中心、配置中心、网关服务中心)
 为微服务提供了自身的高可用、高性能、合并愈合以及更简单的集群恢复能力
@@ -73,7 +73,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 
 # 快速开始
-<img width="1826" alt="dao-cloud-index" src="https://github.com/Suzzt/dao-cloud/assets/27397567/98be714e-29fb-4dc1-86fc-9690d5e68458">
+<img width="1826" alt="dao-cloud-index" src="https://github.com/user-attachments/assets/6b4c7e4a-5a15-42af-99b4-098e004fb4f5">
 
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
@@ -114,10 +114,13 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     详情使用可以参考[dao-cloud-example](dao-cloud-example)工程中使用例子
         
 服务注册管理
-<img width="1826" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/80a6f503-2389-4de0-951a-a25a75bf58ed">
+<img width="1826" alt="dao-cloud-registry" src="https://github.com/user-attachments/assets/f989d608-e5ff-40b4-a83f-bf105793363f">
 
 配置中心管理
 <img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/379fbb3b-5ade-45f9-ab1c-3415d6f0e39a">
+
+日志中心
+<img width="2595" alt="image" src="https://github.com/user-attachments/assets/eebd942d-d1c2-48e4-b71a-dd406570dff8">
 
 项目(dao-cloud-example)中有一个示例
 
