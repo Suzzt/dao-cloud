@@ -43,7 +43,7 @@ public class LogManager {
      *
      * @param logModel
      */
-    public synchronized void collect(LogModel logModel) {
+    public void collect(LogModel logModel) {
         try {
             List<LogMeta> logMetas = logsMeta.get(logModel.getTraceId(), Lists::newArrayList);
             LogMeta logMeta = new LogMeta();
@@ -54,7 +54,7 @@ public class LogManager {
             // path
             String storagePath = logPath + "/" + logModel.getTraceId() + File.separator + logMeta.getHappenTime() + File.separator + "message.log";
 
-            FileUtil.appendUtf8String(logModel.getLogMessage() + "\n", storagePath);
+            FileUtil.appendUtf8String(logModel.getLogMessage(), storagePath);
             logsMeta.put(logModel.getTraceId(), logMetas);
         } catch (ExecutionException e) {
             log.info("dao cloud log collect error", e);

@@ -9,11 +9,15 @@ $(function () {
         "searching": false,
         "ordering": false,
         "columns": [
-            {data: 'proxy'},
-            {data: 'provider'},
-            {data: 'version'},
-            {data: 'ip'},
-            {data: 'log'}
+            {data: 'ip', className: 'text-center vertical-middle'},
+            {
+                data: 'log',
+                render: function (data, type, row) {
+                    return data
+                        .replace(/\n/g, '<br>')          // Newline to <br>
+                        .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');  // Tab to spaces
+                }
+            }
         ],
         "language": {
             "sProcessing": "处理中...",
@@ -58,9 +62,6 @@ $(function () {
                     // Populate the table with the new data
                     response.data.forEach(function (logItem) {
                         dataTable.row.add({
-                            proxy: logItem.proxy || "N/A",
-                            provider: logItem.provider || "N/A",
-                            version: logItem.version || "N/A",
                             ip: logItem.node || "N/A",
                             log: logItem.log
                         });

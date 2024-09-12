@@ -54,7 +54,7 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             throwable.printStackTrace(pw);
-            logMessage += "\n" + sw;
+            logMessage += sw;
         }
 
         // send trace data to center

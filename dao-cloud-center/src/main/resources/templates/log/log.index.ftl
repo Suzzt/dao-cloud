@@ -27,6 +27,9 @@
             margin-top: 20px;
         }
     }
+    .vertical-middle {
+        vertical-align: middle !important;
+    }
 </style>
 <body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
@@ -61,11 +64,8 @@
                             <table id="data_list" class="table table-bordered table-striped" width="100%">
                                 <thead>
                                 <tr>
-                                    <th name="proxy">proxy</th>
-                                    <th name="provider">provider</th>
-                                    <th name="env">version</th>
-                                    <th name="ip">ip</th>
-                                    <th name="log">日志信息内容</th>
+                                    <th name="ip" style="text-align: center;">ip</th>
+                                    <th name="log" style="text-align: center;">日志信息内容</th>
                                 </tr>
                                 </thead>
                                 <tbody></tbody>

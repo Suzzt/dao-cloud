@@ -27,6 +27,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     2.这里服务与center、provider与comsumer都是长连接的提供高可用的方案，这里的心跳检测存活分为两种，一种是重心跳，一种轻量级单向交互的心跳(该单向并不是指只有一方发送心跳！)
     3.服务间设计由于有长连接的存在，因此center宕机对现有服务间的调用没有影响，但是对配置中心的回调有一定程度的通知失败
     4.组件服务都有高可用是采用多节点保证的，高性能是采用最轻化的协议、同通道复用保证的。能保证整个微服务始终在一定程度下提供能力，不保证一些场景下的一致性
+    作者对于微服务的理解：微服务必须要有一个管理者(center)，这个管理可以是注册中心、配置中心、网关中心、日志中心等集成的平台，这样得益于长链接复用。应当是有且要有而不仅仅有！。
 
 
 # center集群架构
@@ -112,6 +113,10 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     </dependency>
     
     详情使用可以参考[dao-cloud-example](dao-cloud-example)工程中使用例子
+
+日志链路追踪
+    
+    通过DaoCloudLogger.getTraceId()直接能获取到traceId去center平台上查询即可！
         
 服务注册管理
 <img width="1826" alt="dao-cloud-registry" src="https://github.com/user-attachments/assets/f989d608-e5ff-40b4-a83f-bf105793363f">

@@ -17,7 +17,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author: sucf
@@ -145,10 +144,10 @@ public class CenterController {
 
     @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ConfigDataVO getConfigProxy(String proxy, String key, @RequestParam(required = false, defaultValue = "0") int start,
+    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start,
                                        @RequestParam(required = false, defaultValue = "10") int length) {
         ConfigDataVO configDataVO = new ConfigDataVO();
-        List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key);
+        List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key, version);
         // 分页
         int endIndex = Math.min(start + length, list.size());
         List<ConfigVO> data = list.subList(start, endIndex);
