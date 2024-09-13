@@ -5,6 +5,7 @@ import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Lists;
@@ -19,6 +20,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -332,6 +334,16 @@ public class FileSystem implements Persistence {
             }
         }
         return callTrendModels;
+    }
+
+    @Override
+    public void storage(LogModel logModel) {
+
+    }
+
+    @Override
+    public List<LogVO> getLog(String tracerId) {
+        return Collections.emptyList();
     }
 
     public String makePath(String prefix, String... modules) {

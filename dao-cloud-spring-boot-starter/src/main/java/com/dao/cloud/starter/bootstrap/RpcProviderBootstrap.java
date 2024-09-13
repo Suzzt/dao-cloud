@@ -20,6 +20,7 @@ import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
 import com.dao.cloud.starter.handler.NettyGlobalTriggerExceptionHandler;
 import com.dao.cloud.starter.handler.RpcServerMessageHandler;
 import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
+import com.dao.cloud.starter.log.LogHandlerInterceptor;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.properties.DaoCloudServerProperties;
@@ -34,6 +35,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,13 +52,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * @author sucf
@@ -56,6 +59,7 @@ import org.springframework.util.StringUtils;
  * @description rpc provider startup
  */
 @Slf4j
+@Component
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -92,8 +96,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             }
             ServiceInvoker serviceInvoker;
             if (flag) {
-                serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()),
-                        serviceBean, interfacesCallTrendMap);
+                serviceInvoker = new CallTrendServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean, interfacesCallTrendMap);
             } else {
                 serviceInvoker = new ServiceInvoker(SerializeStrategyFactory.getSerializeType(daoService.serializable().getName()), serviceBean);
             }
@@ -144,6 +147,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
         public void start() {
             NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("rpc-server-boss", true));
             NioEventLoopGroup worker = new NioEventLoopGroup(4, new DefaultThreadFactory("rpc-server-worker", true));
+            LogHandlerInterceptor logHandlerInterceptor = new LogHandlerInterceptor();
             try {
                 ServerBootstrap serverBootstrap = new ServerBootstrap();
                 serverBootstrap.channel(NioServerSocketChannel.class);
@@ -156,7 +160,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                         ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                         ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
                         ch.pipeline().addLast(new GatewayServiceMessageHandler(methodArgumentResolverHandler));
-                        ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider));
+                        ch.pipeline().addLast(new RpcServerMessageHandler(threadPoolProvider, logHandlerInterceptor));
                         ch.pipeline().addLast(new NettyGlobalTriggerExceptionHandler());
                     }
                 });

@@ -1,9 +1,6 @@
 package com.dao.cloud.center.web.controller;
 
-import com.dao.cloud.center.core.CenterClusterManager;
-import com.dao.cloud.center.core.ConfigCenterManager;
-import com.dao.cloud.center.core.GatewayCenterManager;
-import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
@@ -36,10 +33,13 @@ public class CenterController {
 
     private RegisterCenterManager registerCenterManager;
 
-    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    private LogManager logManager;
+
+    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
         this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.logManager = logManager;
     }
 
     @RequestMapping(value = "/registry/pageList")
@@ -144,10 +144,10 @@ public class CenterController {
 
     @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ConfigDataVO getConfigProxy(String proxy, String key, @RequestParam(required = false, defaultValue = "0") int start,
+    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start,
                                        @RequestParam(required = false, defaultValue = "10") int length) {
         ConfigDataVO configDataVO = new ConfigDataVO();
-        List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key);
+        List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key, version);
         // 分页
         int endIndex = Math.min(start + length, list.size());
         List<ConfigVO> data = list.subList(start, endIndex);
@@ -171,5 +171,23 @@ public class CenterController {
         CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, callTrendClearVO.getMethodName(), null);
         CenterClusterManager.syncCallTrendToCluster(SyncClusterInformationRequestHandler.CALL_TREND_CLEAR, callTrendModel);
         return ApiResult.buildSuccess();
+    }
+
+    @RequestMapping(value = "/log/search", method = RequestMethod.GET)
+    @ResponseBody
+    public ApiResult<List<LogVO>> search(@RequestParam String traceId) {
+        try {
+            List<LogModel> logModels = logManager.get(traceId);
+            List<LogVO> result = Lists.newArrayList();
+            for (LogModel logModel : logModels) {
+                LogVO logVO = new LogVO();
+                logVO.setLog(logModel.getLogMessage());
+                logVO.setNode(logModel.getNode());
+                result.add(logVO);
+            }
+            return ApiResult.buildSuccess(result);
+        } catch (Exception e) {
+            return ApiResult.buildSuccess();
+        }
     }
 }

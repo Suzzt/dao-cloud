@@ -27,6 +27,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     2.这里服务与center、provider与comsumer都是长连接的提供高可用的方案，这里的心跳检测存活分为两种，一种是重心跳，一种轻量级单向交互的心跳(该单向并不是指只有一方发送心跳！)
     3.服务间设计由于有长连接的存在，因此center宕机对现有服务间的调用没有影响，但是对配置中心的回调有一定程度的通知失败
     4.组件服务都有高可用是采用多节点保证的，高性能是采用最轻化的协议、同通道复用保证的。能保证整个微服务始终在一定程度下提供能力，不保证一些场景下的一致性
+    作者对于微服务的理解：微服务必须要有一个管理者(center)，这个管理可以是注册中心、配置中心、网关中心、日志中心等集成的平台，这样得益于长链接复用。应当是有且要有而不仅仅有！。
 
 
 # center集群架构
@@ -57,7 +58,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 帮助rpc服务发现和服务运行状况检查,使服务注册自己与发现其他服务变得简单。还提供服务的实时健康检查，以防止向不健康的主机或服务实例发送请求
 ## 3. 动态配置管理
 服务中的配置允许您在动态变更的方式下异步通知订阅服务。还支持动态变更配置后回调订阅服务中的监听事件
-## 4. 服务监控与链路追踪(todo)
+## 4. 服务监控与链路追踪
 监控服务负载流量压力,追踪各服务间调用的完整链路,归置日志统一收集输出打印,让你知道每个节点性能消耗情况
 ## 5. 高性能高可用center集群(服务注册中心、配置中心、网关服务中心)
 为微服务提供了自身的高可用、高性能、合并愈合以及更简单的集群恢复能力
@@ -73,7 +74,7 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
     serialize type 支持: jdk(DTO请实现序列化接口)、json、hessian(推荐默认)
 
 # 快速开始
-<img width="1826" alt="dao-cloud-index" src="https://github.com/Suzzt/dao-cloud/assets/27397567/98be714e-29fb-4dc1-86fc-9690d5e68458">
+<img width="1826" alt="dao-cloud-index" src="https://github.com/user-attachments/assets/6b4c7e4a-5a15-42af-99b4-098e004fb4f5">
 
 无需任何配置(追求轻量).所有功能组件都是通过SpringBoot自动装配一键化启动(引入启动依赖jar包)
 
@@ -112,12 +113,19 @@ rpc注解用法说明(其实用法与dubbo、spring-cloud、sofa这些差不多�
     </dependency>
     
     详情使用可以参考[dao-cloud-example](dao-cloud-example)工程中使用例子
+
+日志链路追踪
+    
+    通过DaoCloudLogger.getTraceId()直接能获取到traceId去center平台上查询即可！
         
 服务注册管理
-<img width="1826" alt="dao-cloud-registry" src="https://github.com/Suzzt/dao-cloud/assets/27397567/80a6f503-2389-4de0-951a-a25a75bf58ed">
+<img width="1826" alt="dao-cloud-registry" src="https://github.com/user-attachments/assets/f989d608-e5ff-40b4-a83f-bf105793363f">
 
 配置中心管理
 <img width="1808" alt="dao-cloud-config" src="https://github.com/Suzzt/dao-cloud/assets/27397567/379fbb3b-5ade-45f9-ab1c-3415d6f0e39a">
+
+日志中心
+<img width="2595" alt="image" src="https://github.com/user-attachments/assets/eebd942d-d1c2-48e4-b71a-dd406570dff8">
 
 项目(dao-cloud-example)中有一个示例
 

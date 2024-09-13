@@ -4,6 +4,7 @@ import com.dao.cloud.common.DemoService;
 import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.starter.annotation.DaoCallTrend;
 import com.dao.cloud.starter.annotation.DaoService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,8 +13,10 @@ import java.util.concurrent.TimeUnit;
  * @date: 2023/1/12 17:33
  * @description:
  */
+@Slf4j
 @DaoService
 public class DemoServiceImpl implements DemoService {
+
     @Override
     @DaoCallTrend(interval = 5, time_unit = TimeUnit.SECONDS)
     public String test(String string1, int int1, double double1, long long1, boolean flag) {
@@ -42,5 +45,15 @@ public class DemoServiceImpl implements DemoService {
             e.printStackTrace();
         }
         return "time out";
+    }
+
+    @Override
+    public void trace() {
+        log.info("print log data(info)......");
+        try {
+            int i = 1 / 0;
+        } catch (Exception e) {
+            log.error("print log data(error)......", e);
+        }
     }
 }

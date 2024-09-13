@@ -21,6 +21,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -37,6 +38,7 @@ import java.util.Set;
  * @description: rpc consumer startup
  */
 @Slf4j
+@Component
 public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
     private final Set<ProxyProviderModel> relyProxy = new HashSet<>();
@@ -154,14 +156,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
             public Object invoke(Object obj, Method method, Object[] args) throws InterruptedException {
                 ProviderModel providerModel = proxyProviderModel.getProviderModel();
 
-                RpcRequestModel requestModel = new RpcRequestModel(
-                        providerModel.getProvider(),
-                        providerModel.getVersion(),
-                        method.getName(),
-                        method.getParameterTypes(),
-                        args,
-                        method.getReturnType()
-                );
+                RpcRequestModel requestModel = new RpcRequestModel(providerModel.getProvider(), providerModel.getVersion(), method.getName(), method.getParameterTypes(), args, method.getReturnType());
 
                 ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serialized, timeout);
                 return clientInvoker.invoke(requestModel);

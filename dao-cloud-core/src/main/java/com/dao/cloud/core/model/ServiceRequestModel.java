@@ -15,6 +15,8 @@ public class ServiceRequestModel extends Model {
      */
     protected long sequenceId;
 
+    protected String traceId;
+
     /**
      * 调用接口名，在服务端找到它对应的实现
      */

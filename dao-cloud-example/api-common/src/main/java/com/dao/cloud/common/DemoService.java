@@ -15,4 +15,6 @@ public interface DemoService {
     ParamDTO complex(ParamDTO paramDTO);
 
     String timeout();
+
+    void trace();
 }

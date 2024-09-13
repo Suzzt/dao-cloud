@@ -39,6 +39,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, GatewayRequestModel gatewayRequestModel) {
+
         RpcRequestModel rpcRequestModel;
         try {
             rpcRequestModel = wrapper(gatewayRequestModel);

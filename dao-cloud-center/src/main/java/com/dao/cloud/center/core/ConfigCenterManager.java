@@ -1,13 +1,13 @@
 package com.dao.cloud.center.core;
 
-import com.google.common.collect.Lists;
-import com.dao.cloud.center.web.vo.ConfigVO;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.center.web.vo.ConfigVO;
 import com.dao.cloud.core.model.ConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Lists;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -107,9 +107,10 @@ public class ConfigCenterManager {
      *
      * @param proxy
      * @param key
+     * @param version
      * @return
      */
-    public List<ConfigVO> getConfigVO(String proxy, String key) {
+    public List<ConfigVO> getConfigVO(String proxy, String key, Integer version) {
         List<ConfigVO> result = Lists.newArrayList();
         for (Map.Entry<ProxyConfigModel, String> entry : cache.entrySet()) {
             ConfigVO configVO = new ConfigVO();
@@ -118,6 +119,9 @@ public class ConfigCenterManager {
                 continue;
             }
             if (StringUtils.hasLength(key) && !proxyConfigModel.getKey().equals(key)) {
+                continue;
+            }
+            if (version != null && version!=proxyConfigModel.getVersion()) {
                 continue;
             }
             configVO.setProxy(proxyConfigModel.getProxy());

@@ -2,7 +2,7 @@
 <html>
 <head>
     <#import "common/common.macro.ftl" as netCommon>
-    <title>运行报表</title>
+    <title>指标概况</title>
     <@netCommon.commonStyle />
     <!-- daterangepicker -->
     <link rel="stylesheet"
