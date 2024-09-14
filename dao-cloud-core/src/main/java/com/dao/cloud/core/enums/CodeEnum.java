@@ -64,6 +64,11 @@ public enum CodeEnum {
      */
     PULL_CALL_TREND_ERROR("D0007", "拉取接口调用趋势失败"),
 
+    /**
+     * 日志配置地址不存在
+     */
+    COLLECTION_LOG_NOT_EXIST("D0100", "集合日志不存在"),
+
     // G级别 网关侧
     /**
      * 网关请求失败

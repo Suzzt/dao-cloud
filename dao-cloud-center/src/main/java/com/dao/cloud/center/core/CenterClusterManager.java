@@ -365,7 +365,7 @@ public class CenterClusterManager {
     public static void down(String ip) {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.remove(ip);
         if (clusterCenterConnector != null) {
-            log.info("down center node(ip = {})", ip);
+            log.error("down center node(ip = {})", ip);
         }
     }
 
