@@ -49,11 +49,14 @@
         <section class="content">
 
             <div class="row">
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="traceId" autocomplete="on" value="${topic!''}" placeholder="请输入traceId">
+                <div class="col-xs-6 col-sm-4">
+                    <input type="text" class="form-control" id="traceId" autocomplete="on"
+                           value="${topic!''}" placeholder="请输入traceId">
                 </div>
-                <div class="col-xs-3" style="display: flex; justify-content: flex-end;">
-                    <button class="btn btn-info" id="searchBtn" style="margin-right: 5px;">查询</button>
+                <div class="col-xs-3 col-sm-2" style="display: flex; align-items: center;">
+                    <button class="btn btn-primary btn-block" id="searchBtn">
+                        <i class="fa fa-search" aria-hidden="true"></i> 查询
+                    </button>
                 </div>
             </div>
 
@@ -92,4 +95,13 @@
 <script>
 </script>
 </body>
+<script>
+    // 监听回车键
+    document.getElementById('traceId').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            document.getElementById('searchBtn').click();
+        }
+    });
+</script>
+
 </html>
