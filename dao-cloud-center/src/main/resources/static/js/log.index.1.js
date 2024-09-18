@@ -50,12 +50,12 @@ $(function () {
         }
 
         $.ajax({
-            url: base_url+'/log/search',
+            url: base_url + '/log/search',
             method: 'GET',
-            data: { traceId: traceId },
+            data: {traceId: traceId},
             dataType: 'json',
             success: function (response) {
-                if (response.success && response.data.length > 0) {
+                if (response.success && response.data != null && response.data.length > 0) {
                     // Clear existing table data
                     dataTable.clear();
 

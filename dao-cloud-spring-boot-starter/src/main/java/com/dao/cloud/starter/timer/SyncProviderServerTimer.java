@@ -34,7 +34,7 @@ public class SyncProviderServerTimer implements Runnable {
                 public void run(Timeout timeout) {
                     try {
                         Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
-                        ClientManager.add(proxyProviderModel, serverNodeModels);
+                        ClientManager.save(proxyProviderModel, serverNodeModels);
                     } catch (Exception e) {
                         log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", proxyProviderModel.getProxy(), proxyProviderModel.getProviderModel(), e);
                     } finally {
