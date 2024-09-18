@@ -77,7 +77,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
                             for (ServerNodeModel serverNodeModel : serverNodeModels) {
                                 proxyProviders.add(serverNodeModel);
                             }
-                            ClientManager.add(proxyProviderModel, proxyProviders);
+                            ClientManager.save(proxyProviderModel, proxyProviders);
                         }
                         relyProxy.add(proxyProviderModel);
                         LoadBalance loadBalance = daoReference.loadBalance();

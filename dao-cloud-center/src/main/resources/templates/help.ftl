@@ -131,6 +131,10 @@ DaoConfig.subscribe() 订阅配置,在监听到订阅的配置发生变化时,�
                 <p>
                     2.启动之后可以在注册中心对网关监控与配置
                 </p>
+                <h1 style="font-weight: bold;">日志查询</h1>
+                <p>
+                只要用DaoCloudLogger.getTraceId()获取到traceId值，然后去center页面中查询即可！
+                </p>
             </div>
         </section>
     </div>

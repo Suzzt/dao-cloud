@@ -79,12 +79,13 @@ public class ClientManager {
     }
 
     /**
-     * add provider service node
+     * save provider service node
      *
      * @param proxyProviderModel
      * @param providerNodes
      */
-    public static void add(ProxyProviderModel proxyProviderModel, Set<ServerNodeModel> providerNodes) {
+    public static void save(ProxyProviderModel proxyProviderModel, Set<ServerNodeModel> providerNodes) {
+        providerNodes = providerNodes == null ? new HashSet<>() : providerNodes;
         SERVICE_NODES.put(proxyProviderModel, providerNodes);
         for (ServerNodeModel providerNode : providerNodes) {
             SHARED_CONNECT_CLIENTS.putIfAbsent(providerNode, new Client(proxyProviderModel, providerNode.getIp(), providerNode.getPort()));

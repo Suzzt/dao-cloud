@@ -55,7 +55,7 @@ public class LogManager implements InitializingBean {
      * key: traceId
      * value: sort List
      */
-    private final Cache<String, List<LogMeta>> logsMeta = CacheBuilder.newBuilder().initialCapacity(50).expireAfterWrite(2, TimeUnit.SECONDS).removalListener(new RemovalListener<String, List<LogMeta>>() {
+    private final Cache<String, List<LogMeta>> logsMeta = CacheBuilder.newBuilder().initialCapacity(50).expireAfterWrite(2, TimeUnit.HOURS).removalListener(new RemovalListener<String, List<LogMeta>>() {
         @Override
         public void onRemoval(RemovalNotification<String, List<LogMeta>> notification) {
             if (notification.wasEvicted()) {

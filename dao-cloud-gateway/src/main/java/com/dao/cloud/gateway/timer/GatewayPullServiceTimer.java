@@ -55,7 +55,7 @@ public class GatewayPullServiceTimer implements Runnable {
                         for (Map.Entry<ProxyProviderModel, Set<ServerNodeModel>> entry : services.entrySet()) {
                             ProxyProviderModel proxyProviderModel = entry.getKey();
                             Set<ServerNodeModel> serverNodeModels = entry.getValue();
-                            ClientManager.add(proxyProviderModel, serverNodeModels);
+                            ClientManager.save(proxyProviderModel, serverNodeModels);
                     
                             // gateway config
                             GatewayConfigModel gatewayConfigModel = config.get(proxyProviderModel);
