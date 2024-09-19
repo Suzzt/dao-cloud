@@ -79,7 +79,7 @@
                 <b>dao-cloud</b>
             </span>
         </a>
-        <nav class="navbar navbar-static-top" role="navigation" style="display: flex; align-items: center; justify-content: space-between;">
+        <nav class="navbar navbar-static-top" role="navigation">
             <!-- 左侧菜单切换按钮 -->
             <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                 <span class="sr-only">Toggle navigation</span>
@@ -89,11 +89,11 @@
             </a>
 
             <!-- 文案显示区域，位于导航栏中间，并且上下左右居中 -->
-            <div class="navbar-text" id="headerText" style="flex-grow: 1; text-align: center; font-size: 18px; font-weight: bold; color: #FFFFFF;">
+            <div class="navbar-text" id="headerText" style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; font-size: 18px; font-weight: bold; color: #FFFFFF;">
                 dao-cloud
             </div>
 
-            <div class="navbar-custom-menu">
+            <div class="navbar-custom-menu" style="float: right;">
                 <ul class="nav navbar-nav">
                     <!-- 用户菜单 -->
                     <li class="dropdown user user-menu">
