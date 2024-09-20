@@ -17,18 +17,8 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <#--        <!-- Content Header (Page header) &ndash;&gt;-->
-        <#--        <section class="content-header">-->
-        <#--            <h1>系统报表</h1>-->
-        <#--        </section>-->
-
-        <!-- Main content -->
         <section class="content">
-
-            <!-- 报表导航 -->
             <div class="row">
-
-                <#-- center集群节点数 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-aqua">
                         <span class="info-box-icon"><i class="fa fa-navicon"></i></span>
@@ -42,8 +32,6 @@
                         </div>
                     </div>
                 </div>
-
-                <#-- 网关集群节点数 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-teal">
                         <span class="info-box-icon"><i class="fa fa-hourglass-half"></i></span>
@@ -57,8 +45,6 @@
                         </div>
                     </div>
                 </div>
-
-                <#-- 服务提供者数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-green">
                         <span class="info-box-icon"><i class="fa fa-cab"></i></span>
@@ -72,8 +58,6 @@
                         </div>
                     </div>
                 </div>
-
-                <#-- 服务提供者方法数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-yellow">
                         <span class="info-box-icon"><i class="fa fa-flag-o"></i></span>
@@ -87,8 +71,6 @@
                         </div>
                     </div>
                 </div>
-
-                <#-- 配置数量 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-light-blue">
                         <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
@@ -102,8 +84,6 @@
                         </div>
                     </div>
                 </div>
-
-                <#-- 配置订阅 -->
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="info-box bg-lime-active">
                         <span class="info-box-icon"><i class="fa fa-umbrella"></i></span>
@@ -114,6 +94,22 @@
                                 <div class="progress-bar" style="width: 100%"></div>
                             </div>
                             <span class="progress-description">每个配置服务订阅数的总和数(不去重) </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="box box-primary">
+                        <div class="box-body">
+                            <div id="barChart" style="height:400px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="box box-success">
+                        <div class="box-body">
+                            <div id="lineChart" style="height:400px;"></div>
                         </div>
                     </div>
                 </div>
@@ -128,10 +124,103 @@
 <!-- daterangepicker -->
 <script src="${request.contextPath}/static/adminlte/bower_components/moment/moment.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-<#-- echarts -->
+<!-- echarts -->
 <script src="${request.contextPath}/static/plugins/echarts/echarts.common.min.js"></script>
 <script src="${request.contextPath}/static/js/index.js"></script>
+
 <script>
+    // 柱状图配置
+    var barChart = echarts.init(document.getElementById('barChart'));
+    var barOption = {
+        title: {
+            text: 'Proxy服务节点个数'
+        },
+        tooltip: {},
+        xAxis: {
+            type: 'category',
+            data: ['proxy1', 'proxy2', 'proxy3', 'proxy4', 'proxy5'] // 示例数据，实际数据请从后台获取
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [{
+            name: '节点个数',
+            type: 'bar',
+            data: [50, 20, 15, 10, 5],
+            barMaxWidth: '50%',
+            itemStyle: {
+                color: '#337ab7'
+            }
+        }],
+        grid: {
+            containLabel: true,
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%'
+        }
+    };
+    barChart.setOption(barOption);
+
+    // 折线图配置
+    var lineChart = echarts.init(document.getElementById('lineChart'));
+    var lineOption = {
+        title: {
+            text: 'Proxy Key 节点个数 (按时间)'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['proxy1', 'proxy2', 'proxy3'] // 示例数据，实际数据请从后台获取
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['08:00', '08:05', '08:10', '08:15', '08:20', '08:25', '08:30', '08:35', '08:40', '08:45', '08:50', '08:55'] // 时间轴，5分钟间隔，最多显示1小时
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: 'proxy1',
+                type: 'line',
+                data: [12, 15, 11, 10, 13, 12, 14, 15, 13, 11, 12, 14], // 示例数据
+                smooth: true,
+                lineStyle: {
+                    color: '#FF5733'
+                }
+            },
+            {
+                name: 'proxy2',
+                type: 'line',
+                data: [8, 9, 10, 11, 12, 9, 8, 7, 10, 9, 8, 9], // 示例数据
+                smooth: true,
+                lineStyle: {
+                    color: '#33FF57'
+                }
+            },
+            {
+                name: 'proxy3',
+                type: 'line',
+                data: [5, 6, 4, 6, 7, 5, 4, 5, 7, 6, 5, 6], // 示例数据
+                smooth: true,
+                lineStyle: {
+                    color: '#3357FF'
+                }
+            }
+        ],
+        grid: {
+            containLabel: true,
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: '15%'
+        }
+    };
+    lineChart.setOption(lineOption);
+
     setTimeout(function () {
         window.location.reload(1);
     }, 10 * 1000);
