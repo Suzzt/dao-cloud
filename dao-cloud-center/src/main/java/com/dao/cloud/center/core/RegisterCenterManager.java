@@ -4,6 +4,7 @@ import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
@@ -318,5 +319,14 @@ public class RegisterCenterManager {
      */
     public List<CallTrendModel> getCallTrends() {
         return persistence.getCallTrends();
+    }
+
+    /**
+     * 统计服务proxy数量(前十)
+     *
+     * @return
+     */
+    public ProxyStatisticsVO proxyServerStatistics() {
+        return null;
     }
 }

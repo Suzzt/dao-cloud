@@ -138,7 +138,7 @@
         tooltip: {},
         xAxis: {
             type: 'category',
-            data: ['proxy1', 'proxy2', 'proxy3', 'proxy4', 'proxy5'] // 示例数据，实际数据请从后台获取
+            data: ${proxyDimensionStatistics}
         },
         yAxis: {
             type: 'value'
@@ -146,7 +146,7 @@
         series: [{
             name: '节点个数',
             type: 'bar',
-            data: [50, 20, 15, 10, 5],
+            data: ${proxyMeasureStatistics},
             barMaxWidth: '50%',
             itemStyle: {
                 color: '#337ab7'

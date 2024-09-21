@@ -54,6 +54,10 @@ public class IndexController {
         model.addAttribute("configNum", configCenterManager.size());
         // 每个配置服务订阅数的总和(不去重)
         model.addAttribute("configSubscribeNum", ConfigChannelManager.size());
+        
+        // 统计proxy节点图表数据
+        model.addAttribute("proxyDimensionStatistics", "['proxy1', 'proxy2', 'proxy3', 'proxy4', 'pro1111xy5']");
+        model.addAttribute("proxyMeasureStatistics", "[50, 20, 15, 10, 5]");
         return "index";
     }
 
