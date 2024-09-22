@@ -8,6 +8,7 @@ import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -327,6 +328,18 @@ public class RegisterCenterManager {
      * @return
      */
     public ProxyStatisticsVO proxyServerStatistics() {
-        return null;
+        List<String> dimension = Lists.newArrayList();
+        List<Integer> measure = Lists.newArrayList();
+        Set<Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
+        for (Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> entry : entries) {
+            for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : entry.getValue().entrySet()) {
+                dimension.add(entry.getKey() + "_" + providerModelSetEntry.getKey().getProvider() + "_" + providerModelSetEntry.getKey().getVersion());
+                measure.add(providerModelSetEntry.getValue().size());
+            }
+        }
+        // 截取前十个
+        dimension = dimension.size() > 10 ? dimension.subList(0, 10) : dimension;
+        measure = measure.size() > 10 ? measure.subList(0, 10) : measure;
+        return new ProxyStatisticsVO(dimension, measure);
     }
 }

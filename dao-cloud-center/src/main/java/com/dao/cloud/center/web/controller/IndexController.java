@@ -3,8 +3,10 @@ package com.dao.cloud.center.web.controller;
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.Permissions;
+import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.enums.CodeEnum;
+import com.google.gson.Gson;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: sucf
@@ -54,10 +58,12 @@ public class IndexController {
         model.addAttribute("configNum", configCenterManager.size());
         // 每个配置服务订阅数的总和(不去重)
         model.addAttribute("configSubscribeNum", ConfigChannelManager.size());
-        
+
         // 统计proxy节点图表数据
-        model.addAttribute("proxyDimensionStatistics", "['proxy1', 'proxy2', 'proxy3', 'proxy4', 'pro1111xy5']");
-        model.addAttribute("proxyMeasureStatistics", "[50, 20, 15, 10, 5]");
+        ProxyStatisticsVO proxyStatisticsVO = registerCenterManager.proxyServerStatistics();
+        Gson gson = new Gson();
+        model.addAttribute("proxyDimensionStatistics", gson.toJson(proxyStatisticsVO.getDimension()));
+        model.addAttribute("proxyMeasureStatistics",gson.toJson(proxyStatisticsVO.getMeasure()));
         return "index";
     }
 

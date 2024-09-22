@@ -13,4 +13,9 @@ import java.util.List;
 public class ProxyStatisticsVO {
     private List<String> dimension;
     private List<Integer> measure;
+
+    public ProxyStatisticsVO(List<String> dimension, List<Integer> measure) {
+        this.dimension = dimension;
+        this.measure = measure;
+    }
 }

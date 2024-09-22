@@ -129,38 +129,44 @@
 <script src="${request.contextPath}/static/js/index.js"></script>
 
 <script>
-    // 柱状图配置
-    var barChart = echarts.init(document.getElementById('barChart'));
-    var barOption = {
-        title: {
-            text: 'Proxy服务节点个数'
-        },
-        tooltip: {},
-        xAxis: {
-            type: 'category',
-            data: ${proxyDimensionStatistics}
-        },
-        yAxis: {
-            type: 'value'
-        },
-        series: [{
-            name: '节点个数',
-            type: 'bar',
-            data: ${proxyMeasureStatistics},
-            barMaxWidth: '50%',
-            itemStyle: {
-                color: '#337ab7'
+    var proxyDimensionStatistics = ${proxyDimensionStatistics};
+    console.log(proxyDimensionStatistics)
+    if (proxyDimensionStatistics == null || proxyDimensionStatistics.length===0) {
+        document.getElementById('barChart').closest('.col-md-12').style.display = 'none';
+    } else {
+        // 柱状图配置
+        var barChart = echarts.init(document.getElementById('barChart'));
+        var barOption = {
+            title: {
+                text: 'Proxy服务节点个数'
+            },
+            tooltip: {},
+            xAxis: {
+                type: 'category',
+                data: ${proxyDimensionStatistics}
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                name: '节点个数',
+                type: 'bar',
+                data: ${proxyMeasureStatistics},
+                barMaxWidth: '50%',
+                itemStyle: {
+                    color: '#337ab7'
+                }
+            }],
+            grid: {
+                containLabel: true,
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                top: '15%'
             }
-        }],
-        grid: {
-            containLabel: true,
-            left: '3%',
-            right: '4%',
-            bottom: '3%',
-            top: '15%'
-        }
-    };
-    barChart.setOption(barOption);
+        };
+        barChart.setOption(barOption);
+    }
 
     // 折线图配置
     var lineChart = echarts.init(document.getElementById('lineChart'));
