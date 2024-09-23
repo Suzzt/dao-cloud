@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: sucf
@@ -330,16 +331,25 @@ public class RegisterCenterManager {
     public ProxyStatisticsVO proxyServerStatistics() {
         List<String> dimension = Lists.newArrayList();
         List<Integer> measure = Lists.newArrayList();
+        Map<String, Integer> map = Maps.newTreeMap(Collections.reverseOrder());
         Set<Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
         for (Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> entry : entries) {
             for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : entry.getValue().entrySet()) {
-                dimension.add(entry.getKey() + "_" + providerModelSetEntry.getKey().getProvider() + "_" + providerModelSetEntry.getKey().getVersion());
-                measure.add(providerModelSetEntry.getValue().size());
+                map.put(entry.getKey() + "_" + providerModelSetEntry.getKey().getProvider() + "_" + providerModelSetEntry.getKey().getVersion(), providerModelSetEntry.getValue().size());
             }
         }
-        // 截取前十个
-        dimension = dimension.size() > 10 ? dimension.subList(0, 10) : dimension;
-        measure = measure.size() > 10 ? measure.subList(0, 10) : measure;
+
+        // sort
+        List<Map.Entry<String, Integer>> sortedList = map.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < 9 && i < sortedList.size(); i++) {
+            Map.Entry<String, Integer> entry = sortedList.get(i);
+            dimension.add(entry.getKey());
+            measure.add(entry.getValue());
+        }
         return new ProxyStatisticsVO(dimension, measure);
     }
 }
