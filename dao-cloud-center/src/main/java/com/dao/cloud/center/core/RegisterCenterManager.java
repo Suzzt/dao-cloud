@@ -345,7 +345,7 @@ public class RegisterCenterManager {
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < 9 && i < sortedList.size(); i++) {
+        for (int i = 0; i < 14 && i < sortedList.size(); i++) {
             Map.Entry<String, Integer> entry = sortedList.get(i);
             dimension.add(entry.getKey());
             measure.add(entry.getValue());

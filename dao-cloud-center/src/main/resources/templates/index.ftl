@@ -172,18 +172,18 @@
     var lineChart = echarts.init(document.getElementById('lineChart'));
     var lineOption = {
         title: {
-            text: 'Proxy Key 节点个数 (按时间)'
+            text: '预留！看看这里后面可以放什么？'
         },
         tooltip: {
             trigger: 'axis'
         },
         legend: {
-            data: ['proxy1', 'proxy2', 'proxy3'] // 示例数据，实际数据请从后台获取
+            data: ['proxy1', 'proxy2', 'proxy3']
         },
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['08:00', '08:05', '08:10', '08:15', '08:20', '08:25', '08:30', '08:35', '08:40', '08:45', '08:50', '08:55'] // 时间轴，5分钟间隔，最多显示1小时
+            data: ['08:00', '08:05', '08:10', '08:15', '08:20', '08:25', '08:30', '08:35', '08:40', '08:45', '08:50', '08:55']
         },
         yAxis: {
             type: 'value'
@@ -192,7 +192,7 @@
             {
                 name: 'proxy1',
                 type: 'line',
-                data: [12, 15, 11, 10, 13, 12, 14, 15, 13, 11, 12, 14], // 示例数据
+                data: [12, 15, 11, 10, 13, 12, 6, 15, 13, 11, 12, 14],
                 smooth: true,
                 lineStyle: {
                     color: '#FF5733'
@@ -201,7 +201,7 @@
             {
                 name: 'proxy2',
                 type: 'line',
-                data: [8, 9, 10, 11, 12, 9, 8, 7, 10, 9, 8, 9], // 示例数据
+                data: [8, 9, 10, 11, 12, 9, 8, 7, 10, 9, 8, 9],
                 smooth: true,
                 lineStyle: {
                     color: '#33FF57'
