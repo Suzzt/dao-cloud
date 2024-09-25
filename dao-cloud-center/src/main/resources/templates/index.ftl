@@ -115,30 +115,24 @@
                 </div>
             </div>
         </section>
-        <!-- /.content -->
     </div>
-    <!-- footer -->
     <@netCommon.commonFooter />
 </div>
 <@netCommon.commonScript />
-<!-- daterangepicker -->
 <script src="${request.contextPath}/static/adminlte/bower_components/moment/moment.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
-<!-- echarts -->
 <script src="${request.contextPath}/static/plugins/echarts/echarts.common.min.js"></script>
 <script src="${request.contextPath}/static/js/index.js"></script>
-
 <script>
     var proxyDimensionStatistics = ${proxyDimensionStatistics};
-    console.log(proxyDimensionStatistics)
-    if (proxyDimensionStatistics == null || proxyDimensionStatistics.length===0) {
+    if (proxyDimensionStatistics == null || proxyDimensionStatistics.length === 0) {
         document.getElementById('barChart').closest('.col-md-12').style.display = 'none';
     } else {
         // 柱状图配置
         var barChart = echarts.init(document.getElementById('barChart'));
         var barOption = {
             title: {
-                text: 'Proxy服务节点个数'
+                text: '服务节点个数'
             },
             tooltip: {},
             xAxis: {
