@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author: sucf
@@ -63,7 +61,7 @@ public class IndexController {
         ProxyStatisticsVO proxyStatisticsVO = registerCenterManager.proxyServerStatistics();
         Gson gson = new Gson();
         model.addAttribute("proxyDimensionStatistics", gson.toJson(proxyStatisticsVO.getDimension()));
-        model.addAttribute("proxyMeasureStatistics",gson.toJson(proxyStatisticsVO.getMeasure()));
+        model.addAttribute("proxyMeasureStatistics", gson.toJson(proxyStatisticsVO.getMeasure()));
         return "index";
     }
 
