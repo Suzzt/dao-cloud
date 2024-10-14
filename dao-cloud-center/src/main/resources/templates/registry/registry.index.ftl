@@ -90,7 +90,9 @@
                            placeholder="请输入version(精确匹配)">
                 </div>
                 <div class="col-xs-1 pull-right">
-                    <button class="btn btn-block btn-info" id="searchBtn">搜索</button>
+                    <button class="btn btn-block btn-info" id="searchBtn">
+                        <i class="fa fa-search" aria-hidden="true"></i> 查询
+                    </button>
                 </div>
             </div>
 

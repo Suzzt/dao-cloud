@@ -49,7 +49,7 @@
                            value="${topic!''}" placeholder="请输入traceId">
                 </div>
                 <div class="col-xs-3 col-sm-2" style="display: flex; align-items: center;">
-                    <button class="btn btn-primary btn-block" id="searchBtn">
+                    <button class="btn btn-block btn-info" id="searchBtn">
                         <i class="fa fa-search" aria-hidden="true"></i> 查询
                     </button>
                 </div>
