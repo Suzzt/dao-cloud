@@ -91,7 +91,7 @@
                 </div>
                 <div class="col-xs-1 pull-right">
                     <button class="btn btn-block btn-info" id="searchBtn">
-                        <i class="fa fa-search" aria-hidden="true"></i> 查询
+                        <i class="fa fa-search"></i> 查询
                     </button>
                 </div>
             </div>
