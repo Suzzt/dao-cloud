@@ -52,9 +52,9 @@
                 </div>
                 <!-- 新增flex container来包裹按钮 -->
                 <div class="col-xs-3" style="display: flex; justify-content: flex-end;">
-                    <button class="btn btn-info" id="searchBtn" style="margin-right: 5px;">搜索</button>
+                    <button class="btn btn-info" id="searchBtn" style="margin-right: 5px;"> <i class="fa fa-search"></i>搜索</button>
                     <div class="btn-group">
-                        <button class="btn btn-info bg-green" id="config_add">添加</button>
+                        <button class="btn btn-info bg-green" id="config_add"> <i class="fa fa-plus"></i>添加</button>
                     </div>
                 </div>
             </div>

@@ -4,15 +4,18 @@ import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: sucf
@@ -318,5 +321,35 @@ public class RegisterCenterManager {
      */
     public List<CallTrendModel> getCallTrends() {
         return persistence.getCallTrends();
+    }
+
+    /**
+     * 统计服务proxy数量(前十)
+     *
+     * @return
+     */
+    public ProxyStatisticsVO proxyServerStatistics() {
+        List<String> dimension = Lists.newArrayList();
+        List<Integer> measure = Lists.newArrayList();
+        Map<String, Integer> map = Maps.newTreeMap(Collections.reverseOrder());
+        Set<Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>>> entries = REGISTRY_SERVER.entrySet();
+        for (Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> entry : entries) {
+            for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : entry.getValue().entrySet()) {
+                map.put(entry.getKey() + "_" + providerModelSetEntry.getKey().getProvider() + "_" + providerModelSetEntry.getKey().getVersion(), providerModelSetEntry.getValue().size());
+            }
+        }
+
+        // sort
+        List<Map.Entry<String, Integer>> sortedList = map.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < 14 && i < sortedList.size(); i++) {
+            Map.Entry<String, Integer> entry = sortedList.get(i);
+            dimension.add(entry.getKey());
+            measure.add(entry.getValue());
+        }
+        return new ProxyStatisticsVO(dimension, measure);
     }
 }
