@@ -50,7 +50,7 @@
     <script src="${request.contextPath}/static/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 
     <!-- pace -->
-    <script src="${request.contextPath}/static/adminlte/bower_components/PACE/pace.min.js"></script>
+<#--    <script src="${request.contextPath}/static/adminlte/bower_components/PACE/pace.min.js"></script>-->
 <#-- jquery cookie -->
     <script src="${request.contextPath}/static/plugins/jquery/jquery.cookie.js"></script>
 
@@ -72,6 +72,24 @@
 </#macro>
 
 <#macro commonHeader>
+    <style>
+        /* 定义退出登录按钮样式及悬停高亮效果 */
+        #logoutBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #ffffff;
+            font-size: 16px;
+            background-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #logoutBtn:hover {
+            background-color: #3c8dbc; /* 悬停时背景颜色高亮 */
+            color: #ffffff; /* 保持文字白色 */
+        }
+    </style>
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
@@ -124,9 +142,6 @@
                 <li class="nav-click <#if pageName == "registry">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/registry"><i
                                 class="fa fa-circle-o text-orange"></i><span>服务中心</span></a></li>
-                <#--                <li class="nav-click <#if pageName == "gateway">active</#if>"><a-->
-                <#--                            href="${request.contextPath}/dao-cloud/gateway"><i-->
-                <#--                                class="fa fa-circle-o text-blue"></i><span>网关中心</span></a></li>-->
                 <li class="nav-click <#if pageName == "config">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/config"><i
                                 class="fa fa-circle-o text-blue"></i><span>配置中心</span></a></li>
