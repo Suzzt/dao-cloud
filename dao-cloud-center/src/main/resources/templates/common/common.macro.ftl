@@ -50,7 +50,7 @@
     <script src="${request.contextPath}/static/adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 
     <!-- pace -->
-    <script src="${request.contextPath}/static/adminlte/bower_components/PACE/pace.min.js"></script>
+<#--    <script src="${request.contextPath}/static/adminlte/bower_components/PACE/pace.min.js"></script>-->
 <#-- jquery cookie -->
     <script src="${request.contextPath}/static/plugins/jquery/jquery.cookie.js"></script>
 
@@ -64,18 +64,38 @@
     <script src="${request.contextPath}/static/js/common.1.js"></script>
     <script>
         var base_url = '${request.contextPath}' + "/dao-cloud";
-        var current_page_value = $('.sidebar-menu li.active a span').text();;
+        var current_page_value = $('.sidebar-menu li.active a span').text();
+        ;
         $('#headerText').text(current_page_value);
     </script>
 
 </#macro>
 
 <#macro commonHeader>
+    <style>
+        /* 定义退出登录按钮样式及悬停高亮效果 */
+        #logoutBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #ffffff;
+            font-size: 16px;
+            background-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #logoutBtn:hover {
+            background-color: #3c8dbc; /* 悬停时背景颜色高亮 */
+            color: #ffffff; /* 保持文字白色 */
+        }
+    </style>
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
             <span class="logo-lg">
-                <img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo" style="height: 30px; margin-right: 15px;"/>
+                <img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo"
+                     style="height: 30px; margin-right: 15px;"/>
                 <b>dao-cloud</b>
             </span>
         </a>
@@ -89,16 +109,17 @@
             </a>
 
             <!-- 文案显示区域，位于导航栏中间，并且上下左右居中 -->
-            <div class="navbar-text" id="headerText" style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; font-size: 18px; font-weight: bold; color: #FFFFFF;">
+            <div class="navbar-text" id="headerText"
+                 style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; font-size: 18px; font-weight: bold; color: #FFFFFF;">
                 dao-cloud
             </div>
 
             <div class="navbar-custom-menu" style="float: right;">
                 <ul class="nav navbar-nav">
-                    <!-- 用户菜单 -->
-                    <li class="dropdown user user-menu">
-                        <a href=";" id="logoutBtn" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                            <span class="hidden-xs">退出登陆</span>
+                    <li class="dropdown" style="flex-grow: 1;">
+                        <a href="javascript:void(0);" id="logoutBtn" class="dropdown-toggle"
+                           style="display: flex; justify-content: center; align-items: center; height: 100%; color: #ffffff; font-size: 16px; background-color: transparent;">
+                            <i class="fa fa-sign-out" aria-hidden="true" style="margin-right: 8px;"></i>退出登陆
                         </a>
                     </li>
                 </ul>
@@ -121,9 +142,6 @@
                 <li class="nav-click <#if pageName == "registry">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/registry"><i
                                 class="fa fa-circle-o text-orange"></i><span>服务中心</span></a></li>
-                <#--                <li class="nav-click <#if pageName == "gateway">active</#if>"><a-->
-                <#--                            href="${request.contextPath}/dao-cloud/gateway"><i-->
-                <#--                                class="fa fa-circle-o text-blue"></i><span>网关中心</span></a></li>-->
                 <li class="nav-click <#if pageName == "config">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/config"><i
                                 class="fa fa-circle-o text-blue"></i><span>配置中心</span></a></li>
@@ -141,7 +159,7 @@
 
 <#macro commonFooter >
     <footer class="main-footer">
-        Powered by <b>dao-cloud</b>
+        Powered by <a href="https://github.com/Suzzt/dao-cloud" target="_blank"><b>dao-cloud</b></a>
         <div class="pull-right hidden-xs">
             <strong>去
                 <a href="https://github.com/Suzzt/dao-cloud" target="_blank">github</a>
