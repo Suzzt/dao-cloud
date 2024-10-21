@@ -27,13 +27,13 @@ import java.util.Set;
 @RequestMapping(value = "dao-cloud")
 public class CenterController {
 
-    private ConfigCenterManager configCenterManager;
+    private final ConfigCenterManager configCenterManager;
 
-    private GatewayCenterManager gatewayCenterManager;
+    private final GatewayCenterManager gatewayCenterManager;
 
-    private RegisterCenterManager registerCenterManager;
+    private final RegisterCenterManager registerCenterManager;
 
-    private LogManager logManager;
+    private final LogManager logManager;
 
     public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
         this.registerCenterManager = registerCenterManager;
