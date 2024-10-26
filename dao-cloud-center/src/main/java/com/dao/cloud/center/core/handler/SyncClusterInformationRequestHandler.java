@@ -125,7 +125,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 });
             }
         } catch (Throwable t) {
-            log.error("Sharing data={} between clusters accept handle error", t, new Gson().toJson(shareClusterRequestModel));
+            log.error("Sharing data={} between clusters accept handle error", new Gson().toJson(shareClusterRequestModel), t);
             if (shareClusterRequestModel.getType() == DOWN_SERVER || shareClusterRequestModel.getType() == SAVE_CONFIG) {
                 ClusterSyncDataResponseModel clusterSyncDataResponseModel = new ClusterSyncDataResponseModel();
                 clusterSyncDataResponseModel.setDaoException(new DaoException(CodeEnum.SYNC_SHARE_CLUSTER_DATA_ERROR));
