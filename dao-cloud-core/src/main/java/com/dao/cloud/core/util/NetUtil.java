@@ -1,7 +1,6 @@
 package com.dao.cloud.core.util;
 
 import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -19,110 +18,108 @@ import java.util.regex.Pattern;
 public class NetUtil {
     private static final String ANY_HOST_VALUE = "0.0.0.0";
     private static final String LOCALHOST_VALUE = "127.0.0.1";
-    private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
+    private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}$");
 
-    public static String getServerIP(String domainName) {
+    public static String getLocalIp() {
+        InetAddress localAddress = getLocalAddress();
+        return localAddress != null ? localAddress.getHostAddress() : null;
+    }
+
+    private static InetAddress getLocalAddress() {
         try {
-            InetAddress inetAddress = InetAddress.getByName(domainName);
-            return inetAddress.getHostAddress();
+            InetAddress localHost = InetAddress.getLocalHost();
+            InetAddress validAddress = toValidAddress(localHost);
+            if (validAddress != null) {
+                return validAddress;
+            }
         } catch (UnknownHostException e) {
+            log.warn("无法获取本地主机信息", e);
+        }
+
+        return getFirstValidNetworkAddress();
+    }
+
+    private static InetAddress getFirstValidNetworkAddress() {
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            if (networkInterfaces == null) {
+                log.warn("未找到网络接口");
+                return null;
+            }
+
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                if (isInvalidNetworkInterface(networkInterface)) {
+                    continue;
+                }
+
+                InetAddress address = getFirstReachableAddress(networkInterface);
+                if (address != null) {
+                    return address;
+                }
+            }
+        } catch (IOException e) {
+            log.error("获取网络接口时发生IO异常", e);
+        }
+
+        log.warn("未找到有效的网络地址");
+        return null;
+    }
+
+    private static boolean isInvalidNetworkInterface(NetworkInterface networkInterface) throws IOException {
+        return networkInterface.isLoopback() || networkInterface.isVirtual() || !networkInterface.isUp();
+    }
+
+    private static InetAddress getFirstReachableAddress(NetworkInterface networkInterface) {
+        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+        while (addresses.hasMoreElements()) {
+            InetAddress address = addresses.nextElement();
+            InetAddress validAddress = toValidAddress(address);
+            if (validAddress != null && isAddressReachable(validAddress)) {
+                return validAddress;
+            }
         }
         return null;
     }
 
-    public static String getLocalIp() {
-        return getLocalAddress0().getHostAddress();
-    }
-
-    private static InetAddress getLocalAddress0() {
-        InetAddress localAddress = null;
+    private static boolean isAddressReachable(InetAddress address) {
         try {
-            localAddress = InetAddress.getLocalHost();
-            InetAddress addressItem = toValidAddress(localAddress);
-            if (addressItem != null) {
-                return addressItem;
-            }
-        } catch (Throwable e) {
-
+            return address.isReachable(100);
+        } catch (IOException e) {
+            log.debug("无法到达地址: {}", address, e);
+            return false;
         }
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            if (null == interfaces) {
-                return localAddress;
-            }
-            while (interfaces.hasMoreElements()) {
-                try {
-                    NetworkInterface network = interfaces.nextElement();
-                    if (network.isLoopback() || network.isVirtual() || !network.isUp()) {
-                        continue;
-                    }
-                    Enumeration<InetAddress> addresses = network.getInetAddresses();
-                    while (addresses.hasMoreElements()) {
-                        try {
-                            InetAddress addressItem = toValidAddress(addresses.nextElement());
-                            if (addressItem != null) {
-                                try {
-                                    if (addressItem.isReachable(100)) {
-                                        return addressItem;
-                                    }
-                                } catch (IOException e) {
-                                    // ignore
-                                }
-                            }
-                        } catch (Throwable e) {
-                        }
-                    }
-                } catch (Throwable e) {
-                }
-            }
-        } catch (Throwable e) {
-        }
-        return localAddress;
     }
 
     private static InetAddress toValidAddress(InetAddress address) {
         if (address instanceof Inet6Address) {
-            Inet6Address v6Address = (Inet6Address) address;
-            if (isPreferIPV6Address()) {
-                return normalizeV6Address(v6Address);
-            }
+            return isPreferIPV6Address() ? normalizeV6Address((Inet6Address) address) : null;
         }
-        if (isValidV4Address(address)) {
-            return address;
-        }
-        return null;
+        return isValidV4Address(address) ? address : null;
     }
 
     private static boolean isPreferIPV6Address() {
         return Boolean.getBoolean("java.net.preferIPv6Addresses");
     }
 
-    /**
-     * valid Inet4Address
-     *
-     * @param address
-     * @return
-     */
     private static boolean isValidV4Address(InetAddress address) {
         if (address == null || address.isLoopbackAddress()) {
             return false;
         }
-        String name = address.getHostAddress();
-        boolean result = (name != null
-                && IP_PATTERN.matcher(name).matches()
-                && !ANY_HOST_VALUE.equals(name)
-                && !LOCALHOST_VALUE.equals(name));
-        return result;
+        String hostAddress = address.getHostAddress();
+        return hostAddress != null && IP_PATTERN.matcher(hostAddress).matches()
+                && !ANY_HOST_VALUE.equals(hostAddress)
+                && !LOCALHOST_VALUE.equals(hostAddress);
     }
 
     private static InetAddress normalizeV6Address(Inet6Address address) {
-        String addr = address.getHostAddress();
-        int i = addr.lastIndexOf('%');
-        if (i > 0) {
+        String hostAddress = address.getHostAddress();
+        int scopeIndex = hostAddress.lastIndexOf('%');
+        if (scopeIndex > 0) {
             try {
-                return InetAddress.getByName(addr.substring(0, i) + '%' + address.getScopeId());
+                return InetAddress.getByName(hostAddress.substring(0, scopeIndex) + '%' + address.getScopeId());
             } catch (UnknownHostException e) {
-                // ignore
+                log.debug("无法解析IPv6地址: {}", address, e);
             }
         }
         return address;
