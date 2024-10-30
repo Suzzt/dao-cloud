@@ -2,7 +2,6 @@ package com.dao.cloud.gateway.limit;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author: sucf
@@ -49,8 +48,7 @@ public class SlideWindowCountLimiter extends Limiter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SlideWindowCountLimiter that = (SlideWindowCountLimiter) o;
-        return windowSizeInMillis == that.windowSizeInMillis &&
-                maxRequestCount == that.maxRequestCount;
+        return windowSizeInMillis == that.windowSizeInMillis && maxRequestCount == that.maxRequestCount;
     }
 
     @Override
@@ -65,27 +63,5 @@ public class SlideWindowCountLimiter extends Limiter {
         sb.append(", maxRequestCount=").append(maxRequestCount);
         sb.append('}');
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        // 1秒钟最大请求次数
-        final int MAX_REQUESTS_PER_SECOND = 7;
-        System.out.println(TimeUnit.SECONDS.toMillis(1));
-        SlideWindowCountLimiter rateLimiter = new SlideWindowCountLimiter(MAX_REQUESTS_PER_SECOND, TimeUnit.SECONDS.toMillis(1));
-
-        // 模拟请求
-        for (int i = 0; i < 10; i++) {
-            if (rateLimiter.tryAcquire()) {
-                System.out.println("Request " + (i + 1) + ": Allowed");
-            } else {
-                System.out.println("Request " + (i + 1) + ": Denied");
-            }
-            try {
-                // 100毫秒1次请求
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 }

@@ -22,18 +22,6 @@ import oshi.software.os.OSFileStore;
 @Slf4j
 public class SystemUtil {
 
-    private static final OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-
-    /**
-     * get available port
-     *
-     * @return
-     * @throws Exception
-     */
-    public static int getAvailablePort() throws Exception {
-        return getAvailablePort(0);
-    }
-
     /**
      * get available port
      *
