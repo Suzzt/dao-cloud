@@ -51,7 +51,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author sucf
@@ -89,7 +88,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                 if (daoCallTrend != null) {
                     flag = true;
                     String methodName = methodToString(method);
-                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(new AtomicLong(), proxyProviderModel, methodName, daoCallTrend.interval(), daoCallTrend.time_unit());
+                    CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(proxyProviderModel, methodName, daoCallTrend.interval(), daoCallTrend.time_unit());
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.time_unit());
                     interfacesCallTrendMap.put(methodName, callTrendTimerTask);
                 }
