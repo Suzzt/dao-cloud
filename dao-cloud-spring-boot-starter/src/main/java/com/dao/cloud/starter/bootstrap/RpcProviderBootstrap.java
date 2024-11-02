@@ -36,7 +36,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -62,8 +61,11 @@ import java.util.concurrent.TimeUnit;
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
 public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired(required = false)
-    private MethodArgumentResolverHandler methodArgumentResolverHandler;
+    private final MethodArgumentResolverHandler methodArgumentResolverHandler;
+
+    public RpcProviderBootstrap(MethodArgumentResolverHandler methodArgumentResolverHandler) {
+        this.methodArgumentResolverHandler = methodArgumentResolverHandler;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {

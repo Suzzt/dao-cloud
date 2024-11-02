@@ -35,7 +35,7 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter implements 
     public void afterPropertiesSet() {
 
         // valid
-        if (username == null || username.trim().length() == 0 || password == null || password.trim().length() == 0) {
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             throw new RuntimeException("权限账号密码不可为空");
         }
 
