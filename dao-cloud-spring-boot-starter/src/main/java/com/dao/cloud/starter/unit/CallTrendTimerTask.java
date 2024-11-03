@@ -12,49 +12,37 @@ import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * @author: sucf
  * @date: 2024/7/14 23:47
- * @description: 双缓冲分段计数思路
+ * @description: 缓冲分段计数思路
  * 具体思路如下：
- * 1.启动两个计数分段数组：activeBuffer（活跃缓冲）和 backupBuffer（备份缓冲）。
- * 1.1:increment() 操作始终操作 active Buffer，以确保计数操作高效。
- * 1.2:在执行 run()（即发送数据）时，将当前的 buffer1 和 buffer2 交换，然后发送 active Buffer 的数据，再将上一个 active Buffer 清零。
- * 2.交换之后，业务逻辑的 increment() 仍然操作新的 active Buffer，不受影响。
- * 3.发送完数据并重置 backup Buffer 后，下次触发 run() 时就可以直接使用 backup Buffer 来统计上一轮的计数，从而确保计数不丢失。
+ * 使用 LongAdder 提高 increment 性能：LongAdder 能在高并发下有效减少竞争，比 AtomicLong 更适合频繁增量操作。
+ * 发送失败后的计数恢复：在 backupBuffer 中保存一次性总计数，如果发送失败，将 backupBuffer 的值重新加回 activeBuffer，确保计数不丢失。
+ * 更灵活的双缓冲机制：每次 run 方法调用时，activeBuffer 清零，直接复用它继续计数，避免额外的切换开销。
  */
 @Slf4j
 public class CallTrendTimerTask implements TimerTask {
 
     /**
-     * 缓冲区1
+     * 主计数缓冲区
      */
-    private final AtomicLongArray buffer1;
+    private final LongAdder activeBuffer = new LongAdder();
     /**
-     * 缓冲区2
+     * 备份缓冲区
      */
-    private final AtomicLongArray buffer2;
-    /**
-     * 标识当前的活跃缓冲区
-     */
-    private volatile boolean isActive = true;
+    private final AtomicLong backupBuffer = new AtomicLong(0);
+
     private final ProxyProviderModel proxyProviderModel;
     private final String methodName;
     private final int interval;
     private final TimeUnit timeUnit;
 
-    /**
-     * 分段数=CPU核数
-     */
-    private static final int SEGMENT_COUNT = Runtime.getRuntime().availableProcessors();
-
     public CallTrendTimerTask(ProxyProviderModel proxyProviderModel, String methodName, int interval, TimeUnit timeUnit) {
-        this.buffer1 = new AtomicLongArray(SEGMENT_COUNT);
-        this.buffer2 = new AtomicLongArray(SEGMENT_COUNT);
         this.proxyProviderModel = proxyProviderModel;
         this.methodName = methodName;
         this.interval = interval;
@@ -62,54 +50,30 @@ public class CallTrendTimerTask implements TimerTask {
     }
 
     /**
-     * 计数，随机选择一个分段更新
+     * 高并发计数方法，计数操作只作用于 activeBuffer
      */
     public void increment() {
-        int segmentIndex = ThreadLocalRandom.current().nextInt(SEGMENT_COUNT);
-        if (isActive) {
-            buffer1.incrementAndGet(segmentIndex);
-        } else {
-            buffer2.incrementAndGet(segmentIndex);
-        }
-    }
-
-    /**
-     * 获取计数数组的总和
-     */
-    private long getTotalCount(AtomicLongArray buffer) {
-        long sum = 0;
-        for (int i = 0; i < SEGMENT_COUNT; i++) {
-            sum += buffer.get(i);
-        }
-        return sum;
-    }
-
-    /**
-     * 重置计数数组
-     */
-    private void resetBuffer(AtomicLongArray buffer) {
-        for (int i = 0; i < SEGMENT_COUNT; i++) {
-            buffer.set(i, 0);
-        }
+        activeBuffer.increment();
     }
 
     @Override
     public void run(Timeout timeout) {
         try {
-            // 交换缓冲区
-            isActive = !isActive;
-            // 选择当前的非活跃缓冲区发送数据
-            AtomicLongArray bufferToSend = isActive ? buffer2 : buffer1;
-            long totalCount = getTotalCount(bufferToSend);
+            // 获取并交换缓冲区计数
+            long totalCount = activeBuffer.sumThenReset();
             if (totalCount != 0) {
+                // 将统计值转移到备份缓冲区，用于回退
+                backupBuffer.set(totalCount);
+
                 CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
                 DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
                 Channel channel = CenterChannelManager.getChannel();
 
                 channel.writeAndFlush(daoMessage).addListener(future -> {
                     if (future.isSuccess()) {
-                        resetBuffer(bufferToSend);
+                        backupBuffer.set(0);
                     } else {
+                        activeBuffer.add(backupBuffer.get());
                         log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
                     }
                 });
