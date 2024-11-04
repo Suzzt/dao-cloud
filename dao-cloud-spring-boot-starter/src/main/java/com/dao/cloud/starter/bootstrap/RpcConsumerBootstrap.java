@@ -86,7 +86,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
                         // get proxyObj
                         serviceProxy = RpcProxy.build(iface, proxyProviderModel, serialized, loadBalance.getDaoLoadBalance(), timeout);
                     } catch (Exception e) {
-                        log.error("<<<<<<<<<<< pull proxy = {}, provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
+                        log.error("<<<<<<<<<<< pull proxy provider = {} server node error >>>>>>>>>>>", new ProviderModel(provider, version), e);
                         throw new DaoException(e);
                     }
                     // set bean
@@ -137,13 +137,13 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
          */
         private static class ProxyHandler implements InvocationHandler {
 
-            private ProxyProviderModel proxyProviderModel;
+            private final ProxyProviderModel proxyProviderModel;
 
-            private byte serialized;
+            private final byte serialized;
 
-            private DaoLoadBalance daoLoadBalance;
+            private final DaoLoadBalance daoLoadBalance;
 
-            private long timeout;
+            private final long timeout;
 
             public ProxyHandler(ProxyProviderModel proxyProviderModel, byte serialized, DaoLoadBalance daoLoadBalance, long timeout) {
                 this.proxyProviderModel = proxyProviderModel;

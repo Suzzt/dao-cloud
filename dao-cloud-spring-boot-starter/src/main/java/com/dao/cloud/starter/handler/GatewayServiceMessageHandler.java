@@ -1,19 +1,20 @@
 package com.dao.cloud.starter.handler;
 
-import com.dao.cloud.core.model.*;
-import com.dao.cloud.starter.manager.ServiceManager;
-import com.dao.cloud.starter.unit.ServiceInvoker;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.NoMatchMethodException;
+import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.starter.manager.ServiceManager;
+import com.dao.cloud.starter.unit.ServiceInvoker;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
@@ -113,7 +114,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         }
         List<Object> parameterValueList = Arrays.stream(parameters)
                 .map(parameter -> methodArgumentResolverHandler.resolver(parameter, httpServletRequest,
-                    daoCloudServletResponse))
+                        daoCloudServletResponse))
                 .collect(Collectors.toList());
 
         HttpParameterBinderResult result = new HttpParameterBinderResult();
@@ -131,5 +132,22 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
                 HttpHeaderValues.APPLICATION_JSON + ";charset=UTF-8");
         daoCloudServletResponse.addHeader(HttpHeaderNames.CONTENT_LENGTH.toString(), "0");
         return daoCloudServletResponse;
+    }
+
+    @Data
+    private class HttpParameterBinderResult {
+        /**
+         * 方法参数类型
+         */
+        private Class<?>[] parameterTypes;
+
+        /**
+         * 方法参数值
+         */
+        private Object[] parameterValues;
+
+        private Class<?> returnType;
+
+        private DaoCloudServletResponse daoCloudServletResponse;
     }
 }

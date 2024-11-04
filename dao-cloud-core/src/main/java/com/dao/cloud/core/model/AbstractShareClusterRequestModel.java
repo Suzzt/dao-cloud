@@ -17,6 +17,7 @@ public class AbstractShareClusterRequestModel extends Model {
      * 1: indicates that the service is added to the cluster
      * 2: save the configuration from the configuration center
      * 3: save gateway configuration information
+     * detail see com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler
      */
     private byte type;
 
