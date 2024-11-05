@@ -35,7 +35,9 @@ public class CallTrendTimerTask implements TimerTask {
     /**
      * 备份缓冲区
      */
-    private final AtomicLong backupBuffer = new AtomicLong(0);
+    private long lastTotalCount = 0L;
+
+    private final AtomicLong failCountBuffer = new AtomicLong(0L);
 
     private final ProxyProviderModel proxyProviderModel;
     private final String methodName;
@@ -59,24 +61,30 @@ public class CallTrendTimerTask implements TimerTask {
     @Override
     public void run(Timeout timeout) {
         try {
-            // 获取并交换缓冲区计数
-            long totalCount = activeBuffer.sumThenReset();
-            if (totalCount != 0) {
-                // 将统计值转移到备份缓冲区，用于回退
-                backupBuffer.set(totalCount);
+            // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
+            synchronized (this) {
+                // 获取并交换缓冲区计数
+                long allTotalCount = activeBuffer.sum();
+                long deltaCount = allTotalCount - lastTotalCount;
+                long failCount = failCountBuffer.get();
+                if(failCount > 0L) {
+                    failCountBuffer.getAndAdd(-failCount);
+                }
+                long totalCount = deltaCount + failCount;
+                if (totalCount != 0) {
+                    lastTotalCount += deltaCount;
+                    CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
+                    DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE,
+                        DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
+                    Channel channel = CenterChannelManager.getChannel();
 
-                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
-                DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
-                Channel channel = CenterChannelManager.getChannel();
-
-                channel.writeAndFlush(daoMessage).addListener(future -> {
-                    if (future.isSuccess()) {
-                        backupBuffer.set(0);
-                    } else {
-                        activeBuffer.add(backupBuffer.get());
-                        log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
-                    }
-                });
+                    channel.writeAndFlush(daoMessage).addListener(future -> {
+                        if (!future.isSuccess()) {
+                            failCountBuffer.getAndAdd(totalCount);
+                            log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
+                        }
+                    });
+                }
             }
         } catch (Exception e) {
             log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
