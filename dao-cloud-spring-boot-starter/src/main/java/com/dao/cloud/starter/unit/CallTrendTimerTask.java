@@ -81,6 +81,7 @@ public class CallTrendTimerTask implements TimerTask {
 
                     channel.writeAndFlush(daoMessage).addListener(future -> {
                         if (!future.isSuccess()) {
+                            // TODO：除了发送缓冲区失败这种情况，也要考虑服务器响应是否处理成功，请自行补充
                             failCountBuffer.getAndAdd(totalCount);
                             log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
                         }
