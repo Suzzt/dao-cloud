@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.LongAdder;
  * @description: 缓冲分段计数思路
  * 具体思路如下：
  * 使用 LongAdder 提高 increment 性能：LongAdder 能在高并发下有效减少竞争，比 AtomicLong 更适合频繁增量操作。
- * 发送失败后的计数恢复：在 backupBuffer 中保存一次性总计数，如果发送失败，将 backupBuffer 的值重新加回 activeBuffer，确保计数不丢失。
- * 更灵活的双缓冲机制：每次 run 方法调用时，activeBuffer 清零，直接复用它继续计数，避免额外的切换开销。
+ * 发送失败后的计数恢复：在 failCountBuffer 中保存失败计数，等待下一次定时任务将与增量计数一起发送，确保计数不丢失。
  */
 @Slf4j
 public class CallTrendTimerTask implements TimerTask {
@@ -63,11 +62,9 @@ public class CallTrendTimerTask implements TimerTask {
 
     @Override
     public void run(Timeout timeout) {
+        // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
         if (concurrentCtrl.compareAndSet(false, true)) {
             try {
-                // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
-
-                // 获取并交换缓冲区计数
                 long allTotalCount = activeBuffer.sum();
                 long deltaCount = allTotalCount - lastTotalCount;
                 long failCount = failCountBuffer.get();
