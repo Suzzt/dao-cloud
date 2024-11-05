@@ -10,6 +10,7 @@ import com.dao.cloud.starter.manager.CenterChannelManager;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,8 @@ import java.util.concurrent.atomic.LongAdder;
  */
 @Slf4j
 public class CallTrendTimerTask implements TimerTask {
+
+    private final AtomicBoolean concurrentCtrl = new AtomicBoolean(false);
 
     /**
      * 主计数缓冲区
@@ -60,14 +63,15 @@ public class CallTrendTimerTask implements TimerTask {
 
     @Override
     public void run(Timeout timeout) {
-        try {
-            // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
-            synchronized (this) {
+        if (concurrentCtrl.compareAndSet(false, true)) {
+            try {
+                // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
+
                 // 获取并交换缓冲区计数
                 long allTotalCount = activeBuffer.sum();
                 long deltaCount = allTotalCount - lastTotalCount;
                 long failCount = failCountBuffer.get();
-                if(failCount > 0L) {
+                if (failCount > 0L) {
                     failCountBuffer.getAndAdd(-failCount);
                 }
                 long totalCount = deltaCount + failCount;
@@ -85,11 +89,12 @@ public class CallTrendTimerTask implements TimerTask {
                         }
                     });
                 }
+            } catch (Exception e) {
+                log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
+            } finally {
+                concurrentCtrl.set(false);
+                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, timeUnit);
             }
-        } catch (Exception e) {
-            log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
-        } finally {
-            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, timeUnit);
         }
     }
 }
