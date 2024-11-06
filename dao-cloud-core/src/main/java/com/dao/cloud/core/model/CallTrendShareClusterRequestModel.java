@@ -9,5 +9,5 @@ import lombok.Data;
  */
 @Data
 public class CallTrendShareClusterRequestModel extends AbstractShareClusterRequestModel{
-    public CallTrendModel callTrendModel;
+    private CallTrendModel callTrendModel;
 }

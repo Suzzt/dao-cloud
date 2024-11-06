@@ -9,27 +9,16 @@ import com.dao.cloud.core.enums.Serializer;
  */
 public class SerializeStrategyFactory {
 
-    public static byte HESSIAN = 0;
+    public final static byte HESSIAN = 0;
 
-    public static byte JDK = 1;
+    public final static byte JDK = 1;
 
-    public static byte JSON = 2;
+    public final static byte JSON = 2;
 
     public static DaoSerializer getSerializer(byte type) {
         Serializer[] values = Serializer.values();
         for (Serializer serializer : values) {
             if (serializer.getType() == type) {
-                return serializer.getDaoSerializer();
-            }
-        }
-        // default
-        return Serializer.HESSIAN.getDaoSerializer();
-    }
-
-    public static DaoSerializer getSerializer(String name) {
-        Serializer[] serializerStrategies = Serializer.values();
-        for (Serializer serializer : serializerStrategies) {
-            if (serializer.getName().equals(name)) {
                 return serializer.getDaoSerializer();
             }
         }
