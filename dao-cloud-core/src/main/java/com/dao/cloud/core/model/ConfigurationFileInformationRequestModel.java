@@ -9,6 +9,5 @@ import lombok.Data;
  */
 @Data
 public class ConfigurationFileInformationRequestModel extends Model {
-    private String proxy;
     private String groupId;
 }

@@ -1,10 +1,12 @@
 package com.dao.cloud.starter.bootstrap;
 
 import com.dao.cloud.core.exception.DaoException;
+import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
+import com.dao.cloud.starter.properties.DaoCloudServerProperties;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
@@ -53,13 +55,18 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
             throw new DaoException("Unable to connect to center");
         }
 
-//        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, registerProviderModel);
-//        channel.writeAndFlush(daoMessage).addListener(future -> {
-//            if (!future.isSuccess()) {
-//                log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());
-//            }
-//        });
-        // todo
+        // get config file information
+        ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
+        configurationFileInformationRequestModel.setGroupId("182702872927");
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
+        channel.writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("<<<<<<<<< Failed to get profile information and send a message >>>>>>>>>", future.cause());
+            }
+        });
+
+        // get config property
+
         return null;
     }
 }
