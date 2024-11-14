@@ -14,6 +14,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author: sucf
  * @date: 2023/2/12 16:37
@@ -41,8 +43,9 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      * @param remotePropertyConfig
      */
     private void loadRemotePropertyConfig(String remotePropertyConfig) {
-
+        List<String> fileInformation = getRemoteFileInformation("1278268928239764234", 1);
     }
+
 
     /**
      * Obtain the configuration information from Center
@@ -50,6 +53,22 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      * @return
      */
     private String getRemotePropertyConfig() {
+
+
+        // get config property
+
+        return null;
+    }
+
+
+    /**
+     * Get the configuration file information from Center
+     *
+     * @param groupId
+     * @param version
+     * @return file information
+     */
+    private List<String> getRemoteFileInformation(String groupId, int version) {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
@@ -57,16 +76,14 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
 
         // get config file information
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
-        configurationFileInformationRequestModel.setGroupId("182702872927");
+        configurationFileInformationRequestModel.setGroupId(groupId);
+        configurationFileInformationRequestModel.setVersion(version);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< Failed to get profile information and send a message >>>>>>>>>", future.cause());
             }
         });
-
-        // get config property
-
         return null;
     }
 }

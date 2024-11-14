@@ -10,4 +10,5 @@ import lombok.Data;
 @Data
 public class ConfigurationFileInformationRequestModel extends Model {
     private String groupId;
+    private int version;
 }
