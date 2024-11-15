@@ -2,11 +2,11 @@ package com.dao.cloud.starter.bootstrap;
 
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
+import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
-import com.dao.cloud.starter.properties.DaoCloudServerProperties;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
@@ -33,8 +33,6 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
 
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
-        String remotePropertyConfig = getRemotePropertyConfig();
-        loadRemotePropertyConfig(remotePropertyConfig);
     }
 
     /**
@@ -43,7 +41,12 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      * @param remotePropertyConfig
      */
     private void loadRemotePropertyConfig(String remotePropertyConfig) {
-        List<String> fileInformation = getRemoteFileInformation("1278268928239764234", 1);
+        String groupId = "";
+        int version = 0;
+        List<String> fileInformationList = getRemoteFileInformation(groupId, version);
+        for (String fileInformation : fileInformationList) {
+            String content = getRemotePropertyConfig(groupId, version, fileInformation);
+        }
     }
 
 
@@ -52,11 +55,22 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      *
      * @return
      */
-    private String getRemotePropertyConfig() {
+    private String getRemotePropertyConfig(String groupId, int version, String fileName) {
+        Channel channel = CenterChannelManager.getChannel();
+        if (channel == null) {
+            throw new DaoException("Unable to connect to center");
+        }
 
-
-        // get config property
-
+        ConfigurationPropertyRequestModel configurationPropertyRequestModel = new ConfigurationPropertyRequestModel();
+        configurationPropertyRequestModel.setGroupId(groupId);
+        configurationPropertyRequestModel.setVersion(version);
+        configurationPropertyRequestModel.setFileName(fileName);
+        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+        channel.writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
+            }
+        });
         return null;
     }
 
@@ -74,14 +88,13 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
             throw new DaoException("Unable to connect to center");
         }
 
-        // get config file information
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
         configurationFileInformationRequestModel.setGroupId(groupId);
         configurationFileInformationRequestModel.setVersion(version);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
-                log.error("<<<<<<<<< Failed to get profile information and send a message >>>>>>>>>", future.cause());
+                log.error("<<<<<<<<<Failed to send a request to pull the center remote file information >>>>>>>>>", future.cause());
             }
         });
         return null;

@@ -70,6 +70,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE, CallTrendFullModel.class);
         MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, ConfigurationFileInformationRequestModel.class);
         MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE, ConfigurationFileInformationResponseModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, ConfigurationPropertyRequestModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE, ConfigurationPropertyResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {
