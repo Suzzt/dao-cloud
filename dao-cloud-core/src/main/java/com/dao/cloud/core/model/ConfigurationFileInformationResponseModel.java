@@ -2,7 +2,7 @@ package com.dao.cloud.core.model;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -12,5 +12,5 @@ import java.util.List;
  */
 @Data
 public class ConfigurationFileInformationResponseModel extends ErrorResponseModel {
-    private List<String> fileNames;
+    private Set<String> fileNames;
 }

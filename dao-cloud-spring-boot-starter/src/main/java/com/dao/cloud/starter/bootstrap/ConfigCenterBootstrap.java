@@ -3,11 +3,13 @@ package com.dao.cloud.starter.bootstrap;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
 import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
+import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import io.netty.channel.Channel;
+import io.netty.util.concurrent.DefaultPromise;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -15,11 +17,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: sucf
  * @date: 2023/2/12 16:37
- * @description: config center startup(temp)
+ * @description: config center startup
  */
 @Component
 @Slf4j
@@ -43,7 +46,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
     private void loadRemotePropertyConfig(String remotePropertyConfig) {
         String groupId = "";
         int version = 0;
-        List<String> fileInformationList = getRemoteFileInformation(groupId, version);
+        Set<String> fileInformationList = getRemoteFileInformation(groupId, version);
         for (String fileInformation : fileInformationList) {
             String content = getRemotePropertyConfig(groupId, version, fileInformation);
         }
@@ -65,6 +68,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
         configurationPropertyRequestModel.setGroupId(groupId);
         configurationPropertyRequestModel.setVersion(version);
         configurationPropertyRequestModel.setFileName(fileName);
+        DefaultPromise<String> promise = new DefaultPromise<>(channel.eventLoop());
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
@@ -82,7 +86,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      * @param version
      * @return file information
      */
-    private List<String> getRemoteFileInformation(String groupId, int version) {
+    private Set<String> getRemoteFileInformation(String groupId, int version) {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
@@ -91,6 +95,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
         configurationFileInformationRequestModel.setGroupId(groupId);
         configurationFileInformationRequestModel.setVersion(version);
+        DefaultPromise<Set<String>> promise = new DefaultPromise<>(channel.eventLoop());
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
