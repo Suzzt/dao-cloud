@@ -1,22 +1,25 @@
 package com.dao.cloud.starter.bootstrap;
 
+import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
 import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
-import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,21 +37,26 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
         this.environment = environment;
     }
 
+    @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        loadRemotePropertyConfig();
     }
 
     /**
      * Load the configuration file into the Spring container
-     *
-     * @param remotePropertyConfig
      */
-    private void loadRemotePropertyConfig(String remotePropertyConfig) {
+    private void loadRemotePropertyConfig() throws InterruptedException {
         String groupId = "";
         int version = 0;
         Set<String> fileInformationList = getRemoteFileInformation(groupId, version);
         for (String fileInformation : fileInformationList) {
-            String content = getRemotePropertyConfig(groupId, version, fileInformation);
+            String yamlContent = getRemotePropertyConfig(groupId, version, fileInformation);
+            Yaml yaml = new Yaml();
+            Map<String, Object> yamlMap = yaml.load(yamlContent);
+
+            MapPropertySource propertySource = new MapPropertySource("dao_center_Yaml", yamlMap);
+            environment.getPropertySources().addLast(propertySource);
         }
     }
 
@@ -86,7 +94,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      * @param version
      * @return file information
      */
-    private Set<String> getRemoteFileInformation(String groupId, int version) {
+    private Set<String> getRemoteFileInformation(String groupId, int version) throws InterruptedException {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
@@ -95,6 +103,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
         configurationFileInformationRequestModel.setGroupId(groupId);
         configurationFileInformationRequestModel.setVersion(version);
+        configurationFileInformationRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         DefaultPromise<Set<String>> promise = new DefaultPromise<>(channel.eventLoop());
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
@@ -102,6 +111,13 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
                 log.error("<<<<<<<<<Failed to send a request to pull the center remote file information >>>>>>>>>", future.cause());
             }
         });
-        return null;
+        if (!promise.await(5 * 1_000)) {
+            throw new DaoException("get remote file information wait time out");
+        }
+        if (promise.isSuccess()) {
+            return promise.getNow();
+        } else {
+            throw (DaoException) promise.cause();
+        }
     }
 }
