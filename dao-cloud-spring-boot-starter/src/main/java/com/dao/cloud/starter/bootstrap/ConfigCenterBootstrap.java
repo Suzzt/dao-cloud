@@ -66,7 +66,7 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
      *
      * @return
      */
-    private String getRemotePropertyConfig(String groupId, int version, String fileName) {
+    private String getRemotePropertyConfig(String groupId, int version, String fileName) throws InterruptedException {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
@@ -83,7 +83,14 @@ public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEve
                 log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
             }
         });
-        return null;
+        if (!promise.await(5 * 1_000)) {
+            throw new DaoException("get remote configuration property wait time out");
+        }
+        if (promise.isSuccess()) {
+            return promise.getNow();
+        } else {
+            throw (DaoException) promise.cause();
+        }
     }
 
 
