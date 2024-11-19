@@ -129,6 +129,11 @@ public class IndexController {
         return "config/config.index";
     }
 
+    @RequestMapping("configuration")
+    public String configuration() {
+        return "config/configuration.index";
+    }
+
     @RequestMapping("log")
     public String gateway() {
         return "log/log.index";
