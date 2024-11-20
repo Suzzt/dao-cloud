@@ -25,15 +25,15 @@ import java.util.Set;
 /**
  * @author: sucf
  * @date: 2023/2/12 16:37
- * @description: config center startup
+ * @description: Configuration center startup
  */
 @Component
 @Slf4j
-public class ConfigCenterBootstrap implements ApplicationListener<ApplicationEvent> {
+public class ConfigurationCenterBootstrap implements ApplicationListener<ApplicationEvent> {
 
     private final ConfigurableEnvironment environment;
 
-    public ConfigCenterBootstrap(ConfigurableEnvironment environment) {
+    public ConfigurationCenterBootstrap(ConfigurableEnvironment environment) {
         this.environment = environment;
     }
 
