@@ -49,13 +49,13 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
     private void loadRemotePropertyConfig() throws InterruptedException {
         String groupId = "";
         int version = 0;
-        Set<String> fileInformationList = getRemoteFileInformation(groupId, version);
-        for (String fileInformation : fileInformationList) {
-            String yamlContent = getRemotePropertyConfig(groupId, version, fileInformation);
+        Set<String> fileNameSet = getRemoteFileInformation(groupId, version);
+        for (String fileName : fileNameSet) {
+            String yamlContent = getRemotePropertyConfig(groupId, version, fileName);
             Yaml yaml = new Yaml();
             Map<String, Object> yamlMap = yaml.load(yamlContent);
 
-            MapPropertySource propertySource = new MapPropertySource("dao_center_Yaml", yamlMap);
+            MapPropertySource propertySource = new MapPropertySource(fileName, yamlMap);
             environment.getPropertySources().addLast(propertySource);
         }
     }
