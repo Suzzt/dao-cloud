@@ -10,6 +10,6 @@ import lombok.Data;
 @Data
 public class ConfigurationFileInformationRequestModel extends Model {
     private Long sequenceId;
+    private String proxy;
     private String groupId;
-    private int version;
 }

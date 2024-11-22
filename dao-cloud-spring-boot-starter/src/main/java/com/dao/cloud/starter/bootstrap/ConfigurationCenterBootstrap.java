@@ -47,11 +47,11 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
      * Load the configuration file into the Spring container
      */
     private void loadRemotePropertyConfig() throws InterruptedException {
+        String proxy = "";
         String groupId = "";
-        int version = 0;
-        Set<String> fileNameSet = getRemoteFileInformation(groupId, version);
+        Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
-            String yamlContent = getRemotePropertyConfig(groupId, version, fileName);
+            String yamlContent = getRemotePropertyConfig(proxy, groupId, fileName);
             Yaml yaml = new Yaml();
             Map<String, Object> yamlMap = yaml.load(yamlContent);
 
@@ -64,17 +64,21 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
     /**
      * Obtain the configuration information from Center
      *
+     * @param proxy
+     * @param groupId
+     * @param fileName
      * @return
+     * @throws InterruptedException
      */
-    private String getRemotePropertyConfig(String groupId, int version, String fileName) throws InterruptedException {
+    private String getRemotePropertyConfig(String proxy, String groupId, String fileName) throws InterruptedException {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
         }
 
         ConfigurationPropertyRequestModel configurationPropertyRequestModel = new ConfigurationPropertyRequestModel();
+        configurationPropertyRequestModel.setProxy(proxy);
         configurationPropertyRequestModel.setGroupId(groupId);
-        configurationPropertyRequestModel.setVersion(version);
         configurationPropertyRequestModel.setFileName(fileName);
         DefaultPromise<String> promise = new DefaultPromise<>(channel.eventLoop());
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
@@ -97,11 +101,11 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
     /**
      * Get the configuration file information from Center
      *
+     * @param proxy
      * @param groupId
-     * @param version
      * @return file information
      */
-    private Set<String> getRemoteFileInformation(String groupId, int version) throws InterruptedException {
+    private Set<String> getRemoteFileInformation(String proxy, String groupId) throws InterruptedException {
         Channel channel = CenterChannelManager.getChannel();
         if (channel == null) {
             throw new DaoException("Unable to connect to center");
@@ -109,7 +113,7 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
 
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
         configurationFileInformationRequestModel.setGroupId(groupId);
-        configurationFileInformationRequestModel.setVersion(version);
+        configurationFileInformationRequestModel.setProxy(proxy);
         configurationFileInformationRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         DefaultPromise<Set<String>> promise = new DefaultPromise<>(channel.eventLoop());
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);

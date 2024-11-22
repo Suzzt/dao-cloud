@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class ConfigurationPropertyRequestModel extends Model {
+    private String proxy;
     private String groupId;
-    private int version;
     private String fileName;
 }
