@@ -90,10 +90,7 @@ public class CenterController {
 
     @RequestMapping(value = "/registry/on_off")
     @ResponseBody
-    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider,
-                            @RequestParam(defaultValue = "0") Integer version,
-                            @RequestParam String ip, @RequestParam Integer port,
-                            @RequestParam Boolean status) {
+    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, @RequestParam String ip, @RequestParam Integer port, @RequestParam Boolean status) {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
@@ -144,8 +141,7 @@ public class CenterController {
 
     @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start,
-                                       @RequestParam(required = false, defaultValue = "10") int length) {
+    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
         ConfigDataVO configDataVO = new ConfigDataVO();
         List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key, version);
         // 分页
@@ -155,6 +151,18 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
+    }
+
+    @RequestMapping(value = "/configuration/pageList")
+    @ResponseBody
+    public ApiResult getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
+        return null;
+    }
+
+    @RequestMapping(value = "/configuration/property")
+    @ResponseBody
+    public ApiResult getConfigurationProperty(String proxy, String groupId, String fileName) {
+        return null;
     }
 
     @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)
