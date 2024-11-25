@@ -35,11 +35,14 @@ public class CenterController {
 
     private final LogManager logManager;
 
-    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
-        this.registerCenterManager = registerCenterManager;
+    private final ConfigurationCenterManager configurationCenterManager;
+
+    public CenterController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registerCenterManager, LogManager logManager, ConfigurationCenterManager configurationCenterManager) {
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.registerCenterManager = registerCenterManager;
         this.logManager = logManager;
+        this.configurationCenterManager = configurationCenterManager;
     }
 
     @RequestMapping(value = "/registry/pageList")
@@ -155,14 +158,14 @@ public class CenterController {
 
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
-    public ApiResult getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
-        return null;
+    public ApiResult<List<ConfigurationFileVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
+        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationFile(proxy, groupId));
     }
 
     @RequestMapping(value = "/configuration/property")
     @ResponseBody
-    public ApiResult getConfigurationProperty(String proxy, String groupId, String fileName) {
-        return null;
+    public ApiResult<ConfigurationVO> getConfigurationProperty(String proxy, String groupId, String fileName) {
+        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, fileName));
     }
 
     @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)

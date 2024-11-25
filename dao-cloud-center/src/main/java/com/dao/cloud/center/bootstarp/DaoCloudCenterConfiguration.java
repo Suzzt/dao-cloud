@@ -186,8 +186,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController centerController(RegisterCenterManager registryCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
-        return new CenterController(registryCenterManager, configCenterManager, gatewayCenterManager, logManager);
+    public CenterController centerController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registryCenterManager, LogManager logManager, ConfigurationCenterManager configurationCenterManager) {
+        return new CenterController(configCenterManager, gatewayCenterManager, registryCenterManager, logManager, configurationCenterManager);
     }
 
     @Bean
