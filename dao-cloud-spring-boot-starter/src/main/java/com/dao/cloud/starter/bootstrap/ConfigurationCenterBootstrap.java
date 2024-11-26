@@ -12,11 +12,13 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.stereotype.Component;
+import org.springframework.core.env.MutablePropertySources;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
@@ -27,26 +29,27 @@ import java.util.Set;
  * @date: 2023/2/12 16:37
  * @description: Configuration center startup
  */
-@Component
 @Slf4j
-public class ConfigurationCenterBootstrap implements ApplicationListener<ApplicationEvent> {
+@Configuration
+public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-    private final ConfigurableEnvironment environment;
-
-    public ConfigurationCenterBootstrap(ConfigurableEnvironment environment) {
-        this.environment = environment;
+    @Override
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        ConfigurableEnvironment environment = applicationContext.getEnvironment();
+        MutablePropertySources propertySources = environment.getPropertySources();
+        loadRemotePropertyConfig(propertySources);
     }
 
-    @SneakyThrows
     @Override
-    public void onApplicationEvent(ApplicationEvent applicationEvent) {
-        loadRemotePropertyConfig();
+    public int getOrder() {
+        return Integer.MIN_VALUE;
     }
 
     /**
      * Load the configuration file into the Spring container
      */
-    private void loadRemotePropertyConfig() throws InterruptedException {
+    @SneakyThrows
+    private void loadRemotePropertyConfig(MutablePropertySources propertySources) {
         String proxy = "";
         String groupId = "";
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
@@ -56,7 +59,7 @@ public class ConfigurationCenterBootstrap implements ApplicationListener<Applica
             Map<String, Object> yamlMap = yaml.load(yamlContent);
 
             MapPropertySource propertySource = new MapPropertySource(fileName, yamlMap);
-            environment.getPropertySources().addLast(propertySource);
+            propertySources.addLast(propertySource);
         }
     }
 
