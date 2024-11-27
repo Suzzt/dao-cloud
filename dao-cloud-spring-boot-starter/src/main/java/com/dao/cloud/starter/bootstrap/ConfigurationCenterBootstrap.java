@@ -8,10 +8,12 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
+import com.dao.cloud.starter.properties.DaoCloudConfigProperties;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +33,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
+@EnableConfigurationProperties(DaoCloudConfigProperties.class)
 public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
     @Override
@@ -52,6 +55,7 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
     private void loadRemotePropertyConfig(MutablePropertySources propertySources) {
         String proxy = "";
         String groupId = "";
+        DaoCloudConfigProperties daoCloudConfigProperties = new DaoCloudConfigProperties();
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
             String yamlContent = getRemotePropertyConfig(proxy, groupId, fileName);
