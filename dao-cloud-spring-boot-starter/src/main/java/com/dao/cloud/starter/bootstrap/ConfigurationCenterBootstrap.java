@@ -8,12 +8,13 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.manager.CenterChannelManager;
-import com.dao.cloud.starter.properties.DaoCloudConfigProperties;
+import com.dao.cloud.starter.properties.DaoCloudPropertySourceProperties;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Map;
@@ -33,7 +35,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(DaoCloudConfigProperties.class)
+@EnableConfigurationProperties(DaoCloudPropertySourceProperties.class)
 public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
     @Override
@@ -55,9 +57,23 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
     private void loadRemotePropertyConfig(MutablePropertySources propertySources) {
         String proxy = "";
         String groupId = "";
-        DaoCloudConfigProperties daoCloudConfigProperties = new DaoCloudConfigProperties();
+        DaoCloudPropertySourceProperties propertySourceProperties = new DaoCloudPropertySourceProperties();
+        Bindable.ofInstance(propertySourceProperties);
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
+            if (!propertySourceProperties.isAllowOverride()
+                    || (!propertySourceProperties.isOverrideNone() && propertySourceProperties.isOverrideSystemProperties())) {
+                for (PropertySource<?> p : propertySources) {
+                    propertySources.addFirst(p);
+                }
+                return;
+            }
+            if (propertySourceProperties.isOverrideNone()) {
+                for (PropertySource<?> p : propertySources) {
+                    propertySources.addLast(p);
+                }
+                return;
+            }
             String yamlContent = getRemotePropertyConfig(proxy, groupId, fileName);
             Yaml yaml = new Yaml();
             Map<String, Object> yamlMap = yaml.load(yamlContent);
