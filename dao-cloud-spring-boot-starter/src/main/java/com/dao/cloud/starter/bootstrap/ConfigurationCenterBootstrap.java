@@ -1,5 +1,6 @@
 package com.dao.cloud.starter.bootstrap;
 
+import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
@@ -7,10 +8,12 @@ import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.dao.cloud.starter.properties.DaoCloudPropertySourceProperties;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
+import io.netty.util.concurrent.Promise;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -61,8 +64,7 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
         Bindable.ofInstance(propertySourceProperties);
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
-            if (!propertySourceProperties.isAllowOverride()
-                    || (!propertySourceProperties.isOverrideNone() && propertySourceProperties.isOverrideSystemProperties())) {
+            if (!propertySourceProperties.isAllowOverride() || (!propertySourceProperties.isOverrideNone() && propertySourceProperties.isOverrideSystemProperties())) {
                 for (PropertySource<?> p : propertySources) {
                     propertySources.addFirst(p);
                 }
@@ -135,10 +137,12 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
         }
 
         ConfigurationFileInformationRequestModel configurationFileInformationRequestModel = new ConfigurationFileInformationRequestModel();
+        configurationFileInformationRequestModel.setSequenceId(new Snowflake(2, 2).nextId());
         configurationFileInformationRequestModel.setGroupId(groupId);
         configurationFileInformationRequestModel.setProxy(proxy);
         configurationFileInformationRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
-        DefaultPromise<Set<String>> promise = new DefaultPromise<>(channel.eventLoop());
+        Promise<Object> promise = new DefaultPromise<>(channel.eventLoop());
+        LongPromiseBuffer.getInstance().put(configurationFileInformationRequestModel.getSequenceId(), promise);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
@@ -149,7 +153,7 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
             throw new DaoException("get remote file information wait time out");
         }
         if (promise.isSuccess()) {
-            return promise.getNow();
+            return (Set<String>) promise.getNow();
         } else {
             throw (DaoException) promise.cause();
         }
