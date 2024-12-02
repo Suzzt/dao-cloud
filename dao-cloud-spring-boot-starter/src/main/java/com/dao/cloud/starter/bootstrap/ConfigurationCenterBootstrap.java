@@ -105,7 +105,9 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
         configurationPropertyRequestModel.setProxy(proxy);
         configurationPropertyRequestModel.setGroupId(groupId);
         configurationPropertyRequestModel.setFileName(fileName);
-        DefaultPromise<String> promise = new DefaultPromise<>(channel.eventLoop());
+        configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+        DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
+        LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), promise);
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
@@ -116,7 +118,7 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
             throw new DaoException("get remote configuration property wait time out");
         }
         if (promise.isSuccess()) {
-            return promise.getNow();
+            return (String) promise.getNow();
         } else {
             throw (DaoException) promise.cause();
         }
