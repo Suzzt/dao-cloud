@@ -10,6 +10,7 @@ import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.starter.manager.CenterChannelManager;
+import com.dao.cloud.starter.properties.DaoCloudConfigurationProperties;
 import com.dao.cloud.starter.properties.DaoCloudPropertySourceProperties;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
@@ -38,7 +39,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties(DaoCloudPropertySourceProperties.class)
+@EnableConfigurationProperties({DaoCloudPropertySourceProperties.class, DaoCloudConfigurationProperties.class})
 public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
     @Override
