@@ -42,6 +42,12 @@ import java.util.Set;
 @EnableConfigurationProperties({DaoCloudPropertySourceProperties.class, DaoCloudConfigurationProperties.class})
 public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
+    private DaoCloudConfigurationProperties daoCloudConfigurationProperties;
+
+    public ConfigurationCenterBootstrap(DaoCloudConfigurationProperties daoCloudConfigurationProperties) {
+        this.daoCloudConfigurationProperties = daoCloudConfigurationProperties;
+    }
+
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         ConfigurableEnvironment environment = applicationContext.getEnvironment();
@@ -59,8 +65,8 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
      */
     @SneakyThrows
     private void loadRemotePropertyConfig(MutablePropertySources propertySources) {
-        String proxy = "";
-        String groupId = "";
+        String proxy = daoCloudConfigurationProperties.getProxy();
+        String groupId = daoCloudConfigurationProperties.getGroupId();
         DaoCloudPropertySourceProperties propertySourceProperties = new DaoCloudPropertySourceProperties();
         Bindable.ofInstance(propertySourceProperties);
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
