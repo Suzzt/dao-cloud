@@ -42,7 +42,7 @@ import java.util.Set;
 @EnableConfigurationProperties({DaoCloudPropertySourceProperties.class, DaoCloudConfigurationProperties.class})
 public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-    private DaoCloudConfigurationProperties daoCloudConfigurationProperties;
+    private final DaoCloudConfigurationProperties daoCloudConfigurationProperties;
 
     public ConfigurationCenterBootstrap(DaoCloudConfigurationProperties daoCloudConfigurationProperties) {
         this.daoCloudConfigurationProperties = daoCloudConfigurationProperties;
