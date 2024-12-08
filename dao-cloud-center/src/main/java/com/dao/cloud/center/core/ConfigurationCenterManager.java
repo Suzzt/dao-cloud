@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -41,7 +42,7 @@ public class ConfigurationCenterManager {
      * @param groupId
      * @return
      */
-    public List<ConfigurationFileVO> getConfigurationFile(String proxy, String groupId) {
+    public Set<String> getConfigurationFile(String proxy, String groupId) {
         return null;
     }
 

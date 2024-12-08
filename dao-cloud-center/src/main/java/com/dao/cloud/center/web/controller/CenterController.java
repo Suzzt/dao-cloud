@@ -158,7 +158,7 @@ public class CenterController {
 
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
-    public ApiResult<List<ConfigurationFileVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
+    public ApiResult<Set<String>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
         return ApiResult.buildSuccess(configurationCenterManager.getConfigurationFile(proxy, groupId));
     }
 
