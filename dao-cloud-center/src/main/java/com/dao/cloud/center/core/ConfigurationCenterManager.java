@@ -28,11 +28,17 @@ public class ConfigurationCenterManager {
     /**
      * 保存配置文件
      *
-     * @param fileType 文件类型
-     * @param version  文件修改版本号
-     * @param property 配置信息
+     * @param fileName
+     * @param proxy
+     * @param groupId
+     * @param property
      */
-    public void save(int fileType, String version, String property) {
+    public void save(String fileName, String proxy, String groupId, String property) {
+        try {
+            configurationFileStrategy.save(proxy + File.separator + groupId, property);
+        } catch (IOException e) {
+            log.error("Failed to save configuration file", e);
+        }
     }
 
     /**
