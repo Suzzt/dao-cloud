@@ -5,50 +5,63 @@ import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * @author: sucf
- * @date: 2024/11/24 20:30
- * @description:
+ * Configuration Center Manager for handling configuration files.
+ * <p>
+ * Author: sucf
+ * Date: 2024/11/24 20:30
  */
 @Slf4j
 public class ConfigurationCenterManager {
 
     /**
-     * 保存配置文件
+     * Save configuration file.
      *
-     * @param fileName
-     * @param proxy
-     * @param groupId
-     * @param property
+     * @param fileName the name of the configuration file
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param property the content to save
      */
     public void save(String fileName, String proxy, String groupId, String property) {
         FileUtil.writeUtf8String(property, proxy + File.separator + groupId + File.separator + fileName);
     }
 
     /**
-     * 获取文件列表
+     * Get the list of configuration files.
      *
-     * @param proxy
-     * @param groupId
-     * @return
+     * @param proxy   the proxy identifier
+     * @param groupId the group identifier
+     * @return a set of file names
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
+        String directoryPath = proxy + File.separator + groupId;
+        File directory = new File(directoryPath);
 
-        return null;
+        if (!directory.exists() || !directory.isDirectory()) {
+            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
+            return new HashSet<>();
+        }
+
+        return FileUtil.loopFiles(directory).stream()
+                .filter(File::isFile)
+                .map(File::getName)
+                .collect(Collectors.toSet());
     }
 
     /**
-     * 获取配置信息
+     * Get configuration information.
      *
-     * @param proxy
-     * @param groupId
-     * @param fileName
-     * @return
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param fileName the name of the configuration file
+     * @return the configuration VO
      */
     public ConfigurationVO getConfiguration(String proxy, String groupId, String fileName) {
+        // Implementation to be added
         return null;
     }
 }
