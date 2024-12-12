@@ -136,7 +136,7 @@ public class CenterController {
 
     @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
+    public ApiResult delete(ProxyConfigModel proxyConfigModel) {
         configCenterManager.delete(proxyConfigModel);
         CenterClusterManager.syncConfigToCluster(SyncClusterInformationRequestHandler.DELETE_CONFIG, proxyConfigModel, null);
         return ApiResult.buildSuccess();
