@@ -61,7 +61,24 @@ public class ConfigurationCenterManager {
      * @return the configuration VO
      */
     public ConfigurationVO getConfiguration(String proxy, String groupId, String fileName) {
-        // Implementation to be added
-        return null;
+        String filePath = proxy + File.separator + groupId + File.separator + fileName;
+        File file = new File(filePath);
+
+        if (!file.exists() || !file.isFile()) {
+            log.warn("Configuration file does not exist: {}", filePath);
+            return null;
+        }
+
+        try {
+            String content = FileUtil.readUtf8String(file);
+
+            ConfigurationVO configurationVO = new ConfigurationVO();
+            configurationVO.setProperty(content);
+
+            return configurationVO;
+        } catch (Exception e) {
+            log.error("Error reading configuration file: {}", filePath, e);
+            return null;
+        }
     }
 }

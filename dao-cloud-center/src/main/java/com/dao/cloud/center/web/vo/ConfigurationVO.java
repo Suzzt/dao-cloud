@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class ConfigurationVO {
-    @NotNull(message = "version不能为空")
-    private String version;
     @NotNull(message = "property不能为空")
     private String property;
 }
