@@ -60,7 +60,21 @@ public class ConfigurationCenterManager {
      * @param fileName the name of the configuration file
      * @return the configuration VO
      */
-    public ConfigurationVO getConfiguration(String proxy, String groupId, String fileName) {
+    public ConfigurationVO getConfigurationVO(String proxy, String groupId, String fileName) {
+        ConfigurationVO configurationVO = new ConfigurationVO();
+        configurationVO.setProperty(getConfiguration(proxy, groupId, fileName));
+        return configurationVO;
+    }
+
+    /**
+     * Get configuration information.
+     *
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param fileName the name of the configuration file
+     * @return configuration content
+     */
+    public String getConfiguration(String proxy, String groupId, String fileName) {
         String filePath = proxy + File.separator + groupId + File.separator + fileName;
         File file = new File(filePath);
 
@@ -72,10 +86,7 @@ public class ConfigurationCenterManager {
         try {
             String content = FileUtil.readUtf8String(file);
 
-            ConfigurationVO configurationVO = new ConfigurationVO();
-            configurationVO.setProperty(content);
-
-            return configurationVO;
+            return content;
         } catch (Exception e) {
             log.error("Error reading configuration file: {}", filePath, e);
             return null;

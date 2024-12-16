@@ -165,7 +165,7 @@ public class CenterController {
     @RequestMapping(value = "/configuration/property")
     @ResponseBody
     public ApiResult<ConfigurationVO> getConfigurationProperty(String proxy, String groupId, String fileName) {
-        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, fileName));
+        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationVO(proxy, groupId, fileName));
     }
 
     @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)
