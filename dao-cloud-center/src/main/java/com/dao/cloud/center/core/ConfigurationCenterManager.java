@@ -84,9 +84,7 @@ public class ConfigurationCenterManager {
         }
 
         try {
-            String content = FileUtil.readUtf8String(file);
-
-            return content;
+            return FileUtil.readUtf8String(file);
         } catch (Exception e) {
             log.error("Error reading configuration file: {}", filePath, e);
             return null;
