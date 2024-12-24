@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ConfigurationController {
 
-    @Value("user.name:JunMo")
+    @Value("${user.name:JunMo}")
     private String userName;
 
     @RequestMapping("/config_value")
