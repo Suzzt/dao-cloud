@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<AbstractShareClusterRequestModel> {
 
+    public static final byte DELETE_CONFIGURATION = -6;
     public static final byte CALL_TREND_CLEAR = -5;
     public static final byte DELETE_GATEWAY = -3;
     public static final byte DELETE_CONFIG = -2;
@@ -33,6 +34,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     public static final byte SAVE_GATEWAY = 3;
     public static final byte SERVER_STATUS = 4;
     public static final byte CALL_TREND_INCREMENT = 5;
+    public static final byte SAVE_CONFIGURATION = 6;
 
     private final Cache<Long, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -132,9 +134,9 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     /**
      * Sends an error response back to the client.
      *
-     * @param ctx the channel context
+     * @param ctx                      the channel context
      * @param shareClusterRequestModel the model of the request
-     * @param codeEnum the error code to send
+     * @param codeEnum                 the error code to send
      */
     private void sendErrorResponse(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel, CodeEnum codeEnum) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
@@ -150,7 +152,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     /**
      * Sends a success response with the sequence ID.
      *
-     * @param ctx the channel context
+     * @param ctx                      the channel context
      * @param shareClusterRequestModel the model of the request
      */
     private void answer(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel) {
