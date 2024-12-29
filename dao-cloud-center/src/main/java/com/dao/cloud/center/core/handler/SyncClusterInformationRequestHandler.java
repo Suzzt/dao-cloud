@@ -110,6 +110,11 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 CallTrendShareClusterRequestModel callTrendRequest = (CallTrendShareClusterRequestModel) shareClusterRequestModel;
                 registerCenterManager.callTrendClear(callTrendRequest.getCallTrendModel().getProxyProviderModel(), callTrendRequest.getCallTrendModel().getMethodName());
                 break;
+            case DELETE_CONFIGURATION:
+                ConfigurationShareClusterRequestModel configurationShareClusterRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                break;
+            case SAVE_CONFIGURATION:
+                break;
             default:
                 return false;
         }
