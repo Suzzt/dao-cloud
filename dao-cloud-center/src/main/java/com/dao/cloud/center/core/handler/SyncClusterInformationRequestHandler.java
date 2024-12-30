@@ -46,7 +46,6 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private final RegisterCenterManager registerCenterManager;
     private final ConfigurationCenterManager configurationCenterManager;
 
-
     public SyncClusterInformationRequestHandler(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registerCenterManager, ConfigurationCenterManager configurationCenterManager) {
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
