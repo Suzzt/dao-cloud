@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.core.ConfigCenterManager;
+import com.dao.cloud.center.core.ConfigurationCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.core.enums.CodeEnum;
@@ -43,11 +44,14 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private final ConfigCenterManager configCenterManager;
     private final GatewayCenterManager gatewayCenterManager;
     private final RegisterCenterManager registerCenterManager;
+    private final ConfigurationCenterManager configurationCenterManager;
 
-    public SyncClusterInformationRequestHandler(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
-        this.registerCenterManager = registerCenterManager;
+
+    public SyncClusterInformationRequestHandler(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registerCenterManager, ConfigurationCenterManager configurationCenterManager) {
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.registerCenterManager = registerCenterManager;
+        this.configurationCenterManager = configurationCenterManager;
     }
 
     @Override
@@ -111,7 +115,8 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 registerCenterManager.callTrendClear(callTrendRequest.getCallTrendModel().getProxyProviderModel(), callTrendRequest.getCallTrendModel().getMethodName());
                 break;
             case DELETE_CONFIGURATION:
-                ConfigurationShareClusterRequestModel configurationShareClusterRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                ConfigurationShareClusterRequestModel configurationRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                configurationCenterManager.delete(configurationRequest.getProxy(), configurationRequest.getGroupId(), configurationRequest.getFileName());
                 break;
             case SAVE_CONFIGURATION:
                 break;
