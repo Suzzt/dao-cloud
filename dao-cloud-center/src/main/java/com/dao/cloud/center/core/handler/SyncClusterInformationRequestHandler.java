@@ -114,10 +114,12 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 registerCenterManager.callTrendClear(callTrendRequest.getCallTrendModel().getProxyProviderModel(), callTrendRequest.getCallTrendModel().getMethodName());
                 break;
             case DELETE_CONFIGURATION:
-                ConfigurationShareClusterRequestModel configurationRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
-                configurationCenterManager.delete(configurationRequest.getProxy(), configurationRequest.getGroupId(), configurationRequest.getFileName());
+                ConfigurationShareClusterRequestModel configurationDeleteRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                configurationCenterManager.delete(configurationDeleteRequest.getProxy(), configurationDeleteRequest.getGroupId(), configurationDeleteRequest.getFileName());
                 break;
             case SAVE_CONFIGURATION:
+                ConfigurationShareClusterRequestModel configurationSaveRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                configurationCenterManager.save(configurationSaveRequest.getFileName(), configurationSaveRequest.getProxy(), configurationSaveRequest.getGroupId(), configurationSaveRequest.getContent());
                 break;
             default:
                 return false;
