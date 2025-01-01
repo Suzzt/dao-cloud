@@ -306,6 +306,30 @@ public class CenterClusterManager {
     }
 
     /**
+     * synchronized configuration info to cluster
+     *
+     * @param type
+     * @param proxy
+     * @param groupId
+     * @param fileName
+     * @param content
+     */
+    public static void syncConfigurationToCluster(byte type, String proxy, String groupId, String fileName, String content) {
+        for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
+            ClusterCenterConnector clusterCenterConnector = entry.getValue();
+            ConfigurationShareClusterRequestModel configurationShareClusterRequestModel = new ConfigurationShareClusterRequestModel();
+            configurationShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+            configurationShareClusterRequestModel.setType(type);
+            configurationShareClusterRequestModel.setProxy(proxy);
+            configurationShareClusterRequestModel.setGroupId(groupId);
+            configurationShareClusterRequestModel.setFileName(fileName);
+            configurationShareClusterRequestModel.setContent(content);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, configurationShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
+        }
+    }
+
+    /**
      * synchronized server config info to cluster
      *
      * @param type
