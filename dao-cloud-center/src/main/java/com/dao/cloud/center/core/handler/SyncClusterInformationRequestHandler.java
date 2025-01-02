@@ -119,7 +119,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 break;
             case SAVE_CONFIGURATION:
                 ConfigurationShareClusterRequestModel configurationSaveRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
-                configurationCenterManager.save(configurationSaveRequest.getFileName(), configurationSaveRequest.getProxy(), configurationSaveRequest.getGroupId(), configurationSaveRequest.getContent());
+                configurationCenterManager.save(configurationSaveRequest.getProxy(), configurationSaveRequest.getGroupId(), configurationSaveRequest.getFileName(), configurationSaveRequest.getContent());
                 break;
             default:
                 return false;

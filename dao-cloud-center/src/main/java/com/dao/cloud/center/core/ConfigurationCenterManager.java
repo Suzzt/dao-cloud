@@ -21,12 +21,12 @@ public class ConfigurationCenterManager {
     /**
      * Save configuration file.
      *
-     * @param fileName the name of the configuration file
      * @param proxy    the proxy identifier
      * @param groupId  the group identifier
+     * @param fileName the name of the configuration file
      * @param property the content to save
      */
-    public void save(String fileName, String proxy, String groupId, String property) {
+    public void save(String proxy, String groupId, String fileName, String property) {
         FileUtil.writeUtf8String(property, proxy + File.separator + groupId + File.separator + fileName);
     }
 
