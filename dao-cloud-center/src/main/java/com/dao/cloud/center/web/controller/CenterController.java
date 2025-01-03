@@ -168,6 +168,19 @@ public class CenterController {
         return ApiResult.buildSuccess(configurationCenterManager.getConfigurationVO(proxy, groupId, fileName));
     }
 
+    @RequestMapping(value = "/configuration/delete")
+    @ResponseBody
+    public ApiResult delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
+        return ApiResult.buildSuccess(configurationCenterManager.delete(proxy, groupId, fileName));
+    }
+
+    @RequestMapping(value = "/configuration/save")
+    @ResponseBody
+    public ApiResult save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName,@RequestParam String content) {
+        configurationCenterManager.save(proxy, groupId, fileName, content);
+        return ApiResult.buildSuccess();
+    }
+
     @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)
     @ResponseBody
     public List<CallTrendVO> trends(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version) {
