@@ -145,6 +145,9 @@
                 <li class="nav-click <#if pageName == "config">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/config"><i
                                 class="fa fa-circle-o text-blue"></i><span>配置中心</span></a></li>
+                <li class="nav-click <#if pageName == "configuration">active</#if>"><a
+                            href="${request.contextPath}/dao-cloud/configuration"><i
+                                class="fa fa-circle-o text-blue"></i><span>配置文件</span></a></li>
                 <li class="nav-click <#if pageName == "log">active</#if>"><a
                             href="${request.contextPath}/dao-cloud/log"><i
                                 class="fa fa-circle-o text-nowrap"></i><span>日志中心</span></a></li>
