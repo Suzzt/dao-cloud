@@ -29,7 +29,10 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -83,12 +86,26 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
                 }
                 return;
             }
-            String yamlContent = getRemotePropertyConfig(proxy, groupId, fileName);
-            Yaml yaml = new Yaml();
-            Map<String, Object> yamlMap = yaml.load(yamlContent);
-
-            MapPropertySource propertySource = new MapPropertySource(fileName, yamlMap);
-            propertySources.addLast(propertySource);
+            try {
+                String fileContent = getRemotePropertyConfig(proxy, groupId, fileName);
+                if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
+                    Yaml yaml = new Yaml();
+                    Map<String, Object> yamlMap = yaml.load(fileContent);
+                    MapPropertySource yamlPropertySource = new MapPropertySource(fileName, yamlMap);
+                    propertySources.addLast(yamlPropertySource);
+                } else if (fileName.endsWith(".properties")) {
+                    Properties properties = new Properties();
+                    properties.load(new StringReader(fileContent));
+                    Map<String, Object> propertiesMap = new HashMap<>();
+                    properties.forEach((key, value) -> propertiesMap.put((String) key, value));
+                    MapPropertySource propertiesPropertySource = new MapPropertySource(fileName, propertiesMap);
+                    propertySources.addLast(propertiesPropertySource);
+                } else {
+                    log.warn("Unsupported file type for remote configuration: {}", fileName);
+                }
+            } catch (Exception e) {
+                log.error("Failed to load remote property config for file: {}", fileName, e);
+            }
         }
     }
 
