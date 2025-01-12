@@ -30,11 +30,11 @@ import java.util.Date;
 @RequestMapping(value = "dao-cloud")
 public class IndexController {
 
-    private ConfigCenterManager configCenterManager;
+    private final ConfigCenterManager configCenterManager;
 
-    private GatewayCenterManager gatewayCenterManager;
+    private final GatewayCenterManager gatewayCenterManager;
 
-    private RegisterCenterManager registerCenterManager;
+    private final RegisterCenterManager registerCenterManager;
 
     public IndexController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
         this.registerCenterManager = registerCenterManager;
@@ -127,6 +127,11 @@ public class IndexController {
     @RequestMapping("config")
     public String config() {
         return "config/config.index";
+    }
+
+    @RequestMapping("configuration")
+    public String configuration() {
+        return "config/configuration.index";
     }
 
     @RequestMapping("log")

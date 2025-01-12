@@ -8,6 +8,8 @@ server:
 
 dao-cloud:
   enable: true
+  config:
+    groupId: 182642924902
   # 这个是用于日志追踪排查问题的，默认就是/data/logs
   log: /data/logs
   server:

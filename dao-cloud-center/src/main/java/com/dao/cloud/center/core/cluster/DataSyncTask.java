@@ -19,9 +19,9 @@ public class DataSyncTask implements Runnable {
 
     private int failMark;
 
-    private ClusterCenterConnector clusterCenterConnector;
+    private final ClusterCenterConnector clusterCenterConnector;
 
-    private AbstractShareClusterRequestModel requestModel;
+    private final AbstractShareClusterRequestModel requestModel;
 
     public DataSyncTask(ClusterCenterConnector clusterCenterConnector, AbstractShareClusterRequestModel requestModel) {
         this.failMark = 1;

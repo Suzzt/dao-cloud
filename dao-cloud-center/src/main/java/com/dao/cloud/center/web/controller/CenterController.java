@@ -35,11 +35,14 @@ public class CenterController {
 
     private final LogManager logManager;
 
-    public CenterController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
-        this.registerCenterManager = registerCenterManager;
+    private final ConfigurationCenterManager configurationCenterManager;
+
+    public CenterController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registerCenterManager, LogManager logManager, ConfigurationCenterManager configurationCenterManager) {
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.registerCenterManager = registerCenterManager;
         this.logManager = logManager;
+        this.configurationCenterManager = configurationCenterManager;
     }
 
     @RequestMapping(value = "/registry/pageList")
@@ -90,10 +93,7 @@ public class CenterController {
 
     @RequestMapping(value = "/registry/on_off")
     @ResponseBody
-    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider,
-                            @RequestParam(defaultValue = "0") Integer version,
-                            @RequestParam String ip, @RequestParam Integer port,
-                            @RequestParam Boolean status) {
+    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, @RequestParam String ip, @RequestParam Integer port, @RequestParam Boolean status) {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
@@ -136,7 +136,7 @@ public class CenterController {
 
     @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult<List<ConfigVO>> delete(ProxyConfigModel proxyConfigModel) {
+    public ApiResult delete(ProxyConfigModel proxyConfigModel) {
         configCenterManager.delete(proxyConfigModel);
         CenterClusterManager.syncConfigToCluster(SyncClusterInformationRequestHandler.DELETE_CONFIG, proxyConfigModel, null);
         return ApiResult.buildSuccess();
@@ -144,8 +144,7 @@ public class CenterController {
 
     @RequestMapping(value = "/config/pageList")
     @ResponseBody
-    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start,
-                                       @RequestParam(required = false, defaultValue = "10") int length) {
+    public ConfigDataVO getConfigProxy(String proxy, String key, Integer version, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
         ConfigDataVO configDataVO = new ConfigDataVO();
         List<ConfigVO> list = configCenterManager.getConfigVO(proxy, key, version);
         // 分页
@@ -155,6 +154,31 @@ public class CenterController {
         configDataVO.setRecordsFiltered(list.size());
         configDataVO.setData(data);
         return configDataVO;
+    }
+
+    @RequestMapping(value = "/configuration/pageList")
+    @ResponseBody
+    public ApiResult<Set<String>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
+        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationFile(proxy, groupId));
+    }
+
+    @RequestMapping(value = "/configuration/property")
+    @ResponseBody
+    public ApiResult<String> getConfigurationProperty(String proxy, String groupId, String fileName) {
+        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationVO(proxy, groupId, fileName));
+    }
+
+    @RequestMapping(value = "/configuration/delete")
+    @ResponseBody
+    public ApiResult delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
+        return ApiResult.buildSuccess(configurationCenterManager.delete(proxy, groupId, fileName));
+    }
+
+    @RequestMapping(value = "/configuration/save")
+    @ResponseBody
+    public ApiResult save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName,@RequestParam String content) {
+        configurationCenterManager.save(proxy, groupId, fileName, content);
+        return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/call_trend/statistics", method = RequestMethod.GET)

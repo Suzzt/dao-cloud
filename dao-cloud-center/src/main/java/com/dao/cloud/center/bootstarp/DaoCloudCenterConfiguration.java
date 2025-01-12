@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ComponentScan(value = "com.dao.cloud.center.core.storage")
-@Import({RegisterCenterManager.class, ConfigCenterManager.class, GatewayCenterManager.class, WebCenterConfig.class, LogManager.class})
+@Import({RegisterCenterManager.class, ConfigCenterManager.class, GatewayCenterManager.class, ConfigurationCenterManager.class, WebCenterConfig.class, LogManager.class})
 public class DaoCloudCenterConfiguration implements ApplicationListener<ApplicationEvent> {
 
     @Resource
@@ -56,6 +56,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Resource
     private RegisterCenterManager registerCenterManager;
+
+    @Resource
+    private ConfigurationCenterManager configurationCenterManager;
 
     @Resource
     private LogManager logManager;
@@ -97,9 +100,11 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new GatewayServiceConfigHandler(registerCenterManager, gatewayCenterManager));
                             ch.pipeline().addLast(new CenterClusterServerConfigRequestHandler(registerCenterManager));
                             ch.pipeline().addLast(new CenterClusterCallTrendRequestHandler(registerCenterManager));
+                            ch.pipeline().addLast(new ConfigurationFileInformationRequestHandler(configurationCenterManager));
+                            ch.pipeline().addLast(new ConfigurationPropertyRequestHandler(configurationCenterManager));
                             ch.pipeline().addLast(new PullServerRequestHandler(registerCenterManager));
                             ch.pipeline().addLast(new PullConfigRequestHandler(configCenterManager));
-                            ch.pipeline().addLast(new SyncClusterInformationRequestHandler(registerCenterManager, configCenterManager, gatewayCenterManager));
+                            ch.pipeline().addLast(new SyncClusterInformationRequestHandler(configCenterManager, gatewayCenterManager, registerCenterManager, configurationCenterManager));
                             ch.pipeline().addLast(new ServerRegisterHandler(registerCenterManager));
                             ch.pipeline().addLast(new ReceiveCallTrendHandler(registerCenterManager));
                             ch.pipeline().addLast(new LogHandler(logManager));
@@ -186,8 +191,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
     @Bean
     @ConditionalOnWebApplication
     @ConditionalOnProperty(prefix = "dao-cloud.center.admin-web.dashboard", name = "enabled", matchIfMissing = true)
-    public CenterController centerController(RegisterCenterManager registryCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, LogManager logManager) {
-        return new CenterController(registryCenterManager, configCenterManager, gatewayCenterManager, logManager);
+    public CenterController centerController(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registryCenterManager, LogManager logManager, ConfigurationCenterManager configurationCenterManager) {
+        return new CenterController(configCenterManager, gatewayCenterManager, registryCenterManager, logManager, configurationCenterManager);
     }
 
     @Bean

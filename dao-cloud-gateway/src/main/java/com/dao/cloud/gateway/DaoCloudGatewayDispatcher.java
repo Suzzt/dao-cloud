@@ -31,13 +31,13 @@ import java.util.*;
  */
 @RestController
 @Slf4j
-public class Dispatcher {
+public class DaoCloudGatewayDispatcher {
 
     private final DaoLoadBalance daoLoadBalance;
 
     private final List<Interceptor> interceptors;
 
-    public Dispatcher(DaoLoadBalance daoLoadBalance, List<Interceptor> interceptors) {
+    public DaoCloudGatewayDispatcher(DaoLoadBalance daoLoadBalance, List<Interceptor> interceptors) {
         this.daoLoadBalance = daoLoadBalance;
         this.interceptors = interceptors;
     }

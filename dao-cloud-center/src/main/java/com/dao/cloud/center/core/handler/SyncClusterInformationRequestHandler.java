@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.core.ConfigCenterManager;
+import com.dao.cloud.center.core.ConfigurationCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
 import com.dao.cloud.core.enums.CodeEnum;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<AbstractShareClusterRequestModel> {
 
+    public static final byte DELETE_CONFIGURATION = -6;
     public static final byte CALL_TREND_CLEAR = -5;
     public static final byte DELETE_GATEWAY = -3;
     public static final byte DELETE_CONFIG = -2;
@@ -33,6 +35,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     public static final byte SAVE_GATEWAY = 3;
     public static final byte SERVER_STATUS = 4;
     public static final byte CALL_TREND_INCREMENT = 5;
+    public static final byte SAVE_CONFIGURATION = 6;
 
     private final Cache<Long, Boolean> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -41,11 +44,13 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private final ConfigCenterManager configCenterManager;
     private final GatewayCenterManager gatewayCenterManager;
     private final RegisterCenterManager registerCenterManager;
+    private final ConfigurationCenterManager configurationCenterManager;
 
-    public SyncClusterInformationRequestHandler(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
-        this.registerCenterManager = registerCenterManager;
+    public SyncClusterInformationRequestHandler(ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager, RegisterCenterManager registerCenterManager, ConfigurationCenterManager configurationCenterManager) {
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.registerCenterManager = registerCenterManager;
+        this.configurationCenterManager = configurationCenterManager;
     }
 
     @Override
@@ -108,6 +113,14 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 CallTrendShareClusterRequestModel callTrendRequest = (CallTrendShareClusterRequestModel) shareClusterRequestModel;
                 registerCenterManager.callTrendClear(callTrendRequest.getCallTrendModel().getProxyProviderModel(), callTrendRequest.getCallTrendModel().getMethodName());
                 break;
+            case DELETE_CONFIGURATION:
+                ConfigurationShareClusterRequestModel configurationDeleteRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                configurationCenterManager.delete(configurationDeleteRequest.getProxy(), configurationDeleteRequest.getGroupId(), configurationDeleteRequest.getFileName());
+                break;
+            case SAVE_CONFIGURATION:
+                ConfigurationShareClusterRequestModel configurationSaveRequest = (ConfigurationShareClusterRequestModel) shareClusterRequestModel;
+                configurationCenterManager.save(configurationSaveRequest.getProxy(), configurationSaveRequest.getGroupId(), configurationSaveRequest.getFileName(), configurationSaveRequest.getContent());
+                break;
             default:
                 return false;
         }
@@ -132,9 +145,9 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     /**
      * Sends an error response back to the client.
      *
-     * @param ctx the channel context
+     * @param ctx                      the channel context
      * @param shareClusterRequestModel the model of the request
-     * @param codeEnum the error code to send
+     * @param codeEnum                 the error code to send
      */
     private void sendErrorResponse(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel, CodeEnum codeEnum) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
@@ -150,7 +163,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     /**
      * Sends a success response with the sequence ID.
      *
-     * @param ctx the channel context
+     * @param ctx                      the channel context
      * @param shareClusterRequestModel the model of the request
      */
     private void answer(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel) {

@@ -8,6 +8,6 @@ import lombok.Data;
  * @description: Synchronization of call trend information between clusters
  */
 @Data
-public class CallTrendShareClusterRequestModel extends AbstractShareClusterRequestModel{
+public class CallTrendShareClusterRequestModel extends AbstractShareClusterRequestModel {
     private CallTrendModel callTrendModel;
 }

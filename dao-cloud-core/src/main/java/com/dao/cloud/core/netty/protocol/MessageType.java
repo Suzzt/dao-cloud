@@ -35,6 +35,11 @@ public class MessageType {
     public static final byte CALL_TREND_RESPONSE_MESSAGE = 21;
     public static final byte INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE = 22;
     public static final byte INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE = 23;
+    public static final byte PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE = 26;
+    public static final byte PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE = 27;
+    public static final byte PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE = 28;
+    public static final byte PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE = 29;
+
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
 
@@ -63,6 +68,10 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(CALL_TREND_RESPONSE_MESSAGE, CallTrendModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, CallTrendPullMarkModel.class);
         MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE, CallTrendFullModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, ConfigurationFileInformationRequestModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE, ConfigurationFileInformationResponseModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, ConfigurationPropertyRequestModel.class);
+        MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE, ConfigurationPropertyResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

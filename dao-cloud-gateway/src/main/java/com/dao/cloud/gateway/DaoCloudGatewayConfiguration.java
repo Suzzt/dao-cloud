@@ -11,8 +11,10 @@ import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RoundLoadBalance;
 import com.dao.cloud.starter.bootstrap.DaoCloudCenterBootstrap;
 import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
+import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -32,16 +34,12 @@ import java.util.Map;
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
 @Import({DaoCloudCenterProperties.class, DaoCloudCenterBootstrap.class, GatewayBootstrap.class})
-public class DaoCloudGatewayConfiguration {
+public class DaoCloudGatewayConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public DaoCloudGatewayConfiguration(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     @Bean
-    public Dispatcher dispatcher(DaoLoadBalance daoLoadBalance) {
+    public DaoCloudGatewayDispatcher dispatcher(DaoLoadBalance daoLoadBalance) {
         // 获取所有注解GatewayInterceptorRegister的Beans
         Map<String, Object> beans = applicationContext.getBeansWithAnnotation(GatewayInterceptorRegister.class);
         List<Interceptor> interceptors = new ArrayList<>();
@@ -54,7 +52,7 @@ public class DaoCloudGatewayConfiguration {
         // 在这里对拦截器列表进行排序
         interceptors.sort(Comparator.comparingInt(interceptor ->
                 AnnotationUtils.findAnnotation(interceptor.getClass(), GatewayInterceptorRegister.class).order()));
-        return new Dispatcher(daoLoadBalance, interceptors);
+        return new DaoCloudGatewayDispatcher(daoLoadBalance, interceptors);
     }
 
     @Bean
@@ -77,5 +75,10 @@ public class DaoCloudGatewayConfiguration {
                 // 默认为轮询
                 return new RoundLoadBalance();
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
