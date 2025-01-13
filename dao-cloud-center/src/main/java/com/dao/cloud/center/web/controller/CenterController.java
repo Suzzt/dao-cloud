@@ -158,14 +158,14 @@ public class CenterController {
 
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
-    public ApiResult<Set<String>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
-        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationFile(proxy, groupId));
+    public ApiResult<List<ConfigurationVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
+        return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/configuration/property")
     @ResponseBody
     public ApiResult<String> getConfigurationProperty(String proxy, String groupId, String fileName) {
-        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationVO(proxy, groupId, fileName));
+        return ApiResult.buildSuccess(configurationCenterManager.getConfigurationProperty(proxy, groupId, fileName));
     }
 
     @RequestMapping(value = "/configuration/delete")

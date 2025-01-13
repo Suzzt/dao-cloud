@@ -1,7 +1,6 @@
 package com.dao.cloud.center.core;
 
 import cn.hutool.core.io.FileUtil;
-import com.dao.cloud.center.web.vo.ConfigurationPropertyVO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -58,21 +57,9 @@ public class ConfigurationCenterManager {
      * @param proxy    the proxy identifier
      * @param groupId  the group identifier
      * @param fileName the name of the configuration file
-     * @return the configuration content
-     */
-    public String getConfigurationVO(String proxy, String groupId, String fileName) {
-        return getConfiguration(proxy, groupId, fileName);
-    }
-
-    /**
-     * Get configuration information.
-     *
-     * @param proxy    the proxy identifier
-     * @param groupId  the group identifier
-     * @param fileName the name of the configuration file
      * @return configuration content
      */
-    public String getConfiguration(String proxy, String groupId, String fileName) {
+    public String getConfigurationProperty(String proxy, String groupId, String fileName) {
         String filePath = proxy + File.separator + groupId + File.separator + fileName;
         File file = new File(filePath);
 
