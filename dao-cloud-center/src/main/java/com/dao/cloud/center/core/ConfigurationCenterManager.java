@@ -1,10 +1,12 @@
 package com.dao.cloud.center.core;
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,6 +51,19 @@ public class ConfigurationCenterManager {
                 .filter(File::isFile)
                 .map(File::getName)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * get configuration information list.
+     *
+     * @param proxy   the proxy identifier
+     * @param groupId the group identifier
+     * @param start   page index
+     * @param length  page size
+     * @return
+     */
+    public List<ConfigurationVO> getConfiguration(String proxy, String groupId, int start, int length) {
+        return null;
     }
 
     /**

@@ -159,7 +159,7 @@ public class CenterController {
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
     public ApiResult<List<ConfigurationVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
-        return ApiResult.buildSuccess();
+        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, start, length));
     }
 
     @RequestMapping(value = "/configuration/property")
