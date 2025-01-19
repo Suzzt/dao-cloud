@@ -93,7 +93,7 @@ public class CenterController {
 
     @RequestMapping(value = "/registry/on_off")
     @ResponseBody
-    public ApiResult manage(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, @RequestParam String ip, @RequestParam Integer port, @RequestParam Boolean status) {
+    public ApiResult<Void> manage(@RequestParam String proxy, @RequestParam String provider, @RequestParam(defaultValue = "0") Integer version, @RequestParam String ip, @RequestParam Integer port, @RequestParam Boolean status) {
         ServerNodeModel serverNodeModel = new ServerNodeModel(ip, port, status);
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, version);
         registerCenterManager.manage(proxyProviderModel, serverNodeModel);
@@ -103,7 +103,7 @@ public class CenterController {
 
     @RequestMapping(value = "/gateway/save", method = RequestMethod.POST)
     @ResponseBody
-    public ApiResult save(@Valid @RequestBody GatewayVO gatewayVO) {
+    public ApiResult<Void> save(@Valid @RequestBody GatewayVO gatewayVO) {
         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(gatewayVO.getProxy(), gatewayVO.getProvider(), gatewayVO.getVersion());
         GatewayConfigModel gatewayConfigModel = new GatewayConfigModel();
         gatewayConfigModel.setLimitModel(gatewayVO.getLimit());
@@ -170,13 +170,14 @@ public class CenterController {
 
     @RequestMapping(value = "/configuration/delete")
     @ResponseBody
-    public ApiResult delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
-        return ApiResult.buildSuccess(configurationCenterManager.delete(proxy, groupId, fileName));
+    public ApiResult<Void> delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
+        configurationCenterManager.delete(proxy, groupId, fileName);
+        return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/configuration/save")
     @ResponseBody
-    public ApiResult save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName,@RequestParam String content) {
+    public ApiResult save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
         configurationCenterManager.save(proxy, groupId, fileName, content);
         return ApiResult.buildSuccess();
     }
