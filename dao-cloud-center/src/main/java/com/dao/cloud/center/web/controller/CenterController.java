@@ -172,13 +172,15 @@ public class CenterController {
     @ResponseBody
     public ApiResult<Void> delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
         configurationCenterManager.delete(proxy, groupId, fileName);
+        CenterClusterManager.syncConfigurationToCluster(SyncClusterInformationRequestHandler.DELETE_CONFIGURATION, proxy, groupId, fileName, null);
         return ApiResult.buildSuccess();
     }
 
     @RequestMapping(value = "/configuration/save")
     @ResponseBody
-    public ApiResult save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
+    public ApiResult<Void> save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
         configurationCenterManager.save(proxy, groupId, fileName, content);
+        CenterClusterManager.syncConfigurationToCluster(SyncClusterInformationRequestHandler.SAVE_CONFIGURATION, proxy, groupId, fileName, content);
         return ApiResult.buildSuccess();
     }
 
