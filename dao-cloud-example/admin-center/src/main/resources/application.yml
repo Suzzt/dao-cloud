@@ -22,6 +22,7 @@ dao-cloud:
     ############################ 配置中心 ############################
     # 存储方式：file-system(本地文件)、mysql
     storage:
+      # mysql、file-system
       way: file-system
       # 配置文件存储地址
       file-system-setting:

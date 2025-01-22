@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core;
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,6 +19,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class ConfigurationCenterManager {
+
+    private final Persistence persistence;
+
+    public ConfigurationCenterManager(Persistence persistence) {
+        this.persistence = persistence;
+    }
 
     /**
      * Save configuration file.
@@ -63,6 +70,7 @@ public class ConfigurationCenterManager {
      * @return
      */
     public List<ConfigurationVO> getConfiguration(String proxy, String groupId, int start, int length) {
+        // todo 文件存储：proxy 是一层文件夹，下一层groupId 是一层文件夹，然后下一层就是文件名是配置文件名，请你扫描出所有的配置文件名，上面的入参是proxy和groupId，start和length是分页参数
         return null;
     }
 
