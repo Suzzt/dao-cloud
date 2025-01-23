@@ -40,6 +40,13 @@ public interface Persistence {
     void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel);
 
     /**
+     * storage configuration
+     *
+     * @param configurationPropertyRequestModel
+     */
+    void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel);
+
+    /**
      * delete config
      *
      * @param proxyConfigModel
@@ -47,7 +54,7 @@ public interface Persistence {
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
-     * delete config
+     * delete server
      *
      * @param proxyProviderModel
      */

@@ -214,6 +214,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel) {
+
+    }
+
+    @Override
     public Map<ProxyConfigModel, String> loadConfig() {
         Map<ProxyConfigModel, String> map = Maps.newHashMap();
         Long count = count();

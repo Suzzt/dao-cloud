@@ -153,6 +153,11 @@ public class FileSystem implements Persistence {
         write(path, String.valueOf(serverNodeModel.isStatus()));
     }
 
+    @Override
+    public void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel) {
+
+    }
+
     private void fileGC(String path) {
         String[] files = new File(path).list();
         if (files == null || files.length == 0) {
