@@ -1,5 +1,6 @@
 package com.dao.cloud.center.core.storage;
 
+import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.center.web.vo.LogVO;
@@ -42,9 +43,9 @@ public interface Persistence {
     /**
      * storage configuration
      *
-     * @param configurationPropertyRequestModel
+     * @param configurationProperty
      */
-    void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel);
+    void storage(ConfigurationProperty configurationProperty);
 
     /**
      * delete config

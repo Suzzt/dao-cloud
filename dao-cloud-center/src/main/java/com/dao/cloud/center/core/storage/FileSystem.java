@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
@@ -70,6 +71,8 @@ public class FileSystem implements Persistence {
      */
     private final String configStoragePath;
 
+    private final String configurationStoragePath;
+
     /**
      * Gateway Storage Path
      */
@@ -92,6 +95,7 @@ public class FileSystem implements Persistence {
         // default need to be set
         pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
         this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
+        this.configurationStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIGURATION;
         this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
         this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
         this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
@@ -154,8 +158,8 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel) {
-
+    public void storage(ConfigurationProperty configurationProperty) {
+        FileUtil.writeUtf8String(configurationProperty.getProperty(), configurationStoragePath + File.separator + configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName());
     }
 
     private void fileGC(String path) {

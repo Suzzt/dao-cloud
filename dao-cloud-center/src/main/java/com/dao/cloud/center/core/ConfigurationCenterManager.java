@@ -1,8 +1,10 @@
 package com.dao.cloud.center.core;
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigurationVO;
+import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -35,7 +37,12 @@ public class ConfigurationCenterManager {
      * @param property the content to save
      */
     public void save(String proxy, String groupId, String fileName, String property) {
-        FileUtil.writeUtf8String(property, proxy + File.separator + groupId + File.separator + fileName);
+        ConfigurationProperty configurationProperty = new ConfigurationProperty();
+        configurationProperty.setProxy(proxy);
+        configurationProperty.setGroupId(groupId);
+        configurationProperty.setFileName(fileName);
+        configurationProperty.setProperty(property);
+        persistence.storage(configurationProperty);
     }
 
     /**

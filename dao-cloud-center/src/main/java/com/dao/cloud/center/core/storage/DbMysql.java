@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
@@ -214,7 +215,7 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public void storage(ConfigurationPropertyRequestModel configurationPropertyRequestModel) {
+    public void storage(ConfigurationProperty configurationProperty) {
 
     }
 

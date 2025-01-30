@@ -20,6 +20,8 @@ public class DaoCloudConstant {
 
     public static final String CONFIG = "config";
 
+    public static final String CONFIGURATION = "configuration";
+
     public static final String GATEWAY = "gateway";
 
     public static final String SERVER = "server";
