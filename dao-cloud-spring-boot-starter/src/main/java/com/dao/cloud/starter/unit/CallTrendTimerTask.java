@@ -10,6 +10,7 @@ import com.dao.cloud.starter.manager.CenterChannelManager;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -22,11 +23,12 @@ import java.util.concurrent.atomic.LongAdder;
  * @description: 缓冲分段计数思路
  * 具体思路如下：
  * 使用 LongAdder 提高 increment 性能：LongAdder 能在高并发下有效减少竞争，比 AtomicLong 更适合频繁增量操作。
- * 发送失败后的计数恢复：在 backupBuffer 中保存一次性总计数，如果发送失败，将 backupBuffer 的值重新加回 activeBuffer，确保计数不丢失。
- * 更灵活的双缓冲机制：每次 run 方法调用时，activeBuffer 清零，直接复用它继续计数，避免额外的切换开销。
+ * 发送失败后的计数恢复：在 failCountBuffer 中保存失败计数，等待下一次定时任务将与增量计数一起发送，确保计数不丢失。
  */
 @Slf4j
 public class CallTrendTimerTask implements TimerTask {
+
+    private final AtomicBoolean concurrentCtrl = new AtomicBoolean(false);
 
     /**
      * 主计数缓冲区
@@ -35,7 +37,9 @@ public class CallTrendTimerTask implements TimerTask {
     /**
      * 备份缓冲区
      */
-    private final AtomicLong backupBuffer = new AtomicLong(0);
+    private long lastTotalCount = 0L;
+
+    private final AtomicLong failCountBuffer = new AtomicLong(0L);
 
     private final ProxyProviderModel proxyProviderModel;
     private final String methodName;
@@ -58,30 +62,37 @@ public class CallTrendTimerTask implements TimerTask {
 
     @Override
     public void run(Timeout timeout) {
-        try {
-            // 获取并交换缓冲区计数
-            long totalCount = activeBuffer.sumThenReset();
-            if (totalCount != 0) {
-                // 将统计值转移到备份缓冲区，用于回退
-                backupBuffer.set(totalCount);
+        // 保证线程安全，避免因为各种原因导致的定时任务与下一个周期碰撞上（理论上不会碰上的，不过还是加下）
+        if (concurrentCtrl.compareAndSet(false, true)) {
+            try {
+                long allTotalCount = activeBuffer.sum();
+                long deltaCount = allTotalCount - lastTotalCount;
+                long failCount = failCountBuffer.get();
+                if (failCount > 0L) {
+                    failCountBuffer.getAndAdd(-failCount);
+                }
+                long totalCount = deltaCount + failCount;
+                if (totalCount != 0) {
+                    lastTotalCount += deltaCount;
+                    CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
+                    DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE,
+                        DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
+                    Channel channel = CenterChannelManager.getChannel();
 
-                CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
-                DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.CALL_TREND_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
-                Channel channel = CenterChannelManager.getChannel();
-
-                channel.writeAndFlush(daoMessage).addListener(future -> {
-                    if (future.isSuccess()) {
-                        backupBuffer.set(0);
-                    } else {
-                        activeBuffer.add(backupBuffer.get());
-                        log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
-                    }
-                });
+                    channel.writeAndFlush(daoMessage).addListener(future -> {
+                        if (!future.isSuccess()) {
+                            // TODO：除了发送缓冲区失败这种情况，也要考虑服务器响应是否处理成功，请自行补充
+                            failCountBuffer.getAndAdd(totalCount);
+                            log.error("<<<<<<<<< send call data error >>>>>>>>>", future.cause());
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
+            } finally {
+                concurrentCtrl.set(false);
+                DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, timeUnit);
             }
-        } catch (Exception e) {
-            log.error("<<<<<<<<<<< sync call trend error >>>>>>>>>>>", e);
-        } finally {
-            DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, interval, timeUnit);
         }
     }
 }
