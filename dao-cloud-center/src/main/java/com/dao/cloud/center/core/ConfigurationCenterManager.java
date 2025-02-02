@@ -4,7 +4,6 @@ import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigurationVO;
-import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -115,6 +114,11 @@ public class ConfigurationCenterManager {
      * @return true if the file was successfully deleted, false otherwise
      */
     public boolean delete(String proxy, String groupId, String fileName) {
-
+        ConfigurationProperty configurationProperty = new ConfigurationProperty();
+        configurationProperty.setProxy(proxy);
+        configurationProperty.setGroupId(groupId);
+        configurationProperty.setFileName(fileName);
+        persistence.delete(configurationProperty);
+        return true;
     }
 }
