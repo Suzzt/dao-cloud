@@ -115,25 +115,6 @@ public class ConfigurationCenterManager {
      * @return true if the file was successfully deleted, false otherwise
      */
     public boolean delete(String proxy, String groupId, String fileName) {
-        String filePath = proxy + File.separator + groupId + File.separator + fileName;
-        File file = new File(filePath);
 
-        if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist or is not a file: {}", filePath);
-            return false;
-        }
-
-        try {
-            boolean deleted = FileUtil.del(file);
-            if (deleted) {
-                log.info("Successfully deleted configuration file: {}", filePath);
-            } else {
-                log.error("Failed to delete configuration file: {}", filePath);
-            }
-            return deleted;
-        } catch (Exception e) {
-            log.error("Error deleting configuration file: {}", filePath, e);
-            return false;
-        }
     }
 }

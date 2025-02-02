@@ -55,6 +55,13 @@ public interface Persistence {
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
+     * delete configuration
+     *
+     * @param configurationProperty
+     */
+    void delete(ConfigurationProperty configurationProperty);
+
+    /**
      * delete server
      *
      * @param proxyProviderModel

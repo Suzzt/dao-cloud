@@ -149,6 +149,27 @@ public class FileSystem implements Persistence {
     }
 
     @Override
+    public void delete(ConfigurationProperty configurationProperty) {
+        String filePath = configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName();
+        File file = new File(filePath);
+
+        if (!file.exists() || !file.isFile()) {
+            log.warn("Configuration file does not exist or is not a file: {}", filePath);
+        }
+
+        try {
+            boolean deleted = FileUtil.del(file);
+            if (deleted) {
+                log.info("Successfully deleted configuration file: {}", filePath);
+            } else {
+                log.error("Failed to delete configuration file: {}", filePath);
+            }
+        } catch (Exception e) {
+            log.error("Error deleting configuration file: {}", filePath, e);
+        }
+    }
+
+    @Override
     public void storage(ProxyProviderModel proxyProviderModel, ServerNodeModel serverNodeModel) {
         String proxy = proxyProviderModel.getProxy();
         String provider = proxyProviderModel.getProviderModel().getProvider();

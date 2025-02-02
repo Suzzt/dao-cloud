@@ -192,6 +192,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public void delete(ConfigurationProperty configurationProperty) {
+
+    }
+
+    @Override
     public void storage(GatewayModel gatewayModel) {
         insertOrUpdate(gatewayModel);
     }
