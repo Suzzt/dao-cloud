@@ -6,7 +6,6 @@ import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
-import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.google.common.collect.Lists;
@@ -20,10 +19,8 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author sucf
@@ -277,6 +274,22 @@ public class FileSystem implements Persistence {
     }
 
     @Override
+    public Set<String> getConfigurationFile(String proxy, String groupId) {
+        String directoryPath = configurationStoragePath + File.separator + proxy + File.separator + groupId;
+        File directory = new File(directoryPath);
+
+        if (!directory.exists() || !directory.isDirectory()) {
+            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
+            return new HashSet<>();
+        }
+
+        return FileUtil.loopFiles(directory).stream()
+                .filter(File::isFile)
+                .map(File::getName)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public void clear() {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);
@@ -369,11 +382,6 @@ public class FileSystem implements Persistence {
     @Override
     public void storage(LogModel logModel) {
 
-    }
-
-    @Override
-    public List<LogVO> getLog(String tracerId) {
-        return Collections.emptyList();
     }
 
     public String makePath(String prefix, String... modules) {

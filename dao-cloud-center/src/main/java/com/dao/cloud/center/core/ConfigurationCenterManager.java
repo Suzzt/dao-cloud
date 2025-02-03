@@ -7,14 +7,11 @@ import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Configuration Center Manager for handling configuration files.
- * <p>
  * Author: sucf
  * Date: 2024/11/24 20:30
  */
@@ -45,25 +42,14 @@ public class ConfigurationCenterManager {
     }
 
     /**
-     * Get the list of configuration files.
+     * 获取配置文件名列表
      *
      * @param proxy   the proxy identifier
      * @param groupId the group identifier
-     * @return a set of file names
+     * @return 配置文件文件名列表
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
-        String directoryPath = proxy + File.separator + groupId;
-        File directory = new File(directoryPath);
-
-        if (!directory.exists() || !directory.isDirectory()) {
-            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
-            return new HashSet<>();
-        }
-
-        return FileUtil.loopFiles(directory).stream()
-                .filter(File::isFile)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return persistence.getConfigurationFile(proxy, groupId);
     }
 
     /**

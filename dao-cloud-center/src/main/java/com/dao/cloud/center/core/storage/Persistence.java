@@ -8,6 +8,7 @@ import com.dao.cloud.core.model.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -90,6 +91,15 @@ public interface Persistence {
     Map<ServerProxyProviderNode, Boolean> loadServer();
 
     /**
+     * Get the list of configuration files.
+     *
+     * @param proxy   the proxy identifier
+     * @param groupId the group identifier
+     * @return a set of file names
+     */
+    Set<String> getConfigurationFile(String proxy, String groupId);
+
+    /**
      * clear
      */
     void clear();
@@ -130,13 +140,4 @@ public interface Persistence {
      * @param logModel
      */
     void storage(LogModel logModel);
-
-
-    /**
-     * get log data
-     *
-     * @param tracerId
-     * @return
-     */
-    List<LogVO> getLog(String tracerId);
 }
