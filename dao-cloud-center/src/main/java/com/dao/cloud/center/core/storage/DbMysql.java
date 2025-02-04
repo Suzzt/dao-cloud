@@ -6,7 +6,6 @@ import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
-import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.google.common.collect.Lists;
@@ -18,8 +17,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -192,6 +191,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public void delete(ConfigurationProperty configurationProperty) {
+
+    }
+
+    @Override
     public void storage(GatewayModel gatewayModel) {
         insertOrUpdate(gatewayModel);
     }
@@ -290,6 +294,16 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public Set<String> getConfigurationFile(String proxy, String groupId) {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public String getConfigurationProperty(String proxy, String groupId, String fileName) {
+        return "";
+    }
+
+    @Override
     public void clear() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(truncate_config_sql_template);
@@ -379,11 +393,6 @@ public class DbMysql implements Persistence {
     @Override
     public void storage(LogModel logModel) {
 
-    }
-
-    @Override
-    public List<LogVO> getLog(String tracerId) {
-        return Collections.emptyList();
     }
 
     private void doCallTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {

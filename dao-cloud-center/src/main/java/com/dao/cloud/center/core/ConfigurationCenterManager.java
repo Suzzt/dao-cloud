@@ -1,21 +1,15 @@
 package com.dao.cloud.center.core;
 
-import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigurationVO;
-import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Configuration Center Manager for handling configuration files.
- * <p>
  * Author: sucf
  * Date: 2024/11/24 20:30
  */
@@ -46,25 +40,14 @@ public class ConfigurationCenterManager {
     }
 
     /**
-     * Get the list of configuration files.
+     * 获取配置文件名列表
      *
      * @param proxy   the proxy identifier
      * @param groupId the group identifier
-     * @return a set of file names
+     * @return 配置文件文件名列表
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
-        String directoryPath = proxy + File.separator + groupId;
-        File directory = new File(directoryPath);
-
-        if (!directory.exists() || !directory.isDirectory()) {
-            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
-            return new HashSet<>();
-        }
-
-        return FileUtil.loopFiles(directory).stream()
-                .filter(File::isFile)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return persistence.getConfigurationFile(proxy, groupId);
     }
 
     /**
@@ -90,20 +73,7 @@ public class ConfigurationCenterManager {
      * @return configuration content
      */
     public String getConfigurationProperty(String proxy, String groupId, String fileName) {
-        String filePath = proxy + File.separator + groupId + File.separator + fileName;
-        File file = new File(filePath);
-
-        if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist: {}", filePath);
-            return null;
-        }
-
-        try {
-            return FileUtil.readUtf8String(file);
-        } catch (Exception e) {
-            log.error("Error reading configuration file: {}", filePath, e);
-            return null;
-        }
+        return persistence.getConfigurationProperty(proxy, groupId, fileName);
     }
 
     /**
@@ -115,25 +85,11 @@ public class ConfigurationCenterManager {
      * @return true if the file was successfully deleted, false otherwise
      */
     public boolean delete(String proxy, String groupId, String fileName) {
-        String filePath = proxy + File.separator + groupId + File.separator + fileName;
-        File file = new File(filePath);
-
-        if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist or is not a file: {}", filePath);
-            return false;
-        }
-
-        try {
-            boolean deleted = FileUtil.del(file);
-            if (deleted) {
-                log.info("Successfully deleted configuration file: {}", filePath);
-            } else {
-                log.error("Failed to delete configuration file: {}", filePath);
-            }
-            return deleted;
-        } catch (Exception e) {
-            log.error("Error deleting configuration file: {}", filePath, e);
-            return false;
-        }
+        ConfigurationProperty configurationProperty = new ConfigurationProperty();
+        configurationProperty.setProxy(proxy);
+        configurationProperty.setGroupId(groupId);
+        configurationProperty.setFileName(fileName);
+        persistence.delete(configurationProperty);
+        return true;
     }
 }

@@ -3,11 +3,11 @@ package com.dao.cloud.center.core.storage;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.web.vo.CallTrendVO;
-import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.model.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author: sucf
@@ -55,6 +55,13 @@ public interface Persistence {
     void delete(ProxyConfigModel proxyConfigModel);
 
     /**
+     * delete configuration
+     *
+     * @param configurationProperty
+     */
+    void delete(ConfigurationProperty configurationProperty);
+
+    /**
      * delete server
      *
      * @param proxyProviderModel
@@ -81,6 +88,25 @@ public interface Persistence {
      * @return
      */
     Map<ServerProxyProviderNode, Boolean> loadServer();
+
+    /**
+     * Get the list of configuration files.
+     *
+     * @param proxy   the proxy identifier
+     * @param groupId the group identifier
+     * @return a set of file names
+     */
+    Set<String> getConfigurationFile(String proxy, String groupId);
+
+    /**
+     * 获取配置文件内容
+     *
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param fileName the file name
+     * @return the file content
+     */
+    String getConfigurationProperty(String proxy, String groupId, String fileName);
 
     /**
      * clear
@@ -123,13 +149,4 @@ public interface Persistence {
      * @param logModel
      */
     void storage(LogModel logModel);
-
-
-    /**
-     * get log data
-     *
-     * @param tracerId
-     * @return
-     */
-    List<LogVO> getLog(String tracerId);
 }
