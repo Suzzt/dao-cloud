@@ -1,12 +1,10 @@
 package com.dao.cloud.center.core;
 
-import cn.hutool.core.io.FileUtil;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -75,20 +73,7 @@ public class ConfigurationCenterManager {
      * @return configuration content
      */
     public String getConfigurationProperty(String proxy, String groupId, String fileName) {
-        String filePath = proxy + File.separator + groupId + File.separator + fileName;
-        File file = new File(filePath);
-
-        if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist: {}", filePath);
-            return null;
-        }
-
-        try {
-            return FileUtil.readUtf8String(file);
-        } catch (Exception e) {
-            log.error("Error reading configuration file: {}", filePath, e);
-            return null;
-        }
+        return persistence.getConfigurationProperty(proxy, groupId, fileName);
     }
 
     /**

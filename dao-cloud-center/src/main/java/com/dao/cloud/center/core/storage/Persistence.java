@@ -3,7 +3,6 @@ package com.dao.cloud.center.core.storage;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.web.vo.CallTrendVO;
-import com.dao.cloud.center.web.vo.LogVO;
 import com.dao.cloud.core.model.*;
 
 import java.util.List;
@@ -98,6 +97,16 @@ public interface Persistence {
      * @return a set of file names
      */
     Set<String> getConfigurationFile(String proxy, String groupId);
+
+    /**
+     * 获取配置文件内容
+     *
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param fileName the file name
+     * @return the file content
+     */
+    String getConfigurationProperty(String proxy, String groupId, String fileName);
 
     /**
      * clear

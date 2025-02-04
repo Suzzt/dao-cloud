@@ -290,6 +290,24 @@ public class FileSystem implements Persistence {
     }
 
     @Override
+    public String getConfigurationProperty(String proxy, String groupId, String fileName) {
+        String filePath = configurationStoragePath + File.separator + proxy + File.separator + groupId + File.separator + fileName;
+        File file = new File(filePath);
+
+        if (!file.exists() || !file.isFile()) {
+            log.warn("Configuration file does not exist: {}", filePath);
+            return null;
+        }
+
+        try {
+            return FileUtil.readUtf8String(file);
+        } catch (Exception e) {
+            log.error("Error reading configuration file: {}", filePath, e);
+            return null;
+        }
+    }
+
+    @Override
     public void clear() {
         FileUtil.clean(gatewayStoragePath);
         FileUtil.clean(configStoragePath);

@@ -299,6 +299,11 @@ public class DbMysql implements Persistence {
     }
 
     @Override
+    public String getConfigurationProperty(String proxy, String groupId, String fileName) {
+        return "";
+    }
+
+    @Override
     public void clear() {
         try (DruidPooledConnection connection = druidDataSource.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute(truncate_config_sql_template);
