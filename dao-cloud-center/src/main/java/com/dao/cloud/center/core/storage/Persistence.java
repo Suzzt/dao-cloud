@@ -142,11 +142,4 @@ public interface Persistence {
      * @return
      */
     List<CallTrendModel> getCallTrends();
-
-    /**
-     * storage log data
-     *
-     * @param logModel
-     */
-    void storage(LogModel logModel);
 }

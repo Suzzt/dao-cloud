@@ -390,11 +390,6 @@ public class DbMysql implements Persistence {
 
     }
 
-    @Override
-    public void storage(LogModel logModel) {
-
-    }
-
     private void doCallTrendClear(ProxyProviderModel proxyProviderModel, String methodName) {
 
         String proxy = proxyProviderModel.getProxy();

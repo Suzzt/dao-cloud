@@ -397,11 +397,6 @@ public class FileSystem implements Persistence {
         return callTrendModels;
     }
 
-    @Override
-    public void storage(LogModel logModel) {
-
-    }
-
     public String makePath(String prefix, String... modules) {
         for (String directory : modules) {
             prefix = prefix + File.separator + directory;
