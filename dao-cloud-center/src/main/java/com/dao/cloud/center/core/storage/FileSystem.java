@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
@@ -287,6 +288,30 @@ public class FileSystem implements Persistence {
                 .filter(File::isFile)
                 .map(File::getName)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public List<ConfigurationModel> getConfiguration() {
+        List<ConfigurationModel> configurationModels = Lists.newArrayList();
+        String prefixPath = configurationStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> groupIds = loopDirs(prefixPath + File.separator + proxy);
+            for (String groupId : groupIds) {
+                List<String> files = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + groupId);
+                for (String file : files) {
+                    try {
+                        if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
+                            ConfigurationModel configurationModel = new ConfigurationModel(proxy, groupId, file);
+                            configurationModels.add(configurationModel);
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to load configuration data (proxy={}, groupId={}, fileName={}) from file", proxy, groupId, file, e);
+                    }
+                }
+            }
+        }
+        return configurationModels;
     }
 
     @Override

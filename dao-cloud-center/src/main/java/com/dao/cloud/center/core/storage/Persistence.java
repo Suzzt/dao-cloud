@@ -1,5 +1,6 @@
 package com.dao.cloud.center.core.storage;
 
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.web.vo.CallTrendVO;
@@ -97,6 +98,13 @@ public interface Persistence {
      * @return a set of file names
      */
     Set<String> getConfigurationFile(String proxy, String groupId);
+
+    /**
+     * 获取所有配置文件信息
+     *
+     * @return ConfigurationModel
+     */
+    List<ConfigurationModel> getConfiguration();
 
     /**
      * 获取配置文件内容

@@ -11,6 +11,5 @@ import lombok.Data;
 public class ConfigurationVO {
     private String proxy;
     private String groupId;
-    private Integer version;
     private String fileName;
 }

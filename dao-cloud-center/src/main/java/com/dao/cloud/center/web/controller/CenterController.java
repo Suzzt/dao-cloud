@@ -2,6 +2,7 @@ package com.dao.cloud.center.web.controller;
 
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.*;
@@ -158,8 +159,8 @@ public class CenterController {
 
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
-    public ApiResult<List<ConfigurationVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
-        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, start, length));
+    public ApiResult<List<ConfigurationModel>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int pageNo, @RequestParam(required = false, defaultValue = "10") int pageSize) {
+        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, pageNo, pageSize));
     }
 
     @RequestMapping(value = "/configuration/property")

@@ -1,12 +1,14 @@
 package com.dao.cloud.center.core;
 
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
-import com.dao.cloud.center.web.vo.ConfigurationVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Configuration Center Manager for handling configuration files.
@@ -53,15 +55,28 @@ public class ConfigurationCenterManager {
     /**
      * get configuration information list(like pagination).
      *
-     * @param proxy   the proxy identifier
-     * @param groupId the group identifier
-     * @param start   page index
-     * @param length  page size
-     * @return
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param pageNo   page index
+     * @param pageSize page size
+     * @return ConfigurationModel
      */
-    public List<ConfigurationVO> getConfiguration(String proxy, String groupId, int start, int length) {
-        return null;
+    public List<ConfigurationModel> getConfiguration(String proxy, String groupId, int pageNo, int pageSize) {
+        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
+
+        List<ConfigurationModel> filteredList = configurationModelList.stream()
+                .filter(config -> (proxy == null || config.getProxy().contains(proxy)) &&
+                        (groupId == null || config.getGroupId().contains(groupId)))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(filteredList)) {
+            return null;
+        }
+        int fromIndex = pageNo * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, filteredList.size());
+        return filteredList.subList(fromIndex, toIndex);
     }
+
 
     /**
      * Get configuration information.
