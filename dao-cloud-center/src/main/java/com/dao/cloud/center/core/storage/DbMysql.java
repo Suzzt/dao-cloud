@@ -295,11 +295,6 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public Set<String> getConfigurationFile(String proxy, String groupId) {
-        return Collections.emptySet();
-    }
-
-    @Override
     public List<ConfigurationModel> getConfiguration() {
         return Collections.emptyList();
     }

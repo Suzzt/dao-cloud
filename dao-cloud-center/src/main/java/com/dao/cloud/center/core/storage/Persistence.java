@@ -91,15 +91,6 @@ public interface Persistence {
     Map<ServerProxyProviderNode, Boolean> loadServer();
 
     /**
-     * Get the list of configuration files.
-     *
-     * @param proxy   the proxy identifier
-     * @param groupId the group identifier
-     * @return a set of file names
-     */
-    Set<String> getConfigurationFile(String proxy, String groupId);
-
-    /**
      * 获取所有配置文件信息
      *
      * @return ConfigurationModel

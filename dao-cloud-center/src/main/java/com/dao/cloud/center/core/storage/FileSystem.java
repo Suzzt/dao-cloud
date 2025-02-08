@@ -275,22 +275,6 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public Set<String> getConfigurationFile(String proxy, String groupId) {
-        String directoryPath = configurationStoragePath + File.separator + proxy + File.separator + groupId;
-        File directory = new File(directoryPath);
-
-        if (!directory.exists() || !directory.isDirectory()) {
-            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
-            return new HashSet<>();
-        }
-
-        return FileUtil.loopFiles(directory).stream()
-                .filter(File::isFile)
-                .map(File::getName)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
     public List<ConfigurationModel> getConfiguration() {
         List<ConfigurationModel> configurationModels = Lists.newArrayList();
         String prefixPath = configurationStoragePath;

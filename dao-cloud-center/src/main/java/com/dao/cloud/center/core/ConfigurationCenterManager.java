@@ -3,6 +3,7 @@ package com.dao.cloud.center.core;
 import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
@@ -49,7 +50,14 @@ public class ConfigurationCenterManager {
      * @return 配置文件文件名列表
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
-        return persistence.getConfigurationFile(proxy, groupId);
+        Set<String> result = Sets.newHashSet();
+        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
+        for (ConfigurationModel configurationModel : configurationModelList) {
+            if (configurationModel.getProxy().equals(proxy) && configurationModel.getGroupId().equals(groupId)) {
+                result.add(configurationModel.getFileName());
+            }
+        }
+        return result;
     }
 
     /**
