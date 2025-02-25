@@ -1,10 +1,17 @@
 package com.dao.cloud.center.web.vo;
 
-/**
- * xxxxx
+import com.dao.cloud.center.core.model.ConfigurationModel;
+import lombok.Data;
 
- *@author sucf
- *@create_time 2025/2/25 15:53
+import java.util.List;
+
+/**
+ * @author sucf
+ * @since 1.0
  */
+@Data
 public class ConfigurationVO {
+    private List<ConfigurationModel> data;
+    private Integer recordsTotal;
+    private Integer recordsFiltered;
 }

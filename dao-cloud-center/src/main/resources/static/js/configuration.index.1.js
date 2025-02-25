@@ -1,46 +1,60 @@
+var newEditor, updateEditor;
+
 $(function () {
-    var dataTable = $("#data_list").dataTable({
+    // 初始化编辑器
+    function initEditors() {
+        // 新增编辑器
+        var addContainer = $("#addModal .editor-container");
+        newEditor = CodeMirror(addContainer[0], {
+            lineNumbers: true,
+            theme: "material-darker",
+            mode: "yaml",
+            gutters: ["CodeMirror-lint-markers"],
+            lint: true
+        });
+
+        // 更新编辑器
+        var updateContainer = $("#updateModal .editor-container");
+        updateEditor = CodeMirror(updateContainer[0], {
+            lineNumbers: true,
+            theme: "material-darker",
+            mode: "yaml",
+            gutters: ["CodeMirror-lint-markers"],
+            lint: true
+        });
+    }
+    initEditors();
+
+    // 文件类型切换
+    $('select[id="fileType"]').on('change', function() {
+        const mode = $(this).val() === '.yaml' ? 'yaml' : 'properties';
+        const isAddModal = $(this).closest('.modal').is('#addModal');
+        const editor = isAddModal ? newEditor : updateEditor;
+
+        editor.setOption("mode", mode);
+        if (mode === 'properties') {
+            editor.setOption('lint', false);
+        } else {
+            editor.setOption('lint', true);
+        }
+    });
+
+    // 自动补全文件后缀
+    $('input[name="fileName"]').on('blur', function() {
+        const $input = $(this);
+        const fileType = $input.closest('.modal').find('#fileType').val();
+        if (!$input.val().endsWith(fileType)) {
+            $input.val($input.val().replace(/\..*$/, '') + fileType);
+        }
+    });
+
+    // DataTables配置
+    var dataTable = $("#data_list").DataTable({
+        serverSide: true,
         "deferRender": true,
         "processing": true,
-        "serverSide": true,
-        "ajax": {
-            url: base_url + "/config/pageList",
-            type: "post",
-            data: function (d) {
-                var obj = {};
-                // obj.page = d.draw == 0 || d.draw == null ? 1 : d.draw;
-                // obj.size = d.length == 0 || d.length == null ? 10 : d.length;
-                obj.start = d.start;
-                obj.length = d.length;
-                obj.proxy = $('#proxy').val();
-                obj.key = $('#key').val();
-                obj.version = $('#version').val();
-                obj.content = $('#content').val();
-                return obj;
-            }
-        },
         "searching": false,
         "ordering": false,
-        //"scrollX": true,	// X轴滚动条，取消自适应
-        "columns": [
-            {data: 'proxy'},
-            {data: 'key'},
-            {data: 'version'},
-            {data: 'content'},
-            {
-                data: 'opt',
-                "render": function (data, type, row) {
-                    return function () {
-                        tableData['key' + row.id] = row;
-                        var html = '<p proxy="' + row.proxy + '" key="' + row.key + '" version="' + row.version + '" content="' + row.content + '" >' +
-                            '<button class="btn btn-info btn-xs config_update" type="button">编辑</button>  ' +
-                            '<button class="btn btn-danger btn-xs config_remove" type="button">删除</button>  ' +
-                            '</p>';
-                        return html;
-                    };
-                }
-            }
-        ],
         "language": {
             "sProcessing": "处理中...",
             "sLengthMenu": "每页 _MENU_ 条记录",
@@ -64,321 +78,132 @@ $(function () {
                 "sSortAscending": ": 以升序排列此列",
                 "sSortDescending": ": 以降序排列此列"
             }
-        }
+        },
+        ajax: {
+            url: base_url + "/configuration/pageList",
+            type: "POST",
+            data: function(d) {
+                return {
+                    start: d.start,
+                    length: d.length,
+                    proxy: $('#proxy').val(),
+                    groupId: $('#groupId').val(),
+                    fileName: $('#fileName').val()
+                };
+            }
+        },
+        columns: [
+            { data: 'proxy' },
+            { data: 'groupId' },
+            {
+                data: 'fileName',
+                render: function(data) {
+                    const icon = data.endsWith('.yaml') ? '📄' : '⚙️';
+                    return `<span>${data} ${icon}</span>`;
+                }
+            },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `
+                        <button class="btn btn-info btn-xs config_update" 
+                            data-proxy="${row.proxy}" 
+                            data-groupid="${row.groupId}" 
+                            data-filename="${row.fileName}">编辑</button>
+                        <button class="btn btn-danger btn-xs configuration_remove" 
+                            data-proxy="${row.proxy}" 
+                            data-groupid="${row.groupId}" 
+                            data-filename="${row.fileName}">删除</button>
+                    `;
+                }
+            }
+        ]
     });
 
-    // table data
-    var tableData = {};
-
-    // msg 弹框
-    $("#data_list").on('click', '.showData', function () {
-        var _id = $(this).attr('_id');
-        var row = tableData['key' + _id];
-        ComAlertTec.show(row.data);
+    // 搜索功能
+    $('#searchBtn').click(function() {
+        dataTable.ajax.reload();
     });
 
-    // search btn
-    $('#searchBtn').on('click', function () {
-        dataTable.fnDraw();
+    // 新增配置
+    $('#configuration_add').click(function() {
+        $('#addModal').modal('show');
     });
 
-    // config_remove
-    $("#data_list").on('click', '.config_remove', function () {
+    // 保存新增
+    $("#addModal form").submit(function(e) {
+        e.preventDefault();
+        const formData = {
+            proxy: $('input[name="proxy"]', this).val(),
+            groupId: $('input[name="groupId"]', this).val(),
+            fileName: $('input[name="fileName"]', this).val(),
+            content: newEditor.getValue()
+        };
 
-        var proxy = $(this).parent('p').attr("proxy");
-        var key = $(this).parent('p').attr("key");
-        var version = $(this).parent('p').attr("version");
+        $.post(base_url + "/configuration/save", formData, function(res) {
+            if (res.code === "00000") {
+                $('#addModal').modal('hide');
+                dataTable.ajax.reload();
+            }
+            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+        });
+    });
 
-        layer.confirm("确认删除该配置?", {
-            icon: 3,
-            title: "系统提示",
-            btn: ["确认", "取消"]
-        }, function (index) {
+    // 更新配置
+    $("#data_list").on('click', '.config_update', function() {
+        const proxy = $(this).data('proxy');
+        const groupId = $(this).data('groupid');
+        const fileName = $(this).data('filename');
+        const fileType = fileName.endsWith('.yaml') ? '.yaml' : '.properties';
+
+        // 设置表单值
+        $("#updateModal input[name='proxy']").val(proxy);
+        $("#updateModal input[name='groupId']").val(groupId);
+        $("#updateModal input[name='fileName']").val(fileName);
+        $("#updateModal #fileType").val(fileType).trigger('change');
+
+        // 加载内容
+        $.get(base_url + "/configuration/property", { proxy, groupId, fileName }, function(res) {
+            if (res.code === "00000") {
+                updateEditor.setValue(res.data || '');
+                $('#updateModal').modal('show');
+            }
+        });
+    });
+
+    // 保存更新
+    $("#updateModal form").submit(function(e) {
+        e.preventDefault();
+        const formData = {
+            proxy: $('input[name="proxy"]', this).val(),
+            groupId: $('input[name="groupId"]', this).val(),
+            fileName: $('input[name="fileName"]', this).val(),
+            content: updateEditor.getValue()
+        };
+
+        $.post(base_url + "/configuration/save", formData, function(res) {
+            if (res.code === "00000") {
+                $('#updateModal').modal('hide');
+                dataTable.ajax.reload();
+            }
+            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+        });
+    });
+
+    // 删除配置
+    $("#data_list").on('click', '.configuration_remove', function() {
+        const proxy = $(this).data('proxy');
+        const groupId = $(this).data('groupid');
+        const fileName = $(this).data('filename');
+
+        layer.confirm("确认删除该配置？", function(index) {
+            $.post(base_url + "/configuration/delete", { proxy, groupId, fileName }, function(res) {
+                layer.msg(res.msg || (res.code === "00000" ? "删除成功" : "删除失败"));
+                if (res.code === "00000") {
+                    dataTable.ajax.reload();
+                }
+            });
             layer.close(index);
-
-            $.ajax({
-                type: 'POST',
-                url: base_url + "/config/delete",
-                data: {
-                    "proxy": proxy,
-                    "key": key,
-                    "version": version
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data.code == "00000") {
-                        layer.open({
-                            title: "系统提示",
-                            btn: ["确认"],
-                            content: "删除成功",
-                            icon: '1',
-                            end: function (layero, index) {
-                                dataTable.fnDraw(false);
-                            }
-                        });
-                    } else {
-                        layer.open({
-                            title: "系统提示",
-                            btn: ["确认"],
-                            content: (data.msg || "删除失败"),
-                            icon: '2'
-                        });
-                    }
-                }
-            });
         });
-
     });
-
-    // config_add
-    $('#config_add').on('click', function () {
-        $('#addModal').modal({backdrop: false, keyboard: false}).modal('show');
-    });
-    var addModalValidate = $("#addModal .form").validate({
-        errorElement: 'span',
-        errorClass: 'help-block',
-        focusInvalid: true,
-        rules: {
-            proxy: {
-                required: true,
-                rangelength: [1, 255]
-            },
-            key: {
-                required: true,
-                rangelength: [1, 255]
-            },
-            version: {
-                required: true,
-                rangelength: [1, 8],
-                number: true
-            },
-            content: {
-                required: true,
-                rangelength: [1, 10000]
-            }
-        },
-        messages: {
-            proxy: {
-                required: '请输入',
-                rangelength: '长度限制为[1~255]'
-            },
-            key: {
-                required: '请输入',
-                rangelength: '长度限制为[1~255]'
-            },
-            version: {
-                required: '请输入',
-                rangelength: '长度限制为[1~8]'
-            },
-            content: {
-                required: '请输入',
-                rangelength: '长度限制为[1~10000]'
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-        },
-        success: function (label) {
-            label.closest('.form-group').removeClass('has-error');
-            label.remove();
-        },
-        errorPlacement: function (error, element) {
-            element.parent('div').append(error);
-        },
-        submitHandler: function (form) {
-
-            // var dataJson = $("#addModal .form textarea[name='content']").val();
-            // if (dataJson) {
-            //     console.log(dataJson)
-            //     if(!isJSON(dataJson)){
-            //         layer.open({
-            //             icon: '2',
-            //             content: "配置信息必须是json格式或直接文本!"
-            //         });
-            //         return;
-            //     }
-            // }
-
-            // post
-            $.post(base_url + "/config/save", $("#addModal .form").serialize(), function (data, status) {
-                if (data.code == "00000") {
-                    $('#addModal').modal('hide');
-
-                    layer.open({
-                        title: "系统提示",
-                        btn: ["确认"],
-                        content: "新增成功",
-                        icon: '1',
-                        end: function (layero, index) {
-                            dataTable.fnDraw(false);
-                        }
-                    });
-                } else {
-                    layer.open({
-                        title: "系统提示",
-                        btn: ["确认"],
-                        content: (data.msg || "操作失败"),
-                        icon: '2'
-                    });
-                }
-            });
-        }
-    });
-
-    $("#addModal").on('hide.bs.modal', function () {
-        $("#addModal .form")[0].reset();
-        addModalValidate.resetForm();
-        $("#addModal .form .form-group").removeClass("has-error");
-    });
-
-    // config_update
-    $("#data_list").on('click', '.config_update', function () {
-        var proxy = $(this).parent('p').attr("proxy");
-        var key = $(this).parent('p').attr("key");
-        var version = $(this).parent('p').attr("version");
-        var content = $(this).parent('p').attr("content");
-        $("#updateModal .form input[name='proxy']").val(proxy);
-        $("#updateModal .form input[name='key']").val(key);
-        $("#updateModal .form input[name='version']").val(version);
-        $("#updateModal .form textarea[name='content']").val(content);
-        $('#updateModal').modal({backdrop: false, keyboard: false}).modal('show');
-    });
-    var updateModalValidate = $("#updateModal .form").validate({
-        errorElement: 'span',
-        errorClass: 'help-block',
-        focusInvalid: true,
-        rules: {
-            proxy: {
-                required: true,
-                rangelength: [1, 255]
-
-            },
-            key: {
-                required: true,
-                rangelength: [1, 255]
-            },
-            version: {
-                required: true,
-                rangelength: [1, 8],
-                number: true
-            },
-            content: {
-                required: true,
-                rangelength: [1, 10000]
-            }
-        },
-        messages: {
-            proxy: {
-                required: '请输入',
-                rangelength: '长度限制为[1~255]'
-            },
-            key: {
-                required: '请输入',
-                rangelength: '长度限制为[1~255]'
-            },
-            version: {
-                required: '请输入',
-                rangelength: '长度限制为[1~8]'
-            },
-            content: {
-                required: '请输入',
-                rangelength: '长度限制为[1~10000]'
-            }
-        },
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-        },
-        success: function (label) {
-            label.closest('.form-group').removeClass('has-error');
-            label.remove();
-        },
-        errorPlacement: function (error, element) {
-            element.parent('div').append(error);
-        },
-        submitHandler: function (form) {
-            // valid
-            // var dataJson = $("#updateModal .form textarea[name='content']").val();
-            // if (dataJson) {
-            //     try {
-            //         console.log(dataJson)
-            //         $.parseJSON(dataJson);
-            //     } catch (e) {
-            //         layer.open({
-            //             icon: '2',
-            //             content: "配置信息格式非法! 必须是json格式或直接文本1 <br>" + e
-            //         });
-            //         return;
-            //     }
-            // }
-
-            // post
-            $.post(base_url + "/config/save", $("#updateModal .form").serialize(), function (data, status) {
-                if (data.code == "00000") {
-                    $('#updateModal').modal('hide');
-
-                    layer.open({
-                        title: "系统提示",
-                        btn: ["确认"],
-                        content: "更新成功",
-                        icon: '1',
-                        end: function (layero, index) {
-                            dataTable.fnDraw(false);
-                        }
-                    });
-                } else {
-                    layer.open({
-                        title: "系统提示",
-                        btn: ["确认"],
-                        content: (data.msg || "更新失败"),
-                        icon: '2'
-                    });
-                }
-            });
-        }
-    });
-    $("#updateModal").on('hide.bs.modal', function () {
-        $("#updateModal .form")[0].reset();
-        updateModalValidate.resetForm();
-        $("#updateModal .form .form-group").removeClass("has-error");
-    });
-
-
 });
-
-
-// Com Alert by Tec theme
-var ComAlertTec = {
-    html: function () {
-        var html =
-            '<div class="modal fade" id="ComAlertTec" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">' +
-            '<div class="modal-dialog">' +
-            '<div class="modal-content-tec">' +
-            '<div class="modal-body"><div class="alert" style="color:#fff;"></div></div>' +
-            '<div class="modal-footer">' +
-            '<div class="text-center" >' +
-            '<button type="button" class="btn btn-info ok" data-dismiss="modal" >确认</button>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
-        return html;
-    },
-    show: function (msg, callback) {
-        // dom init
-        if ($('#ComAlertTec').length == 0) {
-            $('body').append(ComAlertTec.html());
-        }
-
-        // init com alert
-        $('#ComAlertTec .alert').html(msg);
-        $('#ComAlertTec').modal('show');
-
-        $('#ComAlertTec .ok').click(function () {
-            $('#ComAlertTec').modal('hide');
-            if (typeof callback == 'function') {
-                callback();
-            }
-        });
-    }
-};

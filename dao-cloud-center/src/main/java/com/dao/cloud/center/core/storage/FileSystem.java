@@ -20,8 +20,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author sucf
@@ -69,6 +70,9 @@ public class FileSystem implements Persistence {
      */
     private final String configStoragePath;
 
+    /**
+     * Configuration Storage Path
+     */
     private final String configurationStoragePath;
 
     /**
@@ -148,11 +152,12 @@ public class FileSystem implements Persistence {
 
     @Override
     public void delete(ConfigurationProperty configurationProperty) {
-        String filePath = configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName();
+        String filePath = configurationStoragePath + File.separator + configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName();
         File file = new File(filePath);
 
         if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist or is not a file: {}", filePath);
+            log.error("Configuration file does not exist or is not a file: {}", filePath);
+            return;
         }
 
         try {

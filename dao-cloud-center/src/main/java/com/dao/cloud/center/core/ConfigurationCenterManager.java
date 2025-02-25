@@ -5,7 +5,6 @@ import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -65,24 +64,17 @@ public class ConfigurationCenterManager {
      *
      * @param proxy    the proxy identifier
      * @param groupId  the group identifier
-     * @param pageNo   page index
-     * @param pageSize page size
+     * @param fileName the group fileName
      * @return ConfigurationModel
      */
-    public List<ConfigurationModel> getConfiguration(String proxy, String groupId, int pageNo, int pageSize) {
+    public List<ConfigurationModel> getConfiguration(String proxy, String groupId, String fileName) {
         List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
 
-        List<ConfigurationModel> filteredList = configurationModelList.stream()
+        return configurationModelList.stream()
                 .filter(config -> (proxy == null || config.getProxy().contains(proxy)) &&
+                        (fileName == null || config.getFileName().contains(fileName)) &&
                         (groupId == null || config.getGroupId().contains(groupId)))
                 .collect(Collectors.toList());
-
-        if (CollectionUtils.isEmpty(filteredList)) {
-            return null;
-        }
-        int fromIndex = pageNo * pageSize;
-        int toIndex = Math.min(fromIndex + pageSize, filteredList.size());
-        return filteredList.subList(fromIndex, toIndex);
     }
 
 

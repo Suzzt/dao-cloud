@@ -131,7 +131,7 @@ public class IndexController {
 
     @RequestMapping("configuration")
     public String configuration() {
-        return "config/configuration.index";
+        return "configuration/configuration.index";
     }
 
     @RequestMapping("log")
