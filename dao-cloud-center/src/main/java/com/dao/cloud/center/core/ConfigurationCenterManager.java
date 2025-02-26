@@ -1,12 +1,14 @@
 package com.dao.cloud.center.core;
 
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
-import com.dao.cloud.center.web.vo.ConfigurationVO;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Configuration Center Manager for handling configuration files.
@@ -47,22 +49,34 @@ public class ConfigurationCenterManager {
      * @return 配置文件文件名列表
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
-        return persistence.getConfigurationFile(proxy, groupId);
+        Set<String> result = Sets.newHashSet();
+        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
+        for (ConfigurationModel configurationModel : configurationModelList) {
+            if (configurationModel.getProxy().equals(proxy) && configurationModel.getGroupId().equals(groupId)) {
+                result.add(configurationModel.getFileName());
+            }
+        }
+        return result;
     }
 
     /**
-     * get configuration information list.
+     * get configuration information list(like pagination).
      *
-     * @param proxy   the proxy identifier
-     * @param groupId the group identifier
-     * @param start   page index
-     * @param length  page size
-     * @return
+     * @param proxy    the proxy identifier
+     * @param groupId  the group identifier
+     * @param fileName the group fileName
+     * @return ConfigurationModel
      */
-    public List<ConfigurationVO> getConfiguration(String proxy, String groupId, int start, int length) {
-        // todo 文件存储：proxy 是一层文件夹，下一层groupId 是一层文件夹，然后下一层就是文件名是配置文件名，请你扫描出所有的配置文件名，上面的入参是proxy和groupId，start和length是分页参数
-        return null;
+    public List<ConfigurationModel> getConfiguration(String proxy, String groupId, String fileName) {
+        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
+
+        return configurationModelList.stream()
+                .filter(config -> (proxy == null || config.getProxy().contains(proxy)) &&
+                        (fileName == null || config.getFileName().contains(fileName)) &&
+                        (groupId == null || config.getGroupId().contains(groupId)))
+                .collect(Collectors.toList());
     }
+
 
     /**
      * Get configuration information.

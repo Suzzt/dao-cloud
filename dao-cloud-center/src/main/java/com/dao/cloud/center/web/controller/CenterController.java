@@ -2,6 +2,7 @@ package com.dao.cloud.center.web.controller;
 
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.*;
@@ -12,10 +13,13 @@ import com.google.common.collect.Sets;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.Yaml;
 
 import javax.validation.Valid;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -156,18 +160,61 @@ public class CenterController {
         return configDataVO;
     }
 
+    /**
+     * 获取配置文件列表
+     *
+     * @param proxy
+     * @param proxy
+     * @param groupId
+     * @param start
+     * @param length
+     * @return
+     */
     @RequestMapping(value = "/configuration/pageList")
     @ResponseBody
-    public ApiResult<List<ConfigurationVO>> getConfiguration(String proxy, String groupId, @RequestParam(required = false, defaultValue = "0") int start, @RequestParam(required = false, defaultValue = "10") int length) {
-        return ApiResult.buildSuccess(configurationCenterManager.getConfiguration(proxy, groupId, start, length));
+    public ConfigurationVO pageList(
+            @RequestParam String proxy,
+            @RequestParam String groupId,
+            @RequestParam String fileName,
+            @RequestParam int start,
+            @RequestParam int length) {
+
+        List<ConfigurationModel> allData = configurationCenterManager.getConfiguration(proxy, groupId, fileName);
+
+        // 分页计算
+        int fromIndex = Math.min(start, allData.size());
+        int toIndex = Math.min(start + length, allData.size());
+
+        ConfigurationVO vo = new ConfigurationVO();
+        vo.setData(allData.subList(fromIndex, toIndex));
+        vo.setRecordsTotal(allData.size());
+        vo.setRecordsFiltered(allData.size());
+
+        return vo;
     }
 
+    /**
+     * 获取配置文件内容
+     *
+     * @param proxy
+     * @param groupId
+     * @param fileName
+     * @return
+     */
     @RequestMapping(value = "/configuration/property")
     @ResponseBody
-    public ApiResult<String> getConfigurationProperty(String proxy, String groupId, String fileName) {
+    public ApiResult<String> getConfigurationProperty(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
         return ApiResult.buildSuccess(configurationCenterManager.getConfigurationProperty(proxy, groupId, fileName));
     }
 
+    /**
+     * 删除配置文件
+     *
+     * @param proxy
+     * @param groupId
+     * @param fileName
+     * @return
+     */
     @RequestMapping(value = "/configuration/delete")
     @ResponseBody
     public ApiResult<Void> delete(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName) {
@@ -176,9 +223,34 @@ public class CenterController {
         return ApiResult.buildSuccess();
     }
 
+    /**
+     * 保存配置文件
+     *
+     * @param proxy
+     * @param groupId
+     * @param fileName
+     * @param content
+     * @return
+     */
     @RequestMapping(value = "/configuration/save")
     @ResponseBody
     public ApiResult<Void> save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
+        // 验证文件类型
+        if (!fileName.matches("^.+\\.(yaml|properties)$")) {
+            return ApiResult.buildFail("A0001", "文件名必须以.yaml或.properties结尾");
+        }
+
+        // 验证内容格式
+        try {
+            if (fileName.endsWith(".yaml")) {
+                new Yaml().load(content);
+            } else {
+                Properties props = new Properties();
+                props.load(new StringReader(content));
+            }
+        } catch (Exception e) {
+            return ApiResult.buildFail("A0001", "配置文件格式错误: " + e.getMessage());
+        }
         configurationCenterManager.save(proxy, groupId, fileName, content);
         CenterClusterManager.syncConfigurationToCluster(SyncClusterInformationRequestHandler.SAVE_CONFIGURATION, proxy, groupId, fileName, content);
         return ApiResult.buildSuccess();

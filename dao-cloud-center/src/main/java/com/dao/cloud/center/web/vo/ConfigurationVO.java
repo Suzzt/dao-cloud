@@ -1,16 +1,17 @@
 package com.dao.cloud.center.web.vo;
 
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * @author: sucf
- * @date: 2024/11/24 20:42
- * @description: 配置信息
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class ConfigurationVO {
-    private String proxy;
-    private String groupId;
-    private Integer version;
-    private String fileName;
+    private List<ConfigurationModel> data;
+    private Integer recordsTotal;
+    private Integer recordsFiltered;
 }

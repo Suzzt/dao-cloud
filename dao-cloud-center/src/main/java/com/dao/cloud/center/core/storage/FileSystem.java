@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
@@ -19,8 +20,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author sucf
@@ -68,6 +70,9 @@ public class FileSystem implements Persistence {
      */
     private final String configStoragePath;
 
+    /**
+     * Configuration Storage Path
+     */
     private final String configurationStoragePath;
 
     /**
@@ -147,11 +152,12 @@ public class FileSystem implements Persistence {
 
     @Override
     public void delete(ConfigurationProperty configurationProperty) {
-        String filePath = configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName();
+        String filePath = configurationStoragePath + File.separator + configurationProperty.getProxy() + File.separator + configurationProperty.getGroupId() + File.separator + configurationProperty.getFileName();
         File file = new File(filePath);
 
         if (!file.exists() || !file.isFile()) {
-            log.warn("Configuration file does not exist or is not a file: {}", filePath);
+            log.error("Configuration file does not exist or is not a file: {}", filePath);
+            return;
         }
 
         try {
@@ -274,19 +280,27 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public Set<String> getConfigurationFile(String proxy, String groupId) {
-        String directoryPath = configurationStoragePath + File.separator + proxy + File.separator + groupId;
-        File directory = new File(directoryPath);
-
-        if (!directory.exists() || !directory.isDirectory()) {
-            log.warn("Directory does not exist or is not a directory: {}", directoryPath);
-            return new HashSet<>();
+    public List<ConfigurationModel> getConfiguration() {
+        List<ConfigurationModel> configurationModels = Lists.newArrayList();
+        String prefixPath = configurationStoragePath;
+        List<String> proxyList = loopDirs(prefixPath);
+        for (String proxy : proxyList) {
+            List<String> groupIds = loopDirs(prefixPath + File.separator + proxy);
+            for (String groupId : groupIds) {
+                List<String> files = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + groupId);
+                for (String file : files) {
+                    try {
+                        if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
+                            ConfigurationModel configurationModel = new ConfigurationModel(proxy, groupId, file);
+                            configurationModels.add(configurationModel);
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to load configuration data (proxy={}, groupId={}, fileName={}) from file", proxy, groupId, file, e);
+                    }
+                }
+            }
         }
-
-        return FileUtil.loopFiles(directory).stream()
-                .filter(File::isFile)
-                .map(File::getName)
-                .collect(Collectors.toSet());
+        return configurationModels;
     }
 
     @Override
@@ -395,11 +409,6 @@ public class FileSystem implements Persistence {
             }
         }
         return callTrendModels;
-    }
-
-    @Override
-    public void storage(LogModel logModel) {
-
     }
 
     public String makePath(String prefix, String... modules) {

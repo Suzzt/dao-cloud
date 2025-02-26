@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.storage;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
@@ -294,8 +295,8 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public Set<String> getConfigurationFile(String proxy, String groupId) {
-        return Collections.emptySet();
+    public List<ConfigurationModel> getConfiguration() {
+        return Collections.emptyList();
     }
 
     @Override
@@ -387,11 +388,6 @@ public class DbMysql implements Persistence {
             log.error("<<<<<<<<<<<< mysql update call trend error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
-
-    }
-
-    @Override
-    public void storage(LogModel logModel) {
 
     }
 
