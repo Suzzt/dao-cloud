@@ -1,5 +1,21 @@
 var newEditor, updateEditor;
 
+
+$('#addModal, #updateModal').on('shown.bs.modal', function () {
+    const editorContainer = $(this).find('.editor-container')[0];
+    const modalContentHeight = $(this).find('.modal-content').height();
+
+    // 计算可用高度 = 模态框总高度 - 表单控件高度 - 安全边距
+    const calculatedHeight = modalContentHeight - 350;
+
+    // 设置动态高度（限制在200-700px之间）
+    editorContainer.style.height = Math.min(Math.max(calculatedHeight, 200), 700) + 'px';
+
+    // 刷新CodeMirror实例
+    if (newEditor) newEditor.refresh();
+    if (updateEditor) updateEditor.refresh();
+});
+
 $(function () {
     // 初始化编辑器
     function initEditors() {
@@ -7,9 +23,9 @@ $(function () {
         var addContainer = $("#addModal .editor-container");
         newEditor = CodeMirror(addContainer[0], {
             lineNumbers: true,
+            gutters: ["CodeMirror-linenumbers"],
             theme: "material-darker",
             mode: "yaml",
-            gutters: ["CodeMirror-lint-markers"],
             lint: true
         });
 
@@ -19,7 +35,7 @@ $(function () {
             lineNumbers: true,
             theme: "material-darker",
             mode: "yaml",
-            gutters: ["CodeMirror-lint-markers"],
+            gutters: ["CodeMirror-linenumbers"],
             lint: true
         });
     }

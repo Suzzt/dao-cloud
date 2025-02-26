@@ -93,8 +93,8 @@
 
     <!-- 新增.模态框 -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-lg" style="max-width: 90%;">
+            <div class="modal-content" style="min-height: 80vh;">
                 <div class="modal-header">
                     <h4 class="modal-title">新增配置</h4>
                 </div>
@@ -133,7 +133,7 @@
                             <label for="lastname" class="col-sm-3 control-label">配置信息 <font
                                         color="red">*</font></label>
                             <div class="col-sm-9">
-                                <div class="editor-container" style="height:400px; border:1px solid #ddd"></div>
+                                <div class="editor-container" style="height:500px; border:1px solid #ddd"></div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -150,8 +150,8 @@
 
     <!-- 更新.模态框 -->
     <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-lg" style="max-width: 90%;">
+            <div class="modal-content" style="min-height: 80vh;">
                 <div class="modal-header">
                     <h4 class="modal-title">更新配置内容</h4>
                 </div>
@@ -189,7 +189,7 @@
                             <label for="lastname" class="col-sm-3 control-label">配置信息 <font
                                         color="red">*</font></label>
                             <div class="col-sm-9">
-                                <div class="editor-container" style="height:400px; border:1px solid #ddd"></div>
+                                <div class="editor-container" style="height:500px; border:1px solid #ddd"></div>
                             </div>
                         </div>
                         <div class="form-group">
