@@ -9,8 +9,9 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/1/27 21:44
+ * @description:
  */
 public class UseOnAnnotationCondition implements ConfigurationCondition {
 

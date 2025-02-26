@@ -9,8 +9,9 @@ import java.lang.annotation.*;
 
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/2/6 19:20
+ * @description:
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

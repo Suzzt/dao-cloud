@@ -23,9 +23,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author sucf
- * @since 1.0
- * Gateway Pull Service Instance Node Tasker
+ * @author: sucf
+ * @date: 2024/1/3 23:25
+ * @description: Gateway Pull Service Instance Node Tasker
  */
 @Slf4j
 public class GatewayPullServiceTimer implements Runnable {

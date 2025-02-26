@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author sucf
- * @since 1.0
- * 定时拉取集群节点信息
+ * @author: sucf
+ * @date: 2023/6/7 23:37
+ * @description: 定时拉取集群节点信息
  */
 @Slf4j
 public class InquireClusterTimer implements Runnable {

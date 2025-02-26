@@ -4,8 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/12/3 23:40
+ * @description:
  */
 @Data
 @ConfigurationProperties(prefix = "dao-cloud.config")

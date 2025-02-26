@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/3/2 20:11
+ * @description:
  */
 @Data
 public class GatewayConfig {

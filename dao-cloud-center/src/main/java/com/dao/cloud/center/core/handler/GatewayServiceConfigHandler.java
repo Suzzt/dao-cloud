@@ -14,9 +14,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author sucf
- * @since 1.0
- * Gateway pull service node handler(All server info)
+ * @author: sucf
+ * @date: 2024/1/12 22:53
+ * @description: Gateway pull service node handler(All server info)
  */
 @Slf4j
 public class GatewayServiceConfigHandler extends SimpleChannelInboundHandler<GatewayConfigPullMarkModel> {

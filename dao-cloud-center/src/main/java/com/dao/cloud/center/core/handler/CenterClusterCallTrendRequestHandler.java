@@ -13,9 +13,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author sucf
- * @since 1.0
- * Handles getting all call trend data.
+ * @author: sucf
+ * @date: 2024/7/22 16:59
+ * @description: Handles getting all call trend data.
  */
 @Slf4j
 public class CenterClusterCallTrendRequestHandler extends SimpleChannelInboundHandler<CallTrendPullMarkModel> {

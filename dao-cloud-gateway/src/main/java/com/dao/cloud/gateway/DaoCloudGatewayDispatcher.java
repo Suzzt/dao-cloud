@@ -25,9 +25,9 @@ import java.io.OutputStream;
 import java.util.*;
 
 /**
- * @author sucf
- * @since 1.0
- * 转发分发处理器
+ * @author: sucf
+ * @date: 2023/12/28 14:55
+ * @description: 转发分发处理器
  */
 @RestController
 @Slf4j

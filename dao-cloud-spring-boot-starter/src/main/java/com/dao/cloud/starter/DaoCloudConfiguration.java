@@ -30,9 +30,9 @@ import java.util.List;
 
 
 /**
- * @author sucf
- * @since 1.0
- * dao-cloud SpringBoot Auto Configuration
+ * @author: sucf
+ * @date: 2022/10/28 20:29
+ * @description: dao-cloud SpringBoot Auto Configuration
  */
 @Configuration
 @EnableConfigurationProperties({DaoCloudServerProperties.class})

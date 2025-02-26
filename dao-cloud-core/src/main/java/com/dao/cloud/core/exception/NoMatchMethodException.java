@@ -1,7 +1,8 @@
 package com.dao.cloud.core.exception;
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/2/22 17:55
+ * @description:
  */
 public class NoMatchMethodException extends RuntimeException {
 }

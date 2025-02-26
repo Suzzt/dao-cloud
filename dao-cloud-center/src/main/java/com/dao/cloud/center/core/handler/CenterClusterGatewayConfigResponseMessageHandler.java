@@ -8,9 +8,9 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author sucf
- * @since 1.0
- * Center cluster gateway pull service node handler(All server info)
+ * @author: sucf
+ * @date: 2024/3/17 15:23
+ * @description: Center cluster gateway pull service node handler(All server info)
  */
 @Slf4j
 public class CenterClusterGatewayConfigResponseMessageHandler extends SimpleChannelInboundHandler<GatewayServiceNodeModel> {

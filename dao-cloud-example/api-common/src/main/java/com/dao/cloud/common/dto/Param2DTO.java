@@ -6,8 +6,9 @@ import java.io.Serializable;
 
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/1/24 18:28
+ * @description:
  */
 @Data
 public class Param2DTO implements Serializable {

@@ -23,9 +23,9 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * @author sucf
- * @since 1.0
- * 业务web接口
+ * @author: sucf
+ * @date: 2022/11/19 18:16
+ * @description: 业务web接口
  */
 @Controller
 @RequestMapping(value = "dao-cloud")

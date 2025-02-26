@@ -5,8 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/9/21 23:32
+ * @description:
  */
 @Data
 public class ProxyStatisticsVO {

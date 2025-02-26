@@ -3,8 +3,9 @@ package com.dao.cloud.center.web.vo;
 import lombok.Data;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/8/21 15:58
+ * @description:
  */
 @Data
 public class LogVO {

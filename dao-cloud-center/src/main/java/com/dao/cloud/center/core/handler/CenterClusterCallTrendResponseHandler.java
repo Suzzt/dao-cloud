@@ -8,8 +8,9 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/7/22 16:42
+ * @description:
  */
 @Slf4j
 public class CenterClusterCallTrendResponseHandler extends SimpleChannelInboundHandler<CallTrendFullModel> {

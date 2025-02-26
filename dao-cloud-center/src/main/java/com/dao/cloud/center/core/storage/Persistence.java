@@ -8,11 +8,12 @@ import com.dao.cloud.core.model.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * @author sucf
- * @since 1.0
- * dao center data persistence.
+ * @author: sucf
+ * @date: 2023/2/28 23:41
+ * @description: dao center data persistence.
  * if you want to implement persistence according to your own rules, implement this method
  */
 public interface Persistence {

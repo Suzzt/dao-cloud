@@ -17,9 +17,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author sucf
- * @since 1.0
- * gateway bootstrap
+ * @author: sucf
+ * @date: 2024/1/2 17:31
+ * @description: gateway bootstrap
  */
 @Slf4j
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {

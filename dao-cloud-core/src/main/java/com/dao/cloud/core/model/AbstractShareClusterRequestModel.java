@@ -3,9 +3,9 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author sucf
- * @since 1.0
- * Cluster synchronization data model
+ * @author: sucf
+ * @date: 2024/2/27 18:03
+ * @description: Cluster synchronization data model
  */
 @Data
 public class AbstractShareClusterRequestModel extends Model {

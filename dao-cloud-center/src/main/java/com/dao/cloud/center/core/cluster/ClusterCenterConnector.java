@@ -16,8 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/4/16 23:21
+ * @description:
  */
 @Slf4j
 public class ClusterCenterConnector {

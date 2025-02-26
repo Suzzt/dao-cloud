@@ -36,9 +36,9 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * @author sucf
- * @since 1.0
- * Configuration center startup
+ * @author: sucf
+ * @date: 2023/2/12 16:37
+ * @description: Configuration center startup
  */
 @Slf4j
 @Configuration

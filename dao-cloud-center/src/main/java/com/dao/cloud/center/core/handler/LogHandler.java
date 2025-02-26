@@ -6,9 +6,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 /**
- * @author sucf
- * @since 1.0
- * log receive
+ * @author: sucf
+ * @date: 2024/8/23 16:58
+ * @description: log receive
  */
 public class LogHandler extends SimpleChannelInboundHandler<LogModel> {
 

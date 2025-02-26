@@ -3,9 +3,9 @@ package com.dao.cloud.gateway.limit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author sucf
- * @since 1.0
- * 抽象限流器
+ * @author: sucf
+ * @date: 2023/12/27 17:46
+ * @description: 抽象限流器
  * Be sure to rewrite the equals and hashcode methods,
  * because when pulling the gateway configuration,
  * these two methods are used to determine whether the configuration has been changed.

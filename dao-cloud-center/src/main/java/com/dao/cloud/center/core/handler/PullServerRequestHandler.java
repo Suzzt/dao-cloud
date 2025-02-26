@@ -17,9 +17,9 @@ import java.util.Set;
 
 
 /**
- * @author sucf
- * @since 1.0
- * pull server handler
+ * @author: sucf
+ * @date: 2022/10/29 10:28
+ * @description: pull server handler
  */
 @Slf4j
 public class PullServerRequestHandler extends SimpleChannelInboundHandler<ProxyProviderModel> {

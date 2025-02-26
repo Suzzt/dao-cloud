@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author sucf
- * @since 1.0
- * Gateway global exception handling and unified response
+ * @author: sucf
+ * @date: 2024/2/20 15:05
+ * @description: Gateway global exception handling and unified response
  */
 @Slf4j
 @ControllerAdvice

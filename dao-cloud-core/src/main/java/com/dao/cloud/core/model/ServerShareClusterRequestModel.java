@@ -3,9 +3,9 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author sucf
- * @since 1.0
- * Synchronization of server configuration information between clusters
+ * @author: sucf
+ * @date: 2024/3/31 23:51
+ * @description: Synchronization of server configuration information between clusters
  */
 @Data
 public class ServerShareClusterRequestModel extends AbstractShareClusterRequestModel {

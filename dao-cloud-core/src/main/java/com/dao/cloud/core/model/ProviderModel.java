@@ -5,8 +5,9 @@ import lombok.Data;
 import java.util.Objects;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/2/12 19:55
+ * @description:
  */
 @Data
 public class ProviderModel extends Model {

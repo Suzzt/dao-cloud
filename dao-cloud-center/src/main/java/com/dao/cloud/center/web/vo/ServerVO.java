@@ -4,8 +4,9 @@ import com.dao.cloud.core.model.GatewayConfigModel;
 import lombok.Data;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/2/7 20:43
+ * @description:
  */
 @Data
 public class ServerVO {

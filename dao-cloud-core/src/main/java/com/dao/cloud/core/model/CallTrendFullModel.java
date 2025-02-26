@@ -5,8 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/7/22 16:34
+ * @description:
  */
 @Data
 public class CallTrendFullModel extends ErrorResponseModel{

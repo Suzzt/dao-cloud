@@ -6,8 +6,9 @@ import lombok.Data;
 import java.util.Objects;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2024/3/29 23:57
+ * @description:
  */
 @Data
 public class ServerProxyProviderNode {

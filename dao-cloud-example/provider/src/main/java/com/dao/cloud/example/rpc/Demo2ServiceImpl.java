@@ -4,8 +4,9 @@ import com.dao.cloud.starter.annotation.DaoService;
 import com.dao.cloud.common.Demo2Service;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/7/30 23:50
+ * @description:
  */
 @DaoService
 public class Demo2ServiceImpl implements Demo2Service {

@@ -5,8 +5,9 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/1/13 17:15
+ * @description:
  */
 @Data
 public class Model implements Serializable {

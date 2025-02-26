@@ -7,8 +7,9 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/3/12 22:47
+ * @description:
  */
 @Slf4j
 public class InquireClusterCenterResponseHandler extends SimpleChannelInboundHandler<ClusterCenterNodeModel> {

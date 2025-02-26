@@ -3,8 +3,9 @@ package com.dao.cloud.center.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/3/12 17:58
+ * @description:
  */
 @ConfigurationProperties(prefix = "dao-cloud.center.cluster")
 public class DaoCloudClusterCenterProperties {

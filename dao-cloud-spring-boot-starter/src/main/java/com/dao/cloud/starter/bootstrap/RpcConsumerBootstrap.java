@@ -33,9 +33,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author sucf
- * @since 1.0
- * rpc consumer startup
+ * @author: sucf
+ * @date: 2023/1/12 11:11
+ * @description: rpc consumer startup
  */
 @Slf4j
 @Component

@@ -1,8 +1,9 @@
 package com.dao.cloud.core.netty.protocol;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2023/1/31 15:07
+ * @description:
  */
 public class HeartbeatPacket extends DaoMessage{
     public HeartbeatPacket() {

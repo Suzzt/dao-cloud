@@ -3,8 +3,9 @@ package com.dao.cloud.core.netty.protocol;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 
 /**
- * @author sucf
- * @since 1.0
+ * @author: sucf
+ * @date: 2022/10/28 20:44
+ * @description:
  */
 public class ProtocolFrameDecoder extends LengthFieldBasedFrameDecoder {
 

@@ -11,9 +11,9 @@ import java.util.Map;
 
 
 /**
- * @author sucf
- * @since 1.0
- * 网关中心
+ * @author: sucf
+ * @date: 2024/2/5 13:59
+ * @description: 网关中心
  */
 @Slf4j
 public class GatewayCenterManager {
