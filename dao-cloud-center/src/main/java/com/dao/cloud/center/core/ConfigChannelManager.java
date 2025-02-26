@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/2/11 23:59
- * @description: config channel manager
+ * @author sucf
+ * @since 1.0
+ * config channel manager
  */
 public class ConfigChannelManager {
     /**

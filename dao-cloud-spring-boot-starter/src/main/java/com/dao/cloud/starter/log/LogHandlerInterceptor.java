@@ -4,9 +4,9 @@ import cn.hutool.core.util.IdUtil;
 import org.slf4j.MDC;
 
 /**
- * @author: sucf
- * @date: 2024/9/3 23:03
- * @description: 日志拦截器
+ * @author sucf
+ * @since 1.0
+ * 日志拦截器
  */
 public class LogHandlerInterceptor {
 

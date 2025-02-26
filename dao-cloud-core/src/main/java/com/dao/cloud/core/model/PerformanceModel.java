@@ -6,9 +6,9 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author: sucf
- * @date: 2024/6/16 00:00
- * @description: Service node load performance information
+ * @author sucf
+ * @since 1.0
+ * Service node load performance information
  */
 @Data
 public class PerformanceModel implements Serializable {

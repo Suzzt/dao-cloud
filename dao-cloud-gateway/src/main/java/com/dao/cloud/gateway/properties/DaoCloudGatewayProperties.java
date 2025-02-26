@@ -4,8 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author oooootemp
- * @date: 2024/4/5 11:31
- * @description: dao cloud gateway configuration
+ * @since 1.0
+ * dao cloud gateway configuration
  */
 @ConfigurationProperties(prefix = "dao-cloud.gateway")
 public class DaoCloudGatewayProperties {

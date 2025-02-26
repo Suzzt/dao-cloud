@@ -3,9 +3,8 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/2/20 22:58
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class GlobalExceptionModel extends ErrorResponseModel {

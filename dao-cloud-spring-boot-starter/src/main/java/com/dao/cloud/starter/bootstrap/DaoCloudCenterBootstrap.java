@@ -8,9 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 /**
- * @author: sucf
- * @date: 2023/6/10 12:39
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Component
 public class DaoCloudCenterBootstrap {

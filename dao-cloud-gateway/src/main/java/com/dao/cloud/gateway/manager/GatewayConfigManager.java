@@ -9,9 +9,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author: sucf
- * @date: 2024/2/14 22:13
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 public class GatewayConfigManager {

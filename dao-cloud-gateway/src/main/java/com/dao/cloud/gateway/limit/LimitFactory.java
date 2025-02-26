@@ -6,9 +6,9 @@ import com.dao.cloud.core.util.DaoCloudConstant;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/3/5 22:22
- * @description: limiter factory
+ * @author sucf
+ * @since 1.0
+ * limiter factory
  */
 @Slf4j
 public class LimitFactory {

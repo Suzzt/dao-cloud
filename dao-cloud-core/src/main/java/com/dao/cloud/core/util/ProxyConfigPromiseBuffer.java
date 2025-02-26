@@ -7,9 +7,8 @@ import io.netty.util.concurrent.Promise;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/9/13 15:09
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class ProxyConfigPromiseBuffer {
     /**

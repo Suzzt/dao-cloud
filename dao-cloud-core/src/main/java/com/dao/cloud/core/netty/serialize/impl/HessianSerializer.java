@@ -10,9 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * @author: sucf
- * @date: 2023/2/20 09:40
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class HessianSerializer implements DaoSerializer {
     @Override

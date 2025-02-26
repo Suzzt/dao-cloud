@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/12/27 17:43
- * @description: Gateway Configuration starter
+ * @author sucf
+ * @since 1.0
+ * Gateway Configuration starter
  */
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")

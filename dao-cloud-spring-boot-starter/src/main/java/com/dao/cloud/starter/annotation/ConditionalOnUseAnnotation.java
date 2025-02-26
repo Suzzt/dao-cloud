@@ -5,9 +5,8 @@ import org.springframework.context.annotation.Conditional;
 import java.lang.annotation.*;
 
 /**
- * @author: sucf
- * @date: 2023/1/27 21:43
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

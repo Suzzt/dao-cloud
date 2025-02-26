@@ -11,9 +11,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/12/17 23:34
- * @description: configuration property request handler
+ * @author sucf
+ * @since 1.0
+ * configuration property request handler
  */
 @Slf4j
 public class ConfigurationPropertyRequestHandler extends SimpleChannelInboundHandler<ConfigurationPropertyRequestModel> {

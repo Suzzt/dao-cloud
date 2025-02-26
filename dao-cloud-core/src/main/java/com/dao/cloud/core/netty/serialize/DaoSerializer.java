@@ -3,9 +3,8 @@ package com.dao.cloud.core.netty.serialize;
 import java.io.IOException;
 
 /**
- * @author: sucf
- * @date: 2022/12/29 21:38
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public interface DaoSerializer {
     /**

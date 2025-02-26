@@ -9,9 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/1/12 17:33
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 @DaoService

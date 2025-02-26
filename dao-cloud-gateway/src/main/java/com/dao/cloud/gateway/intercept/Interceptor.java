@@ -1,9 +1,9 @@
 package com.dao.cloud.gateway.intercept;
 
 /**
- * @author: sucf
- * @date: 2023/12/27 17:58
- * @description: Request Interceptor
+ * @author sucf
+ * @since 1.0
+ * Request Interceptor
  */
 public interface Interceptor {
 

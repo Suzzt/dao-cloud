@@ -5,9 +5,9 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author: sucf
- * @date: 2024/8/10 00:26
- * @description: 清空接口调用趋势VO
+ * @author sucf
+ * @since 1.0
+ * 清空接口调用趋势VO
  */
 @Data
 public class CallTrendClearVO {

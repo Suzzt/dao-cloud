@@ -7,9 +7,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.concurrent.Promise;
 
 /**
- * @author: sucf
- * @date: 2023/7/11 18:23
- * @description: 回应cluster数据同步
+ * @author sucf
+ * @since 1.0
+ * 回应cluster数据同步
  */
 public class SyncClusterInformationResponseHandler extends SimpleChannelInboundHandler<ClusterSyncDataResponseModel> {
 

@@ -7,9 +7,8 @@ import com.dao.cloud.starter.unit.Client;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/1/11 22:39
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class RandomLoadBalance extends DaoLoadBalance {
     @Override

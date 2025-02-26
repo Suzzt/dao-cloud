@@ -5,9 +5,8 @@ import lombok.Data;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2022/11/13 23:19
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class RegisterProviderModel extends Model {

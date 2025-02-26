@@ -5,9 +5,8 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * @author: sucf
- * @date: 2023/2/26 23:11
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class ConfigVO {

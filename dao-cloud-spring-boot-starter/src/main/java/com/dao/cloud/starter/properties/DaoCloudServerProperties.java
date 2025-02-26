@@ -3,9 +3,9 @@ package com.dao.cloud.starter.properties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author: sucf
- * @date: 2022/12/29 21:30
- * @description: dao cloud server config
+ * @author sucf
+ * @since 1.0
+ * dao cloud server config
  */
 @ConfigurationProperties(prefix = "dao-cloud.server")
 public class DaoCloudServerProperties {

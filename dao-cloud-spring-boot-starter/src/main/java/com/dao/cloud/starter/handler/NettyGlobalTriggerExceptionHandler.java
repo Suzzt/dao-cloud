@@ -13,9 +13,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/2/20 15:45
- * @description: netty global trigger exception handler.
+ * @author sucf
+ * @since 1.0
+ * netty global trigger exception handler.
  * 这个全局异常处理器只能针对没重写exceptionCaught handler的统一处理
  * important: 对于那些重要的、异步promise、有请求序列id的请求一定要在对应处理器上重写exceptionCaught方法
  */

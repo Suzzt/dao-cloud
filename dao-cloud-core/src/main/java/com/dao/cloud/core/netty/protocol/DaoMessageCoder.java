@@ -13,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
- * @author: sucf
- * @date: 2022/10/28 20:28
- * @description: 消息协议编码处理
+ * @author sucf
+ * @since 1.0
+ * 消息协议编码处理
  */
 @Slf4j
 public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {

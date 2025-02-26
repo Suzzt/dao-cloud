@@ -11,9 +11,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/12/7 16:27
- * @description: configuration file information request handler
+ * @author sucf
+ * @since 1.0
+ * configuration file information request handler
  */
 @Slf4j
 public class ConfigurationFileInformationRequestHandler extends SimpleChannelInboundHandler<ConfigurationFileInformationRequestModel> {

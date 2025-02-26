@@ -13,9 +13,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * @author: sucf
- * @date: 2024/8/23 12:02
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
 

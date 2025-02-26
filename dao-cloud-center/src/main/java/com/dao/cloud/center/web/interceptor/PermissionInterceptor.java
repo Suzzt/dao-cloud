@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.math.BigInteger;
 
 /**
- * @author: sucf
- * @date: 2023/07/29 17:22
- * @description: 权限具体拦截实现
+ * @author sucf
+ * @since 1.0
+ * 权限具体拦截实现
  */
 @Component
 public class PermissionInterceptor extends HandlerInterceptorAdapter implements InitializingBean {

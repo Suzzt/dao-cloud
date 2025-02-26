@@ -5,9 +5,8 @@ import com.dao.cloud.core.enums.CodeEnum;
 import java.io.Serializable;
 
 /**
- * @author: sucf
- * @date: 2023/1/9 10:38
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class DaoException extends RuntimeException implements Serializable {
 

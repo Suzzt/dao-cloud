@@ -5,9 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/4/2 13:58
- * @description: Unite Print Exception Handler
+ * @author sucf
+ * @since 1.0
+ * Unite Print Exception Handler
  */
 @Slf4j
 public class PrintExceptionHandler extends ChannelDuplexHandler {

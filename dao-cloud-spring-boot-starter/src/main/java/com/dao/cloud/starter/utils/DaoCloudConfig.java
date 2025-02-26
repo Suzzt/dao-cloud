@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/2/26 18:32
- * @description: dao config
+ * @author sucf
+ * @since 1.0
+ * dao config
  */
 @Slf4j
 public class DaoCloudConfig {

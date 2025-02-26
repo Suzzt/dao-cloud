@@ -4,9 +4,9 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/2/3 23:54
- * @description: Gateway Model
+ * @author sucf
+ * @since 1.0
+ * Gateway Model
  */
 @Data
 public class GatewayModel extends Model {

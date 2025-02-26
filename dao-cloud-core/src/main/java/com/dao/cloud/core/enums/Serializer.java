@@ -7,9 +7,8 @@ import com.dao.cloud.core.netty.serialize.impl.JdkSerializer;
 import com.dao.cloud.core.netty.serialize.impl.JsonSerializer;
 
 /**
- * @author: sucf
- * @date: 2023/1/18 14:34
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public enum Serializer {
 

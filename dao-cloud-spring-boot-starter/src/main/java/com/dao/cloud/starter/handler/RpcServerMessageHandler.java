@@ -22,9 +22,8 @@ import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @author: sucf
- * @date: 2022/10/29 10:28
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequestModel> {

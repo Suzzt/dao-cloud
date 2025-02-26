@@ -26,8 +26,8 @@ import java.util.Map;
 
 /**
  * @author sucf
- * @date 2023/2/27 23:55
- * @description: data in local file system data persistence
+ * @since 1.0
+ * data in local file system data persistence
  * <p>
  * config data is written to the file system.
  * if there is no directory or file, just create it.

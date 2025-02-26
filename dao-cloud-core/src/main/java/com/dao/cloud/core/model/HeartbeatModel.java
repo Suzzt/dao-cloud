@@ -2,9 +2,8 @@ package com.dao.cloud.core.model;
 
 
 /**
- * @author: sucf
- * @date: 2023/1/15 18:01
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class HeartbeatModel extends Model {
 }

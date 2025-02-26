@@ -19,9 +19,9 @@ import org.springframework.util.StringUtils;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2024/1/27 18:07
- * @description: client invoke handler
+ * @author sucf
+ * @since 1.0
+ * client invoke handler
  */
 @Slf4j
 public class ClientInvoker {

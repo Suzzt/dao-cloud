@@ -1,9 +1,9 @@
 package com.dao.cloud.core.enums;
 
 /**
- * @author: sucf
+ * @author sucf
  * @create: 2020-10-16 11:22:12
- * @description: result返回值code对照码
+ * result返回值code对照码
  */
 public enum CodeEnum {
 

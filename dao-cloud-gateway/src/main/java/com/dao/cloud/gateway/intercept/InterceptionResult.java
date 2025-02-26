@@ -1,9 +1,9 @@
 package com.dao.cloud.gateway.intercept;
 
 /**
- * @author: sucf
- * @date: 2024/3/10 12:06
- * @description: 网关拦截返回的结果封装
+ * @author sucf
+ * @since 1.0
+ * 网关拦截返回的结果封装
  */
 public class InterceptionResult {
 

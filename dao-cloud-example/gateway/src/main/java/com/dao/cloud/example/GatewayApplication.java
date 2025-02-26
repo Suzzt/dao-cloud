@@ -4,9 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author: sucf
- * @date: 2024/1/12 17:49
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @SpringBootApplication
 public class GatewayApplication {

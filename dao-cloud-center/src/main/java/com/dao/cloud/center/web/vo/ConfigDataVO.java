@@ -5,9 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author: sucf
- * @date: 2023/7/30 15:58
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class ConfigDataVO {

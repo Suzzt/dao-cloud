@@ -7,9 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/2/2 22:03
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 public class DaoTimer {

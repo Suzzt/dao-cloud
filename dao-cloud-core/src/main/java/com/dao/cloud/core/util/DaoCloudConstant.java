@@ -5,9 +5,8 @@ import com.dao.cloud.core.model.Model;
 import io.netty.util.AttributeKey;
 
 /**
- * @author: sucf
- * @date: 2022/10/31 17:06
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 public class DaoCloudConstant {
     public static final String MAGIC_NUMBER = "dao";

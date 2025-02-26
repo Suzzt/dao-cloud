@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author: sucf
- * @date: 2022/11/19 09:11
- * @description: pull server node
+ * @author sucf
+ * @since 1.0
+ * pull server node
  */
 @Slf4j
 public class CenterServerMessageHandler extends SimpleChannelInboundHandler<ProxyProviderServerModel> {

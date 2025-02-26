@@ -6,9 +6,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * @author: sucf
- * @date: 2023/1/9 21:33
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Data
 public class ServerNodeModel implements Serializable {

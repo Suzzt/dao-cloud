@@ -13,9 +13,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/4/1 14:16
- * @description: Service configuration pull request
+ * @author sucf
+ * @since 1.0
+ * Service configuration pull request
  */
 @Slf4j
 public class CenterClusterServerConfigRequestHandler extends SimpleChannelInboundHandler<ServerConfigPullMarkModel> {

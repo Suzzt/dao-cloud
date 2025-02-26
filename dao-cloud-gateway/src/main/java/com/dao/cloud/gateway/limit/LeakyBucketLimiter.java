@@ -4,9 +4,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author: sucf
- * @date: 2024/4/9 11:09
- * @description: 漏桶限流
+ * @author sucf
+ * @since 1.0
+ * 漏桶限流
  */
 public class LeakyBucketLimiter extends Limiter {
 

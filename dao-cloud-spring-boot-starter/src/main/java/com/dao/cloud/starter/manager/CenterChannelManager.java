@@ -30,9 +30,8 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/2/27 11:38
- * @description:
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 public class CenterChannelManager {
