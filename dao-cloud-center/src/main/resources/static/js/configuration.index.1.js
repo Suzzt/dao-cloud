@@ -16,6 +16,25 @@ $('#addModal, #updateModal').on('shown.bs.modal', function () {
     if (updateEditor) updateEditor.refresh();
 });
 
+// 新增模态框关闭时重置数据
+$('#addModal').on('hidden.bs.modal', function() {
+    // 重置表单字段
+    const $form = $(this).find('form');
+    $form[0].reset();
+
+    // 清空编辑器内容
+    newEditor.setValue('');
+
+    // 强制重置文件类型为YAML
+    const $fileType = $form.find('#fileType');
+    $fileType.val('.yaml').trigger('change');
+
+    // 清除验证错误提示
+    $form.validate().resetForm();
+});
+
+// 更新模态框关闭时保留数据（按需处理，此处不需要重置）
+
 $(function () {
     // 初始化编辑器
     function initEditors() {
@@ -161,7 +180,7 @@ $(function () {
                 $('#addModal').modal('hide');
                 dataTable.ajax.reload();
             }
-            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+            layer.msg(res.code === "00000" ? "操作成功" : res.message);
         });
     });
 
@@ -202,7 +221,7 @@ $(function () {
                 $('#updateModal').modal('hide');
                 dataTable.ajax.reload();
             }
-            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+            layer.msg(res.code === "00000" ? "操作成功" : res.message);
         });
     });
 
