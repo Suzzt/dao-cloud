@@ -1,12 +1,11 @@
 var newEditor, updateEditor;
 
-
 $('#addModal, #updateModal').on('shown.bs.modal', function () {
     const editorContainer = $(this).find('.editor-container')[0];
     const modalContentHeight = $(this).find('.modal-content').height();
 
     // 计算可用高度 = 模态框总高度 - 表单控件高度 - 安全边距
-    const calculatedHeight = modalContentHeight - 350;
+    const calculatedHeight = modalContentHeight - 600;
 
     // 设置动态高度（限制在200-700px之间）
     editorContainer.style.height = Math.min(Math.max(calculatedHeight, 200), 700) + 'px';
@@ -32,8 +31,6 @@ $('#addModal').on('hidden.bs.modal', function() {
     // 清除验证错误提示
     $form.validate().resetForm();
 });
-
-// 更新模态框关闭时保留数据（按需处理，此处不需要重置）
 
 $(function () {
     // 初始化编辑器

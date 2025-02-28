@@ -93,7 +93,7 @@
 
     <!-- 新增.模态框 -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" style="max-width: 90%;">
+        <div class="modal-dialog modal-lg" style="max-width: 100%;">
             <div class="modal-content" style="min-height: 80vh;">
                 <div class="modal-header">
                     <h4 class="modal-title">新增配置</h4>
@@ -130,11 +130,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="lastname" class="col-sm-3 control-label">配置信息 <font
-                                        color="red">*</font></label>
-                            <div class="col-sm-9">
-                                <div class="editor-container" style="height:500px; border:1px solid #ddd"></div>
-                            </div>
+                            <div class="editor-container" style="height:550px; border:1px solid #ddd"></div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-9">
@@ -189,7 +185,7 @@
                             <label for="lastname" class="col-sm-3 control-label">配置信息 <font
                                         color="red">*</font></label>
                             <div class="col-sm-9">
-                                <div class="editor-container" style="height:500px; border:1px solid #ddd"></div>
+                                <div class="editor-container" style="height:550px; border:1px solid #ddd"></div>
                             </div>
                         </div>
                         <div class="form-group">
