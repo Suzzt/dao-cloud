@@ -1,10 +1,7 @@
 package com.dao.cloud.starter.manager;
 
-import com.dao.cloud.starter.handler.GatewayPullServiceNodeMessageHandler;
+import com.dao.cloud.starter.handler.*;
 import com.dao.cloud.starter.timer.InquireClusterTimer;
-import com.dao.cloud.starter.handler.CenterConfigMessageHandler;
-import com.dao.cloud.starter.handler.CenterServerMessageHandler;
-import com.dao.cloud.starter.handler.InquireClusterCenterResponseHandler;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ClusterCenterNodeModel;
 import com.dao.cloud.core.model.ClusterInquireMarkModel;
@@ -122,6 +119,8 @@ public class CenterChannelManager {
                         .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
                         .addLast(new InquireClusterCenterResponseHandler())
                         .addLast(new CenterConfigMessageHandler())
+                        .addLast(new CenterConfigurationFileMessageHandler())
+                        .addLast(new CenterConfigurationPropertyMessageHandler())
                         .addLast(new CenterServerMessageHandler())
                         .addLast(new GatewayPullServiceNodeMessageHandler());
             }

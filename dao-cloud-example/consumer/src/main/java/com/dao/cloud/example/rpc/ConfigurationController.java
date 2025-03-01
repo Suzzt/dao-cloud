@@ -15,7 +15,7 @@ public class ConfigurationController {
     @Value("${user.name:JunMo}")
     private String userName;
 
-    @RequestMapping("/config_value")
+    @RequestMapping("/configuration_value")
     public String getConfig(){
         return userName;
     }

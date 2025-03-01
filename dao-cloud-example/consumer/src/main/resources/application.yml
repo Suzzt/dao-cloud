@@ -8,6 +8,9 @@ server:
 
 dao-cloud:
   enable: true
+  configuration:
+    proxy: demo
+    groupId: 182642924902
   server:
     proxy: demo2
     corePoolSize: 3
@@ -16,4 +19,4 @@ dao-cloud:
   # 如果没有此项配置的话,默认为单机的127.0.0.1去连接.
 #    ip: 192.168.31.254
 
-log.home: /data/dao-cloud-logs/${spring.application.name}
+log.home: /Users/sucf/logs/dao-cloud/dao-cloud-example-consumer

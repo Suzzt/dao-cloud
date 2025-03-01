@@ -12,5 +12,6 @@ import java.util.Set;
  */
 @Data
 public class ConfigurationFileInformationResponseModel extends ErrorResponseModel {
+    private Long sequenceId;
     private Set<String> fileNames;
 }

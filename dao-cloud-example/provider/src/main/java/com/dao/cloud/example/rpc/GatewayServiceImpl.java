@@ -40,10 +40,10 @@ public class GatewayServiceImpl implements GatewayService {
         return param2DTO;
     }
 
-    @Override
-    public void gatewayTest3(DaoCloudServletResponse response) {
-        response.addHeader("Content-Disposition", "attachment;filename=xx.txt");
-        response.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(), "application/vnd.ms-excel");
-        response.setBodyData("hello world!".getBytes(StandardCharsets.UTF_8));
-    }
+//    @Override
+//    public void gatewayTest3(DaoCloudServletResponse response) {
+//        response.addHeader("Content-Disposition", "attachment;filename=xx.txt");
+//        response.addHeader(HttpHeaderNames.CONTENT_TYPE.toString(), "application/vnd.ms-excel");
+//        response.setBodyData("hello world!".getBytes(StandardCharsets.UTF_8));
+//    }
 }

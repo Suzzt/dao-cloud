@@ -27,6 +27,7 @@ public class ConfigurationFileInformationRequestHandler extends SimpleChannelInb
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ConfigurationFileInformationRequestModel model) throws Exception {
         ConfigurationFileInformationResponseModel configurationFileInformationResponseModel = new ConfigurationFileInformationResponseModel();
+        configurationFileInformationResponseModel.setSequenceId(model.getSequenceId());
         configurationFileInformationResponseModel.setFileNames(configurationCenterManager.getConfigurationFile(model.getProxy(), model.getGroupId()));
         DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, configurationFileInformationResponseModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {

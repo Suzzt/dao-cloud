@@ -9,7 +9,6 @@ import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.banlance.impl.HashLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RoundLoadBalance;
-import com.dao.cloud.starter.bootstrap.DaoCloudCenterBootstrap;
 import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,7 +32,7 @@ import java.util.Map;
  */
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
-@Import({DaoCloudCenterProperties.class, DaoCloudCenterBootstrap.class, GatewayBootstrap.class})
+@Import({DaoCloudCenterProperties.class, GatewayBootstrap.class})
 public class DaoCloudGatewayConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
