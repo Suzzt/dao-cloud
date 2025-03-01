@@ -104,7 +104,7 @@ public class ClientInvoker {
         });
 
         // 等待 promise 结果
-        if (!promise.await(timeout * 1_000)) {
+        if (!promise.await(timeout)) {
             LongPromiseBuffer.getInstance().remove(sequenceId);
             throw new DaoException("rpc do invoke time out");
         }
