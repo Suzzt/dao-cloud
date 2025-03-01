@@ -120,12 +120,12 @@ public class DaoCloudGatewayDispatcher {
         Long timeout;
         if (gatewayConfig == null) {
             // default timeout 30s
-            timeout = 30L;
+            timeout = 30L * 1_000;
         } else {
             timeout = gatewayConfig.getTimeout();
             // default timeout 30s
             if (timeout == null || timeout <= 0) {
-                timeout = 30L;
+                timeout = 30L * 1_000;
             }
         }
 
