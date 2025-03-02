@@ -94,6 +94,8 @@ public class ClusterCenterConnector {
                         .addLast(new CenterClusterConfigResponseHandler())
                         .addLast(new CenterClusterGatewayConfigResponseMessageHandler())
                         .addLast(new CenterClusterServerConfigResponseMessageHandler())
+                        .addLast(new CenterClusterConfigurationFileResponseMessageHandler())
+                        .addLast(new ConfigurationPropertyResponseHandler())
                         .addLast(new CenterClusterCallTrendResponseHandler())
                         .addLast(clusterRequestHandler);
             }

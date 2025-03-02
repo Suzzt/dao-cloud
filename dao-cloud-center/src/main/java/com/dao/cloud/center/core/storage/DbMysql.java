@@ -2,7 +2,6 @@ package com.dao.cloud.center.core.storage;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
-import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
@@ -295,7 +294,7 @@ public class DbMysql implements Persistence {
     }
 
     @Override
-    public List<ConfigurationModel> getConfiguration() {
+    public List<ConfigurationFileInformationModel> getConfiguration() {
         return Collections.emptyList();
     }
 
@@ -311,6 +310,7 @@ public class DbMysql implements Persistence {
             statement.execute(truncate_gateway_config_sql_template);
             statement.execute(truncate_server_config_sql_template);
             statement.execute(truncate_call_trend_sql_template);
+            // todo configuration
         } catch (Exception e) {
             throw new DaoException(e);
         }

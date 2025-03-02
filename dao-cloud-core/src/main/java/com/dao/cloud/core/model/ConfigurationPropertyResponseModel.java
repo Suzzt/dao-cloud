@@ -9,5 +9,6 @@ import lombok.Data;
  */
 @Data
 public class ConfigurationPropertyResponseModel extends ErrorResponseModel {
+    private Long sequenceId;
     private String content;
 }

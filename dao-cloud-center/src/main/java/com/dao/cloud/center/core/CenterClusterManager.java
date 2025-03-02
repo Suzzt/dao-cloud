@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.dao.cloud.center.core.cluster.ClusterCenterConnector;
 import com.dao.cloud.center.core.cluster.DataSyncTask;
 import com.dao.cloud.center.core.handler.*;
+import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
@@ -12,6 +13,7 @@ import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
@@ -129,6 +131,8 @@ public class CenterClusterManager {
             String node = iterator.next();
             // system config
             loadConfig(node);
+            // configuration file
+            loadServerConfiguration(node);
             // gateway service config
             loadGatewayConfig(node);
             // server config
@@ -158,6 +162,57 @@ public class CenterClusterManager {
             Map<ProxyProviderModel, ServerNodeModel> map = serverConfigModel.getServerConfig();
             for (Map.Entry<ProxyProviderModel, ServerNodeModel> entry : map.entrySet()) {
                 persistence.storage(entry.getKey(), entry.getValue());
+            }
+        } else {
+            throw new DaoException(promise.cause());
+        }
+    }
+
+    private static void loadServerConfiguration(String ip) throws InterruptedException {
+        ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
+        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigurationFilePullMarkModel());
+        Promise<ConfigurationFileResponseModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+        CenterClusterConfigurationFileResponseMessageHandler.promise = promise;
+        clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
+            if (!future.isSuccess()) {
+                log.error("send get configuration file request error", future.cause());
+            }
+        });
+        if (!promise.await(SYNC_DATA_REQUEST_TIMEOUT, TimeUnit.SECONDS)) {
+            log.error("<<<<<<<<<<<<<< Pull configuration file information request timeout >>>>>>>>>>>>>>");
+            throw new DaoException("promise await timeout");
+        }
+        if (promise.isSuccess()) {
+            ConfigurationFileResponseModel responseModel = promise.getNow();
+            Set<ConfigurationFileInformationModel> files = responseModel.getFiles();
+            for (ConfigurationFileInformationModel file : files) {
+                ConfigurationPropertyRequestModel configurationPropertyRequestModel = new ConfigurationPropertyRequestModel();
+                configurationPropertyRequestModel.setProxy(file.getProxy());
+                configurationPropertyRequestModel.setGroupId(file.getGroupId());
+                configurationPropertyRequestModel.setFileName(file.getFileName());
+                configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
+                Promise<Object> configurationPropertyPromise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
+                LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), configurationPropertyPromise);
+                DaoMessage daoMessage2 = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+                clusterCenterConnector.getChannel().writeAndFlush(daoMessage2).addListener(future -> {
+                    if (!future.isSuccess()) {
+                        log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
+                    }
+                });
+                if (!configurationPropertyPromise.await(5 * 1_000)) {
+                    throw new DaoException("get remote configuration property wait time out");
+                }
+                if (configurationPropertyPromise.isSuccess()) {
+                    String content = (String) configurationPropertyPromise.getNow();
+                    ConfigurationProperty configurationProperty = new ConfigurationProperty();
+                    configurationProperty.setProxy(file.getProxy());
+                    configurationProperty.setGroupId(file.getGroupId());
+                    configurationProperty.setFileName(file.getFileName());
+                    configurationProperty.setProperty(content);
+                    persistence.storage(configurationProperty);
+                } else {
+                    throw (DaoException) promise.cause();
+                }
             }
         } else {
             throw new DaoException(promise.cause());

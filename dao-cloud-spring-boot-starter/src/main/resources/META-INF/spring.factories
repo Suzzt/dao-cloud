@@ -1,3 +1,9 @@
 # Auto Configuration
+org.springframework.boot.SpringApplicationRunListener=\
+com.dao.cloud.starter.DaoCloudInitializationListener
+
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.dao.cloud.starter.DaoCloudConfiguration
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.dao.cloud.starter.PropertySourceConfiguration

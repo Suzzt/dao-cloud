@@ -1,12 +1,11 @@
 var newEditor, updateEditor;
 
-
 $('#addModal, #updateModal').on('shown.bs.modal', function () {
     const editorContainer = $(this).find('.editor-container')[0];
     const modalContentHeight = $(this).find('.modal-content').height();
 
     // 计算可用高度 = 模态框总高度 - 表单控件高度 - 安全边距
-    const calculatedHeight = modalContentHeight - 350;
+    const calculatedHeight = modalContentHeight - 600;
 
     // 设置动态高度（限制在200-700px之间）
     editorContainer.style.height = Math.min(Math.max(calculatedHeight, 200), 700) + 'px';
@@ -14,6 +13,23 @@ $('#addModal, #updateModal').on('shown.bs.modal', function () {
     // 刷新CodeMirror实例
     if (newEditor) newEditor.refresh();
     if (updateEditor) updateEditor.refresh();
+});
+
+// 新增模态框关闭时重置数据
+$('#addModal').on('hidden.bs.modal', function() {
+    // 重置表单字段
+    const $form = $(this).find('form');
+    $form[0].reset();
+
+    // 清空编辑器内容
+    newEditor.setValue('');
+
+    // 强制重置文件类型为YAML
+    const $fileType = $form.find('#fileType');
+    $fileType.val('.yaml').trigger('change');
+
+    // 清除验证错误提示
+    $form.validate().resetForm();
 });
 
 $(function () {
@@ -161,7 +177,7 @@ $(function () {
                 $('#addModal').modal('hide');
                 dataTable.ajax.reload();
             }
-            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+            layer.msg(res.code === "00000" ? "操作成功" : res.message);
         });
     });
 
@@ -202,7 +218,7 @@ $(function () {
                 $('#updateModal').modal('hide');
                 dataTable.ajax.reload();
             }
-            layer.msg(res.msg || (res.code === "00000" ? "操作成功" : "操作失败"));
+            layer.msg(res.code === "00000" ? "操作成功" : res.message);
         });
     });
 

@@ -2,7 +2,6 @@ package com.dao.cloud.center.web.controller;
 
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
-import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.*;
@@ -179,7 +178,7 @@ public class CenterController {
             @RequestParam int start,
             @RequestParam int length) {
 
-        List<ConfigurationModel> allData = configurationCenterManager.getConfiguration(proxy, groupId, fileName);
+        List<ConfigurationFileInformationModel> allData = configurationCenterManager.getConfiguration(proxy, groupId, fileName);
 
         // 分页计算
         int fromIndex = Math.min(start, allData.size());
@@ -234,19 +233,23 @@ public class CenterController {
      */
     @RequestMapping(value = "/configuration/save")
     @ResponseBody
-    public ApiResult<Void> save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
-        // 验证文件类型
-        if (!fileName.matches("^.+\\.(yaml|properties)$")) {
-            return ApiResult.buildFail("A0001", "文件名必须以.yaml或.properties结尾");
-        }
-
+    public ApiResult<String> save(@RequestParam String proxy, @RequestParam String groupId, @RequestParam String fileName, @RequestParam String content) {
         // 验证内容格式
         try {
             if (fileName.endsWith(".yaml")) {
-                new Yaml().load(content);
+                Object yamlContent = new Yaml().load(content);
+                if (!(yamlContent instanceof Map)) {
+                    throw new Exception("YAML内容必须为键值对结构");
+                }
             } else {
                 Properties props = new Properties();
                 props.load(new StringReader(content));
+                if (props.isEmpty()) {
+                    throw new Exception("Properties内容不能为空");
+                }
+                if (!content.matches("(?m)^.*[=:].*$")) {
+                    throw new Exception("Properties内容缺少键值分隔符");
+                }
             }
         } catch (Exception e) {
             return ApiResult.buildFail("A0001", "配置文件格式错误: " + e.getMessage());

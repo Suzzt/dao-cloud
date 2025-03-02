@@ -1,4 +1,4 @@
-package com.dao.cloud.starter.bootstrap;
+package com.dao.cloud.starter;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
@@ -10,113 +10,104 @@ import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.starter.manager.CenterChannelManager;
-import com.dao.cloud.starter.properties.DaoCloudConfigurationProperties;
 import com.dao.cloud.starter.properties.DaoCloudPropertySourceProperties;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.env.PropertiesPropertySourceLoader;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.yaml.snakeyaml.Yaml;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.util.StringUtils;
 
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.List;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/2/12 16:37
- * @description: Configuration center startup
+ * Remote profiles are automatically configured
+ *
+ * @author sucf
+ * @since 1.0
  */
 @Slf4j
 @Configuration
-@EnableConfigurationProperties({DaoCloudPropertySourceProperties.class, DaoCloudConfigurationProperties.class})
-public class ConfigurationCenterBootstrap implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
-
-    private final DaoCloudConfigurationProperties daoCloudConfigurationProperties;
-
-    public ConfigurationCenterBootstrap(DaoCloudConfigurationProperties daoCloudConfigurationProperties) {
-        this.daoCloudConfigurationProperties = daoCloudConfigurationProperties;
-    }
-
+public class PropertySourceConfiguration implements EnvironmentPostProcessor, Ordered {
     @Override
-    public void initialize(ConfigurableApplicationContext applicationContext) {
-        ConfigurableEnvironment environment = applicationContext.getEnvironment();
-        MutablePropertySources propertySources = environment.getPropertySources();
-        loadRemotePropertyConfig(propertySources);
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        try {
+            MutablePropertySources propertySources = environment.getPropertySources();
+            loadRemotePropertyConfig(propertySources, environment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     @Override
     public int getOrder() {
-        return Integer.MIN_VALUE;
+        return Ordered.HIGHEST_PRECEDENCE + 20;
     }
 
     /**
      * Load the configuration file into the Spring container
      */
-    @SneakyThrows
-    private void loadRemotePropertyConfig(MutablePropertySources propertySources) {
-        String proxy = daoCloudConfigurationProperties.getProxy();
-        String groupId = daoCloudConfigurationProperties.getGroupId();
-        DaoCloudPropertySourceProperties propertySourceProperties = new DaoCloudPropertySourceProperties();
-        Bindable.ofInstance(propertySourceProperties);
+    private void loadRemotePropertyConfig(MutablePropertySources propertySources, ConfigurableEnvironment environment) throws Exception {
+        String proxy = environment.getProperty("dao-cloud.configuration.proxy");
+        String groupId = environment.getProperty("dao-cloud.configuration.groupId");
+        if (!StringUtils.hasLength(proxy) || !StringUtils.hasLength(groupId)) {
+            return;
+        }
+        Binder binder = Binder.get(environment);
+        DaoCloudPropertySourceProperties propertySourceProperties = binder.bind("dao-cloud.configuration",
+                        Bindable.of(DaoCloudPropertySourceProperties.class))
+                .orElse(new DaoCloudPropertySourceProperties());
+
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
+            PropertySource<?> propertySource = loadRemotePropertySource(proxy, groupId, fileName);
+            if (propertySource == null) {
+                continue;
+            }
             if (!propertySourceProperties.isAllowOverride() || (!propertySourceProperties.isOverrideNone() && propertySourceProperties.isOverrideSystemProperties())) {
-                for (PropertySource<?> p : propertySources) {
-                    propertySources.addFirst(p);
-                }
-                return;
+                propertySources.addFirst(propertySource);
+                continue;
             }
-            if (propertySourceProperties.isOverrideNone()) {
-                for (PropertySource<?> p : propertySources) {
-                    propertySources.addLast(p);
-                }
-                return;
-            }
-            try {
-                String fileContent = getRemotePropertyConfig(proxy, groupId, fileName);
-                if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
-                    Yaml yaml = new Yaml();
-                    Map<String, Object> yamlMap = yaml.load(fileContent);
-                    MapPropertySource yamlPropertySource = new MapPropertySource(fileName, yamlMap);
-                    propertySources.addLast(yamlPropertySource);
-                } else if (fileName.endsWith(".properties")) {
-                    Properties properties = new Properties();
-                    properties.load(new StringReader(fileContent));
-                    Map<String, Object> propertiesMap = new HashMap<>();
-                    properties.forEach((key, value) -> propertiesMap.put((String) key, value));
-                    MapPropertySource propertiesPropertySource = new MapPropertySource(fileName, propertiesMap);
-                    propertySources.addLast(propertiesPropertySource);
-                } else {
-                    log.warn("Unsupported file type for remote configuration: {}", fileName);
-                }
-            } catch (Exception e) {
-                log.error("Failed to load remote property config for file: {}", fileName, e);
-            }
+            propertySources.addLast(propertySource);
         }
     }
 
+    private PropertySource<?> loadRemotePropertySource(String proxy, String groupId, String fileName) throws Exception {
+        String fileContent = getRemotePropertyConfig(proxy, groupId, fileName);
+        if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
+            YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+            List<PropertySource<?>> sources = loader.load(fileName, new ByteArrayResource(fileContent.getBytes()));
+            return sources.get(0);
+        } else if (fileName.endsWith(".properties")) {
+            PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
+            List<PropertySource<?>> sources = loader.load(fileName, new ByteArrayResource(fileContent.getBytes()));
+            return sources.get(0);
+        } else {
+            log.warn("Unsupported file type for remote configuration: {}", fileName);
+            return null;
+        }
+    }
 
     /**
      * Obtain the configuration information from Center
      *
-     * @param proxy
-     * @param groupId
-     * @param fileName
-     * @return
+     * @param proxy    proxy
+     * @param groupId  groupId
+     * @param fileName fileName
+     * @return configuration information
      * @throws InterruptedException
      */
     private String getRemotePropertyConfig(String proxy, String groupId, String fileName) throws InterruptedException {
@@ -152,8 +143,8 @@ public class ConfigurationCenterBootstrap implements ApplicationContextInitializ
     /**
      * Get the configuration file information from Center
      *
-     * @param proxy
-     * @param groupId
+     * @param proxy   proxy
+     * @param groupId groupId
      * @return file information
      */
     private Set<String> getRemoteFileInformation(String proxy, String groupId) throws InterruptedException {

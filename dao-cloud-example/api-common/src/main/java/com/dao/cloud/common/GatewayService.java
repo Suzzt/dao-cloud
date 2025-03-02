@@ -2,7 +2,6 @@ package com.dao.cloud.common;
 
 import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.common.dto.Param2DTO;
-import com.dao.cloud.core.model.DaoCloudServletResponse;
 
 /**
  * @author: sucf
@@ -18,5 +17,5 @@ public interface GatewayService {
 
     Param2DTO gatewayTest2(ParamDTO paramDTO);
 
-    void gatewayTest3(DaoCloudServletResponse response);
+//    void gatewayTest3(DaoCloudServletResponse response);
 }
