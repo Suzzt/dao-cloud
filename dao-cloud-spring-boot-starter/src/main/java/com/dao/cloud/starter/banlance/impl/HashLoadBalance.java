@@ -6,9 +6,10 @@ import com.dao.cloud.starter.unit.Client;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/7/6 23:59
- * @description: Hash Load Balance
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/7/6 23:59
+ * Hash Load Balance
  */
 public class HashLoadBalance extends DaoLoadBalance {
     @Override

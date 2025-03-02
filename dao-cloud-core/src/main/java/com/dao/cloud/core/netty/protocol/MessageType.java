@@ -6,9 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/1/13 17:22
- * @description: dao-cloud transfer protocol type
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/13 17:22
+ * dao-cloud transfer protocol type
  */
 public class MessageType {
     public static final byte GLOBAL_DAO_EXCEPTION_MESSAGE = -9;

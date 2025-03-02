@@ -14,9 +14,10 @@ import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2023/2/26 17:49
- * @description: subscribe config handler
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/26 17:49
+ * subscribe config handler
  */
 @Slf4j
 public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyConfigModel> {

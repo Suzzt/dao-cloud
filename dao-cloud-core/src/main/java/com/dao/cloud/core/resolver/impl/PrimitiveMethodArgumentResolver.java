@@ -15,6 +15,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * @author wuzhenhong
+ * @since 1.0.0
  * @date 2024/2/8 14:34
  */
 public class PrimitiveMethodArgumentResolver extends AbstractMethodArgumentResolver {

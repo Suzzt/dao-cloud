@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author: sucf
- * @date: 2024/12/23 22:07
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/12/23 22:07
  */
 @RestController
 public class ConfigurationController {

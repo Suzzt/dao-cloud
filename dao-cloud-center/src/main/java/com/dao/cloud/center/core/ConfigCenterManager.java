@@ -19,9 +19,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/2/11 22:57
- * @description: config manager
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/11 22:57
+ * config manager
  */
 @Slf4j
 public class ConfigCenterManager {

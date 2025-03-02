@@ -33,9 +33,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/3/12 22:27
- * @description: center cluster manager
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/3/12 22:27
+ * center cluster manager
  */
 @Slf4j
 public class CenterClusterManager {

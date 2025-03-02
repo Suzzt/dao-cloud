@@ -6,9 +6,10 @@ import com.dao.cloud.core.enums.Serializer;
 import java.lang.annotation.*;
 
 /**
- * @author: sucf
- * @date: 2023/1/11 12:25
- * @description: reference service
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/11 12:25
+ * reference service
  */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

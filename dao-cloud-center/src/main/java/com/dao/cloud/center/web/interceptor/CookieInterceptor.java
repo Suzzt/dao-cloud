@@ -11,9 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/07/29 17:22
- * @description: cookie拦截器
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/07/29 17:22
+ * cookie拦截器
  */
 @Component
 public class CookieInterceptor extends HandlerInterceptorAdapter {

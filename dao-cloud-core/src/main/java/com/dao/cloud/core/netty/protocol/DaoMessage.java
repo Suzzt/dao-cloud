@@ -7,9 +7,10 @@ import lombok.Data;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author: sucf
- * @date: 2022/10/29 19:49
- * @description: 消息结构载体
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/10/29 19:49
+ * 消息结构载体
  */
 @Data
 public class DaoMessage<T> {

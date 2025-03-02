@@ -3,9 +3,10 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2022/10/28 21:50
- * @description: rpc 请求模型封装
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/10/28 21:50
+ * rpc 请求模型封装
  */
 @Data
 public class RpcRequestModel extends ServiceRequestModel {

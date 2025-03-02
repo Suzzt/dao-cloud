@@ -10,9 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 
 /**
- * @author: sucf
- * @date: 2023/4/16 23:03
- * @description: receive cluster heartbeat handler
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/4/16 23:03
+ * receive cluster heartbeat handler
  */
 @Slf4j
 public class ClusterRequestHandler extends SimpleChannelInboundHandler<HeartbeatModel> {

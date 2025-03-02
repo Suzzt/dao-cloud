@@ -3,9 +3,10 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/1/26 10:44
- * @description: 网关请求模型
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/1/26 10:44
+ * 网关请求模型
  */
 @Data
 public class GatewayRequestModel extends ServiceRequestModel {

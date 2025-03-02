@@ -12,9 +12,10 @@ import javax.annotation.Resource;
 import java.nio.charset.Charset;
 
 /**
- * @author: sucf
- * @date: 2023/07/29 17:58
- * @description: web center configuration
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/07/29 17:58
+ * web center configuration
  */
 @Configuration
 public class WebCenterConfig implements WebMvcConfigurer {

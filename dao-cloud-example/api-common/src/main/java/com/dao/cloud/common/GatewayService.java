@@ -4,9 +4,9 @@ import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.common.dto.Param2DTO;
 
 /**
- * @author: sucf
- * @date: 2024/1/26 11:12
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/1/26 11:12
  */
 public interface GatewayService {
     String test(String string1, int int1, double double1, long long1, boolean flag);

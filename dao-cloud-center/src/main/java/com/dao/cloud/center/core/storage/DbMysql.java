@@ -22,9 +22,10 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * @author: sucf
- * @date: 2023/2/28 23:45
- * @description: data in mysql persistence
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/28 23:45
+ * data in mysql persistence
  */
 @Slf4j
 @Component

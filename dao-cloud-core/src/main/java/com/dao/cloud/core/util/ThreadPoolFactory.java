@@ -5,9 +5,9 @@ import lombok.SneakyThrows;
 import java.util.concurrent.*;
 
 /**
- * @author: sucf
- * @date: 2022/12/29 23:11
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/12/29 23:11
  */
 public class ThreadPoolFactory {
     static {

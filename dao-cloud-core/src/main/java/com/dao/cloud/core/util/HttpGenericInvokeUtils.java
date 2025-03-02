@@ -16,6 +16,7 @@ import org.springframework.util.ClassUtils;
 /**
  * http 泛化调用工具类
  * @author wuzhenhong
+ * @since 1.0.0
  * @date 2024/2/9 9:10
  */
 public class HttpGenericInvokeUtils {

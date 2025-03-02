@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 @Data
 public class ConfigurationProperty {

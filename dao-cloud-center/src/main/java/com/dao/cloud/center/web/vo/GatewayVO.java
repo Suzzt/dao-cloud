@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author sucf
+ * @since 1.0.0
  * @date 2024/2/6 00:15
  * @description 网关设置对象
  */

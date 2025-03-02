@@ -5,9 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * @author: sucf
- * @date: 2024/2/5 14:11
- * @description: 限流信息
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/2/5 14:11
+ * 限流信息
  */
 @Data
 public class LimitModel implements Serializable {

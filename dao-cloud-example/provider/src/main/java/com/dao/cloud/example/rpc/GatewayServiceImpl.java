@@ -10,9 +10,9 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author: sucf
- * @date: 2024/1/26 11:12
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/1/26 11:12
  */
 @DaoService(provider = "GatewayService", version = 0)
 public class GatewayServiceImpl implements GatewayService {

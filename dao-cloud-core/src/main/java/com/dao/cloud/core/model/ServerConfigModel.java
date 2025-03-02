@@ -5,9 +5,10 @@ import lombok.Data;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2024/4/1 11:08
- * @description: server config information model
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/4/1 11:08
+ * server config information model
  */
 @Data
 public class ServerConfigModel extends ErrorResponseModel {

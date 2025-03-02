@@ -11,9 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 
 
 /**
- * @author: sucf
- * @date: 2022/10/29 10:28
- * @description: server register handler
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/10/29 10:28
+ * server register handler
  */
 @Slf4j
 public class ServerRegisterHandler extends SimpleChannelInboundHandler<RegisterProviderModel> {

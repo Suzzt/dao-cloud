@@ -5,9 +5,9 @@ import com.dao.cloud.starter.unit.Client;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/1/11 22:36
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/11 22:36
  */
 public abstract class DaoLoadBalance {
 

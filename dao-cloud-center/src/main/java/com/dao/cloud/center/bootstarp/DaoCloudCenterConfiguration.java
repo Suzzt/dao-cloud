@@ -39,9 +39,10 @@ import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2022/11/13 23:14
- * @description: register center configuration
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/11/13 23:14
+ * register center configuration
  */
 @Slf4j
 @ComponentScan(value = "com.dao.cloud.center.core.storage")

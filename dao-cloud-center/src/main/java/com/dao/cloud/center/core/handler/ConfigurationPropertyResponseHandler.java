@@ -8,7 +8,7 @@ import io.netty.util.concurrent.Promise;
 
 /**
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 public class ConfigurationPropertyResponseHandler extends SimpleChannelInboundHandler<ConfigurationPropertyResponseModel> {
     @Override

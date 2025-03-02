@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
- * @author: sucf
- * @date: 2022/11/24 23:25
- * @description: provider exposure service
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/11/24 23:25
+ * provider exposure service
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

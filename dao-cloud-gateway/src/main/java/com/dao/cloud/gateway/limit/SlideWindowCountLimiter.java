@@ -4,9 +4,10 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * @author: sucf
- * @date: 2023/12/27 17:55
- * @description: 滑动计数限流
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/12/27 17:55
+ * 滑动计数限流
  */
 public class SlideWindowCountLimiter extends Limiter {
 

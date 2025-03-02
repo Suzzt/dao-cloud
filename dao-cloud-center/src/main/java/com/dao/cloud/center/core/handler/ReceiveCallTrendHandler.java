@@ -8,9 +8,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2024/7/14 16:23
- * @description: Receive call trend handler
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/7/14 16:23
+ * Receive call trend handler
  */
 @Slf4j
 public class ReceiveCallTrendHandler extends SimpleChannelInboundHandler<CallTrendModel> {

@@ -18,9 +18,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author: sucf
- * @date: 2022/11/13 22:52
- * @description: server register manager
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/11/13 22:52
+ * server register manager
  */
 @Slf4j
 public class RegisterCenterManager {

@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author: sucf
- * @date: 2023/1/23 21:07
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/23 21:07
  */
 public class ClientManager {
 

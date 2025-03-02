@@ -11,9 +11,9 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2023/2/12 16:58
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/12 16:58
  */
 @Slf4j
 public class CenterConfigMessageHandler extends SimpleChannelInboundHandler<ConfigModel> {

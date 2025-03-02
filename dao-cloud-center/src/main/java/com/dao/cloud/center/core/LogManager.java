@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * @author: sucf
- * @date: 2024/8/23 17:02
- * @description: log manager
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/8/23 17:02
+ * log manager
  */
 @Slf4j
 public class LogManager implements InitializingBean {

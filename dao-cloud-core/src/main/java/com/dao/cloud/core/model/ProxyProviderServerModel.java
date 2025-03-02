@@ -7,9 +7,9 @@ import lombok.Data;
 import java.util.Set;
 
 /**
- * @author: sucf
- * @date: 2023/1/13 23:41
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/13 23:41
  */
 @Data
 public class ProxyProviderServerModel extends ErrorResponseModel {

@@ -3,9 +3,9 @@ package com.dao.cloud.center.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/9/8 22:18
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/9/8 22:18
  */
 @Data
 public class LogMeta implements Comparable {

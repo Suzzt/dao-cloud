@@ -6,9 +6,10 @@ import com.dao.cloud.gateway.intercept.annotation.GatewayInterceptorRegister;
 import org.springframework.stereotype.Component;
 
 /**
- * @author: sucf
- * @date: 2024/3/10 09:54
- * @description: Here is an example permission filtering interceptor.
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/3/10 09:54
+ * Here is an example permission filtering interceptor.
  */
 @GatewayInterceptorRegister
 @Component

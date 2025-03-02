@@ -4,9 +4,10 @@ import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2024/07/10 23:55
- * @description: Interface call trend statistics.
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/07/10 23:55
+ * Interface call trend statistics.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -15,9 +15,9 @@ import java.net.ServerSocket;
 import oshi.software.os.OSFileStore;
 
 /**
- * @author: sucf
- * @date: 2022/12/29 22:06
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/12/29 22:06
  */
 @Slf4j
 public class SystemUtil {

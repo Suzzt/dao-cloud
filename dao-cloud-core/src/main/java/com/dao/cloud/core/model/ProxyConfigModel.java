@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.Objects;
 
 /**
- * @author: sucf
- * @date: 2023/2/26 17:23
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/26 17:23
  */
 @Data
 public class ProxyConfigModel extends Model {

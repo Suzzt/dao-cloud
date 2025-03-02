@@ -6,9 +6,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * @author: sucf
- * @date: 2023/2/27 16:35
- * @description: call back method
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/27 16:35
+ * call back method
  */
 public abstract class ConfigCallBack<T> {
 

@@ -3,9 +3,10 @@ package com.dao.cloud.core;
 import com.dao.cloud.core.enums.CodeEnum;
 
 /**
- * @author: sucf
+ * @author sucf
+ * @since 1.0.0
  * @create: 2022-03-16 11:01:02
- * @description: 返回结果集统一约定
+ * 返回结果集统一约定
  */
 public class ApiResult<T> {
 

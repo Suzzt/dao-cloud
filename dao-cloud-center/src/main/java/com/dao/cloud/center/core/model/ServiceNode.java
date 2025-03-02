@@ -5,9 +5,10 @@ import lombok.Data;
 import java.util.Objects;
 
 /**
- * @author: sucf
- * @date: 2024/6/19 15:55
- * @description: service node info
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/6/19 15:55
+ * service node info
  */
 @Data
 public class ServiceNode {

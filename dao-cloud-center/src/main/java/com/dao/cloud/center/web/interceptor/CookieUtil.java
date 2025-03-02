@@ -5,9 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author: sucf
- * @date: 2023/07/29 17:27
- * @description: cookie util
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/07/29 17:27
+ * cookie util
  */
 public class CookieUtil {
 

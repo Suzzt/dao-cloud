@@ -18,9 +18,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
 /**
- * @author: sucf
- * @date: 2024/7/14 23:47
- * @description: 缓冲分段计数思路
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/7/14 23:47
+ * 缓冲分段计数思路
  * 具体思路如下：
  * 使用 LongAdder 提高 increment 性能：LongAdder 能在高并发下有效减少竞争，比 AtomicLong 更适合频繁增量操作。
  * 发送失败后的计数恢复：在 failCountBuffer 中保存失败计数，等待下一次定时任务将与增量计数一起发送，确保计数不丢失。

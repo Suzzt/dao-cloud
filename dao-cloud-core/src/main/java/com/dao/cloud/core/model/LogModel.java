@@ -3,9 +3,10 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2024/8/22 23:19
- * @description: log data model
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/8/22 23:19
+ * log data model
  */
 @Data
 public class LogModel extends Model {

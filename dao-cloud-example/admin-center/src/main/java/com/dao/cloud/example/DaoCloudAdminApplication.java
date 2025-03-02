@@ -5,9 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author: sucf
- * @date: 2023/2/6 21:03
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/6 21:03
  */
 @SpringBootApplication
 // 开启dao-cloud center注解

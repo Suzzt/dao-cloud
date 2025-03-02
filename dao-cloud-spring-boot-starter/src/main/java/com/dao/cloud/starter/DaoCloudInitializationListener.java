@@ -12,7 +12,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * Perform the initial dao-cloud initialization work.
  *
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 public class DaoCloudInitializationListener implements SpringApplicationRunListener, Ordered {
 

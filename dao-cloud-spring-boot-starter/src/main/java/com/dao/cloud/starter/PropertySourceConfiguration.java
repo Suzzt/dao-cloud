@@ -36,7 +36,7 @@ import java.util.Set;
  * Remote profiles are automatically configured
  *
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 @Slf4j
 @Configuration

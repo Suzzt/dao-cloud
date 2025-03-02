@@ -13,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.net.InetSocketAddress;
 
 /**
- * @author: sucf
- * @date: 2023/3/12 22:47
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/3/12 22:47
  */
 @Slf4j
 public class InquireClusterCenterRequestHandler extends SimpleChannelInboundHandler<ClusterInquireMarkModel> {

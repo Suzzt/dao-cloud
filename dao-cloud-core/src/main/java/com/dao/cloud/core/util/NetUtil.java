@@ -10,9 +10,9 @@ import java.util.Enumeration;
 import java.util.regex.Pattern;
 
 /**
- * @author: sucf
- * @date: 2023/1/19 21:03
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/19 21:03
  */
 @Slf4j
 public class NetUtil {

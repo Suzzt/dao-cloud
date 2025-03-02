@@ -3,9 +3,10 @@ package com.dao.cloud.gateway.limit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author: sucf
- * @date: 2024/4/8 23:01
- * @description: 令牌桶限流
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/4/8 23:01
+ * 令牌桶限流
  */
 public class TokenBucketLimiter extends Limiter {
 

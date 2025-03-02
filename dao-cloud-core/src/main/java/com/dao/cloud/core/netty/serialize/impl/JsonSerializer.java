@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author: sucf
- * @date: 2023/1/17 22:24
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/17 22:24
  */
 public class JsonSerializer implements DaoSerializer {
     @Override

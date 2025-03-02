@@ -5,9 +5,9 @@ import com.dao.cloud.core.netty.serialize.DaoSerializer;
 import java.io.*;
 
 /**
- * @author: sucf
- * @date: 2023/1/17 22:17
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/17 22:17
  */
 public class JdkSerializer implements DaoSerializer {
     @Override

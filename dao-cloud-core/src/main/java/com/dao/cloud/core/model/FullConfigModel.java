@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * @author: sucf
- * @date: 2023/7/4 15:55
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/7/4 15:55
  */
 @Data
 public class FullConfigModel extends ErrorResponseModel {

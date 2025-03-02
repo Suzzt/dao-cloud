@@ -25,9 +25,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @author: sucf
- * @date: 2024/1/30 11:24
- * @description: 网关请求处理响应, 该请求会打到rpc服务调用的handler上
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/1/30 11:24
+ * 网关请求处理响应, 该请求会打到rpc服务调用的handler上
  */
 @Slf4j
 public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<GatewayRequestModel> {

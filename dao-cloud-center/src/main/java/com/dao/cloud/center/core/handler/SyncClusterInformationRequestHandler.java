@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description: 请求处理cluster数据同步
+ * 请求处理cluster数据同步
  */
 @Slf4j
 public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHandler<AbstractShareClusterRequestModel> {

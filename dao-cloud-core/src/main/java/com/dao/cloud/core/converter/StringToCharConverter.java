@@ -6,6 +6,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * @author wuzhenhong
+ * @since 1.0.0
  * @date 2024/2/19 10:22
  */
 public class StringToCharConverter implements Converter<String, Character> {

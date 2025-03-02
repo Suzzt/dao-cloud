@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 @Data
 public class ConfigurationVO {

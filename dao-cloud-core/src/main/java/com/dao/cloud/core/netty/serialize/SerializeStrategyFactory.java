@@ -3,9 +3,9 @@ package com.dao.cloud.core.netty.serialize;
 import com.dao.cloud.core.enums.Serializer;
 
 /**
- * @author: sucf
- * @date: 2023/1/18 13:55
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/18 13:55
  */
 public class SerializeStrategyFactory {
 

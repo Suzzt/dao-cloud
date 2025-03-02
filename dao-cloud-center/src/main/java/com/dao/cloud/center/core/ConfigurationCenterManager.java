@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 
 /**
  * Configuration Center Manager for handling configuration files.
- * Author: sucf
- * Date: 2024/11/24 20:30
+ *
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/11/24 20:30
  */
 @Slf4j
 public class ConfigurationCenterManager {

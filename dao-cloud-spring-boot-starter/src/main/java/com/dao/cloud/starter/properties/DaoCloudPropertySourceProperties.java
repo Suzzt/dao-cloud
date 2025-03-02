@@ -1,9 +1,10 @@
 package com.dao.cloud.starter.properties;
 
 /**
- * @author: sucf
- * @date: 2024/11/27 23:15
- * @description: 配置属性加载
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/11/27 23:15
+ * 配置属性加载
  */
 public class DaoCloudPropertySourceProperties {
     private boolean overrideSystemProperties = true;

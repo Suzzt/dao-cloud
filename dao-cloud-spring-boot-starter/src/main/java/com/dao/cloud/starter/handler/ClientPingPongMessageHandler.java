@@ -7,9 +7,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2023/7/20 23:26
- * @description: 接收服务端ping pong
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/7/20 23:26
+ * 接收服务端ping pong
  */
 @Slf4j
 public class ClientPingPongMessageHandler extends SimpleChannelInboundHandler<HeartbeatModel> {

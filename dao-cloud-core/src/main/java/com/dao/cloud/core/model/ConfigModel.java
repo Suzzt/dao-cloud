@@ -3,9 +3,10 @@ package com.dao.cloud.core.model;
 import lombok.Data;
 
 /**
- * @author: sucf
- * @date: 2023/2/12 14:16
- * @description: 配置中心配置对象
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/2/12 14:16
+ * 配置中心配置对象
  */
 @Data
 public class ConfigModel extends ErrorResponseModel {

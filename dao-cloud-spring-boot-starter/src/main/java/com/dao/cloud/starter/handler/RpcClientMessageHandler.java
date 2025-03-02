@@ -15,9 +15,10 @@ import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2022/10/29 10:28
- * @description: rpc-client handler
+ * @author sucf
+ * @since 1.0.0
+ * @date 2022/10/29 10:28
+ * rpc-client handler
  * 关于服务端与客户端的心跳方案
  * 首先有一个问题? 怎么样感知判断心跳失败(客户端如何得知请求失败?), 心跳所有的设计来自这个问题
  * 应当是以客户端接收到事实的失败响应为判断依据

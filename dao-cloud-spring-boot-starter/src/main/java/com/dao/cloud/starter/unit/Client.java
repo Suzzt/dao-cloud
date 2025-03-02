@@ -20,9 +20,10 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: sucf
- * @date: 2023/1/15 15:03
- * @description: rpc client unit
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/1/15 15:03
+ * rpc client unit
  */
 @Data
 @Slf4j

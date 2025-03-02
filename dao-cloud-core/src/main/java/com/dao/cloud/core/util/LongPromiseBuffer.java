@@ -6,9 +6,9 @@ import io.netty.util.concurrent.Promise;
 import java.util.Map;
 
 /**
- * @author: sucf
- * @date: 2023/9/8 23:33
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/9/8 23:33
  */
 public class LongPromiseBuffer {
     /**

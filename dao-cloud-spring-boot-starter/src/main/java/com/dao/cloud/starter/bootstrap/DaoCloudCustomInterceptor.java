@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author: sucf
- * @date: 2024/9/10 23:57
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/9/10 23:57
  */
 @Component
 public class DaoCloudCustomInterceptor implements HandlerInterceptor {

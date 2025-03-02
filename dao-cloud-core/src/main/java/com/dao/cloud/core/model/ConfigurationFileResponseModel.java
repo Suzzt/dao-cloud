@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * @author sucf
- * @since 1.0
+ * @since 1.0.0
  */
 @Data
 public class ConfigurationFileResponseModel extends ErrorResponseModel {

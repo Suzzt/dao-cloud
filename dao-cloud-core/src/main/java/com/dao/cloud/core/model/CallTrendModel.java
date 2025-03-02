@@ -4,9 +4,10 @@ import lombok.Data;
 
 
 /**
- * @author: sucf
- * @date: 2024/7/11 16:01
- * @description: Synchronous interface call data
+ * @author sucf
+ * @since 1.0.0
+ * @date 2024/7/11 16:01
+ * Synchronous interface call data
  */
 @Data
 public class CallTrendModel extends Model {

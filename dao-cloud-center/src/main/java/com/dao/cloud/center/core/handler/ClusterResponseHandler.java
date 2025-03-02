@@ -9,9 +9,9 @@ import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author: sucf
- * @date: 2023/7/19 21:49
- * @description:
+ * @author sucf
+ * @since 1.0.0
+ * @date 2023/7/19 21:49
  */
 @Slf4j
 public class ClusterResponseHandler extends SimpleChannelInboundHandler<HeartbeatModel> {
