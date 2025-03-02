@@ -39,6 +39,8 @@ public class MessageType {
     public static final byte PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE = 27;
     public static final byte PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE = 28;
     public static final byte PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE = 29;
+    public static final byte INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE = 30;
+    public static final byte INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_RESPONSE_MESSAGE = 31;
 
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();
@@ -72,6 +74,8 @@ public class MessageType {
         MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_FILE_INFORMATION_RESPONSE_MESSAGE, ConfigurationFileInformationResponseModel.class);
         MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, ConfigurationPropertyRequestModel.class);
         MESSAGE_TYPE_MAP.put(PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE, ConfigurationPropertyResponseModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, ConfigurationFilePullMarkModel.class);
+        MESSAGE_TYPE_MAP.put(INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_RESPONSE_MESSAGE, ConfigurationFileResponseModel.class);
     }
 
     public static Class<? extends Model> getMessageModel(byte messageType) {

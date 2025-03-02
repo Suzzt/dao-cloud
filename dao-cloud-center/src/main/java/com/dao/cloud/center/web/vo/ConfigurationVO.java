@@ -1,6 +1,6 @@
 package com.dao.cloud.center.web.vo;
 
-import com.dao.cloud.center.core.model.ConfigurationModel;
+import com.dao.cloud.core.model.ConfigurationFileInformationModel;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Data
 public class ConfigurationVO {
-    private List<ConfigurationModel> data;
+    private List<ConfigurationFileInformationModel> data;
     private Integer recordsTotal;
     private Integer recordsFiltered;
 }

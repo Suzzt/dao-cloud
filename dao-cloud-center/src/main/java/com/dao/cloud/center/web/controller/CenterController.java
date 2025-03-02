@@ -2,7 +2,6 @@ package com.dao.cloud.center.web.controller;
 
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.SyncClusterInformationRequestHandler;
-import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.*;
@@ -179,7 +178,7 @@ public class CenterController {
             @RequestParam int start,
             @RequestParam int length) {
 
-        List<ConfigurationModel> allData = configurationCenterManager.getConfiguration(proxy, groupId, fileName);
+        List<ConfigurationFileInformationModel> allData = configurationCenterManager.getConfiguration(proxy, groupId, fileName);
 
         // 分页计算
         int fromIndex = Math.min(start, allData.size());

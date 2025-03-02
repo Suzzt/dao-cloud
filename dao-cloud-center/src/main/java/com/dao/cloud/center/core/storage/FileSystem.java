@@ -2,7 +2,6 @@ package com.dao.cloud.center.core.storage;
 
 
 import cn.hutool.core.io.FileUtil;
-import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
@@ -280,8 +279,8 @@ public class FileSystem implements Persistence {
     }
 
     @Override
-    public List<ConfigurationModel> getConfiguration() {
-        List<ConfigurationModel> configurationModels = Lists.newArrayList();
+    public List<ConfigurationFileInformationModel> getConfiguration() {
+        List<ConfigurationFileInformationModel> configurationModels = Lists.newArrayList();
         String prefixPath = configurationStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
         for (String proxy : proxyList) {
@@ -291,8 +290,8 @@ public class FileSystem implements Persistence {
                 for (String file : files) {
                     try {
                         if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
-                            ConfigurationModel configurationModel = new ConfigurationModel(proxy, groupId, file);
-                            configurationModels.add(configurationModel);
+                            ConfigurationFileInformationModel configurationFileInformationModel = new ConfigurationFileInformationModel(proxy, groupId, file);
+                            configurationModels.add(configurationFileInformationModel);
                         }
                     } catch (Exception e) {
                         log.error("Failed to load configuration data (proxy={}, groupId={}, fileName={}) from file", proxy, groupId, file, e);
@@ -327,6 +326,7 @@ public class FileSystem implements Persistence {
         FileUtil.clean(configStoragePath);
         FileUtil.clean(serverStoragePath);
         FileUtil.clean(trendStoragePath);
+        FileUtil.clean(configurationStoragePath);
     }
 
     @Override

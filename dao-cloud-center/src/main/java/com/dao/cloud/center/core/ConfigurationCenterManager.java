@@ -1,8 +1,8 @@
 package com.dao.cloud.center.core;
 
-import com.dao.cloud.center.core.model.ConfigurationModel;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.core.model.ConfigurationFileInformationModel;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,10 +50,10 @@ public class ConfigurationCenterManager {
      */
     public Set<String> getConfigurationFile(String proxy, String groupId) {
         Set<String> result = Sets.newHashSet();
-        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
-        for (ConfigurationModel configurationModel : configurationModelList) {
-            if (configurationModel.getProxy().equals(proxy) && configurationModel.getGroupId().equals(groupId)) {
-                result.add(configurationModel.getFileName());
+        List<ConfigurationFileInformationModel> configurationModelList = persistence.getConfiguration();
+        for (ConfigurationFileInformationModel configurationFileInformationModel : configurationModelList) {
+            if (configurationFileInformationModel.getProxy().equals(proxy) && configurationFileInformationModel.getGroupId().equals(groupId)) {
+                result.add(configurationFileInformationModel.getFileName());
             }
         }
         return result;
@@ -67,10 +67,10 @@ public class ConfigurationCenterManager {
      * @param fileName the group fileName
      * @return ConfigurationModel
      */
-    public List<ConfigurationModel> getConfiguration(String proxy, String groupId, String fileName) {
-        List<ConfigurationModel> configurationModelList = persistence.getConfiguration();
+    public List<ConfigurationFileInformationModel> getConfiguration(String proxy, String groupId, String fileName) {
+        List<ConfigurationFileInformationModel> configurationFileInformationModelList = persistence.getConfiguration();
 
-        return configurationModelList.stream()
+        return configurationFileInformationModelList.stream()
                 .filter(config -> (proxy == null || config.getProxy().contains(proxy)) &&
                         (fileName == null || config.getFileName().contains(fileName)) &&
                         (groupId == null || config.getGroupId().contains(groupId)))
@@ -105,5 +105,13 @@ public class ConfigurationCenterManager {
         configurationProperty.setFileName(fileName);
         persistence.delete(configurationProperty);
         return true;
+    }
+
+    /**
+     * @return
+     */
+    public Set<ConfigurationFileInformationModel> fullFileInformation() {
+        List<ConfigurationFileInformationModel> configurationModelList = persistence.getConfiguration();
+        return Sets.newHashSet(configurationModelList);
     }
 }
