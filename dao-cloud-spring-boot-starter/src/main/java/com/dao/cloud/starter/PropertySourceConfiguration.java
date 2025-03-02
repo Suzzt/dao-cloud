@@ -19,19 +19,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.env.PropertiesPropertySourceLoader;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.StringUtils;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -75,7 +73,7 @@ public class PropertySourceConfiguration implements EnvironmentPostProcessor, Or
 
         Set<String> fileNameSet = getRemoteFileInformation(proxy, groupId);
         for (String fileName : fileNameSet) {
-            PropertySource propertySource = loadRemotePropertySource(proxy, groupId, fileName);
+            PropertySource<?> propertySource = loadRemotePropertySource(proxy, groupId, fileName);
             if (propertySource == null) {
                 continue;
             }
@@ -87,20 +85,16 @@ public class PropertySourceConfiguration implements EnvironmentPostProcessor, Or
         }
     }
 
-    private PropertySource loadRemotePropertySource(String proxy, String groupId, String fileName) throws Exception {
+    private PropertySource<?> loadRemotePropertySource(String proxy, String groupId, String fileName) throws Exception {
         String fileContent = getRemotePropertyConfig(proxy, groupId, fileName);
         if (fileName.endsWith(".yaml") || fileName.endsWith(".yml")) {
-            Yaml yaml = new Yaml();
-            Map<String, Object> yamlMap = yaml.load(fileContent);
-            MapPropertySource yamlPropertySource = new MapPropertySource(fileName, yamlMap);
-            return yamlPropertySource;
+            YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+            List<PropertySource<?>> sources = loader.load(fileName, new ByteArrayResource(fileContent.getBytes()));
+            return sources.get(0);
         } else if (fileName.endsWith(".properties")) {
-            Properties properties = new Properties();
-            properties.load(new StringReader(fileContent));
-            Map<String, Object> propertiesMap = new HashMap<>();
-            properties.forEach((key, value) -> propertiesMap.put((String) key, value));
-            MapPropertySource propertiesPropertySource = new MapPropertySource(fileName, propertiesMap);
-            return propertiesPropertySource;
+            PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
+            List<PropertySource<?>> sources = loader.load(fileName, new ByteArrayResource(fileContent.getBytes()));
+            return sources.get(0);
         } else {
             log.warn("Unsupported file type for remote configuration: {}", fileName);
             return null;
@@ -110,10 +104,10 @@ public class PropertySourceConfiguration implements EnvironmentPostProcessor, Or
     /**
      * Obtain the configuration information from Center
      *
-     * @param proxy
-     * @param groupId
-     * @param fileName
-     * @return
+     * @param proxy    proxy
+     * @param groupId  groupId
+     * @param fileName fileName
+     * @return configuration information
      * @throws InterruptedException
      */
     private String getRemotePropertyConfig(String proxy, String groupId, String fileName) throws InterruptedException {
@@ -149,8 +143,8 @@ public class PropertySourceConfiguration implements EnvironmentPostProcessor, Or
     /**
      * Get the configuration file information from Center
      *
-     * @param proxy
-     * @param groupId
+     * @param proxy   proxy
+     * @param groupId groupId
      * @return file information
      */
     private Set<String> getRemoteFileInformation(String proxy, String groupId) throws InterruptedException {
