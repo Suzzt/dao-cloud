@@ -1,7 +1,6 @@
-package com.dao.cloud.starter.bootstrap;
+package com.dao.cloud.starter.log;
 
 
-import com.dao.cloud.starter.log.LogHandlerInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 

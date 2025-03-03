@@ -9,25 +9,25 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * dao cloud server config
  */
 @ConfigurationProperties(prefix = "dao-cloud.server")
-public class DaoCloudServerProperties {
+public class DaoCloudProviderServiceProperties {
     public static String proxy;
     public static int corePoolSize;
     public static int maxPoolSize;
     public static int serverPort;
 
     public void setProxy(String proxy) {
-        DaoCloudServerProperties.proxy = proxy;
+        DaoCloudProviderServiceProperties.proxy = proxy;
     }
 
     public void setCorePoolSize(int corePoolSize) {
-        DaoCloudServerProperties.corePoolSize = corePoolSize;
+        DaoCloudProviderServiceProperties.corePoolSize = corePoolSize;
     }
 
     public void setMaxPoolSize(int maxPoolSize) {
-        DaoCloudServerProperties.maxPoolSize = maxPoolSize;
+        DaoCloudProviderServiceProperties.maxPoolSize = maxPoolSize;
     }
 
     public void setServerPort(int serverPort) {
-        DaoCloudServerProperties.serverPort = serverPort;
+        DaoCloudProviderServiceProperties.serverPort = serverPort;
     }
 }

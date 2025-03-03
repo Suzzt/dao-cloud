@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
-public class PropertySourceConfiguration implements EnvironmentPostProcessor, Ordered {
+public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Ordered {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
@@ -108,7 +108,6 @@ public class PropertySourceConfiguration implements EnvironmentPostProcessor, Or
      * @param groupId  groupId
      * @param fileName fileName
      * @return configuration information
-     * @throws InterruptedException
      */
     private String getRemotePropertyConfig(String proxy, String groupId, String fileName) throws InterruptedException {
         Channel channel = CenterChannelManager.getChannel();

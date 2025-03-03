@@ -1,4 +1,4 @@
-package com.dao.cloud.starter.bootstrap;
+package com.dao.cloud.starter;
 
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProviderModel;
@@ -19,9 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -33,14 +34,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * RPC (consumer) AutoConfiguration
+ *
  * @author sucf
- * @since 1.0.0
  * @date 2023/1/12 11:11
- * rpc consumer startup
+ * @since 1.0.0
  */
 @Slf4j
-@Component
-public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
+@Configuration
+@ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
+public class RpcConsumerAutoConfiguration implements ApplicationListener<ContextRefreshedEvent>, SmartInstantiationAwareBeanPostProcessor, DisposableBean {
 
     private final Set<ProxyProviderModel> relyProxy = new HashSet<>();
 
@@ -60,7 +63,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
             ReflectionUtils.doWithFields(bean.getClass(), field -> {
                 if (field.isAnnotationPresent(DaoReference.class)) {
                     // valid
-                    Class iface = field.getType();
+                    Class<?> iface = field.getType();
                     if (!iface.isInterface()) {
                         throw new DaoException("dao-cloud reference(DaoReference) must be interface.");
                     }
@@ -75,9 +78,7 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
                         Set<ServerNodeModel> serverNodeModels = RegistryManager.pull(proxyProviderModel);
                         Set<ServerNodeModel> proxyProviders = Sets.newLinkedHashSet();
                         if (!CollectionUtils.isEmpty(serverNodeModels)) {
-                            for (ServerNodeModel serverNodeModel : serverNodeModels) {
-                                proxyProviders.add(serverNodeModel);
-                            }
+                            proxyProviders.addAll(serverNodeModels);
                             ClientManager.save(proxyProviderModel, proxyProviders);
                         }
                         relyProxy.add(proxyProviderModel);
@@ -121,13 +122,6 @@ public class RpcConsumerBootstrap implements ApplicationListener<ContextRefreshe
 
         /**
          * build proxy bean
-         *
-         * @param serviceClass
-         * @param proxyProviderModel
-         * @param daoLoadBalance
-         * @param timeout
-         * @param <T>
-         * @return
          */
         public static <T> T build(Class<T> serviceClass, ProxyProviderModel proxyProviderModel, byte serialized, DaoLoadBalance daoLoadBalance, long timeout) {
             return (T) Proxy.newProxyInstance(serviceClass.getClassLoader(), new Class[]{serviceClass}, new RpcProxy.ProxyHandler(proxyProviderModel, serialized, daoLoadBalance, timeout));

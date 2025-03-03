@@ -1,4 +1,4 @@
-package com.dao.cloud.starter.bootstrap;
+package com.dao.cloud.starter;
 
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProviderModel;
@@ -23,7 +23,7 @@ import com.dao.cloud.starter.handler.ServerPingPongMessageHandler;
 import com.dao.cloud.starter.log.LogHandlerInterceptor;
 import com.dao.cloud.starter.manager.RegistryManager;
 import com.dao.cloud.starter.manager.ServiceManager;
-import com.dao.cloud.starter.properties.DaoCloudServerProperties;
+import com.dao.cloud.starter.properties.DaoCloudProviderServiceProperties;
 import com.dao.cloud.starter.unit.CallTrendServiceInvoker;
 import com.dao.cloud.starter.unit.CallTrendTimerTask;
 import com.dao.cloud.starter.unit.ServiceInvoker;
@@ -36,10 +36,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -52,19 +54,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * RPC (Provider) AutoConfiguration
+ *
  * @author sucf
- * @since 1.0.0
  * @date 2022/12/29 16:30
- * @description rpc provider startup
+ * @since 1.0.0
  */
 @Slf4j
-@Component
+@Configuration
+@ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
 @ConditionalOnUseAnnotation(annotation = DaoService.class)
-public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
+@EnableConfigurationProperties(DaoCloudProviderServiceProperties.class)
+public class RpcProviderAutoConfiguration implements ApplicationListener<ContextRefreshedEvent> {
 
     private final MethodArgumentResolverHandler methodArgumentResolverHandler;
 
-    public RpcProviderBootstrap(MethodArgumentResolverHandler methodArgumentResolverHandler) {
+    public RpcProviderAutoConfiguration(MethodArgumentResolverHandler methodArgumentResolverHandler) {
         this.methodArgumentResolverHandler = methodArgumentResolverHandler;
     }
 
@@ -84,7 +89,7 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
             String interfaces = serviceBean.getClass().getInterfaces()[0].getName();
             String provider = StringUtils.hasLength(daoService.provider()) ? daoService.provider() : interfaces;
             Map<String, CallTrendTimerTask> interfacesCallTrendMap = new HashMap<>();
-            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudServerProperties.proxy, provider, daoService.version());
+            ProxyProviderModel proxyProviderModel = new ProxyProviderModel(DaoCloudProviderServiceProperties.proxy, provider, daoService.version());
             boolean flag = false;
             for (Method method : serviceBean.getClass().getDeclaredMethods()) {
                 DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
@@ -111,30 +116,30 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
      * start server
      */
     public void start() {
-        if (!(DaoCloudServerProperties.corePoolSize > 0 && DaoCloudServerProperties.maxPoolSize > 0 && DaoCloudServerProperties.maxPoolSize >= DaoCloudServerProperties.corePoolSize)) {
-            DaoCloudServerProperties.corePoolSize = 60;
-            DaoCloudServerProperties.maxPoolSize = 300;
+        if (!(DaoCloudProviderServiceProperties.corePoolSize > 0 && DaoCloudProviderServiceProperties.maxPoolSize > 0 && DaoCloudProviderServiceProperties.maxPoolSize >= DaoCloudProviderServiceProperties.corePoolSize)) {
+            DaoCloudProviderServiceProperties.corePoolSize = 60;
+            DaoCloudProviderServiceProperties.maxPoolSize = 300;
         }
 
-        if (DaoCloudServerProperties.serverPort <= 0) {
+        if (DaoCloudProviderServiceProperties.serverPort <= 0) {
             try {
-                DaoCloudServerProperties.serverPort = SystemUtil.getAvailablePort(65535);
+                DaoCloudProviderServiceProperties.serverPort = SystemUtil.getAvailablePort(65535);
             } catch (Exception e) {
                 throw new DaoException(e);
             }
         }
 
-        if (!StringUtils.hasLength(DaoCloudServerProperties.proxy)) {
+        if (!StringUtils.hasLength(DaoCloudProviderServiceProperties.proxy)) {
             throw new DaoException("'dao-cloud.proxy' config must it");
         }
         // make thread pool
-        ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudServerProperties.corePoolSize, DaoCloudServerProperties.maxPoolSize);
+        ThreadPoolExecutor threadPoolProvider = ThreadPoolFactory.makeThreadPool("provider", DaoCloudProviderServiceProperties.corePoolSize, DaoCloudProviderServiceProperties.maxPoolSize);
         new NettyServer(threadPoolProvider, methodArgumentResolverHandler).start();
     }
 
     private static class NettyServer {
 
-        private ThreadPoolExecutor threadPoolProvider;
+        private final ThreadPoolExecutor threadPoolProvider;
         private MethodArgumentResolverHandler methodArgumentResolverHandler = MethodArgumentResolverHandler.DEFAULT_RESOLVER;
 
         public NettyServer(ThreadPoolExecutor threadPoolProvider) {
@@ -166,14 +171,14 @@ public class RpcProviderBootstrap implements ApplicationListener<ContextRefreshe
                         ch.pipeline().addLast(new NettyGlobalTriggerExceptionHandler());
                     }
                 });
-                serverBootstrap.bind(DaoCloudServerProperties.serverPort).sync();
-                log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudServerProperties.serverPort);
+                serverBootstrap.bind(DaoCloudProviderServiceProperties.serverPort).sync();
+                log.info(">>>>>>>>>>> start server port = {} bingo <<<<<<<<<<", DaoCloudProviderServiceProperties.serverPort);
                 // register service
                 RegisterProviderModel registerProviderModel = new RegisterProviderModel();
-                registerProviderModel.setProxy(DaoCloudServerProperties.proxy);
+                registerProviderModel.setProxy(DaoCloudProviderServiceProperties.proxy);
                 Set<ProviderModel> providerModels = ServiceManager.getServiceInvokers().keySet();
                 registerProviderModel.setProviderModels(Sets.newHashSet(providerModels));
-                registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudServerProperties.serverPort));
+                registerProviderModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudProviderServiceProperties.serverPort));
                 RegistryManager.registry(registerProviderModel);
             } catch (Exception e) {
                 log.error("<<<<<<<<<<< start dao server interrupted error >>>>>>>>>>>", e);
