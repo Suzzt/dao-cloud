@@ -1,3 +1,3 @@
 # Auto Configuration
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.dao.cloud.gateway.DaoCloudGatewayConfiguration
+com.dao.cloud.gateway.GatewayAutoConfiguration

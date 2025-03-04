@@ -2,7 +2,8 @@ package com.dao.cloud.starter.unit;
 
 import com.dao.cloud.core.model.RpcRequestModel;
 import com.dao.cloud.core.model.RpcResponseModel;
-import com.dao.cloud.starter.bootstrap.RpcProviderBootstrap;
+import com.dao.cloud.starter.RpcProviderAutoConfiguration;
+
 import java.util.Map;
 
 /**
@@ -24,7 +25,7 @@ public class CallTrendServiceInvoker extends ServiceInvoker {
 
         String methodName = requestModel.getMethodName();
         Class<?>[] parameterTypes = requestModel.getParameterTypes();
-        String methodSign = RpcProviderBootstrap.methodToString(methodName, parameterTypes);
+        String methodSign = RpcProviderAutoConfiguration.methodToString(methodName, parameterTypes);
         CallTrendTimerTask callTrendTimerTask = this.interfacesCallTrendMap.get(methodSign);
         if (callTrendTimerTask != null) {
             callTrendTimerTask.increment();

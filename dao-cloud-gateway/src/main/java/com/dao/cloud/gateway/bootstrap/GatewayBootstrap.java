@@ -10,6 +10,7 @@ import com.dao.cloud.gateway.properties.DaoCloudGatewayProperties;
 import com.dao.cloud.gateway.timer.GatewayPullServiceTimer;
 import com.dao.cloud.starter.manager.RegistryManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -20,9 +21,9 @@ import java.util.Set;
  * @author sucf
  * @since 1.0.0
  * @date 2024/1/2 17:31
- * gateway bootstrap
  */
 @Slf4j
+@EnableConfigurationProperties(DaoCloudGatewayProperties.class)
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override

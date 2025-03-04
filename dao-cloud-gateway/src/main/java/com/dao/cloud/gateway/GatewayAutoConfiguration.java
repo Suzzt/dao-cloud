@@ -9,7 +9,6 @@ import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.banlance.impl.HashLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RoundLoadBalance;
-import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -26,15 +25,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Gateway AutoConfiguration
+ *
  * @author sucf
- * @since 1.0.0
  * @date 2023/12/27 17:43
- * Gateway Configuration starter
+ * @since 1.0.0
  */
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
-@Import({DaoCloudCenterProperties.class, GatewayBootstrap.class})
-public class DaoCloudGatewayConfiguration implements ApplicationContextAware {
+@Import(GatewayBootstrap.class)
+public class GatewayAutoConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 

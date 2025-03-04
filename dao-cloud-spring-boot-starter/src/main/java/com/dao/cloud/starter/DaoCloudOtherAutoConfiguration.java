@@ -7,18 +7,14 @@ import com.dao.cloud.core.converter.StringToCharConverter;
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
 import com.dao.cloud.core.util.NetUtil;
-import com.dao.cloud.starter.bootstrap.DaoCloudCustomInterceptor;
 import com.dao.cloud.starter.context.DaoCloudLogAppender;
-import com.dao.cloud.starter.properties.DaoCloudCenterProperties;
-import com.dao.cloud.starter.properties.DaoCloudServerProperties;
+import com.dao.cloud.starter.log.DaoCloudCustomInterceptor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
@@ -30,26 +26,25 @@ import java.util.List;
 
 
 /**
+ * Other Common AutoConfiguration
+ *
  * @author sucf
- * @since 1.0.0
  * @date 2022/10/28 20:29
- * dao-cloud SpringBoot Auto Configuration
+ * @since 1.0.0
  */
 @Configuration
-@EnableConfigurationProperties({DaoCloudServerProperties.class})
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
-@ComponentScan("com.dao.cloud.starter.bootstrap")
-@Import({DaoCloudServerProperties.class, DaoCloudCenterProperties.class})
-public class DaoCloudConfiguration implements WebMvcConfigurer {
+@Import(DaoCloudCustomInterceptor.class)
+public class DaoCloudOtherAutoConfiguration implements WebMvcConfigurer {
 
-    private DaoCloudCustomInterceptor daoCloudCustomInterceptor;
+    private final DaoCloudCustomInterceptor daoCloudCustomInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(daoCloudCustomInterceptor).addPathPatterns("/**");
     }
 
-    public DaoCloudConfiguration(DaoCloudCustomInterceptor daoCloudCustomInterceptor) {
+    public DaoCloudOtherAutoConfiguration(DaoCloudCustomInterceptor daoCloudCustomInterceptor) {
         this.daoCloudCustomInterceptor = daoCloudCustomInterceptor;
     }
 

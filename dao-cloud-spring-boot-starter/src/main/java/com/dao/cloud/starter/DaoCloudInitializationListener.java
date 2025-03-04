@@ -5,6 +5,7 @@ import com.dao.cloud.starter.manager.CenterChannelManager;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
@@ -14,6 +15,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author sucf
  * @since 1.0.0
  */
+@ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
 public class DaoCloudInitializationListener implements SpringApplicationRunListener, Ordered {
 
     public DaoCloudInitializationListener(SpringApplication application, String[] args) {
