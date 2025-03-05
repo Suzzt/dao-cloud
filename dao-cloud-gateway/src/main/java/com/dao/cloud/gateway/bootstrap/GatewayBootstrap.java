@@ -10,7 +10,6 @@ import com.dao.cloud.gateway.properties.DaoCloudGatewayProperties;
 import com.dao.cloud.gateway.timer.GatewayPullServiceTimer;
 import com.dao.cloud.starter.manager.RegistryManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -19,12 +18,17 @@ import java.util.Set;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2024/1/2 17:31
+ * @since 1.0.0
  */
 @Slf4j
-@EnableConfigurationProperties(DaoCloudGatewayProperties.class)
 public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEvent> {
+
+    private final DaoCloudGatewayProperties gatewayProperties;
+
+    public GatewayBootstrap(DaoCloudGatewayProperties daoCloudGatewayProperties) {
+        this.gatewayProperties = daoCloudGatewayProperties;
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -49,7 +53,7 @@ public class GatewayBootstrap implements ApplicationListener<ContextRefreshedEve
         RegisterProviderModel gatewayNodeModel = new RegisterProviderModel();
         gatewayNodeModel.setProxy(DaoCloudConstant.GATEWAY_PROXY);
         Set<ProviderModel> providerModels = new HashSet<>();
-        int version = DaoCloudGatewayProperties.version == null ? 0 : DaoCloudGatewayProperties.version;
+        int version = gatewayProperties.getVersion() == null ? 0 : gatewayProperties.getVersion();
         ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, version);
         providerModels.add(providerModel);
         gatewayNodeModel.setProviderModels(providerModels);

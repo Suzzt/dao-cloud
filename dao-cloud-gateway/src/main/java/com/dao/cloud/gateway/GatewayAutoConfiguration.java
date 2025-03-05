@@ -11,6 +11,7 @@ import com.dao.cloud.starter.banlance.impl.RandomLoadBalance;
 import com.dao.cloud.starter.banlance.impl.RoundLoadBalance;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +35,16 @@ import java.util.Map;
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud.gateway", name = "enable", havingValue = "true")
 @Import(GatewayBootstrap.class)
+@EnableConfigurationProperties(DaoCloudGatewayProperties.class)
 public class GatewayAutoConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
+
+    private final DaoCloudGatewayProperties gatewayProperties;
+
+    public GatewayAutoConfiguration(DaoCloudGatewayProperties daoCloudGatewayProperties) {
+        this.gatewayProperties = daoCloudGatewayProperties;
+    }
 
     @Bean
     public DaoCloudGatewayDispatcher dispatcher(DaoLoadBalance daoLoadBalance) {
@@ -62,7 +70,7 @@ public class GatewayAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     public DaoLoadBalance daoLoadBalance() {
-        String loadBalance = DaoCloudGatewayProperties.loadBalance;
+        String loadBalance = gatewayProperties.getLoadBalance();
         if (!StringUtils.hasLength(loadBalance)) {
             return new RoundLoadBalance();
         }

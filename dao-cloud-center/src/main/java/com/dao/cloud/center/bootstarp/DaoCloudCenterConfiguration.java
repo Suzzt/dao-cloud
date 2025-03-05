@@ -3,7 +3,6 @@ package com.dao.cloud.center.bootstarp;
 import com.dao.cloud.center.core.*;
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.storage.Persistence;
-import com.dao.cloud.center.properties.DaoCloudClusterCenterProperties;
 import com.dao.cloud.center.web.controller.CenterController;
 import com.dao.cloud.center.web.controller.IndexController;
 import com.dao.cloud.center.web.interceptor.CookieInterceptor;
@@ -40,9 +39,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2022/11/13 23:14
  * register center configuration
+ * @since 1.0.0
  */
 @Slf4j
 @ComponentScan(value = "com.dao.cloud.center.core.storage")
@@ -66,6 +65,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     @Resource
     private Persistence persistence;
+
+    @Value("${dao-cloud.center.cluster.ip:#{null}}")
+    private String clusterIp;
 
     /**
      * default hessian serialize
@@ -114,9 +116,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                         }
                     });
                     serverBootstrap.bind(DaoCloudConstant.CENTER_PORT).sync();
-                    if (StringUtils.hasLength(DaoCloudClusterCenterProperties.ip)) {
+                    if (StringUtils.hasLength(clusterIp)) {
                         // join cluster
-                        CenterClusterManager.inquireIpAddress = DaoCloudClusterCenterProperties.ip;
+                        CenterClusterManager.inquireIpAddress = clusterIp;
                         CenterClusterManager.start();
                     }
 
@@ -171,7 +173,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     logLine += "=";
                 }
 
-                log.info("\n\n" + border + "\n" + logLine + "\n" + border + "\n");
+                log.info("\n\n{}\n{}\n{}\n", border, logLine, border);
             });
         }
     }
