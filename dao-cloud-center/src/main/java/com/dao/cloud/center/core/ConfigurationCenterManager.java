@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
  * Configuration Center Manager for handling configuration files.
  *
  * @author sucf
- * @since 1.0.0
  * @date 2024/11/24 20:30
+ * @since 1.0.0
  */
 @Slf4j
 public class ConfigurationCenterManager {
@@ -110,10 +110,18 @@ public class ConfigurationCenterManager {
     }
 
     /**
-     * @return
+     * 获取全部配置文件信息
      */
     public Set<ConfigurationFileInformationModel> fullFileInformation() {
         List<ConfigurationFileInformationModel> configurationModelList = persistence.getConfiguration();
         return Sets.newHashSet(configurationModelList);
+    }
+
+    /**
+     * 获取配置文件数量
+     */
+    public int size() {
+        List<ConfigurationFileInformationModel> list = persistence.getConfiguration();
+        return list == null ? 0 : list.size();
     }
 }

@@ -76,11 +76,11 @@
                         <span class="info-box-icon"><i class="fa fa-calendar"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">配置总数</span>
-                            <span class="info-box-number">${configNum}</span>
+                            <span class="info-box-number">${configurationNum}+${configNum}</span>
                             <div class="progress">
                                 <div class="progress-bar" style="width: 100%"></div>
                             </div>
-                            <span class="progress-description">配置中心保存配置总数量 </span>
+                            <span class="progress-description">配置文件+配置订阅总数量 </span>
                         </div>
                     </div>
                 </div>
