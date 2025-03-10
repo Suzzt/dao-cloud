@@ -20,9 +20,9 @@ import java.util.Set;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2023/2/11 22:57
  * config manager
+ * @since 1.0.0
  */
 @Slf4j
 public class ConfigCenterManager {
@@ -122,7 +122,7 @@ public class ConfigCenterManager {
             if (StringUtils.hasLength(key) && !proxyConfigModel.getKey().equals(key)) {
                 continue;
             }
-            if (version != null && version!=proxyConfigModel.getVersion()) {
+            if (version != null && version != proxyConfigModel.getVersion()) {
                 continue;
             }
             configVO.setProxy(proxyConfigModel.getProxy());
@@ -135,9 +135,7 @@ public class ConfigCenterManager {
     }
 
     /**
-     * 配置数量
-     *
-     * @return
+     * 配置文件数量
      */
     public int size() {
         return cache.size();

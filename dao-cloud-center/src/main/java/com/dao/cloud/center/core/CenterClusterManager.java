@@ -466,7 +466,7 @@ public class CenterClusterManager {
      * collect all center nodes in the entire cluster based in the center ip, remove duplicate nodes, and aggregate all long connections (tcp) based on heartbeats.
      * note: the obtained nodes cannot be guaranteed to be all active, only nodes that are alive at the time of the snapshot request can be guaranteed to be saved.
      *
-     * @return
+     * @return alive center ip node
      */
     public static Set<String> inquire() throws InterruptedException {
         log.info("Inquiring about the cluster node......");

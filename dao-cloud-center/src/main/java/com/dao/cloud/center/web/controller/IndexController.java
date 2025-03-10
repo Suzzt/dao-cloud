@@ -33,14 +33,20 @@ public class IndexController {
 
     private final ConfigCenterManager configCenterManager;
 
+    private final ConfigurationCenterManager configurationCenterManager;
+
     private final GatewayCenterManager gatewayCenterManager;
 
     private final RegisterCenterManager registerCenterManager;
 
-    public IndexController(RegisterCenterManager registerCenterManager, ConfigCenterManager configCenterManager, GatewayCenterManager gatewayCenterManager) {
+    public IndexController(RegisterCenterManager registerCenterManager,
+                           ConfigCenterManager configCenterManager,
+                           GatewayCenterManager gatewayCenterManager,
+                           ConfigurationCenterManager configurationCenterManager) {
         this.registerCenterManager = registerCenterManager;
         this.configCenterManager = configCenterManager;
         this.gatewayCenterManager = gatewayCenterManager;
+        this.configurationCenterManager = configurationCenterManager;
     }
 
     @RequestMapping(value = {"", "/", "index"})
@@ -53,7 +59,9 @@ public class IndexController {
         model.addAttribute("providerNum", registerCenterManager.nodes());
         // 注册方法可调用数
         model.addAttribute("methodNum", registerCenterManager.methods());
-        // 配置条数
+        // 配置文件数
+        model.addAttribute("configurationNum", configurationCenterManager.size());
+        // 配置订阅数
         model.addAttribute("configNum", configCenterManager.size());
         // 每个配置服务订阅数的总和(不去重)
         model.addAttribute("configSubscribeNum", ConfigChannelManager.size());

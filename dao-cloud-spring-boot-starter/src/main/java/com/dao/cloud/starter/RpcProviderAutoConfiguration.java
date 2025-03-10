@@ -27,6 +27,7 @@ import com.dao.cloud.starter.properties.DaoCloudProviderServiceProperties;
 import com.dao.cloud.starter.unit.CallTrendServiceInvoker;
 import com.dao.cloud.starter.unit.CallTrendTimerTask;
 import com.dao.cloud.starter.unit.ServiceInvoker;
+import com.dao.cloud.starter.utils.MethodUtils;
 import com.google.common.collect.Sets;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -98,7 +99,7 @@ public class RpcProviderAutoConfiguration implements ApplicationListener<Context
                 DaoCallTrend daoCallTrend = method.getAnnotation(DaoCallTrend.class);
                 if (daoCallTrend != null) {
                     flag = true;
-                    String methodName = methodToString(method);
+                    String methodName = MethodUtils.methodToString(method);
                     CallTrendTimerTask callTrendTimerTask = new CallTrendTimerTask(proxyProviderModel, methodName, daoCallTrend.interval(), daoCallTrend.time_unit());
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(callTrendTimerTask, daoCallTrend.interval(), daoCallTrend.time_unit());
                     interfacesCallTrendMap.put(methodName, callTrendTimerTask);
@@ -190,23 +191,5 @@ public class RpcProviderAutoConfiguration implements ApplicationListener<Context
                 System.exit(1);
             }
         }
-    }
-
-    public static String methodToString(Method method) {
-        String name = method.getName();
-        Class<?>[] parameterTypes = method.getParameterTypes();
-        return methodToString(name, parameterTypes);
-    }
-
-    public static String methodToString(String methodName, Class<?>[] parameterTypes) {
-        if (parameterTypes == null || parameterTypes.length == 0) {
-            return methodName;
-        }
-        String params = "";
-        for (Class<?> parameterType : parameterTypes) {
-            params += parameterType.getName() + ",";
-        }
-        params = params.substring(0, params.length() - 1);
-        return String.format("%s(%s)", methodName, params);
     }
 }

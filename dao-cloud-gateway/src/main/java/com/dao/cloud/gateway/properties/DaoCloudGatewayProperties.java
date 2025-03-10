@@ -1,5 +1,6 @@
 package com.dao.cloud.gateway.properties;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -9,18 +10,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * dao cloud gateway configuration
  */
+@Data
 @ConfigurationProperties(prefix = "dao-cloud.gateway")
 public class DaoCloudGatewayProperties {
-
-    public static Integer version;
-
-    public static String loadBalance;
-
-    public void setVersion(Integer version) {
-        DaoCloudGatewayProperties.version = version;
-    }
-
-    public void setLoadBalance(String loadBalance) {
-        DaoCloudGatewayProperties.loadBalance = loadBalance;
-    }
+    private Integer version;
+    private String loadBalance;
 }

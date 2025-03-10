@@ -16,15 +16,11 @@ public @interface DaoCallTrend {
 
     /**
      * Statistics interval number
-     *
-     * @return
      */
     int interval() default 1;
 
     /**
      * Statistics interval unit
-     *
-     * @return
      */
     TimeUnit time_unit() default TimeUnit.HOURS;
 }
