@@ -1,5 +1,6 @@
 package com.dao.cloud.starter.utils;
 
+import com.dao.cloud.core.util.GsonUtils;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.dao.cloud.starter.unit.ConfigCallBack;
 import com.google.common.collect.Lists;
@@ -60,9 +61,8 @@ public class DaoCloudConfig {
         CONFIG_OBJECT.put(proxyConfigModel, jsonValue);
         List<ConfigCallBack> configCallBacks = CONFIG_SUBSCRIBERS.get(proxyConfigModel);
         if (!CollectionUtils.isEmpty(configCallBacks)) {
-            Gson gson = new Gson();
             for (ConfigCallBack configCallBack : configCallBacks) {
-                configCallBack.callback(proxyConfigModel, gson.fromJson(jsonValue, configCallBack.getClazz()));
+                configCallBack.callback(proxyConfigModel, GsonUtils.fromJson(jsonValue, configCallBack.getClazz()));
             }
         }
     }
@@ -158,8 +158,7 @@ public class DaoCloudConfig {
             if (String.class.equals(clazz)) {
                 return (T) jsonValue;
             }
-            Gson gson = new Gson();
-            return gson.fromJson(jsonValue, clazz);
+            return (T) GsonUtils.fromJson(jsonValue, clazz);
         } catch (Exception e) {
             log.error("<<<<<<<<<<<<<< get config ({}) error >>>>>>>>>>>>>>", proxyConfigModel, e);
         }

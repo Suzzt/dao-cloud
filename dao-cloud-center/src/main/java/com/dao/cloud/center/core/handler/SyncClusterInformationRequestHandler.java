@@ -10,6 +10,7 @@ import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
@@ -63,7 +64,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 sendErrorResponse(ctx, shareClusterRequestModel, CodeEnum.SYNC_DATA_EXTRA_TYPE_ERROR);
             }
         } catch (Exception e) {
-            log.error("Cluster data sync error: {}", new Gson().toJson(shareClusterRequestModel), e);
+            log.error("Cluster data sync error: {}", GsonUtils.toJson(shareClusterRequestModel), e);
             sendErrorResponse(ctx, shareClusterRequestModel, CodeEnum.SYNC_SHARE_CLUSTER_DATA_ERROR);
         }
     }
