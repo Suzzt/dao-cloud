@@ -454,7 +454,7 @@ public class CenterClusterManager {
      * 由集群配置ip来获取集群中的所有center节点.
      * 询问方案
      * 1.准备新center集群节点.
-     * 2.根据ip连接目标center(见 DaoCloudClusterCenterProperties.class 配置).
+     * 2.根据ip连接目标center(见dao-cloud.center.cluster.ip配置项).
      * 3.center ip 收集整个集群各个center node，拿出所有由心跳构成的长连接(tcp)，去重汇聚.
      * 注意：这里的所获取的node不能保证一定全部存活，只能保证请求时快照存活的node.
      * <p>
@@ -462,7 +462,7 @@ public class CenterClusterManager {
      * retrieve all center nodes in a cluster based on the cluster's configured ip.
      * inquiry plan
      * prepare a new center cluster node.
-     * connect to the target center based on the ip configuration (see DaoCloudClusterCenterProperties.class).
+     * connect to the target center based on the ip configuration (see dao-cloud.center.cluster.ip Configuration items).
      * collect all center nodes in the entire cluster based in the center ip, remove duplicate nodes, and aggregate all long connections (tcp) based on heartbeats.
      * note: the obtained nodes cannot be guaranteed to be all active, only nodes that are alive at the time of the snapshot request can be guaranteed to be saved.
      *
