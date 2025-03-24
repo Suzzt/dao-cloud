@@ -134,7 +134,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         if (promise.isSuccess()) {
             return (String) promise.getNow();
         } else {
-            throw (DaoException) promise.cause();
+            throw new InterruptedException("get remote configuration property error");
         }
     }
 
