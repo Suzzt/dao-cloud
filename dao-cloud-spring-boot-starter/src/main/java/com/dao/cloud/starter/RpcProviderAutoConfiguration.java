@@ -13,7 +13,6 @@ import com.dao.cloud.core.util.DaoTimer;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.SystemUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
-import com.dao.cloud.starter.annotation.ConditionalOnUseAnnotation;
 import com.dao.cloud.starter.annotation.DaoCallTrend;
 import com.dao.cloud.starter.annotation.DaoService;
 import com.dao.cloud.starter.handler.GatewayServiceMessageHandler;
@@ -64,7 +63,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "dao-cloud", name = "enable", havingValue = "true")
-@ConditionalOnUseAnnotation(annotation = DaoService.class)
 @EnableConfigurationProperties(DaoCloudProviderServiceProperties.class)
 public class RpcProviderAutoConfiguration implements ApplicationListener<ContextRefreshedEvent> {
 
