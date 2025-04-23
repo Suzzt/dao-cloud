@@ -60,9 +60,9 @@ DaoCloud通过SpringBoot构建基于netty开发轻量级的微服务框架.麻�
 
 # 项目结构
     dao-cloud-core = 核心
-    dao-cloud-center = 注册+配置-中心(jar)
+    dao-cloud-center = （注册+配置)中心(jar)
     dao-cloud-gateway = 网关(jar)
-    dao-cloud-spring-boot-starter = 自动装配(jar)
+    dao-cloud-spring-boot-starter = rpc(jar)
     dao-cloud-example = 使用示例
 
 # dao-协议
