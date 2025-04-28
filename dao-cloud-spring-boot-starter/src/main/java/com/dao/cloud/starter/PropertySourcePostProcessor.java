@@ -122,7 +122,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
         LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), promise);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
@@ -134,7 +134,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         if (promise.isSuccess()) {
             return (String) promise.getNow();
         } else {
-            throw (DaoException) promise.cause();
+            throw new InterruptedException("get remote configuration property error");
         }
     }
 
@@ -159,7 +159,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         configurationFileInformationRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         Promise<Object> promise = new DefaultPromise<>(channel.eventLoop());
         LongPromiseBuffer.getInstance().put(configurationFileInformationRequestModel.getSequenceId(), promise);
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<Failed to send a request to pull the center remote file information >>>>>>>>>", future.cause());

@@ -11,7 +11,7 @@ import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
+import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.core.util.ThreadPoolFactory;
@@ -146,7 +146,7 @@ public class CenterClusterManager {
 
     private static void loadServerConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
         Promise<ServerConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterServerConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -171,7 +171,7 @@ public class CenterClusterManager {
 
     private static void loadServerConfiguration(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigurationFilePullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigurationFilePullMarkModel());
         Promise<ConfigurationFileResponseModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterConfigurationFileResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -194,7 +194,7 @@ public class CenterClusterManager {
                 configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
                 Promise<Object> configurationPropertyPromise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
                 LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), configurationPropertyPromise);
-                DaoMessage daoMessage2 = new DaoMessage((byte) 1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+                DaoMessage daoMessage2 = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
                 clusterCenterConnector.getChannel().writeAndFlush(daoMessage2).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
@@ -222,7 +222,7 @@ public class CenterClusterManager {
 
     private static void loadGatewayConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
         Promise<GatewayServiceNodeModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterGatewayConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -258,7 +258,7 @@ public class CenterClusterManager {
      */
     private static void loadConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigMarkModel());
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterConfigResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -282,7 +282,7 @@ public class CenterClusterManager {
 
     public static void loadCallTrend(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
         Promise<CallTrendFullModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterCallTrendResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -314,9 +314,11 @@ public class CenterClusterManager {
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
             ServiceShareClusterRequestModel serviceShareClusterRequestModel = new ServiceShareClusterRequestModel();
+            serviceShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
             serviceShareClusterRequestModel.setType(type);
             serviceShareClusterRequestModel.setRegisterProviderModel(registerProviderModel);
-            clusterCenterConnector.share(serviceShareClusterRequestModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, serviceShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }
 
@@ -454,7 +456,7 @@ public class CenterClusterManager {
      * 由集群配置ip来获取集群中的所有center节点.
      * 询问方案
      * 1.准备新center集群节点.
-     * 2.根据ip连接目标center(见 DaoCloudClusterCenterProperties.class 配置).
+     * 2.根据ip连接目标center(见dao-cloud.center.cluster.ip配置项).
      * 3.center ip 收集整个集群各个center node，拿出所有由心跳构成的长连接(tcp)，去重汇聚.
      * 注意：这里的所获取的node不能保证一定全部存活，只能保证请求时快照存活的node.
      * <p>
@@ -462,7 +464,7 @@ public class CenterClusterManager {
      * retrieve all center nodes in a cluster based on the cluster's configured ip.
      * inquiry plan
      * prepare a new center cluster node.
-     * connect to the target center based on the ip configuration (see DaoCloudClusterCenterProperties.class).
+     * connect to the target center based on the ip configuration (see dao-cloud.center.cluster.ip Configuration items).
      * collect all center nodes in the entire cluster based in the center ip, remove duplicate nodes, and aggregate all long connections (tcp) based on heartbeats.
      * note: the obtained nodes cannot be guaranteed to be all active, only nodes that are alive at the time of the snapshot request can be guaranteed to be saved.
      *
@@ -480,12 +482,12 @@ public class CenterClusterManager {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new InquireClusterCenterResponseHandler());
+                ch.pipeline().addLast(new VarIntsProtocolFrameDecoder()).addLast(new DaoMessageCoder()).addLast(new InquireClusterCenterResponseHandler());
             }
         });
         Channel channel = bootstrap.connect().sync().channel();
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         channel.writeAndFlush(daoMessage).addListener(future -> {

@@ -5,6 +5,7 @@ import com.dao.cloud.common.DemoService;
 import com.dao.cloud.common.dto.ParamDTO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.model.ProxyConfigModel;
+import com.dao.cloud.core.util.GsonUtils;
 import com.dao.cloud.starter.annotation.DaoReference;
 import com.dao.cloud.starter.log.DaoCloudLogger;
 import com.dao.cloud.starter.unit.ConfigCallBack;
@@ -86,7 +87,7 @@ public class DemoController {
         paramDTO.setLongValue(1L);
         paramDTO = demoService.complex(paramDTO);
         long end = System.currentTimeMillis();
-        return new Gson().toJson(paramDTO) + "====" + (end - start);
+        return GsonUtils.toJson(paramDTO) + "====" + (end - start);
     }
 
     /**

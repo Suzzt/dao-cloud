@@ -7,6 +7,7 @@ import com.dao.cloud.core.model.RpcRequestModel;
 import com.dao.cloud.core.model.RpcResponseModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.starter.log.LogHandlerInterceptor;
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.unit.ServiceInvoker;
@@ -49,7 +50,7 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
             RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
             this.dealHttpResponseValue(rpcRequestModel, responseModel);
-            DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
+            DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());

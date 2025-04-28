@@ -8,6 +8,7 @@ import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -132,7 +133,7 @@ public class FileSystem implements Persistence {
         String provider = gatewayModel.getProxyProviderModel().getProviderModel().getProvider();
         int version = gatewayModel.getProxyProviderModel().getProviderModel().getVersion();
         String path = makePath(gatewayStoragePath, proxy, provider, String.valueOf(version));
-        String content = new Gson().toJson(gatewayModel.getGatewayConfigModel());
+        String content = GsonUtils.toJson(gatewayModel.getGatewayConfigModel());
         write(path, content);
     }
 
@@ -221,7 +222,6 @@ public class FileSystem implements Persistence {
         Map<ProxyProviderModel, GatewayConfigModel> map = Maps.newConcurrentMap();
         String prefixPath = gatewayStoragePath;
         List<String> proxyList = loopDirs(prefixPath);
-        Gson gson = new Gson();
         for (String proxy : proxyList) {
             List<String> providers = loopDirs(prefixPath + File.separator + proxy);
             for (String provider : providers) {
@@ -232,7 +232,7 @@ public class FileSystem implements Persistence {
                         if (value == null) {
                             continue;
                         }
-                        GatewayConfigModel gatewayConfigModel = gson.fromJson(value, GatewayConfigModel.class);
+                        GatewayConfigModel gatewayConfigModel = GsonUtils.fromJson(value, GatewayConfigModel.class);
                         ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, provider, Integer.parseInt(version));
                         map.put(proxyProviderModel, gatewayConfigModel);
                     } catch (Exception e) {

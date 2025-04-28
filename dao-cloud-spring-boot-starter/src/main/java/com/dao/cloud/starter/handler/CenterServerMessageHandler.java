@@ -5,6 +5,7 @@ import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.ProxyProviderServerModel;
 import com.dao.cloud.core.model.ServerNodeModel;
+import com.dao.cloud.core.util.GsonUtils;
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,10 +37,10 @@ public class CenterServerMessageHandler extends SimpleChannelInboundHandler<Prox
         Set<ServerNodeModel> serverNodeModes = proxyProviderServerModel.getServerNodeModes();
         DaoException daoException = proxyProviderServerModel.getDaoException();
         if (daoException == null) {
-            log.info(">>>>>>>>>>>> pull (proxy = {}, provider = {}, server node = {}) success. <<<<<<<<<<<<", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
+            log.info(">>>>>>>>>>>> pull (proxy = {}, provider = {}, server node = {}) success. <<<<<<<<<<<<", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), GsonUtils.toJson(proxyProviderServerModel.getServerNodeModes()));
             pullPromise.setSuccess(serverNodeModes);
         } else {
-            log.error("<<<<<<<<<<<< pull (proxy = {}, provider = {}, server node = {}) error. >>>>>>>>>>>>", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), new Gson().toJson(proxyProviderServerModel.getServerNodeModes()));
+            log.error("<<<<<<<<<<<< pull (proxy = {}, provider = {}, server node = {}) error. >>>>>>>>>>>>", proxyProviderServerModel.getProxy(), proxyProviderServerModel.getProviderModel(), GsonUtils.toJson(proxyProviderServerModel.getServerNodeModes()));
             pullPromise.setFailure(daoException);
         }
     }

@@ -8,6 +8,7 @@ import com.dao.cloud.core.model.ServerConfigModel;
 import com.dao.cloud.core.model.ServerConfigPullMarkModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class CenterClusterServerConfigRequestHandler extends SimpleChannelInboun
         } catch (Exception e) {
             serverConfigModel.setDaoException(new DaoException(CodeEnum.PULL_SERVER_CONFIG_ERROR));
         }
-        daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, serverConfigModel);
+        daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, serverConfigModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send service configuration data >>>>>>>>>>>>", future.cause());

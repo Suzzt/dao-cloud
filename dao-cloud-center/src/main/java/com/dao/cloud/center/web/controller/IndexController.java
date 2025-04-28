@@ -6,6 +6,7 @@ import com.dao.cloud.center.web.interceptor.Permissions;
 import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
 import com.dao.cloud.core.ApiResult;
 import com.dao.cloud.core.enums.CodeEnum;
+import com.dao.cloud.core.util.GsonUtils;
 import com.google.gson.Gson;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -68,9 +69,8 @@ public class IndexController {
 
         // 统计proxy节点图表数据
         ProxyStatisticsVO proxyStatisticsVO = registerCenterManager.proxyServerStatistics();
-        Gson gson = new Gson();
-        model.addAttribute("proxyDimensionStatistics", gson.toJson(proxyStatisticsVO.getDimension()));
-        model.addAttribute("proxyMeasureStatistics", gson.toJson(proxyStatisticsVO.getMeasure()));
+        model.addAttribute("proxyDimensionStatistics", GsonUtils.toJson(proxyStatisticsVO.getDimension()));
+        model.addAttribute("proxyMeasureStatistics", GsonUtils.toJson(proxyStatisticsVO.getMeasure()));
         return "index";
     }
 

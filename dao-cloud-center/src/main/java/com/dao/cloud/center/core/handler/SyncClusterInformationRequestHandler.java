@@ -10,6 +10,7 @@ import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
@@ -63,7 +64,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
                 sendErrorResponse(ctx, shareClusterRequestModel, CodeEnum.SYNC_DATA_EXTRA_TYPE_ERROR);
             }
         } catch (Exception e) {
-            log.error("Cluster data sync error: {}", new Gson().toJson(shareClusterRequestModel), e);
+            log.error("Cluster data sync error: {}", GsonUtils.toJson(shareClusterRequestModel), e);
             sendErrorResponse(ctx, shareClusterRequestModel, CodeEnum.SYNC_SHARE_CLUSTER_DATA_ERROR);
         }
     }
@@ -152,7 +153,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void sendErrorResponse(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel, CodeEnum codeEnum) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setDaoException(new DaoException(codeEnum));
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send error response", future.cause());
@@ -169,7 +170,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void answer(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setSequenceId(shareClusterRequestModel.getSequenceId());
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send response message", future.cause());

@@ -8,7 +8,7 @@ import com.dao.cloud.core.model.ClusterInquireMarkModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
+import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -66,7 +66,7 @@ public class CenterChannelManager {
      */
     public static void inquire() throws InterruptedException {
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(getChannel().eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -114,7 +114,7 @@ public class CenterChannelManager {
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ProtocolFrameDecoder())
+                ch.pipeline().addLast(new VarIntsProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
                         .addLast(new IdleStateHandler(8, 0, 0, TimeUnit.SECONDS))
                         .addLast(new InquireClusterCenterResponseHandler())

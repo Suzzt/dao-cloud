@@ -9,6 +9,7 @@ import com.dao.cloud.core.model.ProxyProviderServerModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,10 @@ public class PullServerRequestHandler extends SimpleChannelInboundHandler<ProxyP
         DaoMessage daoMessage;
         try {
             serverNodeModels = registerCenterManager.getServers(proxy, providerModel);
-            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
+            daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(proxy, providerModel, serverNodeModels));
         } catch (Exception e) {
             log.error("<<<<<<<<<<< Failed to pull service list >>>>>>>>>>>>", e);
-            daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(CodeEnum.PULL_SERVICE_NODE_ERROR));
+            daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, new ProxyProviderServerModel(CodeEnum.PULL_SERVICE_NODE_ERROR));
         }
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {

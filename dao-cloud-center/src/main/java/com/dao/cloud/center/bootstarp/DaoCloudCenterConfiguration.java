@@ -10,7 +10,7 @@ import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.WebCenterConfig;
 import com.dao.cloud.core.netty.handler.PrintExceptionHandler;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
-import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
+import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
@@ -94,7 +94,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new ProtocolFrameDecoder());
+                            ch.pipeline().addLast(new VarIntsProtocolFrameDecoder());
                             ch.pipeline().addLast(new DaoMessageCoder());
                             ch.pipeline().addLast(new IdleStateHandler(0, 10, 0, TimeUnit.SECONDS));
                             ch.pipeline().addLast(new InquireClusterCenterRequestHandler());

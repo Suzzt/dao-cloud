@@ -36,7 +36,7 @@ public class RegistryManager {
      * @throws Exception
      */
     public static Set<ServerNodeModel> pull(ProxyProviderModel proxyProviderModel) throws Exception {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyProviderModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyProviderModel);
         DefaultPromise<Set<ServerNodeModel>> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
         CenterServerMessageHandler.PROMISE_MAP.put(proxyProviderModel, promise);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -95,7 +95,7 @@ public class RegistryManager {
             log.error("<<<<<<<<< get system load status error >>>>>>>>", t);
             registerProviderModel.getServerNodeModel().setPerformance(null);
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.REGISTRY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, registerProviderModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.REGISTRY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, registerProviderModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send register server error >>>>>>>>>", future.cause());
