@@ -9,6 +9,7 @@ import com.dao.cloud.core.model.GatewayConfigPullMarkModel;
 import com.dao.cloud.core.model.GatewayServiceNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class GatewayServiceConfigHandler extends SimpleChannelInboundHandler<Gat
         } catch (Exception e) {
             gatewayServiceNodeModel.setDaoException(new DaoException(CodeEnum.PULL_GATEWAY_CONFIG_ERROR));
         }
-        daoMessage = new DaoMessage((byte) 1, MessageType.GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, gatewayServiceNodeModel);
+        daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.GATEWAY_REGISTER_ALL_SERVER_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, gatewayServiceNodeModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send service instance to gateway >>>>>>>>>>>>", future.cause());

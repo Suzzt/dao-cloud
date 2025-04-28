@@ -124,7 +124,7 @@ public class DaoCloudConfig {
         String jsonValue = CONFIG_OBJECT.get(proxyConfigModel);
         if (!StringUtils.hasLength(jsonValue)) {
             // no hit cache
-            DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyConfigModel);
+            DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, proxyConfigModel);
             Promise<String> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
             ProxyConfigPromiseBuffer.getInstance().put(proxyConfigModel, promise);
             CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {

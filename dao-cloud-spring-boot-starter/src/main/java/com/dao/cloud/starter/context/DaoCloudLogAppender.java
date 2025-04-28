@@ -64,7 +64,7 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
         logModel.setHappenTime(eventObject.getTimeStamp());
         logModel.setLogMessage(logMessage);
 
-        DaoMessage daoMessage = new DaoMessage((byte) 0, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage);
     }
 

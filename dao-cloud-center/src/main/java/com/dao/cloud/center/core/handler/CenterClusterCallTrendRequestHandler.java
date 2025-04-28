@@ -8,6 +8,7 @@ import com.dao.cloud.core.model.CallTrendFullModel;
 import com.dao.cloud.core.model.CallTrendPullMarkModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class CenterClusterCallTrendRequestHandler extends SimpleChannelInboundHa
         } catch (Exception e) {
             callTrendFullModel.setDaoException(new DaoException(CodeEnum.PULL_CALL_TREND_ERROR));
         }
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, callTrendFullModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, callTrendFullModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send call trend data >>>>>>>>>>>>", future.cause());

@@ -6,6 +6,7 @@ import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
+import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.manager.ClientManager;
@@ -89,7 +90,7 @@ public class ClientInvoker {
             }
             ClientManager.remove(new ServerNodeModel(client.getIp(), client.getPort()));
         }
-        DaoMessage message = new DaoMessage((byte) 1, messageType, serializable, model);
+        DaoMessage message = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, messageType, serializable, model);
 
         // 异步执行！ promise 对象来处理异步接收的结果线程
         Promise<Object> promise = new DefaultPromise<>(client.getChannel().eventLoop());
