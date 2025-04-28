@@ -37,7 +37,7 @@ public class GatewayPullServiceTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // 从注册中心拉取所有服务节点数据
-                    DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
+                    DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
                     DefaultPromise<GatewayServiceNodeModel> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
                     GatewayPullServiceNodeMessageHandler.promise = promise;
                     CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {

@@ -6,7 +6,7 @@ import com.dao.cloud.starter.handler.RpcClientMessageHandler;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
-import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
+import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -140,7 +140,7 @@ public class Client {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline()
-                        .addLast(new ProtocolFrameDecoder())
+                        .addLast(new VarIntsProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
                         .addLast("clientIdleHandler", new IdleStateHandler(2, 0, 0, TimeUnit.SECONDS))
                         .addLast(rpcClientMessageHandler)

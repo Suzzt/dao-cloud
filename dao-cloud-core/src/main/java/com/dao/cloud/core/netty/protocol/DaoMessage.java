@@ -28,7 +28,7 @@ public class DaoMessage<T> {
      * 魔数
      * 3byte
      */
-    private byte[] magicNumber = DaoCloudConstant.MAGIC_NUMBER.getBytes(StandardCharsets.UTF_8);
+    private byte[] magicNumber = DaoCloudConstant.MAGIC_NUMBER;
 
     /**
      * 消息类型
@@ -48,12 +48,6 @@ public class DaoMessage<T> {
      * 1byte
      */
     private byte serializableType;
-
-    /**
-     * 消息内容长度
-     * 4byte
-     */
-    private int length;
 
     /**
      * 内容

@@ -86,7 +86,7 @@ public class ClusterCenterConnector {
             protected void initChannel(SocketChannel ch) {
                 state = true;
                 ch.pipeline()
-                        .addLast(new ProtocolFrameDecoder())
+                        .addLast(new VarIntsProtocolFrameDecoder())
                         .addLast(new DaoMessageCoder())
                         .addLast(new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS))
                         .addLast(new InquireClusterCenterResponseHandler())
@@ -163,7 +163,7 @@ public class ClusterCenterConnector {
      * @param requestModel
      */
     public void share(AbstractShareClusterRequestModel requestModel) {
-        DaoMessage daoMessage = new DaoMessage((byte) 1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
+        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());

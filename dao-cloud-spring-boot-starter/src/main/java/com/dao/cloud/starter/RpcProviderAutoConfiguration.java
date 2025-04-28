@@ -6,7 +6,7 @@ import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
-import com.dao.cloud.core.netty.protocol.ProtocolFrameDecoder;
+import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
 import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
 import com.dao.cloud.core.util.DaoTimer;
@@ -164,7 +164,7 @@ public class RpcProviderAutoConfiguration implements ApplicationListener<Context
                 serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(new ProtocolFrameDecoder());
+                        ch.pipeline().addLast(new VarIntsProtocolFrameDecoder());
                         ch.pipeline().addLast(new DaoMessageCoder());
                         ch.pipeline().addLast("serverIdleHandler", new IdleStateHandler(0, 0, 4, TimeUnit.SECONDS));
                         ch.pipeline().addLast("serverHeartbeatHandler", new ServerPingPongMessageHandler());
