@@ -314,9 +314,11 @@ public class CenterClusterManager {
         for (Map.Entry<String, ClusterCenterConnector> entry : ALL_HISTORY_CLUSTER_MAP.entrySet()) {
             ClusterCenterConnector clusterCenterConnector = entry.getValue();
             ServiceShareClusterRequestModel serviceShareClusterRequestModel = new ServiceShareClusterRequestModel();
+            serviceShareClusterRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
             serviceShareClusterRequestModel.setType(type);
             serviceShareClusterRequestModel.setRegisterProviderModel(registerProviderModel);
-            clusterCenterConnector.share(serviceShareClusterRequestModel);
+            DataSyncTask dataSyncTask = new DataSyncTask(clusterCenterConnector, serviceShareClusterRequestModel);
+            SYNC_DATA_THREAD_POOL_EXECUTOR.execute(dataSyncTask);
         }
     }
 
