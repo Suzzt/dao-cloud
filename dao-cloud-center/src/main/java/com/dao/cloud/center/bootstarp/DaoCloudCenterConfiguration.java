@@ -1,6 +1,7 @@
 package com.dao.cloud.center.bootstarp;
 
 import com.dao.cloud.center.core.*;
+import com.dao.cloud.center.core.cluster.ClusterLoadTimer;
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.controller.CenterController;
@@ -79,6 +80,8 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
 
     private boolean flag = false;
 
+    private Thread clusterLoadThread;
+
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
         if (applicationEvent instanceof ContextRefreshedEvent) {
@@ -132,6 +135,9 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     log.info("Load initial configuration data into memory (Finish)");
                     // Before the above procedures are executed, the node cannot provide service capabilities.
                     CenterClusterManager.ready();
+                    // open center cluster load Timer
+                    clusterLoadThread = new Thread(new ClusterLoadTimer());
+                    ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(clusterLoadThread);
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
