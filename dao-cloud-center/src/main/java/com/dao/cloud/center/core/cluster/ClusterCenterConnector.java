@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ClusterCenterConnector {
     private final Bootstrap bootstrap = new Bootstrap();
-    private String connectIp;
+    private final String connectIp;
     private volatile Channel clusterChannel;
     /**
      * fail mark count
