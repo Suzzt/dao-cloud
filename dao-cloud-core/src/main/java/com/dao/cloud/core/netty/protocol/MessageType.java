@@ -42,6 +42,8 @@ public class MessageType {
     public static final byte PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE = 29;
     public static final byte INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE = 30;
     public static final byte INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_RESPONSE_MESSAGE = 31;
+    public static final byte INQUIRE_CLUSTER_LOADED_REQUEST_MESSAGE = 32;
+    public static final byte INQUIRE_CLUSTER_LOADED_RESPONSE_MESSAGE = 33;
 
 
     private static final Map<Byte, Class<? extends Model>> MESSAGE_TYPE_MAP = new HashMap<>();

@@ -6,6 +6,7 @@ import io.netty.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,6 +29,12 @@ public class ClusterLoadTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // todo 拿取其他center节点服务负载情况
+                    Map<String, Integer> loadedCount = getLoadedCount();
+                    loadedCount.forEach((ip, number) -> {
+                        if (number > 100) {
+                        }
+                    });
+
                     // 判断是否需要触发rebalance
                     ///触发rebalance
                 } catch (Exception e) {
@@ -37,5 +44,9 @@ public class ClusterLoadTimer implements Runnable {
             }
         };
         DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
+    }
+
+    private Map<String, Integer> getLoadedCount() {
+        return null;
     }
 }
