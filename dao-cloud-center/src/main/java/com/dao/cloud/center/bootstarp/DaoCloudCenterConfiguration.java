@@ -87,6 +87,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
         if (applicationEvent instanceof ContextRefreshedEvent) {
             // init center cluster attribute persistence
             CenterClusterManager.setPersistence(persistence);
+            ServiceConnectorManager serviceConnectorManager = new ServiceConnectorManager();
             ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(() -> {
                 NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("dao-center-boss", true));
                 NioEventLoopGroup worker = new NioEventLoopGroup(4, new DefaultThreadFactory("dao-center-worker", true));
@@ -136,7 +137,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     // Before the above procedures are executed, the node cannot provide service capabilities.
                     CenterClusterManager.ready();
                     // open center cluster load Timer
-                    clusterLoadThread = new Thread(new ClusterLoadTimer());
+                    clusterLoadThread = new Thread(new ClusterLoadTimer(serviceConnectorManager));
                     ThreadPoolFactory.GLOBAL_THREAD_POOL.execute(clusterLoadThread);
                     log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
                 } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.dao.cloud.center.core.cluster;
 
+import com.dao.cloud.center.core.ServiceConnectorManager;
 import com.dao.cloud.core.util.DaoTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -22,6 +23,12 @@ public class ClusterLoadTimer implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterLoadTimer.class);
 
+    private final ServiceConnectorManager serviceConnectorManager;
+
+    public ClusterLoadTimer(ServiceConnectorManager serviceConnectorManager) {
+        this.serviceConnectorManager = serviceConnectorManager;
+    }
+
     @Override
     public void run() {
         TimerTask task = new TimerTask() {
@@ -29,14 +36,22 @@ public class ClusterLoadTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // todo 拿取其他center节点服务负载情况
-                    Map<String, Integer> loadedCount = getLoadedCount();
-                    loadedCount.forEach((ip, number) -> {
-                        if (number > 100) {
+                    Map<String, Integer> loadedMap = getCenterLoaded();
+                    // 节点数量
+                    int size = loadedMap.size();
+                    // 总负载连接数
+                    int loadNumber = serviceConnectorManager.count();
+                    boolean flag = false;
+                    for (Map.Entry<String, Integer> entry : loadedMap.entrySet()) {
+                        loadNumber += entry.getValue();
+                        if (entry.getValue() > 100) {
+                            flag = true;
                         }
-                    });
-
+                    }
                     // 判断是否需要触发rebalance
-                    ///触发rebalance
+                    if (flag && loadNumber / size * 2 > serviceConnectorManager.count()) {
+                        ///触发rebalance
+                    }
                 } catch (Exception e) {
                 } finally {
                     DaoTimer.HASHED_WHEEL_TIMER.newTimeout(this, 5, TimeUnit.SECONDS);
@@ -46,7 +61,7 @@ public class ClusterLoadTimer implements Runnable {
         DaoTimer.HASHED_WHEEL_TIMER.newTimeout(task, 5, TimeUnit.SECONDS);
     }
 
-    private Map<String, Integer> getLoadedCount() {
+    private Map<String, Integer> getCenterLoaded() {
         return null;
     }
 }
