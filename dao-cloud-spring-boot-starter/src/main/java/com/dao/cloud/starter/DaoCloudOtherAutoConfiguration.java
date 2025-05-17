@@ -7,7 +7,7 @@ import com.dao.cloud.core.converter.StringToCharConverter;
 import com.dao.cloud.core.resolver.MethodArgumentResolver;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
 import com.dao.cloud.core.util.NetUtil;
-import com.dao.cloud.starter.context.DaoCloudLogAppender;
+import com.dao.cloud.starter.log.context.DaoCloudLogAppender;
 import com.dao.cloud.starter.log.DaoCloudCustomInterceptor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
