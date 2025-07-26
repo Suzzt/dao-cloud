@@ -1,5 +1,6 @@
 package com.dao.cloud.starter.manager;
 
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.starter.handler.*;
 import com.dao.cloud.starter.timer.InquireClusterTimer;
 import com.dao.cloud.core.exception.DaoException;
@@ -109,7 +110,7 @@ public class CenterChannelManager {
     public static void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
-        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_PORT);
+        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, Ports.CENTER_PORT);
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -141,7 +142,7 @@ public class CenterChannelManager {
         }
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
-                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_PORT);
+                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, Ports.CENTER_PORT);
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) {

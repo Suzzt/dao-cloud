@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core.cluster;
 
 import com.dao.cloud.center.core.handler.*;
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.AbstractShareClusterRequestModel;
 import com.dao.cloud.core.netty.protocol.*;
@@ -78,7 +79,7 @@ public class ClusterCenterConnector {
     public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_PORT);
+        bootstrap.remoteAddress(connectIp, Ports.CENTER_PORT);
         bootstrap.group(group);
         ClusterResponseHandler clusterRequestHandler = new ClusterResponseHandler(this);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {

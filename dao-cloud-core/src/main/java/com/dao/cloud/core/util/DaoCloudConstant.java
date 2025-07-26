@@ -15,9 +15,6 @@ public class DaoCloudConstant {
     public static final int HEARTBEAT_FRAME_LENGTH = 4;
     public static final int MAX_FRAME_LENGTH = 10 * 1024 * 1024;
     public static final byte PROTOCOL_VERSION_1 = 1;
-    public static final int CENTER_PORT = 5551;
-
-    public static final int GATEWAY_PORT = 6666;
 
     public static final byte DEFAULT_SERIALIZE = 0;
 

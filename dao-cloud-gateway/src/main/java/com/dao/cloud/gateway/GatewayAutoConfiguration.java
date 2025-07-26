@@ -1,5 +1,6 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
@@ -120,7 +121,7 @@ public class GatewayAutoConfiguration implements ApplicationContextAware, Applic
         ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, version);
         providerModels.add(providerModel);
         gatewayNodeModel.setProviderModels(providerModels);
-        gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudConstant.GATEWAY_PORT));
+        gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), Ports.GATEWAY_PORT));
         RegistryManager.registry(gatewayNodeModel);
     }
 }

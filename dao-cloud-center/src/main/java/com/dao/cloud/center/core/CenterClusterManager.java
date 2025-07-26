@@ -6,6 +6,7 @@ import com.dao.cloud.center.core.cluster.DataSyncTask;
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
@@ -475,7 +476,7 @@ public class CenterClusterManager {
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_PORT);
+        bootstrap.remoteAddress(inquireIpAddress, Ports.CENTER_PORT);
         bootstrap.group(group);
         // 设置连接超时时间
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
