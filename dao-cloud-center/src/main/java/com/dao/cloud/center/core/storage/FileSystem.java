@@ -6,6 +6,7 @@ import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.core.constant.Components;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.GsonUtils;
@@ -97,11 +98,11 @@ public class FileSystem implements Persistence {
         String pathPrefix = fileSystemSetting.getPathPrefix();
         // default need to be set
         pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
-        this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
-        this.configurationStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIGURATION;
-        this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
-        this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
-        this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
+        this.configStoragePath = pathPrefix + File.separator + Components.CONFIG;
+        this.configurationStoragePath = pathPrefix + File.separator + Components.CONFIGURATION;
+        this.gatewayStoragePath = pathPrefix + File.separator + Components.GATEWAY;
+        this.serverStoragePath = pathPrefix + File.separator + Components.SERVER;
+        this.trendStoragePath = pathPrefix + File.separator + Components.CALL;
     }
 
     @Override
