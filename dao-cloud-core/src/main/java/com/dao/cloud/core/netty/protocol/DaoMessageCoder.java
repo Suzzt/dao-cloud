@@ -1,5 +1,6 @@
 package com.dao.cloud.core.netty.protocol;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.UnsupportedVersionException;
 import com.dao.cloud.core.model.HeartbeatModel;
 import com.dao.cloud.core.model.Model;
@@ -17,9 +18,9 @@ import java.util.List;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2022/10/28 20:28
  * 消息协议编码处理
+ * @since 1.0.0
  */
 @Slf4j
 public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {
@@ -29,7 +30,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
         ByteBuf buf = ctx.alloc().buffer();
         try {
             // 固定头魔数值
-            buf.writeBytes(DaoCloudConstant.MAGIC_NUMBER);
+            buf.writeBytes(Protocol.MAGIC_NUMBER);
             buf.writeByte(msg.getMessageType());
 
             if (msg.getMessageType() != MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
@@ -61,7 +62,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
         try {
-            frame.skipBytes(DaoCloudConstant.MAGIC_NUMBER_LENGTH); // 跳过魔数
+            frame.skipBytes(Protocol.MAGIC_NUMBER_LENGTH); // 跳过魔数
 
             byte messageType = frame.readByte();
             if (messageType == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {

@@ -1,5 +1,6 @@
 package com.dao.cloud.core.netty.protocol;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.Serializer;
 import com.dao.cloud.core.util.DaoCloudConstant;
 import lombok.Data;
@@ -28,7 +29,7 @@ public class DaoMessage<T> {
      * 魔数
      * 3byte
      */
-    private byte[] magicNumber = DaoCloudConstant.MAGIC_NUMBER;
+    private byte[] magicNumber = Protocol.MAGIC_NUMBER;
 
     /**
      * 消息类型
