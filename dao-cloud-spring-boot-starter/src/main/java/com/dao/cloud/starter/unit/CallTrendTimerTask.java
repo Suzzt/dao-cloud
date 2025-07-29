@@ -1,5 +1,6 @@
 package com.dao.cloud.starter.unit;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.CallTrendModel;
 import com.dao.cloud.core.model.ProxyProviderModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
@@ -76,7 +77,7 @@ public class CallTrendTimerTask implements TimerTask {
                 if (totalCount != 0) {
                     lastTotalCount += deltaCount;
                     CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
-                    DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.CALL_TREND_RESPONSE_MESSAGE,
+                    DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.CALL_TREND_RESPONSE_MESSAGE,
                         DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
                     Channel channel = CenterChannelManager.getChannel();
 

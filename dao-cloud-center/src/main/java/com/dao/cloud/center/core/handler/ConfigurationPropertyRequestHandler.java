@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.bootstarp.DaoCloudCenterConfiguration;
 import com.dao.cloud.center.core.ConfigurationCenterManager;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
 import com.dao.cloud.core.model.ConfigurationPropertyResponseModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
@@ -32,7 +33,7 @@ public class ConfigurationPropertyRequestHandler extends SimpleChannelInboundHan
         configurationPropertyResponseModel.setSequenceId(model.getSequenceId());
         String properties = configurationCenterManager.getConfigurationProperty(model.getProxy(), model.getGroupId(), model.getFileName());
         configurationPropertyResponseModel.setContent(properties);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, configurationPropertyResponseModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, configurationPropertyResponseModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send configuration information data >>>>>>>>>>>>", future.cause());

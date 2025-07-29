@@ -35,7 +35,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
 
             if (msg.getMessageType() != MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
                 // 校验协议版本(现在没有什么用)
-                if (msg.getVersion() != DaoCloudConstant.PROTOCOL_VERSION_1) {
+                if (msg.getVersion() != Protocol.DEFAULT_VERSION) {
                     throw new UnsupportedVersionException("Unsupported version: " + msg.getVersion());
                 }
 
@@ -72,7 +72,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
 
             // 版本检查
             byte version = frame.readByte();
-            if (version != DaoCloudConstant.PROTOCOL_VERSION_1) {
+            if (version != Protocol.DEFAULT_VERSION) {
                 throw new UnsupportedVersionException("Received unsupported version: " + version);
             }
 

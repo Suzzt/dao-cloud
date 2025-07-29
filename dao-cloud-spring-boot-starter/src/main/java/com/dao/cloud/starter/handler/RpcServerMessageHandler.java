@@ -1,6 +1,7 @@
 package com.dao.cloud.starter.handler;
 
 import cn.hutool.json.JSONUtil;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.DaoCloudServletResponse;
 import com.dao.cloud.core.model.RpcRequestModel;
@@ -50,7 +51,7 @@ public class RpcServerMessageHandler extends SimpleChannelInboundHandler<RpcRequ
             ServiceInvoker serviceInvoker = ServiceManager.getServiceInvoker(rpcRequestModel.getProvider(), rpcRequestModel.getVersion());
             RpcResponseModel responseModel = serviceInvoker.doInvoke(rpcRequestModel);
             this.dealHttpResponseValue(rpcRequestModel, responseModel);
-            DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
+            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, serviceInvoker.getSerialized(), responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< send rpc result data error >>>>>>>>>>", future.cause());

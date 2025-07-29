@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.bootstarp.DaoCloudCenterConfiguration;
 import com.dao.cloud.center.core.ConfigurationCenterManager;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.ConfigurationFileInformationModel;
 import com.dao.cloud.core.model.ConfigurationFilePullMarkModel;
 import com.dao.cloud.core.model.ConfigurationFileResponseModel;
@@ -32,7 +33,7 @@ public class CenterClusterConfigurationFileRequestHandler extends SimpleChannelI
         Set<ConfigurationFileInformationModel> files = configurationCenterManager.fullFileInformation();
         ConfigurationFileResponseModel configurationFileResponseModel = new ConfigurationFileResponseModel();
         configurationFileResponseModel.setFiles(files);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, configurationFileResponseModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_RESPONSE_MESSAGE, DaoCloudCenterConfiguration.SERIALIZE_TYPE, configurationFileResponseModel);
         ctx.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<<< Failed to send configuration file information data >>>>>>>>>>>>", future.cause());

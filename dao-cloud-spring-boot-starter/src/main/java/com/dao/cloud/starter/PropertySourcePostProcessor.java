@@ -2,6 +2,7 @@ package com.dao.cloud.starter;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.ConfigurationFileInformationRequestModel;
 import com.dao.cloud.core.model.ConfigurationPropertyRequestModel;
@@ -122,7 +123,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         DefaultPromise<Object> promise = new DefaultPromise<>(channel.eventLoop());
         LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), promise);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
@@ -159,7 +160,7 @@ public class PropertySourcePostProcessor implements EnvironmentPostProcessor, Or
         configurationFileInformationRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
         Promise<Object> promise = new DefaultPromise<>(channel.eventLoop());
         LongPromiseBuffer.getInstance().put(configurationFileInformationRequestModel.getSequenceId(), promise);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_CENTER_CONFIGURATION_FILE_INFORMATION_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationFileInformationRequestModel);
         channel.writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<Failed to send a request to pull the center remote file information >>>>>>>>>", future.cause());

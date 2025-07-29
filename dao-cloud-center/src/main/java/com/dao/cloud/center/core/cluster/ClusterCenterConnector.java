@@ -2,6 +2,7 @@ package com.dao.cloud.center.core.cluster;
 
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.core.constant.Ports;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.AbstractShareClusterRequestModel;
 import com.dao.cloud.core.netty.protocol.*;
@@ -164,7 +165,7 @@ public class ClusterCenterConnector {
      * @param requestModel
      */
     public void share(AbstractShareClusterRequestModel requestModel) {
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());
