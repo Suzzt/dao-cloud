@@ -131,7 +131,7 @@ public class DaoCloudGatewayDispatcher {
         }
 
         // 发起转发路由请求
-        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
+        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, Protocol.DEFAULT_SERIALIZE, timeout);
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
         Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())

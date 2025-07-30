@@ -39,7 +39,7 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
         ConfigModel configModel = new ConfigModel();
         configModel.setProxyConfigModel(proxyConfigModel);
         configModel.setConfigValue(configValue);
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, configModel);
         ctx.writeAndFlush(daoMessage).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< pull config value fail. proxyConfigModel={}, channel={} >>>>>>>>>>", proxyConfigModel, ctx.channel(), f.cause());

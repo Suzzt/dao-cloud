@@ -48,7 +48,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             rpcRequestModel = wrapper(gatewayRequestModel);
         } catch (NoMatchMethodException e) {
             RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
-            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());
@@ -58,7 +58,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         } catch (Exception e) {
             log.error("网关参数绑定失败", e);
             RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_PARAM_PROCESS_BINDING_FAILED);
-            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());

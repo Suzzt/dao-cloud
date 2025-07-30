@@ -154,7 +154,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void sendErrorResponse(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel, CodeEnum codeEnum) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setDaoException(new DaoException(codeEnum));
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send error response", future.cause());
@@ -171,7 +171,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void answer(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setSequenceId(shareClusterRequestModel.getSequenceId());
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send response message", future.cause());

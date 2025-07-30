@@ -78,7 +78,7 @@ public class CallTrendTimerTask implements TimerTask {
                     lastTotalCount += deltaCount;
                     CallTrendModel callTrendModel = new CallTrendModel(proxyProviderModel, methodName, totalCount);
                     DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.CALL_TREND_RESPONSE_MESSAGE,
-                        DaoCloudConstant.DEFAULT_SERIALIZE, callTrendModel);
+                        Protocol.DEFAULT_SERIALIZE, callTrendModel);
                     Channel channel = CenterChannelManager.getChannel();
 
                     channel.writeAndFlush(daoMessage).addListener(future -> {

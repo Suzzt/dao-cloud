@@ -165,7 +165,7 @@ public class ClusterCenterConnector {
      * @param requestModel
      */
     public void share(AbstractShareClusterRequestModel requestModel) {
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, requestModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());

@@ -68,7 +68,7 @@ public class CenterChannelManager {
      */
     public static void inquire() throws InterruptedException {
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(getChannel().eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {

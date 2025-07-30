@@ -35,7 +35,7 @@ public class NettyGlobalTriggerExceptionHandler extends SimpleChannelInboundHand
         log.error("An unknown error occurred in the component, which is a bad sign. the message is: {}", model, cause);
         GlobalExceptionModel exceptionModel = new GlobalExceptionModel();
         exceptionModel.setDaoException(new DaoException(CodeEnum.SERVICE_UNKNOWN_ERROR));
-        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.GLOBAL_DAO_EXCEPTION_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, exceptionModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.GLOBAL_DAO_EXCEPTION_MESSAGE, Protocol.DEFAULT_SERIALIZE, exceptionModel);
         ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<<< Global exception send data error >>>>>>>>>>", future.cause());
