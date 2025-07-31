@@ -1,7 +1,7 @@
 package com.dao.cloud.core.netty.protocol;
 
 import com.dao.cloud.core.constant.Protocol;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

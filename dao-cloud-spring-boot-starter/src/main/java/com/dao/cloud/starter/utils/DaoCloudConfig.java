@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.ProxyConfigPromiseBuffer;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;

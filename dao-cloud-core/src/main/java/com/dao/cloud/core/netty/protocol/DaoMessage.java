@@ -2,7 +2,7 @@ package com.dao.cloud.core.netty.protocol;
 
 import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.Serializer;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import lombok.Data;
 
 import java.nio.charset.StandardCharsets;

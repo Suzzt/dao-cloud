@@ -8,7 +8,7 @@ import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.DaoTimer;
 import com.dao.cloud.core.util.SystemUtil;
 import com.dao.cloud.starter.handler.CenterServerMessageHandler;

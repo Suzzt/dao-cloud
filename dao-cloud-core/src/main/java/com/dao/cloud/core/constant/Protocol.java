@@ -1,8 +1,5 @@
 package com.dao.cloud.core.constant;
 
-import com.dao.cloud.core.model.Model;
-import io.netty.util.AttributeKey;
-
 /**
  * @author sucf
  * @date 2025/7/24 23:24:33
@@ -16,7 +13,6 @@ public class Protocol {
     public static final int MAX_FRAME_LENGTH = 10 * 1024 * 1024;
     public static final byte DEFAULT_VERSION = 1;
     public static final byte DEFAULT_SERIALIZE = 0;
-    public static final AttributeKey<Model> REQUEST_MESSAGE_ATTR_KEY = AttributeKey.valueOf("REQUEST_MESSAGE");
 
     private Protocol() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");

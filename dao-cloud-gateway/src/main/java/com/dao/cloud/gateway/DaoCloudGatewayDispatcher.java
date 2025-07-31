@@ -1,9 +1,10 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.manager.GatewayConfigManager;

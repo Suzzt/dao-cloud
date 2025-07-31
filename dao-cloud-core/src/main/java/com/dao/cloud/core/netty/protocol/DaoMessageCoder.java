@@ -6,12 +6,13 @@ import com.dao.cloud.core.model.HeartbeatModel;
 import com.dao.cloud.core.model.Model;
 import com.dao.cloud.core.netty.serialize.DaoSerializer;
 import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
-import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -24,6 +25,9 @@ import java.util.List;
  */
 @Slf4j
 public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {
+
+    @Getter
+    private static final AttributeKey<Model> REQUEST_MESSAGE_ATTR_KEY = AttributeKey.valueOf("REQUEST_MESSAGE");
 
     @Override
     protected void encode(ChannelHandlerContext ctx, DaoMessage msg, List<Object> out) {
@@ -88,7 +92,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             DaoSerializer serializer = SerializeStrategyFactory.getSerializer(serializableType);
             Model model = serializer.deserialize(content, MessageType.getMessageModel(messageType));
 
-            ctx.channel().attr(DaoCloudConstant.REQUEST_MESSAGE_ATTR_KEY).set(model);
+            ctx.channel().attr(REQUEST_MESSAGE_ATTR_KEY).set(model);
             out.add(model);
         } catch (Exception e) {
             handleDecodeError(frame, e);
@@ -135,4 +139,6 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             throw (UnsupportedVersionException) e;
         }
     }
+
+
 }

@@ -14,7 +14,6 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
-import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import com.google.common.collect.Maps;
@@ -36,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2023/3/12 22:27
  * center cluster manager
+ * @since 1.0.0
  */
 @Slf4j
 public class CenterClusterManager {

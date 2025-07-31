@@ -10,7 +10,7 @@ import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
