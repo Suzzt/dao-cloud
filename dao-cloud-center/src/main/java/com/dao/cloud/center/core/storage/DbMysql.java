@@ -17,15 +17,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.sql.Date;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2023/2/28 23:45
  * data in mysql persistence
+ * @since 1.0.0
  */
 @Slf4j
 @Component
@@ -103,6 +105,20 @@ public class DbMysql implements Persistence {
             ") ENGINE = InnoDB\n" +
             "  AUTO_INCREMENT = 1\n" +
             "  DEFAULT CHARSET = utf8 COMMENT ='接口调用趋势表';";
+    private final String configuration_create_table_sql = "CREATE TABLE IF NOT EXISTS `configuration`\n" +
+            "(\n" +
+            "    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',\n" +
+            "    `gmt_create`   datetime     NOT NULL COMMENT '创建时间',\n" +
+            "    `gmt_modified` datetime     NOT NULL COMMENT '修改时间',\n" +
+            "    `proxy`        varchar(255) NOT NULL COMMENT 'proxy标识',\n" +
+            "    `group_id`     varchar(255) NOT NULL COMMENT '分组标识',\n" +
+            "    `file_name`    varchar(255) NOT NULL COMMENT '文件名',\n" +
+            "    `property`     longtext     NOT NULL COMMENT '配置文件内容',\n" +
+            "    PRIMARY KEY (`id`),\n" +
+            "    UNIQUE KEY `configuration_uk_p_g_f` (`proxy`, `group_id`, `file_name`)\n" +
+            ") ENGINE = InnoDB\n" +
+            "  AUTO_INCREMENT = 1\n" +
+            "  DEFAULT CHARSET = utf8 COMMENT ='配置文件存储表';";
 
     private final String insert_config_sql_template = "INSERT INTO dao_cloud.config (gmt_create, gmt_modified, proxy, `key`, version, value) VALUES (now(), now(), ?, ?, ?, ?)";
 
@@ -112,6 +128,8 @@ public class DbMysql implements Persistence {
 
     private final String insert_call_trend_sql_template = "INSERT INTO dao_cloud.call_trend (gmt_create, gmt_modified, proxy, `provider`, version, method_name, count) VALUES (now(), now(), ?, ?, ?, ?, ?)";
 
+    private final String insert_configuration_sql_template = "INSERT INTO dao_cloud.configuration (gmt_create, gmt_modified, proxy, group_id, file_name, property) VALUES (now(), now(), ?, ?, ?, ?)";
+
     private final String update_config_sql_template = "UPDATE dao_cloud.config SET gmt_modified=now(), value=? WHERE proxy=? AND `key`=? AND version=?";
 
     private final String update_gateway_config_sql_template = "UPDATE dao_cloud.gateway_config SET gmt_modified=now(), timeout=?, limit_algorithm=?, slide_date_window_size=?, slide_window_max_request_count=?, token_bucket_max_size=?, token_bucket_refill_rate=?, leaky_bucket_capacity=?, leaky_bucket_refill_rate=? WHERE proxy=? AND `provider`=? AND version=?";
@@ -120,9 +138,13 @@ public class DbMysql implements Persistence {
 
     private final String update_call_trend_sql_template = "UPDATE dao_cloud.call_trend SET gmt_modified=now(), `count` = `count` + ? WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
 
+    private final String update_configuration_sql_template = "UPDATE dao_cloud.configuration SET gmt_modified=now(), property=? WHERE proxy=? AND group_id=? AND file_name=?";
+
     private final String delete_config_sql_template = "DELETE FROM dao_cloud.config WHERE proxy = ? and `key` = ? and value = ?";
 
     private final String delete_gateway_config_sql_template = "DELETE FROM dao_cloud.gateway_config WHERE proxy = ? and `provider` = ? and version = ?";
+
+    private final String delete_configuration_sql_template = "DELETE FROM dao_cloud.configuration WHERE proxy = ? AND group_id = ? AND file_name = ?";
 
     private final String truncate_config_sql_template = "TRUNCATE TABLE dao_cloud.config";
 
@@ -132,8 +154,13 @@ public class DbMysql implements Persistence {
 
     private final String truncate_call_trend_sql_template = "TRUNCATE TABLE dao_cloud.call_trend";
 
+    private final String truncate_configuration_sql_template = "TRUNCATE TABLE dao_cloud.configuration";
+
     private final String select_call_trend_sql_template = "SELECT method_name, `count` as c from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
     private final String select_all_call_trend_sql_template = "SELECT * from dao_cloud.call_trend limit ?,?";
+
+    private final String select_configuration_list_sql_template = "SELECT DISTINCT proxy, group_id, file_name FROM dao_cloud.configuration";
+    private final String select_configuration_property_sql_template = "SELECT property FROM dao_cloud.configuration WHERE proxy=? AND group_id=? AND file_name=?";
 
     private final String delete_call_trend_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=?";
     private final String delete_call_trend_by_method_sql_template = "delete from dao_cloud.call_trend WHERE proxy=? AND `provider`=? AND version=? AND method_name=?";
@@ -168,6 +195,7 @@ public class DbMysql implements Persistence {
             statement.execute(gateway_config_create_table_sql);
             statement.execute(server_config_create_table_sql);
             statement.execute(call_trend_create_table_sql);
+            statement.execute(configuration_create_table_sql);
         } catch (Exception e) {
             throw new DaoException(e);
         }
@@ -193,7 +221,15 @@ public class DbMysql implements Persistence {
 
     @Override
     public void delete(ConfigurationProperty configurationProperty) {
-
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(delete_configuration_sql_template)) {
+            preparedStatement.setString(1, configurationProperty.getProxy());
+            preparedStatement.setString(2, configurationProperty.getGroupId());
+            preparedStatement.setString(3, configurationProperty.getFileName());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql delete configuration error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -221,7 +257,7 @@ public class DbMysql implements Persistence {
 
     @Override
     public void storage(ConfigurationProperty configurationProperty) {
-
+        insertOrUpdate(configurationProperty);
     }
 
     @Override
@@ -296,12 +332,38 @@ public class DbMysql implements Persistence {
 
     @Override
     public List<ConfigurationFileInformationModel> getConfiguration() {
-        return Collections.emptyList();
+        List<ConfigurationFileInformationModel> configurationModels = Lists.newArrayList();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(select_configuration_list_sql_template)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String proxy = resultSet.getString("proxy");
+                String groupId = resultSet.getString("group_id");
+                String fileName = resultSet.getString("file_name");
+                ConfigurationFileInformationModel configurationFileInformationModel = new ConfigurationFileInformationModel(proxy, groupId, fileName);
+                configurationModels.add(configurationFileInformationModel);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql query configuration list error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+        return configurationModels;
     }
 
     @Override
     public String getConfigurationProperty(String proxy, String groupId, String fileName) {
-        return "";
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(select_configuration_property_sql_template)) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, groupId);
+            preparedStatement.setString(3, fileName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("property");
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql query configuration property error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+        return null;
     }
 
     @Override
@@ -311,8 +373,29 @@ public class DbMysql implements Persistence {
             statement.execute(truncate_gateway_config_sql_template);
             statement.execute(truncate_server_config_sql_template);
             statement.execute(truncate_call_trend_sql_template);
-            // todo configuration
+            statement.execute(truncate_configuration_sql_template);
         } catch (Exception e) {
+            throw new DaoException(e);
+        }
+    }
+
+    private void insertOrUpdate(ConfigurationProperty configurationProperty) {
+        String proxy = configurationProperty.getProxy();
+        String groupId = configurationProperty.getGroupId();
+        String fileName = configurationProperty.getFileName();
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement("select count(1) from configuration where proxy=? and group_id=? and file_name=?")) {
+            preparedStatement.setString(1, proxy);
+            preparedStatement.setString(2, groupId);
+            preparedStatement.setString(3, fileName);
+            ResultSet result = preparedStatement.executeQuery();
+            result.next();
+            if (result.getLong(1) == 0) {
+                insert(configurationProperty);
+            } else {
+                update(configurationProperty);
+            }
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< insertOrUpdate configuration error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
@@ -586,6 +669,19 @@ public class DbMysql implements Persistence {
         }
     }
 
+    public void insert(ConfigurationProperty configurationProperty) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(insert_configuration_sql_template)) {
+            preparedStatement.setString(1, configurationProperty.getProxy());
+            preparedStatement.setString(2, configurationProperty.getGroupId());
+            preparedStatement.setString(3, configurationProperty.getFileName());
+            preparedStatement.setString(4, configurationProperty.getProperty());
+            preparedStatement.execute();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql insert configuration error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
     public void update(ConfigModel configModel) {
         ProxyConfigModel proxyConfigModel = configModel.getProxyConfigModel();
         String proxy = proxyConfigModel.getProxy();
@@ -661,6 +757,19 @@ public class DbMysql implements Persistence {
             preparedStatement.executeUpdate();
         } catch (Exception e) {
             log.error("<<<<<<<<<<<< mysql update server config error >>>>>>>>>>>>", e);
+            throw new DaoException(e);
+        }
+    }
+
+    public void update(ConfigurationProperty configurationProperty) {
+        try (DruidPooledConnection connection = druidDataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(update_configuration_sql_template)) {
+            preparedStatement.setString(1, configurationProperty.getProperty());
+            preparedStatement.setString(2, configurationProperty.getProxy());
+            preparedStatement.setString(3, configurationProperty.getGroupId());
+            preparedStatement.setString(4, configurationProperty.getFileName());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            log.error("<<<<<<<<<<<< mysql update configuration error >>>>>>>>>>>>", e);
             throw new DaoException(e);
         }
     }
