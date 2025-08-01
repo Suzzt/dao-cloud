@@ -5,9 +5,10 @@ import com.dao.cloud.center.core.model.ServiceNode;
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.CallTrendVO;
 import com.dao.cloud.center.web.vo.ProxyStatisticsVO;
+import com.dao.cloud.core.constant.Components;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public class RegisterCenterManager {
         Map<ProxyProviderModel, Set<ServerNodeModel>> conversionObject = new HashMap<>();
         for (Map.Entry<String, Map<ProviderModel, Map<ServiceNode, ServerNodeModel>>> entry : REGISTRY_SERVER.entrySet()) {
             String proxy = entry.getKey();
-            if (DaoCloudConstant.GATEWAY_PROXY.equals(proxy)) {
+            if (Components.GATEWAY_PROXY.equals(proxy)) {
                 continue;
             }
             Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModels = entry.getValue();
@@ -139,14 +140,14 @@ public class RegisterCenterManager {
      * @return 网关在整个系统的节点数
      */
     public int gatewayCountNodes() {
-        Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelMapMap = REGISTRY_SERVER.get(DaoCloudConstant.GATEWAY_PROXY);
+        Map<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelMapMap = REGISTRY_SERVER.get(Components.GATEWAY_PROXY);
         if (providerModelMapMap == null) {
             return 0;
         }
         int i = 0;
         for (Map.Entry<ProviderModel, Map<ServiceNode, ServerNodeModel>> providerModelSetEntry : providerModelMapMap.entrySet()) {
             ProviderModel providerModel = providerModelSetEntry.getKey();
-            if (DaoCloudConstant.GATEWAY.equals(providerModel.getProvider())) {
+            if (Components.GATEWAY.equals(providerModel.getProvider())) {
                 i += providerModelSetEntry.getValue().size();
             }
         }

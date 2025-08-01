@@ -1,11 +1,12 @@
-package com.dao.cloud.starter.context;
+package com.dao.cloud.starter.log.context;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.LogModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.starter.manager.CenterChannelManager;
 import org.springframework.util.StringUtils;
 
@@ -64,7 +65,7 @@ public class DaoCloudLogAppender extends AppenderBase<ILoggingEvent> {
         logModel.setHappenTime(eventObject.getTimeStamp());
         logModel.setLogMessage(logMessage);
 
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.UPLOAD_LOG_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, logModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.UPLOAD_LOG_MESSAGE, Protocol.DEFAULT_SERIALIZE, logModel);
         CenterChannelManager.getChannel().writeAndFlush(daoMessage);
     }
 

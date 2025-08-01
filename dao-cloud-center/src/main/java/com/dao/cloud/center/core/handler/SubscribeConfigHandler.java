@@ -2,11 +2,12 @@ package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.core.ConfigCenterManager;
 import com.dao.cloud.center.core.ConfigChannelManager;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.ConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -38,7 +39,7 @@ public class SubscribeConfigHandler extends SimpleChannelInboundHandler<ProxyCon
         ConfigModel configModel = new ConfigModel();
         configModel.setProxyConfigModel(proxyConfigModel);
         configModel.setConfigValue(configValue);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, configModel);
         ctx.writeAndFlush(daoMessage).addListener(f -> {
             if (!f.isSuccess()) {
                 log.error("<<<<<<<<<< pull config value fail. proxyConfigModel={}, channel={} >>>>>>>>>>", proxyConfigModel, ctx.channel(), f.cause());

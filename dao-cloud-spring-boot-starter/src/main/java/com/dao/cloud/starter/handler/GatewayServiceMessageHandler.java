@@ -1,12 +1,13 @@
 package com.dao.cloud.starter.handler;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.NoMatchMethodException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.resolver.MethodArgumentResolverHandler;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.starter.manager.ServiceManager;
 import com.dao.cloud.starter.unit.ServiceInvoker;
 import io.netty.channel.ChannelFutureListener;
@@ -47,7 +48,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
             rpcRequestModel = wrapper(gatewayRequestModel);
         } catch (NoMatchMethodException e) {
             RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
-            DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());
@@ -57,7 +58,7 @@ public class GatewayServiceMessageHandler extends SimpleChannelInboundHandler<Ga
         } catch (Exception e) {
             log.error("网关参数绑定失败", e);
             RpcResponseModel responseModel = RpcResponseModel.builder(gatewayRequestModel.getSequenceId(), CodeEnum.GATEWAY_PARAM_PROCESS_BINDING_FAILED);
-            DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, responseModel);
+            DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SERVICE_RPC_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, responseModel);
             ctx.writeAndFlush(daoMessage).addListener((ChannelFutureListener) future -> {
                 if (!future.isSuccess()) {
                     log.error("<<<<<<<<<< Request result failed! Sending data to the gateway also failed. >>>>>>>>>>", future.cause());

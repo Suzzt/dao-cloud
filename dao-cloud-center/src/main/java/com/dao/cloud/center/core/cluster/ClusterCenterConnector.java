@@ -1,10 +1,12 @@
 package com.dao.cloud.center.core.cluster;
 
 import com.dao.cloud.center.core.handler.*;
+import com.dao.cloud.core.constant.Ports;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.AbstractShareClusterRequestModel;
 import com.dao.cloud.core.netty.protocol.*;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -78,7 +80,7 @@ public class ClusterCenterConnector {
     public void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(connectIp, DaoCloudConstant.CENTER_PORT);
+        bootstrap.remoteAddress(connectIp, Ports.CENTER_PORT);
         bootstrap.group(group);
         ClusterResponseHandler clusterRequestHandler = new ClusterResponseHandler(this);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
@@ -163,7 +165,7 @@ public class ClusterCenterConnector {
      * @param requestModel
      */
     public void share(AbstractShareClusterRequestModel requestModel) {
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, requestModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, requestModel);
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("<<<<<<<<< send sync data to cluster error >>>>>>>>>", future.cause());

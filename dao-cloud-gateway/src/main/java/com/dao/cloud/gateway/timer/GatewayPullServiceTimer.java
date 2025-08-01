@@ -1,10 +1,11 @@
 package com.dao.cloud.gateway.timer;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.DaoTimer;
 import com.dao.cloud.gateway.limit.LimitFactory;
 import com.dao.cloud.gateway.limit.Limiter;
@@ -37,7 +38,7 @@ public class GatewayPullServiceTimer implements Runnable {
             public void run(Timeout timeout) {
                 try {
                     // 从注册中心拉取所有服务节点数据
-                    DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
+                    DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
                     DefaultPromise<GatewayServiceNodeModel> promise = new DefaultPromise<>(CenterChannelManager.getChannel().eventLoop());
                     GatewayPullServiceNodeMessageHandler.promise = promise;
                     CenterChannelManager.getChannel().writeAndFlush(daoMessage).addListener(future -> {

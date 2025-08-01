@@ -1,9 +1,10 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.HttpGenericInvokeUtils;
 import com.dao.cloud.gateway.intercept.Interceptor;
 import com.dao.cloud.gateway.manager.GatewayConfigManager;
@@ -131,7 +132,7 @@ public class DaoCloudGatewayDispatcher {
         }
 
         // 发起转发路由请求
-        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, DaoCloudConstant.DEFAULT_SERIALIZE, timeout);
+        ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, Protocol.DEFAULT_SERIALIZE, timeout);
         DaoCloudServletResponse result;
         result = (DaoCloudServletResponse) clientInvoker.invoke(gatewayRequestModel);
         Optional.ofNullable(result.getHeads()).orElse(Collections.emptyMap())

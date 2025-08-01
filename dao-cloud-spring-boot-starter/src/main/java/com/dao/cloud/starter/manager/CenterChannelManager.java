@@ -1,5 +1,7 @@
 package com.dao.cloud.starter.manager;
 
+import com.dao.cloud.core.constant.Ports;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.starter.handler.*;
 import com.dao.cloud.starter.timer.InquireClusterTimer;
 import com.dao.cloud.core.exception.DaoException;
@@ -9,7 +11,7 @@ import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -66,7 +68,7 @@ public class CenterChannelManager {
      */
     public static void inquire() throws InterruptedException {
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(getChannel().eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -109,7 +111,7 @@ public class CenterChannelManager {
     public static void connect() {
         NioEventLoopGroup group = new NioEventLoopGroup();
         BOOTSTRAP.channel(NioSocketChannel.class);
-        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_PORT);
+        BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, Ports.CENTER_PORT);
         BOOTSTRAP.group(group);
         BOOTSTRAP.handler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -141,7 +143,7 @@ public class CenterChannelManager {
         }
         CONNECT_CENTER_CHANNEL.close().addListener(future -> {
             CONNECT_CENTER_CHANNEL.eventLoop().schedule(() -> {
-                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, DaoCloudConstant.CENTER_PORT);
+                BOOTSTRAP.remoteAddress(CURRENT_USE_CENTER_IP, Ports.CENTER_PORT);
                 BOOTSTRAP.connect().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) {

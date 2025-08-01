@@ -6,12 +6,12 @@ import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.model.ServerProxyProviderNode;
 import com.dao.cloud.center.properties.DaoCloudConfigCenterProperties;
 import com.dao.cloud.center.web.vo.CallTrendVO;
+import com.dao.cloud.core.constant.Components;
+import com.dao.cloud.core.constant.SystemOS;
 import com.dao.cloud.core.model.*;
-import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +26,6 @@ import java.util.Map;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2023/2/27 23:55
  * data in local file system data persistence
  * <p>
@@ -60,6 +59,7 @@ import java.util.Map;
  * ｜  dir  ｜     dir    ｜    dir    ｜    dir       ｜ file-content ｜
  * ｜ proxy ｜  provider  ｜  version  ｜  method-name ｜     count    ｜
  * </p>
+ * @since 1.0.0
  */
 @Slf4j
 @Component
@@ -97,11 +97,11 @@ public class FileSystem implements Persistence {
         String pathPrefix = fileSystemSetting.getPathPrefix();
         // default need to be set
         pathPrefix = StringUtils.hasLength(pathPrefix) ? pathPrefix : "/data/dao-cloud/data_storage";
-        this.configStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIG;
-        this.configurationStoragePath = pathPrefix + File.separator + DaoCloudConstant.CONFIGURATION;
-        this.gatewayStoragePath = pathPrefix + File.separator + DaoCloudConstant.GATEWAY;
-        this.serverStoragePath = pathPrefix + File.separator + DaoCloudConstant.SERVER;
-        this.trendStoragePath = pathPrefix + File.separator + DaoCloudConstant.CALL;
+        this.configStoragePath = pathPrefix + File.separator + Components.CONFIG;
+        this.configurationStoragePath = pathPrefix + File.separator + Components.CONFIGURATION;
+        this.gatewayStoragePath = pathPrefix + File.separator + Components.GATEWAY;
+        this.serverStoragePath = pathPrefix + File.separator + Components.SERVER;
+        this.trendStoragePath = pathPrefix + File.separator + Components.CALL;
     }
 
     @Override
@@ -290,7 +290,7 @@ public class FileSystem implements Persistence {
                 List<String> files = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + groupId);
                 for (String file : files) {
                     try {
-                        if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
+                        if (!SystemOS.MACOS_HIDE_FILE_NAME.equals(file)) {
                             ConfigurationFileInformationModel configurationFileInformationModel = new ConfigurationFileInformationModel(proxy, groupId, file);
                             configurationModels.add(configurationFileInformationModel);
                         }
@@ -356,7 +356,7 @@ public class FileSystem implements Persistence {
             List<String> files = FileUtil.listFileNames(path);
             for (String file : files) {
                 try {
-                    if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(file)) {
+                    if (!SystemOS.MACOS_HIDE_FILE_NAME.equals(file)) {
                         String count = FileUtil.readUtf8String(path + File.separator + file);
                         CallTrendVO callTrendVO = new CallTrendVO(file, Long.valueOf(count));
                         result.add(callTrendVO);
@@ -395,7 +395,7 @@ public class FileSystem implements Persistence {
                     List<String> methods = FileUtil.listFileNames(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version);
                     for (String method : methods) {
                         try {
-                            if (!DaoCloudConstant.MACOS_HIDE_FILE_NAME.equals(method)) {
+                            if (!SystemOS.MACOS_HIDE_FILE_NAME.equals(method)) {
                                 String count = FileUtil.readUtf8String(prefixPath + File.separator + proxy + File.separator + provider + File.separator + version + File.separator + method);
                                 ProviderModel providerModel = new ProviderModel(provider, Integer.parseInt(version));
                                 ProxyProviderModel proxyProviderModel = new ProxyProviderModel(proxy, providerModel);

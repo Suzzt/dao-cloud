@@ -1,9 +1,11 @@
 package com.dao.cloud.gateway;
 
+import com.dao.cloud.core.constant.Components;
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.core.model.ProviderModel;
 import com.dao.cloud.core.model.RegisterProviderModel;
 import com.dao.cloud.core.model.ServerNodeModel;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import com.dao.cloud.gateway.global.GlobalGatewayExceptionHandler;
@@ -114,13 +116,13 @@ public class GatewayAutoConfiguration implements ApplicationContextAware, Applic
      */
     public void registry() {
         RegisterProviderModel gatewayNodeModel = new RegisterProviderModel();
-        gatewayNodeModel.setProxy(DaoCloudConstant.GATEWAY_PROXY);
+        gatewayNodeModel.setProxy(Components.GATEWAY_PROXY);
         Set<ProviderModel> providerModels = new HashSet<>();
         int version = gatewayProperties.getVersion() == null ? 0 : gatewayProperties.getVersion();
-        ProviderModel providerModel = new ProviderModel(DaoCloudConstant.GATEWAY, version);
+        ProviderModel providerModel = new ProviderModel(Components.GATEWAY, version);
         providerModels.add(providerModel);
         gatewayNodeModel.setProviderModels(providerModels);
-        gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), DaoCloudConstant.GATEWAY_PORT));
+        gatewayNodeModel.setServerNodeModel(new ServerNodeModel(NetUtil.getLocalIp(), Ports.GATEWAY_PORT));
         RegistryManager.registry(gatewayNodeModel);
     }
 }

@@ -4,12 +4,13 @@ import com.dao.cloud.center.core.ConfigCenterManager;
 import com.dao.cloud.center.core.ConfigurationCenterManager;
 import com.dao.cloud.center.core.GatewayCenterManager;
 import com.dao.cloud.center.core.RegisterCenterManager;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.enums.CodeEnum;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.GsonUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -153,7 +154,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void sendErrorResponse(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel, CodeEnum codeEnum) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setDaoException(new DaoException(codeEnum));
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send error response", future.cause());
@@ -170,7 +171,7 @@ public class SyncClusterInformationRequestHandler extends SimpleChannelInboundHa
     private void answer(ChannelHandlerContext ctx, AbstractShareClusterRequestModel shareClusterRequestModel) {
         ClusterSyncDataResponseModel response = new ClusterSyncDataResponseModel();
         response.setSequenceId(shareClusterRequestModel.getSequenceId());
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, response);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.SYNC_CLUSTER_SERVER_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, response);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("Failed to send response message", future.cause());

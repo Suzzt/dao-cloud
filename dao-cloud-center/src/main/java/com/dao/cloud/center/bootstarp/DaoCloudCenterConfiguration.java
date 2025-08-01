@@ -8,10 +8,11 @@ import com.dao.cloud.center.web.controller.IndexController;
 import com.dao.cloud.center.web.interceptor.CookieInterceptor;
 import com.dao.cloud.center.web.interceptor.PermissionInterceptor;
 import com.dao.cloud.center.web.interceptor.WebCenterConfig;
+import com.dao.cloud.core.constant.Ports;
 import com.dao.cloud.core.netty.handler.PrintExceptionHandler;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.dao.cloud.core.util.NetUtil;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import io.netty.bootstrap.ServerBootstrap;
@@ -115,7 +116,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                             ch.pipeline().addLast(new PrintExceptionHandler());
                         }
                     });
-                    serverBootstrap.bind(DaoCloudConstant.CENTER_PORT).sync();
+                    serverBootstrap.bind(Ports.CENTER_PORT).sync();
                     if (StringUtils.hasLength(clusterIp)) {
                         // join cluster
                         CenterClusterManager.inquireIpAddress = clusterIp;
@@ -132,7 +133,7 @@ public class DaoCloudCenterConfiguration implements ApplicationListener<Applicat
                     log.info("Load initial configuration data into memory (Finish)");
                     // Before the above procedures are executed, the node cannot provide service capabilities.
                     CenterClusterManager.ready();
-                    log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", DaoCloudConstant.CENTER_PORT);
+                    log.info(">>>>>>>>>>>> dao-cloud-center port: {}(tcp) start success <<<<<<<<<<<", Ports.CENTER_PORT);
                 } catch (Exception e) {
                     log.error("dao-cloud center start error", e);
                     boss.shutdownGracefully();

@@ -1,6 +1,7 @@
 package com.dao.cloud.core.netty.protocol;
 
-import com.dao.cloud.core.util.DaoCloudConstant;
+import com.dao.cloud.core.constant.Protocol;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -24,7 +25,7 @@ public class VarIntsProtocolFrameDecoder extends ByteToMessageDecoder {
 
         try {
             // 基本长度检查(魔数3b+消息类型1b)
-            if (in.readableBytes() < DaoCloudConstant.MAGIC_NUMBER_LENGTH + 1) {
+            if (in.readableBytes() < Protocol.MAGIC_NUMBER_LENGTH + 1) {
                 return;
             }
 
@@ -36,7 +37,7 @@ public class VarIntsProtocolFrameDecoder extends ByteToMessageDecoder {
             }
 
             // 预读消息类型
-            final int typeIndex = in.readerIndex() + DaoCloudConstant.MAGIC_NUMBER_LENGTH;
+            final int typeIndex = in.readerIndex() + Protocol.MAGIC_NUMBER_LENGTH;
             final byte messageType = in.getByte(typeIndex);
 
             if (messageType == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
@@ -53,8 +54,8 @@ public class VarIntsProtocolFrameDecoder extends ByteToMessageDecoder {
     }
 
     private boolean checkMagicNumber(ByteBuf in) {
-        for (int i = 0; i < DaoCloudConstant.MAGIC_NUMBER_LENGTH; i++) {
-            if (in.getByte(in.readerIndex() + i) != DaoCloudConstant.MAGIC_NUMBER[i]) {
+        for (int i = 0; i < Protocol.MAGIC_NUMBER_LENGTH; i++) {
+            if (in.getByte(in.readerIndex() + i) != Protocol.MAGIC_NUMBER[i]) {
                 return false;
             }
         }
@@ -62,14 +63,14 @@ public class VarIntsProtocolFrameDecoder extends ByteToMessageDecoder {
     }
 
     private void handleHeartbeat(ByteBuf in, List<Object> out) {
-        if (in.readableBytes() >= DaoCloudConstant.HEARTBEAT_FRAME_LENGTH) {
-            out.add(in.readRetainedSlice(DaoCloudConstant.HEARTBEAT_FRAME_LENGTH));
+        if (in.readableBytes() >= Protocol.HEARTBEAT_FRAME_LENGTH) {
+            out.add(in.readRetainedSlice(Protocol.HEARTBEAT_FRAME_LENGTH));
         }
     }
 
     private void processBusinessFrame(ByteBuf in, List<Object> out) {
         // 跳过魔数和消息类型
-        in.skipBytes(DaoCloudConstant.MAGIC_NUMBER_LENGTH + 1);
+        in.skipBytes(Protocol.MAGIC_NUMBER_LENGTH + 1);
 
         // 检查基础字段
         if (in.readableBytes() < 2) {
@@ -99,14 +100,14 @@ public class VarIntsProtocolFrameDecoder extends ByteToMessageDecoder {
         }
 
         // 计算总帧长度
-        int totalLength = DaoCloudConstant.MAGIC_NUMBER_LENGTH  // 魔数3
+        int totalLength = Protocol.MAGIC_NUMBER_LENGTH  // 魔数3
                 + 1                                     // 消息类型1
                 + 2                                     // 版本1+序列化1
                 + varintBytes                           // Varint头
                 + contentLength;                        // 内容长度
 
         // 长度校验
-        if (totalLength > DaoCloudConstant.MAX_FRAME_LENGTH) {
+        if (totalLength > Protocol.MAX_FRAME_LENGTH) {
             throw new CorruptedFrameException("Frame too large: " + totalLength);
         }
 

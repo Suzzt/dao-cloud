@@ -1,6 +1,7 @@
 package com.dao.cloud.center.core.handler;
 
 import com.dao.cloud.center.core.ConfigCenterManager;
+import com.dao.cloud.core.constant.Protocol;
 import com.google.common.collect.Lists;
 import com.dao.cloud.core.model.ConfigMarkModel;
 import com.dao.cloud.core.model.ConfigModel;
@@ -8,7 +9,7 @@ import com.dao.cloud.core.model.FullConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class PullConfigRequestHandler extends SimpleChannelInboundHandler<Config
             configModels.add(configModel);
         }
         fullConfigModel.setConfigModels(configModels);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, fullConfigModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, fullConfigModel);
         ctx.channel().writeAndFlush(daoMessage).addListener(future -> {
             if (!future.isSuccess()) {
                 log.error("send full config data error", future.cause());

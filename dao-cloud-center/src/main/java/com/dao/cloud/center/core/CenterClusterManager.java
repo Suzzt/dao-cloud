@@ -6,13 +6,14 @@ import com.dao.cloud.center.core.cluster.DataSyncTask;
 import com.dao.cloud.center.core.handler.*;
 import com.dao.cloud.center.core.model.ConfigurationProperty;
 import com.dao.cloud.center.core.storage.Persistence;
+import com.dao.cloud.core.constant.Ports;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.DaoMessageCoder;
 import com.dao.cloud.core.netty.protocol.MessageType;
 import com.dao.cloud.core.netty.protocol.VarIntsProtocolFrameDecoder;
-import com.dao.cloud.core.util.DaoCloudConstant;
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.core.util.ThreadPoolFactory;
 import com.google.common.collect.Maps;
@@ -34,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2023/3/12 22:27
  * center cluster manager
+ * @since 1.0.0
  */
 @Slf4j
 public class CenterClusterManager {
@@ -146,7 +147,7 @@ public class CenterClusterManager {
 
     private static void loadServerConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_SERVER_CONFIG_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new ServerConfigPullMarkModel());
         Promise<ServerConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterServerConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -171,7 +172,7 @@ public class CenterClusterManager {
 
     private static void loadServerConfiguration(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigurationFilePullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_CONFIGURATION_FILE_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new ConfigurationFilePullMarkModel());
         Promise<ConfigurationFileResponseModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterConfigurationFileResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -194,7 +195,7 @@ public class CenterClusterManager {
                 configurationPropertyRequestModel.setSequenceId(IdUtil.getSnowflake(2, 2).nextId());
                 Promise<Object> configurationPropertyPromise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
                 LongPromiseBuffer.getInstance().put(configurationPropertyRequestModel.getSequenceId(), configurationPropertyPromise);
-                DaoMessage daoMessage2 = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
+                DaoMessage daoMessage2 = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_CENTER_CONFIGURATION_PROPERTY_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, configurationPropertyRequestModel);
                 clusterCenterConnector.getChannel().writeAndFlush(daoMessage2).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("<<<<<<<<< Failed to send a request to pull the center remote configuration >>>>>>>>>", future.cause());
@@ -222,7 +223,7 @@ public class CenterClusterManager {
 
     private static void loadGatewayConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.GATEWAY_REGISTER_ALL_SERVER_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new GatewayConfigPullMarkModel());
         Promise<GatewayServiceNodeModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterGatewayConfigResponseMessageHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -258,7 +259,7 @@ public class CenterClusterManager {
      */
     private static void loadConfig(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new ConfigMarkModel());
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_CONFIG_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new ConfigMarkModel());
         Promise<FullConfigModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterConfigResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -282,7 +283,7 @@ public class CenterClusterManager {
 
     public static void loadCallTrend(String ip) throws InterruptedException {
         ClusterCenterConnector clusterCenterConnector = ALL_HISTORY_CLUSTER_MAP.get(ip);
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_FULL_CALL_TREND_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, new CallTrendPullMarkModel());
         Promise<CallTrendFullModel> promise = new DefaultPromise<>(clusterCenterConnector.getChannel().eventLoop());
         CenterClusterCallTrendResponseHandler.promise = promise;
         clusterCenterConnector.getChannel().writeAndFlush(daoMessage).addListener(future -> {
@@ -475,7 +476,7 @@ public class CenterClusterManager {
         NioEventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.remoteAddress(inquireIpAddress, DaoCloudConstant.CENTER_PORT);
+        bootstrap.remoteAddress(inquireIpAddress, Ports.CENTER_PORT);
         bootstrap.group(group);
         // 设置连接超时时间
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
@@ -487,7 +488,7 @@ public class CenterClusterManager {
         });
         Channel channel = bootstrap.connect().sync().channel();
         ClusterInquireMarkModel clusterInquireMarkModel = new ClusterInquireMarkModel();
-        DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, clusterInquireMarkModel);
+        DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.INQUIRE_CLUSTER_NODE_REQUEST_MESSAGE, Protocol.DEFAULT_SERIALIZE, clusterInquireMarkModel);
         DefaultPromise<ClusterCenterNodeModel> promise = new DefaultPromise<>(channel.eventLoop());
         InquireClusterCenterResponseHandler.promise = promise;
         channel.writeAndFlush(daoMessage).addListener(future -> {

@@ -2,11 +2,12 @@ package com.dao.cloud.center.core;
 
 import com.dao.cloud.center.core.storage.Persistence;
 import com.dao.cloud.center.web.vo.ConfigVO;
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.model.ConfigModel;
 import com.dao.cloud.core.model.ProxyConfigModel;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-import com.dao.cloud.core.util.DaoCloudConstant;
+
 import com.google.common.collect.Lists;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,7 @@ public class ConfigCenterManager {
                 ConfigModel configModel = new ConfigModel();
                 configModel.setProxyConfigModel(proxyConfigModel);
                 configModel.setConfigValue(jsonValue);
-                DaoMessage daoMessage = new DaoMessage(DaoCloudConstant.PROTOCOL_VERSION_1, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, DaoCloudConstant.DEFAULT_SERIALIZE, configModel);
+                DaoMessage daoMessage = new DaoMessage(Protocol.DEFAULT_VERSION, MessageType.PULL_REGISTRY_CONFIG_RESPONSE_MESSAGE, Protocol.DEFAULT_SERIALIZE, configModel);
                 channel.writeAndFlush(daoMessage).addListener(future -> {
                     if (!future.isSuccess()) {
                         log.error("<<<<<<<<<<< pushing config information to subscriber({}) failed >>>>>>>>>>>", channel);

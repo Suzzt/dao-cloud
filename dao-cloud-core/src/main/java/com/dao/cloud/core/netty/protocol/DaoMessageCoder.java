@@ -1,40 +1,45 @@
 package com.dao.cloud.core.netty.protocol;
 
+import com.dao.cloud.core.constant.Protocol;
 import com.dao.cloud.core.exception.UnsupportedVersionException;
 import com.dao.cloud.core.model.HeartbeatModel;
 import com.dao.cloud.core.model.Model;
 import com.dao.cloud.core.netty.serialize.DaoSerializer;
 import com.dao.cloud.core.netty.serialize.SerializeStrategyFactory;
-import com.dao.cloud.core.util.DaoCloudConstant;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.CorruptedFrameException;
 import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2022/10/28 20:28
  * 消息协议编码处理
+ * @since 1.0.0
  */
 @Slf4j
 public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> {
+
+    @Getter
+    private static final AttributeKey<Model> REQUEST_MESSAGE_ATTR_KEY = AttributeKey.valueOf("REQUEST_MESSAGE");
 
     @Override
     protected void encode(ChannelHandlerContext ctx, DaoMessage msg, List<Object> out) {
         ByteBuf buf = ctx.alloc().buffer();
         try {
             // 固定头魔数值
-            buf.writeBytes(DaoCloudConstant.MAGIC_NUMBER);
+            buf.writeBytes(Protocol.MAGIC_NUMBER);
             buf.writeByte(msg.getMessageType());
 
             if (msg.getMessageType() != MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
                 // 校验协议版本(现在没有什么用)
-                if (msg.getVersion() != DaoCloudConstant.PROTOCOL_VERSION_1) {
+                if (msg.getVersion() != Protocol.DEFAULT_VERSION) {
                     throw new UnsupportedVersionException("Unsupported version: " + msg.getVersion());
                 }
 
@@ -61,7 +66,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
         try {
-            frame.skipBytes(DaoCloudConstant.MAGIC_NUMBER_LENGTH); // 跳过魔数
+            frame.skipBytes(Protocol.MAGIC_NUMBER_LENGTH); // 跳过魔数
 
             byte messageType = frame.readByte();
             if (messageType == MessageType.PING_PONG_HEART_BEAT_MESSAGE) {
@@ -71,7 +76,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
 
             // 版本检查
             byte version = frame.readByte();
-            if (version != DaoCloudConstant.PROTOCOL_VERSION_1) {
+            if (version != Protocol.DEFAULT_VERSION) {
                 throw new UnsupportedVersionException("Received unsupported version: " + version);
             }
 
@@ -87,7 +92,7 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             DaoSerializer serializer = SerializeStrategyFactory.getSerializer(serializableType);
             Model model = serializer.deserialize(content, MessageType.getMessageModel(messageType));
 
-            ctx.channel().attr(DaoCloudConstant.REQUEST_MESSAGE_ATTR_KEY).set(model);
+            ctx.channel().attr(REQUEST_MESSAGE_ATTR_KEY).set(model);
             out.add(model);
         } catch (Exception e) {
             handleDecodeError(frame, e);
@@ -134,4 +139,6 @@ public class DaoMessageCoder extends MessageToMessageCodec<ByteBuf, DaoMessage> 
             throw (UnsupportedVersionException) e;
         }
     }
+
+
 }
