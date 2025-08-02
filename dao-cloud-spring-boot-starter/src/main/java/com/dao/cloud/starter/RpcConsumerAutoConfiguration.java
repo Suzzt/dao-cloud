@@ -141,7 +141,7 @@ public class RpcConsumerAutoConfiguration implements ApplicationListener<Context
                 RpcRequestModel requestModel = new RpcRequestModel(providerModel.getProvider(), providerModel.getVersion(), method.getName(), method.getParameterTypes(), args, method.getReturnType());
 
                 ClientInvoker clientInvoker = new ClientInvoker(proxyProviderModel, daoLoadBalance, serialized, timeout);
-                return clientInvoker.invoke(requestModel);
+                return clientInvoker.invoke(requestModel, method, args);
             }
         }
     }
