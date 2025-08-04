@@ -27,30 +27,63 @@
         }
         
         .dao-stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
             overflow: hidden;
             animation: slideInUp 0.6s ease-out;
         }
         
         .dao-stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
         }
         
-        .dao-stat-card::before {
+        
+        /* 卡片背景装饰效果 */
+        .dao-stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.05) 0%, transparent 60%);
+            border-radius: 50%;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .dao-stat-card:hover::after {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+        
+        /* 图标装饰效果 */
+        .dao-stat-icon::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: var(--primary-gradient);
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: inherit;
+        }
+        
+        /* 确保内容在装饰层之上 */
+        .dao-stat-header {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dao-stat-content {
+            position: relative;
+            z-index: 1;
         }
         
         .dao-stat-header {
@@ -60,16 +93,18 @@
         }
         
         .dao-stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 16px;
-            font-size: 20px;
+            margin-right: 20px;
+            font-size: 24px;
             color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
         }
         
         .dao-stat-icon.aqua {
@@ -101,27 +136,31 @@
         }
         
         .dao-stat-title {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            font-weight: 500;
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
         
         .dao-stat-value {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 32px;
+            font-weight: 800;
             color: var(--text-primary);
-            margin-bottom: 8px;
-            background: var(--primary-gradient);
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: -0.5px;
         }
         
         .dao-stat-description {
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.4;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-weight: 400;
         }
         
         /* 图表容器样式 */

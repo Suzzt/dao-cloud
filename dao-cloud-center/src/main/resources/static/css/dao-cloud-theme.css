@@ -522,41 +522,35 @@
    统计信息卡片
    ================================ */
 .dao-stat-card {
-    background: var(--white);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
     overflow: hidden;
 }
 
 .dao-stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
-.dao-stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--primary-gradient);
-}
 
 .dao-stat-icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius-round);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: var(--spacing-md);
-    font-size: 1.5rem;
+    font-size: 24px;
     color: var(--white);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
 }
 
 .dao-stat-icon.primary {
@@ -576,22 +570,31 @@
 }
 
 .dao-stat-value {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     color: var(--text-primary);
-    margin-bottom: var(--spacing-xs);
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.5px;
 }
 
 .dao-stat-label {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-sm);
+    font-size: 15px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .dao-stat-description {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    line-height: 1.4;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-weight: 400;
 }
 
 /* ================================
