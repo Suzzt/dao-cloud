@@ -1,0 +1,729 @@
+/*
+ * dao-cloud 统一主题样式
+ * 基于登录页面的现代化设计风格，提供统一的UI组件样式
+ */
+
+/* ================================
+   变量定义 - 主题色彩和尺寸
+   ================================ */
+:root {
+    /* 主色调 - 渐变紫蓝色系 */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --primary-dark: #764ba2;
+    --primary-light: rgba(102, 126, 234, 0.1);
+    
+    /* 辅助色彩 */
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    
+    /* 中性色彩 */
+    --text-primary: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --border-color: #e1e5e9;
+    --background-light: #f8f9fa;
+    --white: #ffffff;
+    
+    /* 阴影效果 */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 25px 45px rgba(0, 0, 0, 0.2);
+    
+    /* 圆角半径 */
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-round: 50%;
+    
+    /* 间距 */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+}
+
+/* ================================
+   通用动画和过渡效果
+   ================================ */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* ================================
+   现代化卡片组件
+   ================================ */
+.dao-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    animation: slideInUp 0.6s ease-out;
+}
+
+.dao-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.dao-card-glass {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dao-card-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.dao-card-body {
+    padding: var(--spacing-xl);
+}
+
+.dao-card-footer {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-top: 1px solid var(--border-color);
+    background: var(--background-light);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+/* ================================
+   现代化按钮组件
+   ================================ */
+.dao-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 44px;
+    line-height: 1.2;
+}
+
+.dao-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.dao-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 主要按钮 */
+.dao-btn-primary {
+    background: var(--primary-gradient);
+    color: var(--white);
+    box-shadow: var(--shadow-sm);
+}
+
+.dao-btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.dao-btn-primary:active {
+    transform: translateY(0);
+}
+
+/* 次要按钮 */
+.dao-btn-secondary {
+    background: var(--white);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.dao-btn-secondary:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* 成功按钮 */
+.dao-btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: var(--white);
+}
+
+.dao-btn-success:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+}
+
+/* 危险按钮 */
+.dao-btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+    color: var(--white);
+}
+
+.dao-btn-danger:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+/* 按钮尺寸 */
+.dao-btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    min-height: 36px;
+}
+
+.dao-btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    min-height: 52px;
+}
+
+.dao-btn-block {
+    width: 100%;
+}
+
+/* ================================
+   现代化表单组件
+   ================================ */
+.dao-form-group {
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+}
+
+.dao-form-label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.dao-form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--background-light);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.dao-form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: var(--white);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.dao-form-control:disabled {
+    background-color: #e9ecef;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.dao-form-control.is-invalid {
+    border-color: var(--danger-color);
+    background: #fdf2f2;
+}
+
+.dao-form-control.is-valid {
+    border-color: var(--success-color);
+    background: #f0f9f0;
+}
+
+/* 图标输入框 */
+.dao-input-icon {
+    position: relative;
+}
+
+.dao-input-icon .dao-form-control {
+    padding-left: 3rem;
+}
+
+.dao-input-icon-left {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1rem;
+    z-index: 2;
+}
+
+/* 搜索表单 */
+.dao-search-form {
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid var(--border-color);
+}
+
+.dao-search-form .row {
+    align-items: end;
+}
+
+.dao-search-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+    margin-top: var(--spacing-md);
+}
+
+/* ================================
+   现代化数据表格
+   ================================ */
+.dao-table-container {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.dao-table {
+    width: 100%;
+    margin-bottom: 0;
+    background: transparent;
+}
+
+.dao-table thead th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 2px solid var(--border-color);
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.dao-table tbody td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #f1f3f4;
+    vertical-align: middle;
+    color: var(--text-secondary);
+}
+
+.dao-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.dao-table tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    transform: scale(1.001);
+}
+
+.dao-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* 表格操作按钮 */
+.dao-table-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+}
+
+.dao-table-actions .dao-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    min-height: auto;
+}
+
+/* ================================
+   现代化模态框
+   ================================ */
+.dao-modal .modal-content {
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    animation: scaleIn 0.3s ease-out;
+}
+
+.dao-modal .modal-header {
+    background: var(--primary-gradient);
+    color: var(--white);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: none;
+}
+
+.dao-modal .modal-title {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.dao-modal .close {
+    color: var(--white);
+    opacity: 0.8;
+    text-shadow: none;
+    font-size: 1.5rem;
+}
+
+.dao-modal .close:hover {
+    opacity: 1;
+}
+
+.dao-modal .modal-body {
+    padding: var(--spacing-xl);
+}
+
+.dao-modal .modal-footer {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-top: 1px solid var(--border-color);
+    background: var(--background-light);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ================================
+   加载状态组件
+   ================================ */
+.dao-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-muted);
+}
+
+.dao-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--border-color);
+    border-top: 2px solid var(--primary-color);
+    border-radius: var(--radius-round);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.dao-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+
+.dao-skeleton-text {
+    height: 1rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.dao-skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: var(--spacing-md);
+}
+
+/* ================================
+   信息框和提示组件
+   ================================ */
+.dao-alert {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    animation: slideInDown 0.3s ease-out;
+}
+
+.dao-alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.dao-alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-color: #ffeaa7;
+    color: #856404;
+}
+
+.dao-alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.dao-alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+/* ================================
+   统计信息卡片
+   ================================ */
+.dao-stat-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dao-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.dao-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+.dao-stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-md);
+    font-size: 1.5rem;
+    color: var(--white);
+}
+
+.dao-stat-icon.primary {
+    background: var(--primary-gradient);
+}
+
+.dao-stat-icon.success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.dao-stat-icon.warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.dao-stat-icon.info {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+}
+
+.dao-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.dao-stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.dao-stat-description {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+/* ================================
+   响应式设计优化
+   ================================ */
+@media (max-width: 768px) {
+    .dao-card-body {
+        padding: var(--spacing-lg);
+    }
+    
+    .dao-search-form {
+        padding: var(--spacing-lg);
+    }
+    
+    .dao-search-actions {
+        justify-content: stretch;
+        flex-direction: column;
+    }
+    
+    .dao-btn {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .dao-table-container {
+        overflow-x: auto;
+    }
+    
+    .dao-table {
+        min-width: 600px;
+    }
+    
+    .dao-stat-card {
+        margin-bottom: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .dao-card-header,
+    .dao-card-body,
+    .dao-card-footer {
+        padding: var(--spacing-md);
+    }
+    
+    .dao-search-form {
+        padding: var(--spacing-md);
+    }
+    
+    .dao-modal .modal-body {
+        padding: var(--spacing-lg);
+    }
+    
+    .dao-stat-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .dao-stat-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* ================================
+   页面过渡动画
+   ================================ */
+.dao-page-enter {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.dao-content-section {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.dao-content-section:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.dao-content-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.dao-content-section:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+/* ================================
+   工具类
+   ================================ */
+.dao-text-gradient {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.dao-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--border-color) 50%, transparent 100%);
+    margin: var(--spacing-xl) 0;
+}
+
+.dao-glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dao-hover-lift {
+    transition: transform 0.2s ease;
+}
+
+.dao-hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+.dao-text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================
+   打印样式优化
+   ================================ */
+@media print {
+    .dao-card,
+    .dao-table-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .dao-btn {
+        background: #fff !important;
+        color: #000 !important;
+        border: 1px solid #000;
+    }
+}
