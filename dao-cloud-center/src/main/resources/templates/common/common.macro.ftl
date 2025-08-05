@@ -34,8 +34,8 @@
     <!-- scrollup -->
     <link rel="stylesheet" href="${request.contextPath}/static/plugins/scrollup/image.css">
     
-    <!-- dao-cloud 统一主题样式 -->
-    <link rel="stylesheet" href="${request.contextPath}/static/css/dao-cloud-theme.css">
+    <!-- dao-cloud 玻璃拟态设计系统 -->
+    <link rel="stylesheet" href="${request.contextPath}/static/css/dao-glassmorphism.css">
 
 </#macro>
 
@@ -67,9 +67,6 @@
     <script src="${request.contextPath}/static/js/common.1.js"></script>
     <script>
         var base_url = '${request.contextPath}' + "/dao-cloud";
-        var current_page_value = $('.sidebar-menu li.active a span').text();
-        ;
-        $('#headerText').text(current_page_value);
     </script>
 
 </#macro>
@@ -181,12 +178,6 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-
-            <!-- 文案显示区域，位于导航栏中间，并且上下左右居中 -->
-            <div class="navbar-text" id="headerText"
-                 style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; font-size: 16px; font-weight: bold; color: #FFFFFF;">
-                dao-cloud 分布式服务中心
-            </div>
 
             <div class="navbar-custom-menu" style="float: right;">
                 <ul class="nav navbar-nav">
