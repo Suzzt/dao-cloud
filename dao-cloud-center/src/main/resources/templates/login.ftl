@@ -427,7 +427,7 @@
 				
 				<div class="form-group">
 					<i class="fa fa-lock form-icon"></i>
-					<input type="password" name="password" class="form-control" placeholder="请输入登录密码" value="123456" maxlength="18">
+					<input type="password" name="password" class="form-control" placeholder="请输入登录密码" maxlength="18">
 				</div>
 				
 				<div class="remember-me">
