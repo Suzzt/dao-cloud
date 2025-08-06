@@ -174,6 +174,7 @@
 		.form-group {
 			margin-bottom: 25px;
 			position: relative;
+			min-height: 70px;
 		}
 		
 		.form-control {
@@ -183,7 +184,7 @@
 			backdrop-filter: blur(10px);
 			-webkit-backdrop-filter: blur(10px);
 			border-radius: 16px;
-			padding: 0 24px 0 54px;
+			padding: 0 54px 0 54px;
 			font-size: 16px;
 			color: #333;
 			transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -211,11 +212,46 @@
 		.form-icon {
 			position: absolute;
 			left: 18px;
-			top: 50%;
-			transform: translateY(-50%);
+			top: 18px;
 			color: #999;
 			font-size: 18px;
-			z-index: 1;
+			z-index: 2;
+		}
+		
+		.password-toggle {
+			position: absolute;
+			right: 18px;
+			top: 18px;
+			color: #999;
+			font-size: 18px;
+			cursor: pointer;
+			z-index: 3;
+			transition: all 0.3s ease;
+		}
+		
+		.password-toggle:hover {
+			color: #667eea;
+			transform: scale(1.1);
+		}
+		
+		.help-block {
+			color: #e74c3c;
+			font-size: 12px;
+			margin-top: 5px;
+			position: absolute;
+			bottom: -20px;
+			left: 0;
+			width: 100%;
+		}
+		
+		.form-group.has-error .form-control {
+			border-color: #e74c3c;
+			background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(255, 255, 255, 0.05));
+		}
+		
+		.form-group.has-error .form-icon,
+		.form-group.has-error .password-toggle {
+			color: #e74c3c;
 		}
 		
 		.remember-me {
@@ -374,21 +410,6 @@
 			animation-delay: 4.5s;
 		}
 		
-		.help-block {
-			color: #e74c3c;
-			font-size: 12px;
-			margin-top: 5px;
-		}
-		
-		.form-group.has-error .form-control {
-			border-color: #e74c3c;
-			background: #fdf2f2;
-		}
-		
-		.form-group.has-error .form-icon {
-			color: #e74c3c;
-		}
-		
 		@media (max-width: 480px) {
 			.login-card {
 				padding: 30px 20px;
@@ -422,17 +443,13 @@
 			<form id="loginForm" method="post">
 				<div class="form-group">
 					<i class="fa fa-user form-icon"></i>
-					<input type="text" name="userName" class="form-control" placeholder="请输入登录账号" value="admin" maxlength="18">
+					<input type="text" name="userName" class="form-control" placeholder="请输入登录账号" value="admin" maxlength="18" style="padding-right: 24px;">
 				</div>
 				
 				<div class="form-group">
 					<i class="fa fa-lock form-icon"></i>
-					<input type="password" name="password" class="form-control" placeholder="请输入登录密码" maxlength="18">
-				</div>
-				
-				<div class="remember-me">
-					<input type="checkbox" name="ifRemember" id="rememberMe">
-					<label for="rememberMe">记住登录状态</label>
+					<input type="password" name="password" id="passwordInput" class="form-control" placeholder="请输入登录密码" maxlength="18">
+					<i class="fa fa-eye password-toggle" id="passwordToggle" title="显示密码"></i>
 				</div>
 				
 				<button type="submit" class="login-btn">
@@ -446,6 +463,26 @@
 <script src="${request.contextPath}/static/plugins/jquery/jquery.validate.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/plugins/iCheck/icheck.min.js"></script>
 <script src="${request.contextPath}/static/js/login.1.js"></script>
+
+<script>
+$(function() {
+	// 密码显示/隐藏切换功能
+	$('#passwordToggle').on('click', function() {
+		var passwordInput = $('#passwordInput');
+		var toggleIcon = $(this);
+		
+		if (passwordInput.attr('type') === 'password') {
+			passwordInput.attr('type', 'text');
+			toggleIcon.removeClass('fa-eye').addClass('fa-eye-slash');
+			toggleIcon.attr('title', '隐藏密码');
+		} else {
+			passwordInput.attr('type', 'password');
+			toggleIcon.removeClass('fa-eye-slash').addClass('fa-eye');
+			toggleIcon.attr('title', '显示密码');
+		}
+	});
+});
+</script>
 
 </body>
 </html>
