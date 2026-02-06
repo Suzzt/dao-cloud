@@ -7,10 +7,10 @@ import com.dao.cloud.core.exception.DaoException;
 import com.dao.cloud.core.model.*;
 import com.dao.cloud.core.netty.protocol.DaoMessage;
 import com.dao.cloud.core.netty.protocol.MessageType;
-
 import com.dao.cloud.core.util.LongPromiseBuffer;
 import com.dao.cloud.starter.banlance.DaoLoadBalance;
 import com.dao.cloud.starter.manager.ClientManager;
+import com.dao.cloud.starter.utils.HashKeyExtractor;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
@@ -18,27 +18,28 @@ import org.slf4j.MDC;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
  * @author sucf
- * @since 1.0.0
  * @date 2024/1/27 18:07
  * client invoke handler
+ * @since 1.0.0
  */
 @Slf4j
 public class ClientInvoker {
 
-    private ProxyProviderModel proxyProviderModel;
+    private final ProxyProviderModel proxyProviderModel;
 
-    private DaoLoadBalance daoLoadBalance;
+    private final DaoLoadBalance daoLoadBalance;
 
-    private byte serializable;
+    private final byte serializable;
 
     /**
      * Service call timeout. The unit is seconds
      */
-    private long timeout;
+    private final long timeout;
 
     public ClientInvoker(ProxyProviderModel proxyProviderModel, DaoLoadBalance daoLoadBalance, byte serializable, long timeout) {
         this.proxyProviderModel = proxyProviderModel;
@@ -48,14 +49,14 @@ public class ClientInvoker {
     }
 
     public Object invoke(GatewayRequestModel gatewayRequestModel) throws InterruptedException {
-        return doInvoke(gatewayRequestModel, MessageType.GATEWAY_RPC_REQUEST_MESSAGE);
+        return doInvoke(gatewayRequestModel, MessageType.GATEWAY_RPC_REQUEST_MESSAGE, null, null);
     }
 
-    public Object invoke(RpcRequestModel rpcRequestModel) throws InterruptedException {
-        return doInvoke(rpcRequestModel, MessageType.SERVICE_RPC_REQUEST_MESSAGE);
+    public Object invoke(RpcRequestModel rpcRequestModel, Method method, Object[] methodArgs) throws InterruptedException {
+        return doInvoke(rpcRequestModel, MessageType.SERVICE_RPC_REQUEST_MESSAGE, method, methodArgs);
     }
 
-    public Object doInvoke(ServiceRequestModel model, byte messageType) throws InterruptedException {
+    public Object doInvoke(ServiceRequestModel model, byte messageType, Method method, Object[] methodArgs) throws InterruptedException {
         long sequenceId = IdUtil.getSnowflake(2, 2).nextId();
         model.setSequenceId(sequenceId);
         if (!StringUtils.hasLength(MDC.get("traceId"))) {
@@ -84,8 +85,12 @@ public class ClientInvoker {
                     throw new DaoException(CodeEnum.GATEWAY_SERVICE_NOT_EXIST);
                 }
             }
-            // load balance
-            client = daoLoadBalance.route(clients);
+            // load balance with hash key support
+            Object hashKeyValue = null;
+            if (method != null && methodArgs != null) {
+                hashKeyValue = HashKeyExtractor.extractHashKey(method, methodArgs);
+            }
+            client = daoLoadBalance.route(clients, hashKeyValue);
             if (client.getChannel().isActive()) {
                 break;
             }

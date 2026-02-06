@@ -14,21 +14,7 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
-<style>
-    /* 在小屏幕上设置 10px 的下间距 */
-    @media (max-width: 768px) {
-        .row + .row {
-            margin-top: 10px;
-        }
-    }
-    /* 在大屏幕上设置 20px 的下间距 */
-    @media (min-width: 769px) {
-        .row + .row {
-            margin-top: 20px;
-        }
-    }
-</style>
-<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter dao-layout-full dao-page-workspace <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />
@@ -40,56 +26,72 @@
         <!-- Main content -->
         <section class="content">
 
-            <div class="row">
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="proxy" autocomplete="on" value="${topic!''}" placeholder="请输入proxy(精确匹配)">
+            <!-- 搜索表单 -->
+            <div class="dao-search-form">
+                <div class="dao-chart-title">
+                    <i class="fa fa-search"></i> 配置查询
                 </div>
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="key" autocomplete="on" value="${topic!''}" placeholder="请输入key(精确匹配)">
-                </div>
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="version" autocomplete="on" value="${topic!''}" placeholder="请输入version(精确匹配)">
-                </div>
-                <!-- 新增flex container来包裹按钮 -->
-                <div class="col-xs-3" style="display: flex; justify-content: flex-end;">
-                    <button class="btn btn-info" id="searchBtn" style="margin-right: 5px;"> <i class="fa fa-search"></i>搜索</button>
-                    <div class="btn-group">
-                        <button class="btn btn-info bg-green" id="config_add"> <i class="fa fa-plus"></i>添加</button>
+                <div class="dao-search-grid-3">
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Proxy</label>
+                        <input type="text" class="dao-form-control" id="proxy" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入proxy (精确匹配)">
+                    </div>
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Key</label>
+                        <input type="text" class="dao-form-control" id="key" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入key (精确匹配)">
+                    </div>
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Version</label>
+                        <input type="text" class="dao-form-control" id="version" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入version (精确匹配)">
+                    </div>
+                    <div class="dao-btn-group">
+                        <button class="dao-btn dao-btn-primary" id="searchBtn">
+                            <i class="fa fa-search"></i> 搜索
+                        </button>
+                        <button class="dao-btn dao-btn-success" id="config_add">
+                            <i class="fa fa-plus"></i> 添加配置
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-body">
-                            <table id="data_list" class="table table-bordered table-striped" width="100%">
-                                <thead>
-                                <tr>
-                                    <th name="proxy">proxy</th>
-                                    <th name="provider">key</th>
-                                    <th name="env">version</th>
-                                    <th name="content">配置内容</th>
-                                    <th>操作</th>
-                                </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
-                    </div>
+            <!-- 数据表格 -->
+            <div class="dao-table-container">
+                <div class="dao-chart-title">
+                    <i class="fa fa-list"></i> 配置订阅列表
                 </div>
+                <table id="data_list" class="dao-table table table-bordered table-striped" width="100%">
+                    <thead>
+                    <tr>
+                        <th name="proxy">proxy</th>
+                        <th name="provider">key</th>
+                        <th name="env">version</th>
+                        <th name="content">配置内容</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
             </div>
 
         </section>
     </div>
 
-    <!-- 新增.模态框 -->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- 新增配置模态框 -->
+    <div class="modal fade dao-modal" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">新增配置</h4>
+                    <h4 class="modal-title">
+                        <i class="fa fa-plus-circle"></i> 新增配置
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">
@@ -132,12 +134,17 @@
         </div>
     </div>
 
-    <!-- 更新.模态框 -->
-    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- 更新配置模态框 -->
+    <div class="modal fade dao-modal" id="updateModal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">更新配置内容</h4>
+                    <h4 class="modal-title">
+                        <i class="fa fa-edit"></i> 更新配置内容
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">

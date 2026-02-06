@@ -34,6 +34,9 @@
     <!-- scrollup -->
     <link rel="stylesheet" href="${request.contextPath}/static/plugins/scrollup/image.css">
 
+    <!-- dao-cloud 统一主题样式 -->
+    <link rel="stylesheet" href="${request.contextPath}/static/css/dao-cloud-theme.css">
+
 </#macro>
 
 <#macro commonScript>
@@ -64,39 +67,18 @@
     <script src="${request.contextPath}/static/js/common.1.js"></script>
     <script>
         var base_url = '${request.contextPath}' + "/dao-cloud";
-        var current_page_value = $('.sidebar-menu li.active a span').text();
-        ;
-        $('#headerText').text(current_page_value);
     </script>
 
 </#macro>
 
 <#macro commonHeader>
-    <style>
-        /* 定义退出登录按钮样式及悬停高亮效果 */
-        #logoutBtn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: #ffffff;
-            font-size: 16px;
-            background-color: transparent;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        #logoutBtn:hover {
-            background-color: #3c8dbc; /* 悬停时背景颜色高亮 */
-            color: #ffffff; /* 保持文字白色 */
-        }
-    </style>
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
             <span class="logo-lg">
                 <img src="${request.contextPath}/static/dao-cloud-logo.png" alt="dao-cloud logo"
-                     style="height: 30px; margin-right: 15px;"/>
-                <b>dao-cloud</b>
+                     style="height: 30px; margin-right: 12px;"/>
+                <b style="color: white; font-size: 18px;">dao-cloud</b>
             </span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
@@ -108,18 +90,11 @@
                 <span class="icon-bar"></span>
             </a>
 
-            <!-- 文案显示区域，位于导航栏中间，并且上下左右居中 -->
-            <div class="navbar-text" id="headerText"
-                 style="position: absolute; left: 50%; transform: translateX(-50%); text-align: center; font-size: 18px; font-weight: bold; color: #FFFFFF;">
-                dao-cloud
-            </div>
-
             <div class="navbar-custom-menu" style="float: right;">
                 <ul class="nav navbar-nav">
-                    <li class="dropdown" style="flex-grow: 1;">
-                        <a href="javascript:void(0);" id="logoutBtn" class="dropdown-toggle"
-                           style="display: flex; justify-content: center; align-items: center; height: 100%; color: #ffffff; font-size: 16px; background-color: transparent;">
-                            <i class="fa fa-sign-out" aria-hidden="true" style="margin-right: 8px;"></i>退出登陆
+                    <li>
+                        <a href="javascript:void(0);" id="logoutBtn">
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>退出登录
                         </a>
                     </li>
                 </ul>
@@ -133,27 +108,44 @@
     <aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-            <!-- sidebar menu: : style can be found in sidebar.less -->
+            <!-- sidebar menu: style can be found in sidebar.less -->
             <ul class="sidebar-menu">
-                <li class="header">导航菜单</li>
-                <li class="nav-click <#if pageName == "index">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud"><i
-                                class="fa fa-circle-o text-red"></i><span>指标概况</span></a></li>
-                <li class="nav-click <#if pageName == "registry">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/registry"><i
-                                class="fa fa-circle-o text-orange"></i><span>服务中心</span></a></li>
-                <li class="nav-click <#if pageName == "configuration">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/configuration"><i
-                                class="fa fa-circle-o text-blue"></i><span>配置文件</span></a></li>
-                <li class="nav-click <#if pageName == "config">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/config"><i
-                                class="fa fa-circle-o text-success"></i><span>配置订阅</span></a></li>
-                <li class="nav-click <#if pageName == "log">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/log"><i
-                                class="fa fa-circle-o text-nowrap"></i><span>日志中心</span></a></li>
-                <li class="nav-click <#if pageName == "help">active</#if>"><a
-                            href="${request.contextPath}/dao-cloud/help"><i
-                                class="fa fa-circle-o text-green"></i><span>使用教程</span></a></li>
+                <li class="nav-click <#if pageName == "index">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud">
+                        <i class="fa fa-dashboard text-red"></i>
+                        <span>指标概况</span>
+                    </a>
+                </li>
+                <li class="nav-click <#if pageName == "registry">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud/registry">
+                        <i class="fa fa-server text-orange"></i>
+                        <span>服务中心</span>
+                    </a>
+                </li>
+                <li class="nav-click <#if pageName == "configuration">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud/configuration">
+                        <i class="fa fa-file-code-o text-blue"></i>
+                        <span>配置文件</span>
+                    </a>
+                </li>
+                <li class="nav-click <#if pageName == "config">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud/config">
+                        <i class="fa fa-cogs text-success"></i>
+                        <span>配置订阅</span>
+                    </a>
+                </li>
+                <li class="nav-click <#if pageName == "log">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud/log">
+                        <i class="fa fa-list-alt text-nowrap"></i>
+                        <span>日志中心</span>
+                    </a>
+                </li>
+                <li class="nav-click <#if pageName == "help">active</#if>">
+                    <a href="${request.contextPath}/dao-cloud/help">
+                        <i class="fa fa-question-circle text-green"></i>
+                        <span>使用教程</span>
+                    </a>
+                </li>
             </ul>
         </section>
         <!-- /.sidebar -->
@@ -162,11 +154,15 @@
 
 <#macro commonFooter >
     <footer class="main-footer">
-        Powered by <a href="https://github.com/Suzzt/dao-cloud" target="_blank"><b>dao-cloud</b></a>
+        <div class="pull-left">
+            Powered by <a href="https://github.com/Suzzt/dao-cloud" target="_blank"><b>dao-cloud</b></a> 
+            - 分布式服务中心管理平台
+        </div>
         <div class="pull-right hidden-xs">
-            <strong>去
-                <a href="https://github.com/Suzzt/dao-cloud" target="_blank">github</a>
-                看源码!
+            <strong>
+                <a href="https://github.com/Suzzt/dao-cloud" target="_blank">
+                    <i class="fa fa-github"></i> 查看源码
+                </a>
             </strong>
         </div>
     </footer>

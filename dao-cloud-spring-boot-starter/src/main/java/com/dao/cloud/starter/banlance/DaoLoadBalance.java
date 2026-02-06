@@ -18,4 +18,15 @@ public abstract class DaoLoadBalance {
      * @return
      */
     public abstract Client route(Set<Client> availableClients);
+
+    /**
+     * route channel client with hash key
+     *
+     * @param availableClients
+     * @param hashKey hash key for consistent hashing, can be null
+     * @return
+     */
+    public Client route(Set<Client> availableClients, Object hashKey) {
+        return route(availableClients);
+    }
 }
