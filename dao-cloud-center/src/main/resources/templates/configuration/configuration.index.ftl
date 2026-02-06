@@ -17,7 +17,7 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css"/>
 </head>
-<body class="hold-transition skin-blue sidebar-mini dao-page-enter <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter dao-layout-full dao-page-workspace <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />
@@ -83,63 +83,53 @@
 
     <!-- 新增配置模态框 -->
     <div class="modal fade dao-modal" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" style="max-width: 95%;">
-            <div class="modal-content" style="min-height: 80vh;">
+        <div class="modal-dialog modal-lg" style="max-width: 900px;">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                     <h4 class="modal-title">
                         <i class="fa fa-plus-circle"></i> 新增配置文件
                     </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">服务代理 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
+                        <div class="dao-modal-grid">
+                            <div class="form-group">
+                                <label class="control-label">服务代理 <span>*</span></label>
                                 <input type="text" class="form-control" name="proxy" maxlength="255"
                                        placeholder="请输入服务代理名称">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">分组标识 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">分组标识 <span>*</span></label>
                                 <input type="text" class="form-control" name="groupId" maxlength="255"
                                        placeholder="请输入分组标识">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">文件名称 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">文件名称 <span>*</span></label>
                                 <input type="text" class="form-control" name="fileName" maxlength="255"
                                        placeholder="请输入配置文件名称">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">文件类型 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">文件类型 <span>*</span></label>
                                 <select class="form-control" id="fileType">
                                     <option value=".yaml">YAML 格式</option>
                                     <option value=".properties">Properties 格式</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">配置内容 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
-                                <div class="editor-container"></div>
-                            </div>
+                        <div class="form-group dao-modal-full-width" style="margin-top: 24px;">
+                            <label class="control-label">配置内容 <span>*</span></label>
+                            <div class="editor-container"></div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-3 col-sm-9">
-                                <button type="submit" class="dao-btn dao-btn-primary">
-                                    <i class="fa fa-save"></i> 保存配置
-                                </button>
-                                <button type="button" class="dao-btn dao-btn-secondary" data-dismiss="modal">
-                                    <i class="fa fa-times"></i> 取消
-                                </button>
-                            </div>
+                        <div class="modal-footer" style="justify-content: center;">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fa fa-times"></i> 取消
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> 保存配置
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -149,61 +139,51 @@
 
     <!-- 更新配置模态框 -->
     <div class="modal fade dao-modal" id="updateModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" style="max-width: 95%;">
-            <div class="modal-content" style="min-height: 80vh;">
+        <div class="modal-dialog modal-lg" style="max-width: 900px;">
+            <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                     <h4 class="modal-title">
                         <i class="fa fa-edit"></i> 更新配置内容
                     </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">服务代理</label>
-                            <div class="col-sm-9">
+                        <div class="dao-modal-grid">
+                            <div class="form-group">
+                                <label class="control-label">服务代理</label>
                                 <input type="text" class="form-control" name="proxy" maxlength="255" readonly>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">分组标识</label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">分组标识</label>
                                 <input type="text" class="form-control" name="groupId" maxlength="255" readonly>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">文件名称</label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">文件名称</label>
                                 <input type="text" class="form-control" name="fileName" maxlength="255" readonly>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">文件类型</label>
-                            <div class="col-sm-9">
+                            <div class="form-group">
+                                <label class="control-label">文件类型</label>
                                 <select class="form-control" id="fileType" disabled>
                                     <option value=".yaml">YAML 格式</option>
                                     <option value=".properties">Properties 格式</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label">配置内容 <span style="color: #e74c3c;">*</span></label>
-                            <div class="col-sm-9">
-                                <div class="editor-container"></div>
-                            </div>
+                        <div class="form-group dao-modal-full-width" style="margin-top: 24px;">
+                            <label class="control-label">配置内容 <span>*</span></label>
+                            <div class="editor-container"></div>
                         </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-3 col-sm-9">
-                                <button type="submit" class="dao-btn dao-btn-primary">
-                                    <i class="fa fa-save"></i> 更新配置
-                                </button>
-                                <button type="button" class="dao-btn dao-btn-secondary" data-dismiss="modal">
-                                    <i class="fa fa-times"></i> 取消
-                                </button>
-                                <input type="hidden" name="id">
-                            </div>
+                        <div class="modal-footer" style="justify-content: center;">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fa fa-times"></i> 取消
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> 更新配置
+                            </button>
+                            <input type="hidden" name="id">
                         </div>
                     </form>
                 </div>

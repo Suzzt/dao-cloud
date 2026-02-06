@@ -14,7 +14,7 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
-<body class="hold-transition skin-blue sidebar-mini dao-page-enter <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter dao-layout-full dao-page-workspace <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />

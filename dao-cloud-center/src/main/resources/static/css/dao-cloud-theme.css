@@ -445,50 +445,222 @@ body {
 }
 
 /* ================================
-   现代化模态框
+   现代化模态框 (Modal Optimization)
    ================================ */
+/* 模态框整体容器 */
 .dao-modal .modal-content {
     border: none;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
-    animation: scaleIn 0.3s ease-out;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    background: #ffffff;
+    overflow: hidden; /* 确保圆角不被子元素溢出遮挡 */
+    animation: modalScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes modalScaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 模态框头部 */
 .dao-modal .modal-header {
-    background: var(--primary-gradient);
-    color: var(--white);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    padding: var(--spacing-lg) var(--spacing-xl);
-    border-bottom: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 确保左右分开 */
+    position: relative;
 }
 
 .dao-modal .modal-title {
+    color: #fff;
+    font-size: 18px;
     font-weight: 600;
-    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 !important; /* 强制去除 Bootstrap 默认 margin */
+    flex: 1; /* 占据左侧空间 */
+    text-align: left; /* 强制左对齐 */
 }
 
 .dao-modal .close {
-    color: var(--white);
+    color: #fff;
     opacity: 0.8;
     text-shadow: none;
-    font-size: 1.5rem;
+    font-size: 28px; /* 稍微调大一点 */
+    font-weight: 300;
+    transition: all 0.2s;
+    outline: none;
+    float: none !important; /* 禁用 float */
+    margin: 0 !important; /* 去除 margin */
+    line-height: 1;
+    padding: 0;
+    margin-left: 20px !important; /* 稍微离标题远一点 */
+    position: static !important; /* 防止定位干扰 */
+    background: transparent;
+    border: none;
 }
 
 .dao-modal .close:hover {
     opacity: 1;
+    transform: rotate(90deg);
 }
 
+/* 模态框主体 */
 .dao-modal .modal-body {
-    padding: var(--spacing-xl);
+    padding: 32px 40px;
+    background: #f9fafb; /* 极淡的灰色背景，突出输入框 */
 }
 
+/* 表单组优化 */
+.dao-modal .form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.dao-modal .control-label {
+    text-align: left !important; /* 强制左对齐 */
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding-left: 0;
+}
+
+/* 输入框美化 */
+.dao-modal .form-control {
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #1f2937;
+    transition: all 0.2s ease;
+}
+
+.dao-modal .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    outline: none;
+}
+
+.dao-modal select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+/* 必填项星号 */
+.dao-modal .control-label span {
+    color: #ef4444;
+    margin-left: 4px;
+}
+
+/* 底部按钮区域 */
 .dao-modal .modal-footer {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background: rgba(0, 0, 0, 0.02);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    background: #fff;
+    padding: 20px 40px;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* 按钮样式重写 */
+.dao-modal .btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dao-modal .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.dao-modal .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.dao-modal .btn-secondary, 
+.dao-modal .btn-default {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.dao-modal .btn-secondary:hover,
+.dao-modal .btn-default:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+/* 编辑器容器特殊处理 */
+.dao-modal .editor-container {
+    border-radius: 10px !important;
+    border: 1px solid #e5e7eb !important;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.dao-modal .CodeMirror {
+    height: 400px !important; /* 增加编辑器高度 */
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* 布局调整：将标签和输入框改为上下结构（更现代） */
+.dao-modal .form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+    display: block; /* 覆盖 Bootstrap 的 flex/table 布局 */
+}
+
+.dao-modal .form-horizontal .control-label {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 8px;
+    padding-top: 0;
+}
+
+.dao-modal .form-horizontal .col-sm-3,
+.dao-modal .form-horizontal .col-sm-9 {
+    width: 100%;
+    padding: 0;
+    float: none;
+}
+
+/* 两列布局优化：让短输入框并排显示 */
+.dao-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.dao-modal-grid .form-group {
+    margin-bottom: 0; /* grid gap 控制间距 */
+}
+
+.dao-modal-full-width {
+    grid-column: 1 / -1;
 }
 
 /* ================================
@@ -580,8 +752,211 @@ body {
 }
 
 /* ================================
-   响应式设计优化
+   工作台模式 (Workspace Mode)
+   适用于列表页：将搜索和表格整合为一个大面板
    ================================ */
+.dao-page-workspace .content {
+    background: rgba(255, 255, 255, 0.95);
+    /* 核心修改：恢复适当的边距，实现“悬浮卡片”效果 */
+    margin: 16px;
+    padding: 0 !important;
+    /* 核心修改：增加圆角 */
+    border-radius: 16px;
+    /* 核心修改：添加柔和的阴影，营造层次感 */
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    /* 核心修改：添加细微边框 */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    flex: 1;
+    overflow: hidden; /* 确保圆角不被内部内容溢出遮挡 */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 工作台模式下的搜索表单 */
+.dao-page-workspace .dao-search-form {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04); /* 更淡的分割线 */
+    border-radius: 0;
+    padding: 24px 32px; /* 增加内部呼吸感 */
+}
+
+/* 工作台模式下的表格容器 */
+.dao-page-workspace .dao-table-container {
+    margin: 0 !important;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 32px 0 32px; /* 增加左右内边距 */
+    border-radius: 0;
+    min-height: 0;
+}
+
+/* 调整表格分页栏位置 */
+.dao-page-workspace .dataTables_wrapper > .row:last-child {
+    background: rgba(255, 255, 255, 0.6); /* 半透明背景 */
+    padding: 12px 32px;
+    margin: 0 -32px !important; /* 抵消 container 的 padding */
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* ================================
+   首页仪表盘优化 (Dashboard Mode)
+   ================================ */
+.dao-page-dashboard .content {
+    padding: 16px !important; /* 仪表盘模式保留少量间距 */
+    /* 核心修复：首页不需要工作台模式的 Flex 布局，应该允许滚动 */
+    display: block !important; 
+    /* 核心修复：背景透明，不需要工作台的大卡片背景 */
+    background: transparent !important; 
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important; /* 允许溢出滚动 */
+}
+
+/* 首页统计卡片网格布局恢复 */
+.dao-page-dashboard .dao-stats-grid {
+    display: grid;
+    /* 响应式网格：最小宽度300px，自动填充 */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+    padding: 0;
+}
+
+/* 首页图表区域布局优化 */
+.dao-page-dashboard .dao-chart-row {
+    display: flex;
+    flex-wrap: wrap; /* 允许换行 */
+    gap: 20px;
+    /* 移除之前可能影响布局的 flex 属性 */
+    flex: none !important; 
+}
+
+.dao-page-dashboard .dao-chart-container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    /* 修复图表容器高度 */
+    flex: 1;
+    min-width: 45%; /* 在大屏上并排显示 */
+    min-height: 400px;
+    margin-bottom: 0 !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 992px) {
+    .dao-page-dashboard .dao-chart-container {
+        min-width: 100%; /* 小屏占满一行 */
+    }
+}
+
+/* ================================
+   全屏布局优化 (Full Layout)
+   ================================ */
+/* 强制内容区域占满剩余空间 */
+.dao-layout-full .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 101px) !important;
+}
+
+.dao-layout-full .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important; /* 基础重置 */
+}
+
+/* 搜索表单紧凑化 */
+.dao-layout-full .dao-search-form {
+    flex-shrink: 0;
+    margin-bottom: 15px;
+}
+
+/* 表格容器强制撑满 */
+.dao-layout-full .dao-table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0 !important;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none; /* 底部无边框，与footer融合 */
+    background: rgba(255, 255, 255, 0.95); /* 稍微不透明一点，增加实体感 */
+}
+
+/* 优化 DataTables 在全屏模式下的表现 */
+.dao-layout-full .dataTables_wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 10px;
+}
+
+.dao-layout-full .dataTables_wrapper > .row:nth-child(2) {
+    flex: 1;
+    margin: 0 !important;
+    overflow: auto; /* 内容过多时滚动 */
+}
+
+/* 首页布局优化 */
+.dao-layout-full .dao-stats-grid {
+    flex-shrink: 0; /* 统计卡片不压缩 */
+}
+
+.dao-layout-full .dao-chart-row {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 0; /* 关键：允许flex子项小于内容高度 */
+}
+
+.dao-layout-full .dao-chart-container {
+    flex: 1; /* 图表容器平分或自动填充剩余空间 */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    min-height: 350px; /* 最小高度保障 */
+}
+
+.dao-layout-full .dao-chart-container:last-child {
+    margin-bottom: 0; /* 最后一个图表贴底 */
+}
+
+/* ECharts 容器自适应 */
+.dao-layout-full .dao-chart-container > div:last-child {
+    flex: 1;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 300px;
+}
+
+/* 增加内容充实感 */
+.dao-layout-full .dao-search-form,
+.dao-layout-full .dao-table-container,
+.dao-layout-full .dao-chart-container,
+.dao-layout-full .dao-help-card {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dao-layout-full .dao-search-form:hover,
+.dao-layout-full .dao-table-container:hover,
+.dao-layout-full .dao-chart-container:hover,
+.dao-layout-full .dao-help-card:hover {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
 @media (max-width: 768px) {
     .dao-card-body {
         padding: var(--spacing-lg);

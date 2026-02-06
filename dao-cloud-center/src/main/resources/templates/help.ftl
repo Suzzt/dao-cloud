@@ -5,7 +5,7 @@
     <title>使用教程 - dao-cloud 分布式服务中心</title>
     <@netCommon.commonStyle />
 </head>
-<body class="hold-transition skin-blue sidebar-mini dao-page-enter <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if> ">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter dao-layout-full <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if> ">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />
