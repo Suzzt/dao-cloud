@@ -14,57 +14,8 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 </head>
-<style>
-    #popup {
-        width: auto !important;
-        max-width: calc(100% - 40px);
-    }
 
-    /* 在小屏幕上设置 10px 的下间距 */
-    @media (max-width: 768px) {
-        .row + .row {
-            margin-top: 10px;
-        }
-    }
-
-    /* 在大屏幕上设置 20px 的下间距 */
-    @media (min-width: 769px) {
-        .row + .row {
-            margin-top: 20px;
-        }
-    }
-
-    #call-popup-list th, #call-popup-list td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    #call-popup-list th#method-column, #call-popup-list td:nth-child(1) {
-        width: 80%;
-    }
-
-    #call-popup-list th#count-column, #call-popup-list td:nth-child(2) {
-        width: 20%;
-    }
-
-    #call-popup {
-        width: 100%;
-        max-width: 600px;
-    }
-
-    #call-popup-list {
-        table-layout: fixed;
-        width: 100%;
-    }
-
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-</style>
-
-<body class="hold-transition skin-blue sidebar-mini <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if>">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />
@@ -76,57 +27,69 @@
         <!-- Main content -->
         <section class="content">
 
-            <div class="row">
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="proxy" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入proxy(精确匹配)">
+            <!-- 搜索表单 -->
+            <div class="dao-search-form">
+                <div class="dao-chart-title">
+                    <i class="fa fa-search"></i> 服务查询
                 </div>
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="provider" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入注册provider(精确匹配)">
-                </div>
-                <div class="col-xs-3">
-                    <input type="text" class="form-control" id="version" autocomplete="on" value="${topic!''}"
-                           placeholder="请输入version(精确匹配)">
-                </div>
-                <div class="col-xs-1 pull-right">
-                    <button class="btn btn-block btn-info" id="searchBtn">
-                        <i class="fa fa-search"></i> 查询
-                    </button>
+                <div class="dao-search-grid-3">
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Proxy</label>
+                        <input type="text" class="dao-form-control" id="proxy" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入proxy (精确匹配)">
+                    </div>
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Provider</label>
+                        <input type="text" class="dao-form-control" id="provider" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入provider (精确匹配)">
+                    </div>
+                    <div class="dao-form-group">
+                        <label class="dao-form-label">Version</label>
+                        <input type="text" class="dao-form-control" id="version" autocomplete="on" value="${topic!''}"
+                               placeholder="请输入version (精确匹配)">
+                    </div>
+                    <div>
+                        <button class="dao-btn dao-btn-primary" id="searchBtn">
+                            <i class="fa fa-search"></i> 查询
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="box">
-                        <div class="box-body">
-                            <table id="data_list" class="table table-bordered table-striped" width="100%">
-                                <thead>
-                                <tr>
-                                    <th name="proxy">proxy</th>
-                                    <th name="provider">provider</th>
-                                    <th name="env">version</th>
-                                    <th name="number">注册节点数</th>
-                                    <th name="call">调用统计</th>
-                                    <th name="gateway">网关设置</th>
-                                </tr>
-                                </thead>
-                                <tbody></tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
-                    </div>
+            <!-- 数据表格 -->
+            <div class="dao-table-container">
+                <div class="dao-chart-title">
+                    <i class="fa fa-list"></i> 服务注册列表
                 </div>
+                <table id="data_list" class="dao-table table table-bordered table-striped" width="100%">
+                    <thead>
+                    <tr>
+                        <th name="proxy">proxy</th>
+                        <th name="provider">provider</th>
+                        <th name="env">version</th>
+                        <th name="number">注册节点数</th>
+                        <th name="call">调用统计</th>
+                        <th name="gateway">网关设置</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
             </div>
 
         </section>
     </div>
 
-    <div class="modal fade" id="openGatewayConfigModelWindow" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade dao-modal" id="openGatewayConfigModelWindow" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">网关设置</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <i class="fa fa-cogs"></i> 网关设置
+                    </h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal form" role="form">

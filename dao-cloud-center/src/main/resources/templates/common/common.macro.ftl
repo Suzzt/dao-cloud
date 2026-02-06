@@ -33,9 +33,9 @@
 
     <!-- scrollup -->
     <link rel="stylesheet" href="${request.contextPath}/static/plugins/scrollup/image.css">
-    
-    <!-- dao-cloud 玻璃拟态设计系统 -->
-    <link rel="stylesheet" href="${request.contextPath}/static/css/dao-glassmorphism.css">
+
+    <!-- dao-cloud 统一主题样式 -->
+    <link rel="stylesheet" href="${request.contextPath}/static/css/dao-cloud-theme.css">
 
 </#macro>
 
@@ -72,95 +72,6 @@
 </#macro>
 
 <#macro commonHeader>
-    <style>
-        /* 现代化头部样式 */
-        .main-header {
-            background: var(--primary-gradient);
-            box-shadow: var(--shadow-md);
-            border-bottom: none;
-        }
-        
-        .main-header .logo {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 0 12px 12px 0;
-            margin: 8px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .main-header .logo:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-        
-        .main-header .logo-lg {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 15px;
-        }
-        
-        .main-header .navbar {
-            background: transparent;
-        }
-        
-        .sidebar-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            margin: 8px;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-toggle:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-        
-        #headerText {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 8px 24px;
-            border-radius: var(--radius-lg);
-            transition: all 0.3s ease;
-            animation: slideInDown 0.6s ease-out;
-        }
-        
-        #logoutBtn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 44px;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-md);
-            margin: 8px;
-            padding: 0 16px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        #logoutBtn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-        }
-        
-        #logoutBtn i {
-            margin-right: 6px;
-            transition: transform 0.3s ease;
-        }
-        
-        #logoutBtn:hover i {
-            transform: translateX(-2px);
-        }
-    </style>
     <header class="main-header">
         <a href="${request.contextPath}" class="logo">
             <span class="logo-mini"><b>dao</b></span>
@@ -193,88 +104,6 @@
 </#macro>
 
 <#macro commonLeft pageName >
-    <style>
-        /* 现代化侧边栏样式 */
-        .main-sidebar {
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .sidebar {
-            padding-top: 20px;
-        }
-        
-        .sidebar-menu > .header {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 12px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0 15px 15px;
-            border-radius: var(--radius-md);
-            backdrop-filter: blur(10px);
-        }
-        
-        .sidebar-menu > li {
-            margin: 0 15px 8px;
-        }
-        
-        .sidebar-menu > li > a {
-            color: rgba(255, 255, 255, 0.85);
-            padding: 14px 18px;
-            border-radius: var(--radius-md);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            border: 1px solid transparent;
-        }
-        
-        .sidebar-menu > li > a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(8px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .sidebar-menu > li.active > a {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .sidebar-menu > li > a > i {
-            margin-right: 12px;
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-        
-        .sidebar-menu > li > a:hover > i {
-            transform: scale(1.1);
-        }
-        
-        .sidebar-menu > li.active > a > i {
-            animation: pulse 2s infinite;
-        }
-        
-        .sidebar-menu > li > a > span {
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        
-        /* 导航图标颜色 */
-        .sidebar-menu .text-red { color: #e74c3c !important; }
-        .sidebar-menu .text-orange { color: #f39c12 !important; }
-        .sidebar-menu .text-blue { color: #3498db !important; }
-        .sidebar-menu .text-success { color: #27ae60 !important; }
-        .sidebar-menu .text-nowrap { color: #9b59b6 !important; }
-        .sidebar-menu .text-green { color: #2ecc71 !important; }
-    </style>
     <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
@@ -324,33 +153,6 @@
 </#macro>
 
 <#macro commonFooter >
-    <style>
-        /* 现代化底部样式 */
-        .main-footer {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-top: 1px solid var(--border-color);
-            padding: 20px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .main-footer a {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .main-footer a:hover {
-            color: var(--primary-dark);
-            text-shadow: 0 1px 2px rgba(102, 126, 234, 0.2);
-        }
-        
-        .main-footer .pull-right {
-            font-weight: 500;
-        }
-    </style>
     <footer class="main-footer">
         <div class="pull-left">
             Powered by <a href="https://github.com/Suzzt/dao-cloud" target="_blank"><b>dao-cloud</b></a> 
