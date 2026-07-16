@@ -37,6 +37,21 @@
     <!-- dao-cloud 统一主题样式 -->
     <link rel="stylesheet" href="${request.contextPath}/static/css/dao-cloud-theme.css">
 
+    <!-- 主题模式初始化（防止刷新闪烁 FOUC） -->
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('dao-theme');
+                if (!t) {
+                    t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
 </#macro>
 
 <#macro commonScript>
@@ -67,6 +82,19 @@
     <script src="${request.contextPath}/static/js/common.1.js"></script>
     <script>
         var base_url = '${request.contextPath}' + "/dao-cloud";
+
+        // 主题切换：亮 <-> 暗，持久化并广播 daoThemeChange 事件（供 ECharts 等响应）
+        (function () {
+            var btn = document.getElementById('daoThemeToggle');
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                var next = cur === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                try { localStorage.setItem('dao-theme', next); } catch (e) {}
+                window.dispatchEvent(new CustomEvent('daoThemeChange', { detail: { theme: next } }));
+            });
+        })();
     </script>
 
 </#macro>
@@ -93,8 +121,15 @@
             <div class="navbar-custom-menu" style="float: right;">
                 <ul class="nav navbar-nav">
                     <li>
+                        <a href="javascript:void(0);" id="daoThemeToggle" title="切换主题">
+                            <i class="fa fa-moon-o dao-theme-moon" aria-hidden="true"></i>
+                            <i class="fa fa-sun-o dao-theme-sun" aria-hidden="true"></i>
+                            <span class="hidden-xs">主题</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="javascript:void(0);" id="logoutBtn">
-                            <i class="fa fa-sign-out" aria-hidden="true"></i>退出登录
+                            <i class="fa fa-sign-out" aria-hidden="true"></i><span class="hidden-xs">退出登录</span>
                         </a>
                     </li>
                 </ul>

@@ -8,7 +8,7 @@
     <link rel="stylesheet"
           href="${request.contextPath}/static/adminlte/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 </head>
-<body class="hold-transition skin-blue sidebar-mini dao-page-enter <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if> ">
+<body class="hold-transition skin-blue sidebar-mini dao-page-enter dao-page-dashboard <#if cookieMap?exists && cookieMap["dao-cloud_adminlte_settings"]?exists && "off" == cookieMap["dao-cloud_adminlte_settings"].value >sidebar-collapse</#if> ">
 <div class="wrapper">
     <!-- header -->
     <@netCommon.commonHeader />
@@ -99,20 +99,23 @@
                 </div>
             </div>
 
-            <!-- 服务节点柱状图 -->
-            <div class="dao-chart-container">
-                <div class="dao-chart-title">
-                    <i class="fa fa-bar-chart"></i> 服务节点分布统计
+            <!-- 图表区域 -->
+            <div class="dao-chart-row">
+                <!-- 服务节点柱状图 -->
+                <div class="dao-chart-container">
+                    <div class="dao-chart-title">
+                        <i class="fa fa-bar-chart"></i> 服务节点分布统计
+                    </div>
+                    <div id="barChart" style="height:360px;"></div>
                 </div>
-                <div id="barChart" style="height:400px;"></div>
-            </div>
 
-            <!-- 预留图表区域 -->
-            <div class="dao-chart-container">
-                <div class="dao-chart-title">
-                    <i class="fa fa-line-chart"></i> 系统监控趋势
+                <!-- 系统监控趋势 -->
+                <div class="dao-chart-container">
+                    <div class="dao-chart-title">
+                        <i class="fa fa-line-chart"></i> 系统监控趋势
+                    </div>
+                    <div id="lineChart" style="height:360px;"></div>
                 </div>
-                <div id="lineChart" style="height:400px;"></div>
             </div>
         </section>
     </div>
@@ -124,12 +127,43 @@
 <script src="${request.contextPath}/static/plugins/echarts/echarts.common.min.js"></script>
 <script src="${request.contextPath}/static/js/index.js"></script>
 <script>
+    // 依据当前主题返回图表配色（亮/暗自适应）
+    function daoChartTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            dark: dark,
+            axisText: dark ? '#9aa5b8' : '#5b6472',
+            axisLine: dark ? '#2a3444' : '#e3e8f0',
+            splitLine: dark ? '#232c3d' : '#eef1f7',
+            tooltipBg: dark ? 'rgba(27,35,49,0.96)' : 'rgba(255,255,255,0.98)',
+            tooltipBorder: '#667eea',
+            tooltipText: dark ? '#e6eaf2' : '#333',
+            legendText: dark ? '#9aa5b8' : '#5b6472'
+        };
+    }
+
+    var daoCharts = [];
+
+    // 将当前主题配色合并进已初始化的图表
+    function applyChartTheme() {
+        var t = daoChartTheme();
+        daoCharts.forEach(function (c) {
+            c.setOption({
+                tooltip: { backgroundColor: t.tooltipBg, borderColor: t.tooltipBorder, textStyle: { color: t.tooltipText } },
+                legend: { textStyle: { color: t.legendText } },
+                xAxis: { axisLine: { lineStyle: { color: t.axisLine } }, axisLabel: { color: t.axisText } },
+                yAxis: { axisLine: { lineStyle: { color: t.axisLine } }, axisLabel: { color: t.axisText }, splitLine: { lineStyle: { color: t.splitLine } } }
+            });
+        });
+    }
+
     var proxyDimensionStatistics = ${proxyDimensionStatistics};
     if (proxyDimensionStatistics == null || proxyDimensionStatistics.length === 0) {
         document.getElementById('barChart').closest('.dao-chart-container').style.display = 'none';
     } else {
-        // 现代化柱状图配置
+        // 柱状图配置
         var barChart = echarts.init(document.getElementById('barChart'));
+        daoCharts.push(barChart);
         var barOption = {
             title: {
                 show: false
@@ -239,8 +273,9 @@
         });
     }
 
-    // 现代化折线图配置
+    // 折线图配置
     var lineChart = echarts.init(document.getElementById('lineChart'));
+    daoCharts.push(lineChart);
     var lineOption = {
         title: {
             show: false
@@ -414,10 +449,17 @@
         }
     };
     lineChart.setOption(lineOption);
-    
-    // 响应式
-    window.addEventListener('resize', function() {
-        lineChart.resize();
+
+    // 应用主题配色
+    applyChartTheme();
+
+    // 响应式 & 主题切换重绘
+    window.addEventListener('resize', function () {
+        daoCharts.forEach(function (c) { c.resize(); });
+    });
+    window.addEventListener('daoThemeChange', function () {
+        applyChartTheme();
+        daoCharts.forEach(function (c) { c.resize(); });
     });
 
     // 自动刷新机制优化 - 增加到30秒，减少频繁刷新
